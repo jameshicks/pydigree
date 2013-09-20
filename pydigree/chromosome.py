@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+
+from pydigree._pydigree import choice_with_probs
+
+class Chromosome():
+    """ Chromsome is a class that keeps track of marker frequencies and distances
+    Not an actual chromosome with genotypes, which you would find under Individual
+
+    Chromosomal positions are marginal: they describe the probablility of
+    recombination between the current marker and the one immediately preceding it
+
+    Markers are currently diallelic and frequencies are given for minor alleles.
+    Marker frequencies must sum to 1. Major allele frequency is then f = 1 - f_minor
+
+    linkageequilibrium_chromosome generates chromsomes that are generated from
+    simulating all markers with complete independence (i.e. linkage equilibrium).
+    This is not typically what you want: you won't find any LD for association etc.
+    linkageequilibrium_chromosome is used for 'seed' chromosomes when initializing a
+    population pool or when simulating purely family-based studies for linkage
+    analysis. 
+    """
+    def __init__(self):
+        self.genetic_map = []
+        self.frequencies = []
+    def __str__(self):
+        return 'Chromosome object: %d markers, %f cM' % (len(self.frequencies),sum(self.genetic_map) * 100)
+    def size(self): return self.genetic_map[-1] - self.genetic_map[0]
+    def add_genotype(self,frequency,map_position):
+        self.genetic_map.append(map_position)
+        self.frequencies.append(frequency)
+    def linkageequilibrium_chromosome(self):
+        # Returns a randomly generated chromosome
+        return [choice_with_probs([0,1], [1-f,f]) for f in self.frequencies]
