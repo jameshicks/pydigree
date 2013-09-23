@@ -3,6 +3,7 @@
 import itertools
 import random
 import math
+import numpy
 from collections import MutableMapping
 
 from individual import Individual
@@ -227,4 +228,4 @@ class Pedigree(Population):
                 if a == b: row.append(1 + a.inbreeding())
                 else: row.append(2 * kinship(a,b))
             mat.append(row)
-        return mat
+        return np.array(mat)
