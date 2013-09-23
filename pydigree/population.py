@@ -7,6 +7,7 @@ from collections import MutableMapping
 
 from individual import Individual
 from chromosome import Chromosome
+from paths import kinship
 from common import *
 
 from pydigree._pydigree import sample_with_replacement,random_pairs
@@ -170,9 +171,35 @@ class Population(MutableMapping):
 class Pedigree(Population):
     def __init__(self):
         Population.__init__(self)
+        self.kinmat = {}
     def bit_size(self):
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
+    def kinship(self,id1,id2):
+        """
+        Get the Malecot coefficient of coancestry for two individuals in the pedigree.
+        (See notes in pydigree.paths.kinship). For pedigree objects, results are stored
+        to reduce the calculation time for kinship matrices.
+
+        This is a convenience wrapper for paths.kinship, which takes pedigree objects as
+        arguments. This function takes id labels and looks them up in the pedigree, and
+        calls paths.kinship on those pedigree objects. 
+        """
+        pair = frozenset([id1,id2])
+        if pair not in self.kinmat:
+            k = kinship(self[id1],self[id2])
+            self.kinmat[pair] = k
+            return k
+        else: return self.kinmat[pair]
+    def inbreeding(self,id):
+        """
+        Like Pedigree.kinship, this is a convenience function for getting inbreeding
+        coefficients for individuals in pedigrees by their id label. As inbreeding
+        coefficients are the kinship coefficient of the parents, this function calls
+        Pedigree.kinship to check for stored values.
+        """
+        ind = self[id]
+        return self.kinship(ind.father.id,ind.mother.id)
     def simulate_ibd_states(self):
         """
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
