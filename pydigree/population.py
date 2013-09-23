@@ -170,6 +170,9 @@ class Population(MutableMapping):
 class Pedigree(Population):
     def __init__(self):
         Population.__init__(self)
+    def bit_size(self):
+        t = table([x.is_founder() for x in self])
+        return 2 * t[False] - t[True]
     def simulate_ibd_states(self):
         """
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
