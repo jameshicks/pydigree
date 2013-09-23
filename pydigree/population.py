@@ -220,12 +220,12 @@ class Pedigree(Population):
         Important: the rows/columns are sorted on ids. If you're not sure about this, try
         sorted(x.id for x in ped) to see the ordering.
         """
-        inds = sorted(self,key=lambda x: x.id)
+        inds = sorted(x.id for x in self)
         mat = []
-        for a in inds:
+        for a in ids:
             row = []
-            for b in inds:
-                if a == b: row.append(1 + a.inbreeding())
-                else: row.append(2 * kinship(a,b))
+            for b in ids:
+                if a == b: row.append(1 + self.inbreeding(a))
+                else: row.append(2 * self.kinship(a,b))
             mat.append(row)
         return np.array(mat)
