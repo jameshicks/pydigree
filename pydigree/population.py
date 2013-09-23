@@ -1,19 +1,25 @@
 #!/usr/bin/env python
 
+# Packages we're going to use
 import itertools
 import random
 import math
 import numpy as np
+
+# Abstract base class for population and pedigree
 from collections import MutableMapping
 
+# Other pydigree objects
 from individual import Individual
 from chromosome import Chromosome
 from paths import kinship
 from common import *
+from recombination import recombine
 
+# C extension functions
 from pydigree._pydigree import sample_with_replacement,random_pairs
 from pydigree._pydigree import choice_with_probs
-from recombination import recombine
+
 
 ### Population growth models.
 # These are easy enough to supply your own if you wanted
@@ -110,6 +116,10 @@ class Population(MutableMapping):
     ###
     ###
     def mate(self,ind1,ind2,id):
+        """
+        Creates an individual as the child of two specificied individual objects
+        randomly chooses a sex. 
+        """
         child = Individual(self,id,ind1,ind2,random.choice([0,1]))
         return child
     def random_mating_generation(self,gensize):
@@ -142,6 +152,7 @@ class Population(MutableMapping):
         return [ [c.linkage_equilibrium_chromosome(),c.linkage_equilibrium_chromosome()]
                 for c in self.chromosomes]
     def clear_genotypes(self):
+        """ Clears genotypes for every one in population """
         for x in self: x.clear_genotypes()
     def alleles(self,location):
         """ The list of available alleles at a location in this population """
@@ -174,6 +185,13 @@ class Pedigree(Population):
         Population.__init__(self)
         self.kinmat = {}
     def bit_size(self):
+        """
+        Returns the bit size of the pedigree. The bitsize is defined as 2*n-f
+        where n is the number of nonfounders and f is the number of founders.
+
+        This represents the number of bits it takes to represent the inheritance
+        vector in the Lander-Green algorithm.
+        """
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
     def kinship(self,id1,id2):
