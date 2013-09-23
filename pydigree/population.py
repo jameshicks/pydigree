@@ -3,7 +3,7 @@
 import itertools
 import random
 import math
-import numpy
+import numpy as np
 from collections import MutableMapping
 
 from individual import Individual
