@@ -15,7 +15,10 @@ def read_ped(filename,population=None,affected_labels=None):
     """
     p = Pedigree()
     if not affected_labels:
-        affected_labels = {'1':0,'2':1}
+        affected_labels = {'1':0,'2':1,
+                           'A':1,'U':0,
+                           'X': None,
+                           '-9': None}
     def getph(ph):
         if ph in affected_labels:
             return affected_labels[ph]
