@@ -191,7 +191,7 @@ class Pedigree(Population):
         where n is the number of nonfounders and f is the number of founders.
 
         This represents the number of bits it takes to represent the inheritance
-        vector in the Lander-Green algorithm.
+        vector in the Lander-Green algorithm. 
         """
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
@@ -203,7 +203,7 @@ class Pedigree(Population):
 
         This is a convenience wrapper for paths.kinship, which takes pedigree objects as
         arguments. This function takes id labels and looks them up in the pedigree, and
-        calls paths.kinship on those pedigree objects. 
+        calls paths.kinship on those individual objects. 
         """
         pair = frozenset([id1,id2])
         if pair not in self.kinmat:
