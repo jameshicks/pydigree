@@ -188,6 +188,10 @@ class Population(MutableMapping):
         freqtab = table(alleles)
         if allele not in freqtab: return 0
         return freqtab[allele] / float(len(alleles))
+    def major_allele(self,location,constraint=None):
+        alleles = self.alleles(location,constraint=constraint)
+        freqtab = table(alleles)
+        return sorted(freqtab.keys(), key=lambda x:freqtab[x])[0]
     ### Phenotype functions
     ###
     ###
