@@ -98,8 +98,11 @@ class Population(MutableMapping):
     ### Chromosome pool functions
     ###
     ###
-    def chrom_pool_size(self): return len(self.pool[0])
+    def chrom_pool_size(self):
+        """ Returns the size of the pool of available chromosomes"
+        return len(self.pool[0])
     def initialize_pool(self):
+        """ Initializes a pool of chromosomes for simulation """
         self.pool = [None]*self.chromosome_count()
         for i,q in enumerate(self.chromosomes):
             self.pool[i]=[q.linkageequilibrium_chromosome() for x in xrange(2*self.n0)]
