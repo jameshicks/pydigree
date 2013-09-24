@@ -3,6 +3,7 @@
 import itertools
 import random
 from recombination import recombine
+from misc import is_missing_genotype
 from paths import *
 
 
@@ -64,6 +65,11 @@ class Individual(individual):
             raise ValueError('Individual has no genotypes!')
         chr,pos = location
         return tuple([x[pos] for x in self.genotypes[chr]])
+    def has_allele(self,location,allele):
+        """ Returns true if individual has the specified allele at location """
+        g = self.get_genotype(location)
+        if is_missing_genotype(g): return None
+        else: return allele in g
     def label_genotypes(self):
         """
         Gives the individual label genotypes. When these genotypes are transmitted on to the next
