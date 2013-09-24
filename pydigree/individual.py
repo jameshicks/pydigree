@@ -61,7 +61,7 @@ class Individual():
         self.genotypes = g
     def clear_genotypes(self): self.genotypes = None
     def clear_phenotypes(self): self.phenotypes = {}
-    ### Functions about ancestry
+    ### Functions about ancestry and family
     ###
     def is_founder(self):
         return self.father is None and self.mother is None
@@ -72,7 +72,12 @@ class Individual():
     def descendants(self):
         """ Recursively searches for descendants. """
         return set(self.children + list(flatten([x.descendants() for x in self.children])))
-    def siblings(self): return set(self.father.children) & set(self.mother.children)
+    def siblings(self, include_halfsibs=False):
+        """ Returns this individuals sibliings. If include halfsibs is set, half sibs will also be included """
+        if include_halfsibs:
+            return set(self.father.children) | set(self.mother.children)
+        else:
+            return set(self.father.children) & set(self.mother.children)
     def remove_ancestry(self):
         """
         Removes ancestry: makes a person a founder. Cannot be used on an individual in a
