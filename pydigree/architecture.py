@@ -63,7 +63,6 @@ class Architecture():
         locations = tuple(tuple(loc) for loc in locations)
         g = tuple(frozenset(individual.get_genotype(chr,pos) for chr,pos in locations))
         if g not in self.epistatic_effects[locations]: return 0
-        
     def set_liability_threshold(self,threshold):
         if self.traittype != 'dichotomous':
             raise ValueError('Liability thresholds only available for dichotomous traits')
