@@ -289,6 +289,8 @@ class Pedigree(Population):
         if nonfounders: return Population.allele_frequency(self,location,allele,constraint)
         constraint = self.__prepare_nonfounder_constraint(constraint)
         return Population.allele_frequency(self,location,allele,constraint=constraint)
+    def ld(self):
+        raise NotImplementedError('LD not meaningful for pedigrees?')
     ### Relationships
     ###
     def kinship(self,id1,id2):
