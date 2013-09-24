@@ -198,6 +198,9 @@ class Pedigree(Population):
         Population.__init__(self)
         self.kinmat = {}
         self.fratmat = {}
+    def __prepare_nonfounder_contraint(self,con):
+        if not con: return lambda x: x.is_founder()
+        else: return lambda x: x.is_founder() and con(x)
     def bit_size(self):
         """
         Returns the bit size of the pedigree. The bitsize is defined as 2*n-f
@@ -208,6 +211,21 @@ class Pedigree(Population):
         """
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
+    ### Frequency
+    def alleles(self,location, constraint=None, nonfounders=False):
+        """
+        Like Population.alleles, except constrained to founder individuals
+
+        If nonfounders is True, it's just a call to Population.alleles.
+        """
+        if nonfounders:
+            return Population.alleles(self,location,constraint)
+        con = self.__prepare_nonfounder_constraint(constraint)
+        return Population.alleles(self,location,con)
+    def allele_frequency(self,location,allele,constraint=None, nonfounders=False):
+        if nonfounders: return Population.allele_frequency(self,location,allele,constraint)
+        constraint = self.__prepare_nonfounder_constraint(constraint)
+        return Population.allele_frequency(self,location,allele,constraint=constraint)
     ### Relationships
     ###
     def kinship(self,id1,id2):
