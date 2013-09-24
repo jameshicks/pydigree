@@ -3,12 +3,8 @@
 
 /* Function Prototypes */ 
 
-PyObject* recombine_interface(PyObject* self, PyObject* args);
-PyObject* recombine(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l);
-
 PyObject* haldane_interface(PyObject* self, PyObject* args);
 PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l);
-
 
 PyObject* sample_with_replacement_interface(PyObject* self, PyObject* args);
 PyObject* sample_with_replacement(PyObject* population, long int n);
@@ -24,9 +20,6 @@ PyObject* choice_probs(PyObject* choices, PyObject* probs);
 static char module_docstring[] =
   "This sub-module provides C implementations of time-intensive pydigree functions";
 
-static char recombine_docstring[] = 
-  "Takes 3 python lists, chromA, chromB, and map. The map is a list of floats indicating\
- the recombination probablility between the current marker and the previous one considered";
 static char haldane_docstring[] = "Takes 3 python lists, chromA, chromB, and map. The map is a list of floats indicating\
  the map position";
 static char sample_repl_docstring[] = "Randomly choses n individuals (with replacement) from the population";
@@ -35,7 +28,6 @@ static char choice_prob_docstring[] = "Chooses a random item based on probabilit
 
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
-  {"recombine", recombine_interface, METH_VARARGS, recombine_docstring},
   {"recombine_haldane", haldane_interface, METH_VARARGS, haldane_docstring},
   {"sample_with_replacement", sample_with_replacement_interface, METH_VARARGS, sample_repl_docstring},
   {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
@@ -75,37 +67,6 @@ double rexp(double rate) {
 }
 
 
-/* Recombination functions! */ 
-PyObject* recombine_interface(PyObject* self, PyObject* args) {
-  PyObject *chromA,*chromB, *map;
-  if (!PyArg_ParseTuple(args, "OOO", &chromA, &chromB, &map)) return NULL;
-  Py_ssize_t length = PyList_Size(chromA);
-  PyObject* nc = recombine(chromA,chromB,map,length);
-  return nc; 
-
-}
-
-PyObject* recombine(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l) {
-  Py_ssize_t i; 
-  unsigned char flipped = 0;
-  PyObject* newchrom = PyList_New(l);
-  for (i = 0; i < l; i++) {
-    PyObject *a, *b;
-    a = PyList_GetItem(A,i);
-    b = PyList_GetItem(B,i);
-    
-    double r = drand48();
-    double recomb_prob = PyFloat_AsDouble( PyList_GetItem(map,i) );
-    if (r < recomb_prob) flipped = !flipped;
-
-    PyObject* allele = flipped ? b : a;
-    Py_INCREF(allele);
-
-    PyList_SET_ITEM(newchrom,i,allele);
-
-  }
-  return newchrom;
-}
 
 PyObject* haldane_interface(PyObject* self, PyObject* args) {
   PyObject *chromA,*chromB, *map;
