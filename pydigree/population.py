@@ -81,6 +81,12 @@ class Population(MutableMapping):
             if id not in self.population.keys():
                 yield id
             idx+1
+    def males(self):
+        """ Returns list of males in population """
+        return [x for x in self if x.sex == 0]
+    def females(self):
+        """ Returns list of females in population """
+        return [x for x in self if x.sex == 1]
     ### Chromosome functions
     ###
     ###
@@ -111,7 +117,6 @@ class Population(MutableMapping):
                 return recombine(q,w,map)
             np = [choose_chrom(self.pool[i],c.genetic_map) for x in xrange(gensize)]
             self.pool[i] = np
-
     ### Random mating
     ###
     ###
@@ -138,7 +143,7 @@ class Population(MutableMapping):
     def add_founder_individual(self):
         i = self._founder_ind()
         self.register_individual(i)
-    ### Genotype/Allele Functions
+    ### Genotype Functions
     ###
     ###
     def get_founder_genotypes(self):
@@ -154,6 +159,8 @@ class Population(MutableMapping):
     def clear_genotypes(self):
         """ Clears genotypes for every one in population """
         for x in self: x.clear_genotypes()
+    ### Frequency functions
+    ### 
     def alleles(self,location):
         """ The list of available alleles at a location in this population """
         return list(flatten(x.get_genotype(location) for x in self if x.has_genotypes()))
@@ -163,13 +170,6 @@ class Population(MutableMapping):
         freqtab = table(alleles)
         if allele not in freqtab: return 0
         return freqtab[allele] / float(len(alleles))
-    def males(self):
-        """ Returns list of males in population """
-        return [x for x in self if x.sex == 0]
-    def females(self):
-        """ Returns list of females in population """
-        return [x for x in self if x.sex == 1]
-
     ### Phenotype functions
     ###
     ###
