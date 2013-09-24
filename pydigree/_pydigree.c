@@ -71,7 +71,7 @@ double rexp(double rate) {
 PyObject* haldane_interface(PyObject* self, PyObject* args) {
   PyObject *chromA,*chromB, *map;
   if (!PyArg_ParseTuple(args, "OOO", &chromA, &chromB, &map)) return NULL;
-  Py_ssize_t length = PyList_Size(chromA);
+  Py_ssize_t length = PySequence_Size(chromA);
   PyObject* nc = recombine_haldane(chromA,chromB,map,length);
   return nc;
 
@@ -85,8 +85,13 @@ PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t 
   for (i = 0; i < l; i++) {
     /* Get the alleles */
     PyObject *a, *b;
-    a = PyList_GetItem(A,i);
-    b = PyList_GetItem(B,i);
+
+    /* 
+       FIXME: check if I'm leaking memory here. PyList used to return a
+       borrowed reference for GetItem, but PySequence returns a new reference!
+    */
+    a = PySequence_GetItem(A,i);
+    b = PySequence_GetItem(B,i);
 
     /* Do we cross over? */ 
     double position = PyFloat_AsDouble( PyList_GetItem(map,i) );

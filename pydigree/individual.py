@@ -123,7 +123,6 @@ class Individual(individual):
         def randbit(): random.choice([True,False])
         g = []
         for i,chr in enumerate(self.genotypes):
-            ### FIXME: _pydigree.recombine should work on sequences
             chr1,chr2 = chr
             if randbit():
                 chrom = recombine(chr1,chr2,self.population.chromosomes[i].genetic_map)
