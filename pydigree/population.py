@@ -14,6 +14,7 @@ from individual import Individual
 from chromosome import Chromosome
 from paths import kinship, fraternity
 from common import *
+from misc import is_missing_genotype
 from recombination import recombine
 
 # C extension functions
@@ -193,6 +194,54 @@ class Population(MutableMapping):
         alleles = self.alleles(location,constraint=constraint)
         freqtab = table(alleles)
         return sorted(freqtab.keys(), key=lambda x:freqtab[x])[0]
+    def ld(self,locusa,locusb,allelea=None,alleleb=None, method='r2'):
+        """
+        Returns a measure of linkage disquilibirum between alleles at two loci,
+        for methods in {D, Dprime, r2}. If alleles aren't specified, the
+        major alleles at each locus are chosen.
+        
+        LD metrics are functions of D, the measure of deviance from independence in
+        sampling alleles. D = x11 - p1q1, where x11 is the frequency of allele 1 at
+        locus p occuring with allele 1 at locus q.
+        
+        Lewontin's D' is a normalization of D, since D is dependent on frequency.
+        D' = D / Dmax, where:
+        Dmax = min(p1*q1, p2*q2) if D > 0
+        Dmax = min(p2*q1,p1*q2) if D < 0
+        
+        r2 is a third metric, equal to
+        D**2 / (p1 * p2 * q1 * q2)
+        r2 ranges from 0 to 1
+        
+        Alleles are in linkage equilibrium if any of these metrics are 0. 
+        """
+        method = method.lower()
+        if method not in set(['r2','dprime','d']):
+            raise ValueError("LD metric must be one of r2,Dprime or D") 
+        if not allelea: allelea = self.major_allele(locusa)
+        if not alleleb: alleleb = self.major_allele(locusb)
+        pop = [x for x in self if \
+               (not is_missing_genotype(x.get_genotype(locusa))) and \
+               (not is_missing_genotype(x.get_genotype(locusb)))]
+        # Allele 1
+        p1 = self.allele_frequency(locusa,allelea)
+        p2 = 1 - p1
+        # Allele 2
+        q1 = self.allele_frequency(locusa,allelea)
+        q2 = 1 - q1
+        x = sum(1 for x in pop \
+                if x.has_allele(locusa,allelea) and x.has_allele(locusb,alleleb))
+        D = x - pa*qa
+        # All of these metrics are normalizations of D by dividing it by
+        # some expression. If D==0 all of them will equal 0.
+        if D == 0: return 0 
+        elif method == 'd': return D
+        elif method == 'dprime':
+            if D > 0: Dmax = min(p1*q1,p2*q2)
+            else: Dmax = min(p2*q1,p1*q2)
+            return D / Dmax
+        elif method == 'r2':
+            return (D**2) / (p1 * p2 * q1 * q2)
     ### Phenotype functions
     ###
     ###
