@@ -73,6 +73,8 @@ class Population(MutableMapping):
         if ind.id in self.population:
             raise ValueError('ID %s already in population!' % ind.id)
         self.population[ind.id] = ind
+    def remove_individual(self,ind):
+        del self[ind.id]
     def random_identifier(self):
         idx = 0
         while True:
