@@ -56,23 +56,33 @@ class Individual(individual):
         else:
             self.genotypes = self.fertilize(self.father.gamete(),self.mother.gamete())
     def get_genotype(self,location):
+        """
+        Returns a tuple of alleles, in the format (paternal allele, maternal allele)
+        """
         self.__fail_on_observed_genos()
-        if not self.has_genotypes(): raise ValueError('Individual has no genotypes!')
+        if not self.has_genotypes():
+            raise ValueError('Individual has no genotypes!')
         chr,pos = location
         return tuple([x[pos] for x in self.genotypes[chr]])
     def label_genotypes(self):
+        """
+        Gives the individual label genotypes. When these genotypes are transmitted on to the next
+        generation, you can see where each allele in the next generation came from. Useful for
+        gene dropping simulations, probably not much else.
+        """
         self.__fail_on_observed_genos()
         g = []
         for x in self.population.chromosomes:
             g.append( [ ['%sP' % self.id ] * len(x.genetic_map), ['%sM' % self.id] * len(x.genetic_map) ]  )
         self.genotypes = g
     def clear_genotypes(self):
+        """ Removes genotypes """
         self.observed_genos = False
         self.genotypes = None
-    def clear_phenotypes(self): self.phenotypes = {}
     ### Functions about ancestry and family
     ###
     def is_founder(self):
+        """ Returns true if individual is a founder """
         return self.father is None and self.mother is None
     def ancestors(self):
         """ Recursively searches for ancestors. """
@@ -82,7 +92,10 @@ class Individual(individual):
         """ Recursively searches for descendants. """
         return set(self.children + list(flatten([x.descendants() for x in self.children])))
     def siblings(self, include_halfsibs=False):
-        """ Returns this individuals sibliings. If include halfsibs is set, half sibs will also be included """
+        """
+        Returns this individuals sibliings.
+        If include halfsibs is set, half sibs will also be included
+        """
         if include_halfsibs:
             return set(self.father.children) | set(self.mother.children)
         else:
@@ -96,7 +109,12 @@ class Individual(individual):
         self.father = None
         self.mother = None
     def inbreeding(self):
+        """
+        Returns the inbreeding coefficient (F) for the individual.
+        """
+        # Two edge cases where inbreedings must be 0
         if self.is_founder(): return 0.0
+        if self.father.is_founder() or self.mother.is_founder(): return 0.0
         return kinship(self.father,self.mother)
     ### Functions for breeding
     ###
@@ -115,12 +133,10 @@ class Individual(individual):
         return g
     def fertilize(self,father,mother):
         return [ [x,y] for x,y in itertools.izip(father,mother) ]
-    def pprint_genos(self):
-        for i,c in enumerate(self.genotypes):
-            print 'Chromosome %s' % i 
-            for g in zip(*c):
-                print '\t'.join([str(x) for x in g])
+    ### Phenotype functions
     def predict_phenotype(self,trait):
         self.phenotypes[trait.name] = trait.predict_phenotype(self)
-
+    def clear_phenotypes(self):
+        """ Removes phenotypes """
+        self.phenotypes = {}
     
