@@ -22,6 +22,7 @@ class Individual():
         self.sex = sex # 0:M 1:F
         self.pedigree = None
         self.genotypes = None
+        self.observed_genos = True
         self.phenotypes = {}
         self.children = []
         if isinstance(self.father,Individual): self.father.register_child(self)
@@ -39,7 +40,11 @@ class Individual():
     ### Functions about genotypes
     ###
     def has_genotypes(self): return self.genotypes is not None
+    def __fail_on_observed_genos(self):
+        if self.observed_genos:
+            raise ValueError('Individual has observed genotypes')        
     def get_genotypes(self,linkeq=False):
+        self.__fail_on_observed_genos()
         if self.has_genotypes(): return 
         if self.is_founder() and self.population is None:
             raise ValueError('Founder individual %s has no assigned population!' % (self.id)) 
@@ -51,15 +56,19 @@ class Individual():
         else:
             self.genotypes = self.fertilize(self.father.gamete(),self.mother.gamete())
     def get_genotype(self,location):
+        self.__fail_on_observed_genos()
         if not self.has_genotypes(): raise ValueError('Individual has no genotypes!')
         chr,pos = location
         return tuple([x[pos] for x in self.genotypes[chr]])
     def label_genotypes(self):
+        self.__fail_on_observed_genos()
         g = []
         for x in self.population.chromosomes:
             g.append( [ ['%sP' % self.id ] * len(x.genetic_map), ['%sM' % self.id] * len(x.genetic_map) ]  )
         self.genotypes = g
-    def clear_genotypes(self): self.genotypes = None
+    def clear_genotypes(self):
+        self.observed_genos = False
+        self.genotypes = None
     def clear_phenotypes(self): self.phenotypes = {}
     ### Functions about ancestry and family
     ###
