@@ -222,7 +222,8 @@ class Pedigree(Population):
     def simulate_ibd_states(self):
         """
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
-        founder that they received the genotype from.  
+        founder chromosome that they received the genotype from. You can then use
+        misc.ibs to determine IBD state. This effectively an infinite-alleles simulation.
         """
         for x in self:
             if x.is_founder(): x.label_genotypes()
