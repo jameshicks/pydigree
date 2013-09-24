@@ -335,6 +335,8 @@ class Pedigree(Population):
         Pedigree.kinship to check for stored values.
         """
         ind = self[id]
+        if ind.is_founder: return 0.0
+        if ind.father.is_founder() or ind.mother.is_founder(): return 0.0
         return self.kinship(ind.father.id,ind.mother.id)
     def makeA(self):
         """
