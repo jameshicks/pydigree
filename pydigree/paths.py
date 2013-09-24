@@ -92,3 +92,12 @@ def kinship(ind1, ind2):
                  for p in paths_through_ancestor(ind1,ind2,ancestor) )
         partialkin.append(k)
     return sum(partialkin)
+def fraternity(ind1,ind2):
+    """
+    The coefficient of fraternity is the probability that both alleles in a pair of individuals
+    are IBD. This is equal to: k(x_m,y_m) * k(x_f,y_f) + k(x_m,y_f) + k(x_f,y_m)
+    where x_m represents the mother of x, etc. and k(x,y) represents the Malecot kinship
+    between x and y.
+    """
+    return kinship(ind1.mother,ind2.mother) * kinship(ind1.father,ind2.father) \
+           + kinship(ind1.mother,ind2.father) * kinship(ind1.father,ind2.mother)

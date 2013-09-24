@@ -12,7 +12,7 @@ from collections import MutableMapping
 # Other pydigree objects
 from individual import Individual
 from chromosome import Chromosome
-from paths import kinship
+from paths import kinship, fraternity
 from common import *
 from recombination import recombine
 
@@ -184,6 +184,7 @@ class Pedigree(Population):
     def __init__(self):
         Population.__init__(self)
         self.kinmat = {}
+        self.fratmat = {}
     def bit_size(self):
         """
         Returns the bit size of the pedigree. The bitsize is defined as 2*n-f
@@ -210,6 +211,18 @@ class Pedigree(Population):
             self.kinmat[pair] = k
             return k
         else: return self.kinmat[pair]
+    def fraternity(self,id1,id2):
+        """
+        Like Pedigree.kinship, this is a convenience function for getting fraternity
+        coefficients for two pedigree memebers by their ID label. This is a wrapper
+        for paths.fraternity
+        """
+        pair = frozenset([id1,id2])
+        if pair not in self.fratmat:
+            f = fraternity(self[id1],self[id2])
+            self.fratmat[pair] = f
+            return f
+        else: return self.fratmat[pair]
     def inbreeding(self,id):
         """
         Like Pedigree.kinship, this is a convenience function for getting inbreeding
@@ -239,12 +252,30 @@ class Pedigree(Population):
         Important: the rows/columns are sorted on ids. If you're not sure about this, try
         sorted(x.id for x in ped) to see the ordering.
         """
-        inds = sorted(x.id for x in self)
+        ids = sorted(x.id for x in self)
         mat = []
         for a in ids:
             row = []
             for b in ids:
                 if a == b: row.append(1 + self.inbreeding(a))
                 else: row.append(2 * self.kinship(a,b))
+            mat.append(row)
+        return np.array(mat)
+    def makeD(self):
+        """
+        Calculates the dominance genetic relationship matrix (the D matrix) for quantitative genetics.
+        D_ij = .25 * fraternity(i,j) if i != j (See notes on function 'fraternity')
+        D_ij = 1 if i == j.
+
+        Important: the rows/columns are sorted on ids. If you're not sure about this, try
+        sorted(x.id for x in ped) to see the ordering.
+        """
+        ids = sorted(x.id for x in self)
+        mat = []
+        for a in ids:
+            row = []
+            for b in ids:
+                if a == b: row.append(1)
+                else: row.append(.25 * self.fraternity(a,b))
             mat.append(row)
         return np.array(mat)
