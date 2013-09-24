@@ -195,6 +195,8 @@ class Pedigree(Population):
         """
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
+    ### Relationships
+    ###
     def kinship(self,id1,id2):
         """
         Get the Malecot coefficient of coancestry for two individuals in the pedigree.
@@ -232,17 +234,6 @@ class Pedigree(Population):
         """
         ind = self[id]
         return self.kinship(ind.father.id,ind.mother.id)
-    def simulate_ibd_states(self):
-        """
-        Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
-        founder chromosome that they received the genotype from. You can then use
-        misc.ibs to determine IBD state. This effectively an infinite-alleles simulation.
-        """
-        for x in self:
-            if x.is_founder(): x.label_genotypes()
-        for x in self:
-            if x.is_founder(): continue
-            x.get_genotypes()
     def makeA(self):
         """
         Calculates an additive relationship matrix (the A matrix) for quantiatitive genetics.
@@ -279,3 +270,16 @@ class Pedigree(Population):
                 else: row.append(.25 * self.fraternity(a,b))
             mat.append(row)
         return np.array(mat)
+    ### Gene dropping
+    ###
+    def simulate_ibd_states(self):
+        """
+        Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
+        founder chromosome that they received the genotype from. You can then use
+        misc.ibs to determine IBD state. This effectively an infinite-alleles simulation.
+        """
+        for x in self:
+            if x.is_founder(): x.label_genotypes()
+        for x in self:
+            if x.is_founder(): continue
+            x.get_genotypes()
