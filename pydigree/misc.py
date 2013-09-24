@@ -41,7 +41,7 @@ def read_ped(filename,population=None,affected_labels=None):
 
 ### Extra genetics functions
 def is_missing_genotype(g):
-    return g == tuple([None,None])
+    return g == tuple([0,0])
 
 def ibs(g1,g2):
     """ Returns the number of alleles identical by state between two genotypes """
