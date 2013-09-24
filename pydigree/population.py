@@ -223,6 +223,10 @@ class Pedigree(Population):
         con = self.__prepare_nonfounder_constraint(constraint)
         return Population.alleles(self,location,con)
     def allele_frequency(self,location,allele,constraint=None, nonfounders=False):
+        """
+        Like Population.alleles, except constrained to founder individuals.
+        If nonfounders is True, it's just a call to Population.alleles.        
+        """
         if nonfounders: return Population.allele_frequency(self,location,allele,constraint)
         constraint = self.__prepare_nonfounder_constraint(constraint)
         return Population.allele_frequency(self,location,allele,constraint=constraint)
