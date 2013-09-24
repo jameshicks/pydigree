@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from array import array
 from pydigree._pydigree import choice_with_probs
 
 class Chromosome():
@@ -22,6 +22,7 @@ class Chromosome():
     def __init__(self):
         self.genetic_map = []
         self.frequencies = []
+        self.typecode = 'B' # Unsigned char
     def __str__(self):
         return 'Chromosome object: %d markers, %f cM' % (len(self.frequencies),sum(self.genetic_map) * 100)
     def size(self): return self.genetic_map[-1] - self.genetic_map[0]
@@ -30,4 +31,5 @@ class Chromosome():
         self.frequencies.append(frequency)
     def linkageequilibrium_chromosome(self):
         # Returns a randomly generated chromosome
-        return [choice_with_probs([0,1], [1-f,f]) for f in self.frequencies]
+        return array(self.typecode,
+                     [choice_with_probs([1,2], [1-f,f]) for f in self.frequencies])
