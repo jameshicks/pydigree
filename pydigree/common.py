@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from operator import mul as multiply
+
 def count(val,iter):
     """ Counts how many times a value (val) occurs in an iterable """
     return sum(1 for x in (y for y in iter if y is not None) if val == x)
@@ -30,7 +32,15 @@ def invert_dict(d):
     WARNING: No guarantee of dictionary structure if mappings are not unique
     """
     return dict( (y,x) for x,y in d.items() )
-# Common stats functions
+
+# Common stats/math functions
+def product(iter):
+    """
+    Reduces an iterable by multiplication. Analogous to sum, but with multiplication
+    instead of addition.
+    """
+    # This should really be a python builtiin
+    return reduce(multiply, iter)
 def cumsum(iter):
     """
     Cumulative sum:
