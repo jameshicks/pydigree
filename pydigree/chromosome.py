@@ -2,7 +2,7 @@
 from array import array
 from pydigree._pydigree import choice_with_probs
 
-class Chromosome():
+class Chromosome(object):
     """ Chromsome is a class that keeps track of marker frequencies and distances
     Not an actual chromosome with genotypes, which you would find under Individual
 

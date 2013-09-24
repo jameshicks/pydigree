@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-class Architecture():
+class Architecture(object):
     """
     Architecture is a static class that relates genotypes to phenotypes. 
 

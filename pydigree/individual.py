@@ -6,7 +6,7 @@ from recombination import recombine
 from paths import *
 
 
-class Individual():
+class Individual(individual):
     def __init__(self,population,id,father,mother,sex):
         # Every individual is observed within a population with certain genotypes
         #  available. This makes recombination book-keeping easier. 
