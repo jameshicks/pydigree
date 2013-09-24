@@ -24,7 +24,12 @@ def flatten(x):
         for i in it:
             for j in flatten(i):
                 yield j
-
+def invert_dict(d):
+    """
+    Makes the keys the values and the values the keys
+    WARNING: No guarantee of dictionary structure if mappings are not unique
+    """
+    return dict( (y,x) for x,y in d.items() )
 # Common stats functions
 def cumsum(iter):
     """
