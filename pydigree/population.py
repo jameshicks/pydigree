@@ -166,7 +166,13 @@ class Population(MutableMapping):
         """ Clears genotypes for every one in population """
         for x in self: x.clear_genotypes()
     ### Frequency functions
-    ### 
+    ###
+    def missingness(self,location):
+        """ Returns the percentage of individuals in the population
+        missing a genotype at location. """
+        genotypes = [x.get_genotype(location) for x in self])
+        tab = table(genotypes)
+        return tab[(0,0)] / float(len(genotypes)
     def alleles(self,location, constraint=None):
         """
         The list of available alleles at a location in this population
