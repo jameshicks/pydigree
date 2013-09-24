@@ -3,11 +3,11 @@
 import itertools
 import random
 from recombination import recombine
-from misc import is_missing_genotype
 from paths import *
 
+def is_missing_genotype(g): g == (0,0)
 
-class Individual(individual):
+class Individual(object):
     def __init__(self,population,id,father,mother,sex):
         # Every individual is observed within a population with certain genotypes
         #  available. This makes recombination book-keeping easier. 

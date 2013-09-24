@@ -14,13 +14,13 @@ from individual import Individual
 from chromosome import Chromosome
 from paths import kinship, fraternity
 from common import *
-from misc import is_missing_genotype
 from recombination import recombine
 
 # C extension functions
 from pydigree._pydigree import sample_with_replacement,random_pairs
 from pydigree._pydigree import choice_with_probs
 
+def is_missing_genotype(g): g == (0,0)
 
 ### Population growth models.
 # These are easy enough to supply your own if you wanted
@@ -100,7 +100,7 @@ class Population(MutableMapping):
     ###
     ###
     def chrom_pool_size(self):
-        """ Returns the size of the pool of available chromosomes"
+        """ Returns the size of the pool of available chromosomes """
         return len(self.pool[0])
     def initialize_pool(self):
         """ Initializes a pool of chromosomes for simulation """
@@ -170,9 +170,9 @@ class Population(MutableMapping):
     def missingness(self,location):
         """ Returns the percentage of individuals in the population
         missing a genotype at location. """
-        genotypes = [x.get_genotype(location) for x in self])
+        genotypes = [x.get_genotype(location) for x in self]
         tab = table(genotypes)
-        return tab[(0,0)] / float(len(genotypes)
+        return tab[(0,0)] / float(len(genotypes))
     def alleles(self,location, constraint=None):
         """
         The list of available alleles at a location in this population
