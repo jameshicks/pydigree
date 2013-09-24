@@ -176,7 +176,8 @@ class Population(MutableMapping):
         if not constraint:
             constraint = lambda x: True
         gen = (x for x in self if constraint(x))
-        return list(flatten(x.get_genotype(location) for x in gen if x.has_genotypes()))
+        alleles = list(flatten(x.get_genotype(location) for x in gen if x.has_genotypes()))
+        return [x for x in alleles if x != 0]
     def allele_frequency(self,location,allele,constraint=None):
         """
         Returns the frequency (as a percentage) of an allele in this population
