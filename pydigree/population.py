@@ -161,12 +161,25 @@ class Population(MutableMapping):
         for x in self: x.clear_genotypes()
     ### Frequency functions
     ### 
-    def alleles(self,location):
-        """ The list of available alleles at a location in this population """
-        return list(flatten(x.get_genotype(location) for x in self if x.has_genotypes()))
-    def allele_frequency(self,location,allele):
-        """ Returns the frequency (as a percentage) of an allele in this population """
-        alleles = self.alleles(location)
+    def alleles(self,location, constraint=None):
+        """
+        The list of available alleles at a location in this population
+
+        The argument constraint is a function that acts on an individual. If
+        constraint(individual) can evaluate as True that person is included
+        """
+        if not constraint:
+            constraint = lambda x: True
+        gen = (x for x in self if constraint(x))
+        return list(flatten(x.get_genotype(location) for x in gen if x.has_genotypes()))
+    def allele_frequency(self,location,allele,constraint=None):
+        """
+        Returns the frequency (as a percentage) of an allele in this population
+
+        The argument constraint is a function that acts on an individual. If
+        constraint(individual) can evaluate as True that person is included
+        """
+        alleles = self.alleles(location,constraint=constraint)
         freqtab = table(alleles)
         if allele not in freqtab: return 0
         return freqtab[allele] / float(len(alleles))
