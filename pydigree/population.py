@@ -94,7 +94,7 @@ class Population(MutableMapping):
     def initialize_pool(self):
         self.pool = [None]*self.chromosome_count()
         for i,q in enumerate(self.chromosomes):
-            self.pool[i]=[q.linkageequilibrium_chromosome() for x in range(2*self.n0)]
+            self.pool[i]=[q.linkageequilibrium_chromosome() for x in xrange(2*self.n0)]
     def iterate_pool(self,gensize):
         """
         Iterate pool simulates a generation of random mating
@@ -109,7 +109,7 @@ class Population(MutableMapping):
             def choose_chrom(pool,map):
                 q,w = random.choice(pool),random.choice(pool)
                 return recombine(q,w,map)
-            np = [choose_chrom(self.pool[i],c.genetic_map) for x in range(gensize)]
+            np = [choose_chrom(self.pool[i],c.genetic_map) for x in xrange(gensize)]
             self.pool[i] = np
 
     ### Random mating
