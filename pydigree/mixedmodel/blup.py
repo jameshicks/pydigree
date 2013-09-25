@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
+import numpy as np
+from itertools import izip
+
 def makeC(X,Zlist,Ginvlist,Rinv):
     predictors = [X] + Zlist
+    Ginvlist = [0]+Ginvlist
     cmat = []
     for i,a in enumerate(predictors):
         row = []
@@ -9,7 +13,8 @@ def makeC(X,Zlist,Ginvlist,Rinv):
             element = a.transpose() * Rinv * b
             if i == j:
                 # This is the diagonal
-                element = element + np.linalg.inv(Ginvlist[i])
+                element = element + Ginvlist[i]
+            row.append(element)
         cmat.append(row)
     return np.bmat(cmat)
 def makeE(y,X,Zlist,Rinv):
@@ -19,7 +24,7 @@ def makeE(y,X,Zlist,Rinv):
         m.append( [ effect.transpose() * Rinv * y ] )
     return np.bmat(m)
 
-def blup(y,X,Zlist,covariance_matrices,variancecomponents,R=None):
+def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     """
     Solves mixed model equations for one or more uncorrelated random effects.
 
@@ -32,7 +37,7 @@ def blup(y,X,Zlist,covariance_matrices,variancecomponents,R=None):
     X: an m x p design matrix of fixed effects
     Z: a list of n x m design matrices for random effects
     covariance_matrices: a list of n x n covariance matrices for the random effects
-    variance_components: (scalar) variances for each random effect
+    variance_components: a list of scalar ratios in the form sigma_e / sigma_a 
     R: Matrix size n x n of residual errors for GLS approximation (not implemented!)
     """
     if R is None:
@@ -40,8 +45,9 @@ def blup(y,X,Zlist,covariance_matrices,variancecomponents,R=None):
         Rinv = R
     else: 
         return NotImplementedError('Structured R matrices are not supported at this time')
+    residual_variance = 1 - sum(variance_components)
     # Make the covariance matrices into G matrices
-    Ginvmats = [vc * covmat for vc,covmat in izip(covarience_matrices,variancecomponents)]
+    Ginvmats = [ (residual_variance/lambd) * np.linalg.inv(covmat) for lambd,covmat in izip(variance_components,covariance_matrices)]
 
     # Hendersons Mixed Model equation looks like
     # Cp = E
@@ -57,7 +63,7 @@ def blup(y,X,Zlist,covariance_matrices,variancecomponents,R=None):
     # E = | Z1' Rinv y |
     #     | Z2' Rinv y |
     #     \            /
-    C = makeC(X,Zlist,Gmats,Rinv)
+    C = makeC(X,Zlist,Ginvmats,Rinv)
     E = makeE(y,X,Zlist,Rinv)
-    predictions = numpy.linalg.solve(C,E)
+    predictions = np.linalg.solve(C,E)
     return predictions
