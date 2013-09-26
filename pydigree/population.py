@@ -220,6 +220,8 @@ class Population(MutableMapping):
         r2 ranges from 0 to 1
         
         Alleles are in linkage equilibrium if any of these metrics are 0. 
+
+        Returns: a double
         """
         method = method.lower()
         if method not in set(['r2','dprime','d']):
@@ -255,6 +257,8 @@ class Population(MutableMapping):
         """
         Shortcut function to call predict_phenotype(trait) for every individual
         in the population.
+
+        Returns: nothing
         """
         for x in self: x.predict_phenotype(trait)
 
@@ -268,11 +272,11 @@ class Pedigree(Population):
         else: return lambda x: x.is_founder() and con(x)
     def bit_size(self):
         """
-        Returns the bit size of the pedigree. The bitsize is defined as 2*n-f
-        where n is the number of nonfounders and f is the number of founders.
+        Returns the bit size of the pedigree. The bitsize is defined as 2*n-f where n is the number
+        of nonfounders and f is the number of founders. This represents the number of bits it takes
+        to represent the inheritance vector in the Lander-Green algorithm.
 
-        This represents the number of bits it takes to represent the inheritance
-        vector in the Lander-Green algorithm. 
+        Returns: an integer
         """
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
@@ -282,6 +286,8 @@ class Pedigree(Population):
         Like Population.alleles, except constrained to founder individuals
 
         If nonfounders is True, it's just a call to Population.alleles.
+
+        Returns: a list
         """
         if nonfounders:
             return Population.alleles(self,location,constraint)
@@ -291,6 +297,8 @@ class Pedigree(Population):
         """
         Like Population.alleles, except constrained to founder individuals.
         If nonfounders is True, it's just a call to Population.alleles.        
+
+        Returns: a double
         """
         if nonfounders: return Population.allele_frequency(self,location,allele,constraint)
         constraint = self.__prepare_nonfounder_constraint(constraint)
@@ -308,6 +316,8 @@ class Pedigree(Population):
         This is a convenience wrapper for paths.kinship, which takes pedigree objects as
         arguments. This function takes id labels and looks them up in the pedigree, and
         calls paths.kinship on those individual objects. 
+
+        Returns: a double
         """
         pair = frozenset([id1,id2])
         if pair not in self.kinmat:
@@ -320,6 +330,8 @@ class Pedigree(Population):
         Like Pedigree.kinship, this is a convenience function for getting fraternity
         coefficients for two pedigree memebers by their ID label. This is a wrapper
         for paths.fraternity
+
+        Returns: a double
         """
         pair = frozenset([id1,id2])
         if pair not in self.fratmat:
@@ -333,6 +345,8 @@ class Pedigree(Population):
         coefficients for individuals in pedigrees by their id label. As inbreeding
         coefficients are the kinship coefficient of the parents, this function calls
         Pedigree.kinship to check for stored values.
+
+        Returns: a double
         """
         ind = self[id]
         if ind.is_founder: return 0.0
@@ -346,6 +360,8 @@ class Pedigree(Population):
 
         Important: the rows/columns are sorted on ids. If you're not sure about this, try
         sorted(x.id for x in ped) to see the ordering.
+
+        Returns: a numpy matrix
         """
         ids = sorted(x.id for x in self)
         mat = []
@@ -364,6 +380,8 @@ class Pedigree(Population):
 
         Important: the rows/columns are sorted on ids. If you're not sure about this, try
         sorted(x.id for x in ped) to see the ordering.
+
+        Returns: A numpy matrix
         """
         ids = sorted(x.id for x in self)
         mat = []
@@ -378,6 +396,14 @@ class Pedigree(Population):
         """
         Calculates the mitochondrial relationship matrix.
         M_ij = 1 if matriline(i) == matriline(j)
+
+        WARNING: These matrices are often singular!
+
+        Returns: A numpy matrix
+
+        Reference:
+        Liu et al. Association Testing of the Mitochondrial Genome Using Pedigree Data
+        Genetic Epidemiology. (2013). 37,3:239-247
         """
         ids = sorted(x for x in self,key=lambda x: x.id)
         mat = []
@@ -394,6 +420,8 @@ class Pedigree(Population):
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect the
         founder chromosome that they received the genotype from. You can then use
         misc.ibs to determine IBD state. This effectively an infinite-alleles simulation.
+
+        Returns: Nothing
         """
         for x in self:
             if x.is_founder(): x.label_genotypes()
