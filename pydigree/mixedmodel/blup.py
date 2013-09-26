@@ -17,11 +17,13 @@ def makeC(X,Zlist,Ginvlist,Rinv):
             row.append(element)
         cmat.append(row)
     return np.bmat(cmat)
-def makeE(y,X,Zlist,Rinv):
-    m = []
+def makeLHS(y,X,Zlist,Rinv):
+    """
+    Makes the right-hand side (RHS) of the mixed model equations. See
+    notes on pydigree.mixedmodel.blup
+    """
     effects = [X] + Zlist
-    for effect in effects:
-        m.append( [ effect.transpose() * Rinv * y ] )
+    m = [ [ effect.transpose() * Rinv * y ] for effect in effects ]
     return np.bmat(m)
 
 def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
@@ -41,8 +43,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     R: Matrix size n x n of residual errors for GLS approximation (not implemented!)
     """
     if R is None:
-        R = np.matrix(np.eye(X.shape[0]))
-        Rinv = R
+        Rinv = np.matrix(np.eye(X.shape[0]))
     else: 
         return NotImplementedError('Structured R matrices are not supported at this time')
     residual_variance = 1 - sum(variance_components)
@@ -53,17 +54,17 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     # Cp = E
     # Where p is a column vector of BLUEs for fixed effect and BLUPs for random effects and
     #     /                                                            \
-    #     |  (X' Rinv X)       (X' Rinv Z1)          (X' Rinv Z2)      |  
-    # C = | (Z1' Rinv X)   (Z1' Rinv Z1 + G1inv)     (Z1' Rinv Z2 )    |  
+    #     |  (X' Rinv X)       (X'  Rinv Z1)         (X'  Rinv Z2)     |  
+    # C = | (Z1' Rinv X)   (Z1' Rinv Z1 + G1inv)     (Z1' Rinv Z2)     |  
     #     | (Z2' Rinv X)       (Z2' Rinv Z1)     (Z2' Rinv Z1 + G2inv) |     
     #     \                                                            /
     #
-    #     /            \
-    #     | X'  Rinv y |                               
-    # E = | Z1' Rinv y |
-    #     | Z2' Rinv y |
-    #     \            /
+    #       /            \
+    #       | X'  Rinv y |                               
+    # RHS = | Z1' Rinv y |
+    #       | Z2' Rinv y |
+    #       \            /
     C = makeC(X,Zlist,Ginvmats,Rinv)
-    E = makeE(y,X,Zlist,Rinv)
-    predictions = np.linalg.solve(C,E)
+    RHS = makeRHS(y,X,Zlist,Rinv)
+    predictions = np.linalg.solve(C,RHS)
     return predictions
