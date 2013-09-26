@@ -338,7 +338,7 @@ class Pedigree(Population):
         if ind.is_founder: return 0.0
         if ind.father.is_founder() or ind.mother.is_founder(): return 0.0
         return self.kinship(ind.father.id,ind.mother.id)
-    def makeA(self):
+    def additive_relationship_matrix(self):
         """
         Calculates an additive relationship matrix (the A matrix) for quantiatitive genetics.
         A_ij = 2 * kinship(i,j) if i != j. (See the notes on function 'kinship')
@@ -356,7 +356,7 @@ class Pedigree(Population):
                 else: row.append(2 * self.kinship(a,b))
             mat.append(row)
         return np.array(mat)
-    def makeD(self):
+    def deminance_relationship_matrix(self):
         """
         Calculates the dominance genetic relationship matrix (the D matrix) for quantitative genetics.
         D_ij = .25 * fraternity(i,j) if i != j (See notes on function 'fraternity')
