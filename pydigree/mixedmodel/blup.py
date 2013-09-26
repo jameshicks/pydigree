@@ -30,6 +30,14 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     """
     Solves mixed model equations for one or more uncorrelated random effects.
 
+    Value
+    ------
+    Returns a tuple. The first element is a list of estimates of the fixed effects.
+    The secont element is a list of lists. The internal list consists of BLUPs
+    for each random effect.
+
+    Arguements
+    ------
     Where: n is the number of individuals to be estimated (including those not
     directly observed for breeding value estimation), m is the number of
     observations, and p is the number of fixed effects, the arguments to
@@ -42,29 +50,39 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     variance_components: a list of scalar ratios in the form sigma_e / sigma_a 
     R: Matrix size n x n of residual errors for GLS approximation (not implemented!)
     """
+    if not Zlist:
+        raise ValueError('No random effects. Are you looking for an OLS/GLS solver?')
+    m,p = X.shape
+    n = Zlist[0].shape[0]
     if R is None:
-        Rinv = np.matrix(np.eye(X.shape[0]))
+        Rinv = np.matrix(np.eye(n))
     else: 
-        return NotImplementedError('Structured R matrices are not supported at this time')
+        Rinv = np.linalg.inv(R)
     residual_variance = 1 - sum(variance_components)
     # Make the covariance matrices into G matrices
-    Ginvmats = [ (residual_variance/lambd) * np.linalg.inv(covmat) for lambd,covmat in izip(variance_components,covariance_matrices)]
+    Ginvmats = [ (residual_variance/lambd) * np.linalg.inv(covmat) \
+                 for lambd,covmat in izip(variance_components,covariance_matrices)]
 
     # Hendersons Mixed Model equation looks like
     # Cp = E
-    # Where p is a column vector of BLUEs for fixed effect and BLUPs for random effects and
+    #
     #     /                                                            \
     #     |  (X' Rinv X)       (X'  Rinv Z1)         (X'  Rinv Z2)     |  
     # C = | (Z1' Rinv X)   (Z1' Rinv Z1 + G1inv)     (Z1' Rinv Z2)     |  
     #     | (Z2' Rinv X)       (Z2' Rinv Z1)     (Z2' Rinv Z1 + G2inv) |     
     #     \                                                            /
     #
-    #       /            \
-    #       | X'  Rinv y |                               
-    # RHS = | Z1' Rinv y |
-    #       | Z2' Rinv y |
-    #       \            /
+    #       /            \      /     \    X,R,y: described in docstring
+    #       | X'  Rinv y |      |  b  |    Zx: incidence matrix of random effect x
+    # RHS = | Z1' Rinv y |  p = |  a  |    Gx: covariance matrix for random effect x
+    #       | Z2' Rinv y |      |  d  |    b: vector of fixed effect estimates
+    #       \            /      \     /    a: vector of BLUPs for random effect 1
+    #                                      d: vector of BLUPs for random effect 2
+    #
     C = makeC(X,Zlist,Ginvmats,Rinv)
     RHS = makeRHS(y,X,Zlist,Rinv)
-    predictions = np.linalg.solve(C,RHS)
-    return predictions
+    predictions = np.linalg.solve(C,RHS).transpose().tolist()[0]
+    BLUE = predictions[:nfixef]
+    BLUPS = grouper(predictions[nfixef:], n)
+    
+    return BLUE,BLUPs
