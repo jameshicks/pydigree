@@ -405,7 +405,7 @@ class Pedigree(Population):
         Liu et al. Association Testing of the Mitochondrial Genome Using Pedigree Data
         Genetic Epidemiology. (2013). 37,3:239-247
         """
-        ids = sorted(x for x in self,key=lambda x: x.id)
+        ids = sorted((x for x in self),key=lambda x: x.id)
         mat = []
         for a in inds:
             row = [1 if a.matriline() == b.matriline() else 0 \
