@@ -356,7 +356,7 @@ class Pedigree(Population):
                 else: row.append(2 * self.kinship(a,b))
             mat.append(row)
         return np.matrix(mat)
-    def deminance_relationship_matrix(self):
+    def dominance_relationship_matrix(self):
         """
         Calculates the dominance genetic relationship matrix (the D matrix) for quantitative genetics.
         D_ij = .25 * fraternity(i,j) if i != j (See notes on function 'fraternity')
