@@ -106,6 +106,18 @@ class Individual(object):
             return set(self.father.children) | set(self.mother.children)
         else:
             return set(self.father.children) & set(self.mother.children)
+    def matriline(self):
+        """
+        Returns a label by recursively searching for the individual's mother's mother's
+        mother's etc. until it reachesa founder mother, in which case it returns that
+        ancestor's id.
+
+        Useful reference:
+        Courtenay et al. 'Mitochondrial haplogroup X is associated with successful aging in the Amish.'
+        Human Genetics (2012). 131(2):201-8. doi: 10.1007/s00439-011-1060-3. Epub 2011 Jul 13.
+        """
+        if self.is_founder(): return self.id
+        else: return self.mother.matriline()
     def remove_ancestry(self):
         """
         Removes ancestry: makes a person a founder. Cannot be used on an individual in a
