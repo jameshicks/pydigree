@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from itertools import izip_longest
 from operator import mul as multiply
 
 def count(val,iter):
@@ -26,6 +27,11 @@ def flatten(x):
         for i in it:
             for j in flatten(i):
                 yield j
+def grouper(iterable, n, fillvalue=None):
+    "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
+    args = [iter(iterable)] * n
+    return izip_longest(fillvalue=fillvalue, *args)
 def invert_dict(d):
     """
     Makes the keys the values and the values the keys
