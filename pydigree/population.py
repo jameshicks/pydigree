@@ -374,6 +374,19 @@ class Pedigree(Population):
                 else: row.append(.25 * self.fraternity(a,b))
             mat.append(row)
         return np.array(mat)
+    def mitochondrial_relationship_matrix(self):
+        """
+        Calculates the mitochondrial relationship matrix.
+        M_ij = 1 if matriline(i) == matriline(j)
+        """
+        ids = sorted(x for x in self,key=lambda x: x.id)
+        mat = []
+        for a in inds:
+            row = [1 if a.matriline() == b.matriline() else 0 \
+                   for b in ids]
+            mat.append(row)
+        return np.array(mat)
+
     ### Gene dropping
     ###
     def simulate_ibd_states(self):
