@@ -355,7 +355,7 @@ class Pedigree(Population):
                 if a == b: row.append(1 + self.inbreeding(a))
                 else: row.append(2 * self.kinship(a,b))
             mat.append(row)
-        return np.array(mat)
+        return np.matrix(mat)
     def deminance_relationship_matrix(self):
         """
         Calculates the dominance genetic relationship matrix (the D matrix) for quantitative genetics.
@@ -373,7 +373,7 @@ class Pedigree(Population):
                 if a == b: row.append(1)
                 else: row.append(.25 * self.fraternity(a,b))
             mat.append(row)
-        return np.array(mat)
+        return np.matrix(mat)
     def mitochondrial_relationship_matrix(self):
         """
         Calculates the mitochondrial relationship matrix.
@@ -385,7 +385,7 @@ class Pedigree(Population):
             row = [1 if a.matriline() == b.matriline() else 0 \
                    for b in ids]
             mat.append(row)
-        return np.array(mat)
+        return np.matrix(mat)
 
     ### Gene dropping
     ###
