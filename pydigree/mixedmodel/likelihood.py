@@ -25,13 +25,15 @@ def restricted_loglikelihood(y,v,x):
     """
     Returns the restricted loglikelihood for mixed model estimation.
 
-    Reference:
+    References:
     Harville. 'Maximum Likelihood Approaches to Variance Component Estimation and to Related Problems'
     Journal of the American Statistical Association. (1977) (72):258
 
     Lange, Westlake, & Spence. Extensions to pedigree analysis III. Variance components by the scoring method.
     Ann Hum Genet. (1976). 39:4,485-491 DOI: 10.1111/j.1469-1809.1976.tb00156.x
-    "
+    """
+    
     vinv = inv(v)
     p = vinv - vinv * x * pinv(x.T * vinv * x) * x.T * vinv
-    return - 0.5 * ( ln(det(v) + ln( x.T * vinv * x) + y.T * p * y )
+    return -0.5 * ( ln(det(v) + ln( x.T * vinv * x) + y.T * p * y ))
+                    
