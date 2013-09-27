@@ -6,7 +6,7 @@ from math import log as ln
 import numpy as np
 from numpy.linalg import inv,pinv,det
 
-def makeV(covariance_mats, variance_components, residual_variance):
+def makeV(covariance_mats, incidence_mats, variance_components, residual_variance,R):
     """
     Returns the V matrix for the restricted loglikelihood function. For a
     decent definition, see
@@ -15,11 +15,10 @@ def makeV(covariance_mats, variance_components, residual_variance):
     Lange, Westlake, & Spence. Extensions to pedigree analysis III. Variance components by the scoring method.
     Ann Hum Genet. (1976). 39:4,485-491 DOI: 10.1111/j.1469-1809.1976.tb00156.x
     """
-    V = sum(partial_variance * covariance_matrix \
-            for partial_variance, covariance_matrix in \
-            izip(variance_components, covariance_mats))
-    variance = sum(variance_components) + residual_variance
-    np.fill_diagonal(V,variance)
+    V = sum(sigma * Z * A * Z.transpose()  \
+            for sigma,A,Z in \
+            izip(variance_components, covariance_mats,incidence_mats))
+    V = V + residual_variance * R 
     return V
 def restricted_loglikelihood(y,v,x):
     """
