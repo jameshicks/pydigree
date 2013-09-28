@@ -4,7 +4,6 @@
 import itertools
 import random
 import math
-import numpy as np
 
 # Abstract base class for population and pedigree
 from collections import MutableMapping
