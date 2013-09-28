@@ -149,8 +149,24 @@ class Pedigree(Population):
         Calculates the mitochondrial relationship matrix.
         M_ij = 1 if matriline(i) == matriline(j)
 
-        WARNING: These matrices are often singular!
+        WARNING: These matrices can often be singular!
+        Consider the pedigree:
+               F---M
+                 |
+          ---------------
+          |      |      |  
+          C1     C2     C3
+        There are only two matrilines in here. One belonging to whoever the mother of the
+        father is (not specified in this pedigree) and one transmitted from the mother to
+        all three children. The mitochondrial relationship matrix would then look like this:
 
+        
+            / 1 0 0 0 0 \
+            | 0 1 1 1 1 |  This matrix is obviously singlular and will not 
+        M = | 0 1 1 1 1 |  be useful in variance component estimation.
+            | 0 1 1 1 1 |
+            \ 0 1 1 1 1 /
+        
         Arguments
         -----
         ids: IDs of pedigree members to include in the matrix
