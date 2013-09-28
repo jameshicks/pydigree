@@ -11,7 +11,8 @@ from paths import common_ancestors,kinship
 from population import exponential_growth,logistic_growth
 
 # Classes
-from population import Population,Pedigree
+from population import Population
+from pedigree import Pedigree
 from individual import Individual
 from chromosome import Chromosome
 from architecture import Architecture
