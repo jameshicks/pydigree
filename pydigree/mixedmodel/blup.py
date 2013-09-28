@@ -64,7 +64,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
                  for lambd,covmat in izip(variance_components,covariance_matrices)]
 
     # Hendersons Mixed Model equation looks like
-    # Cp = E
+    # Cp = RHS
     #
     #     /                                                            \
     #     |  (X' Rinv X)       (X'  Rinv Z1)         (X'  Rinv Z2)     |  
