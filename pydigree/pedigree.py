@@ -1,3 +1,11 @@
+#!/usr/bin/env/python
+
+import numpy as np
+
+from common import *
+from population import Population
+from paths import kinship,fraternity
+
 class Pedigree(Population):
     def __init__(self):
         Population.__init__(self)
