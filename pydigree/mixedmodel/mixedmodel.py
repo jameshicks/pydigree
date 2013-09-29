@@ -14,7 +14,7 @@ class MixedModel(object):
       u_i is a vector of values corresponding to random effect i
       e is a vector of errors
     """
-    def __init__(self):
+    def __init__(self,pedigrees=None,fixed_effects=None,random_effects=None):
         pass
     def _makeX(self):
         """
