@@ -2,10 +2,12 @@
 
 import random
 
-from population import Population,Pedigree
+from population import Population
 from individual import Individual
+from pedigree import Pedigree
+from pedigreecollection import PedigreeCollection
 
-def read_ped(filename,population=None,affected_labels=None):
+def read_ped(filename,population=None,affected_labels=None,onepedigree=False):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -14,6 +16,7 @@ def read_ped(filename,population=None,affected_labels=None):
     you can't simulate genotypes!
     """
     p = Pedigree()
+    pc = PedigreeCollection()
     if not affected_labels:
         affected_labels = {'1':0,'2':1,
                            'A':1,'U':0,
@@ -28,6 +31,7 @@ def read_ped(filename,population=None,affected_labels=None):
             fam,id,fa,mo,sex,aff = line.strip().split(None,5)
             p[id] = Individual(population,id,fa,mo,sex)
             p[id].phenotypes['aff'] = getph(aff)
+            p[id].phenotypes['__pedigree'] = fam
             p[id].pedigree = p
         for ind in p:
             # Actually make the references instead of just pointing at strings
@@ -36,7 +40,13 @@ def read_ped(filename,population=None,affected_labels=None):
             ind.sex = {'1':0,'2':1}[ind.sex]
             if population: population.register_individual(p[id])
             ind.register_with_parents()
-    return p
+        if onepedigree: return p
+        for pedigree_label in set(ind.phenotypes['__pedigree'] for ind in p):
+            ped = Pedigree(pedigree_label)
+            thisped = [x for x in p if x.phenotypes['__pedigree'] == pedigree_label]
+            for ind in thisped: ped[ind.id] = ind
+            pc[pedigree_label] = ped
+    return pc
 
 
 ### Extra genetics functions
