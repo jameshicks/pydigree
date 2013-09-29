@@ -3,6 +3,15 @@
 import numpy as np
 
 class MixedModel(object):
+    """
+    Fits linear models in the form of y = X * b + sum(Z_i * u_i) + e, where:
+      y is the vector of outcomes
+      X is a design matrix of fixed effects
+      b is the vector of coefficients correstponding to those fixed effects
+      Z_i is an incidence matrix corresponding to random effect i
+      u_i is a vector of values corresponding to random effect i
+      e is a vector of errors
+    """
     def __init__(self):
         pass
     def _makeX(self):
