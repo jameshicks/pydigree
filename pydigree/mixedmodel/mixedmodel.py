@@ -2,6 +2,8 @@
 
 import numpy as np
 
+from likelihood import makeV, restricted_loglikelihood
+
 class MixedModel(object):
     """
     Fits linear models in the form of y = X * b + sum(Z_i * u_i) + e, where:
