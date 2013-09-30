@@ -15,6 +15,7 @@ class PedigreeCollection(MutableMapping):
     def __len__(self): return len(self.pedigrees)
     def __setitem__(self,key,value): self.pedigrees[key] = value
     def __delitem__(self,key): del self.pedigrees[key]
+    def keys(self): return self.pedigrees.keys()
     ### Matrix functions
     ###
     def additive_relationship_matrix(self):
