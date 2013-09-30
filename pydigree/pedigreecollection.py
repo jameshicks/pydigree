@@ -16,29 +16,29 @@ class PedigreeCollection(MutableMapping):
     def __setitem__(self,key,value): self.pedigrees[key] = value
     def __delitem__(self,key): del self.pedigrees[key]
     def keys(self): return self.pedigrees.keys()
-    ### Matrix functions
-    ###
     def individuals(self):
         inds = []
         for pedigree in sorted(self,key=lambda x:x.label):
-            inds.extend(sorted(x for x in pedigree,key=lambda x:x.id))
+            inds.extend(sorted((x for x in pedigree),key=lambda x:x.id))
         return inds
+    ### Matrix functions
+    ###
     def additive_relationship_matrix(self):
         """
         Returns a block diagonal matrix of additive relationships for each pedigree.
         See notes on Pedigree.additive_relationship_matrix
         """
-        return block_diag(x.additive_relationship_matrix() for x in self)
+        return block_diag(*[x.additive_relationship_matrix() for x in self])
     def dominance_relationship_matrix(self):
         """
         Returns a block diagonal matrix of dominance relationships for each pedigree.
         See notes on Pedigree.dominance_relationship_matrix
         """
-        return block_diag(x.dominance_relationship_matrix() for x in self)
+        return block_diag(*[x.dominance_relationship_matrix() for x in self])
     def mitochondrial_relationship_matrix(self):
         """
         Returns a block diagonal matrix of mitochondrial relationships for each pedigree.
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
-        return block_diag(x.mitochondrial_relationship_matrix() for x in self)
+        return block_diag(*[x.mitochondrial_relationship_matrix() for x in self])
     
