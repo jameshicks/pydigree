@@ -33,7 +33,7 @@ class MixedModel(object):
     def observations(self):
         def has_all_fixefs(ind,effects):
             return all(ind[effect] is not None for effect in effects)
-        obs = [x for x in self.pedigrees.individual_chain() if has_all_fixefs(x,self.fixed_effects)]
+        obs = [x for x in self.pedigrees.individuals() if has_all_fixefs(x,self.fixed_effects)]
         if not self.obs: self.obs = obs
         return obs
     def nobs(self): return len(self.observations())
@@ -60,7 +60,7 @@ class MixedModel(object):
         """
         Zlist = []
         for effect_name in random_effects:
-            allinds = self.pedigrees.individual_chain()
+            allinds = self.pedigrees.individuals()
             obs = frozenset(self.observations())
             obsidx = [i for i,x in allinds if x in obs]
             if is_genetic_effect(effect_name):

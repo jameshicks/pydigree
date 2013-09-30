@@ -18,6 +18,11 @@ class PedigreeCollection(MutableMapping):
     def keys(self): return self.pedigrees.keys()
     ### Matrix functions
     ###
+    def individuals(self):
+        inds = []
+        for pedigree in sorted(self,key=lambda x:x.label):
+            inds.extend(sorted(x for x in pedigree,key=lambda x:x.id))
+        return inds
     def additive_relationship_matrix(self):
         """
         Returns a block diagonal matrix of additive relationships for each pedigree.
