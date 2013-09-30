@@ -49,4 +49,4 @@ def restricted_loglikelihood(y,V,X):
     #    versions of numpy. At some point I might require newer versions of numpy but, because of (1)
     #    I don't think i'll bother.
     llik_restricted = ln(det(V)) + ln(det(X.transpose() * Vinverse * X)) + r.transpose() * Vinverse * r
-    return llike_restricted
+    return llik_restricted
