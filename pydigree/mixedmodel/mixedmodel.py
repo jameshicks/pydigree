@@ -4,6 +4,9 @@ import numpy as np
 from blup import blup
 from likelihood import makeV, restricted_loglikelihood
 
+def is genetic_effect(effect):
+    return effect in set(['additive','dominance','mitochondrial'])
+
 class MixedModel(object):
     """
     Fits linear models in the form of y = X * b + sum(Z_i * u_i) + e, where:
@@ -17,10 +20,18 @@ class MixedModel(object):
     def __init__(self,pedigrees=None,outcome=None,fixed_effects=None,random_effects=None):
         self.maximized = False
         self.obs = None
+    def clear_model(self):
+        """ Clears all parameters from the model """
+        self.maximized = False
+        self.obs = []
+        self.X = None
+        self.Zlist = []
     def observations(self):
         def has_all_fixefs(ind,effects):
             return all(ind[effect] is not None for effect in effects)
-        return [x for x in self.pedigrees.individual_chain() if has_all_fixefs(x,self.fixed_effects)]
+        obs = [x for x in self.pedigrees.individual_chain() if has_all_fixefs(x,self.fixed_effects)]
+        if not self.obs: self.obs = obs
+        return obs
     def nobs(self): return len(self.observations())
     def _makeX(self):
         """
@@ -33,9 +44,27 @@ class MixedModel(object):
         obs = self.observations()
         xmat = [[1] * len(obs)]
         for ob in obs: xmat.append([x.phenotypes[phen] for phen in self.fixed_effects])
-        return np.matrix(zip(*xmat))
+        X = np.matrix(zip(*xmat))
+        self.X = X
+        return X
+    
     def _makeZs(self):
-        pass 
+        """
+        Makes the incidence matrix for random effects
+
+        Arguements: None
+        Returns: A list of numpy matrixes
+        """
+        Zlist = []
+        for effect_name in random_effects:
+            allinds = self.pedigrees.individual_chain()
+            obs = frozenset(self.observations())
+            obsidx = [i for i,x in allinds if x in obs]
+            if is_genetic_effect(effect_name):
+                incidence_matrix = np.matrix(np.eye(len(allinds)))[obsidx,:]
+                Zlist.append(incidence_matrix)
+            else: raise NotImplementedError('Arbitrary random effects not yet implemented')
+        self.Zlist = Zlist
     def add_fixed_effects(self):
         pass
     def maximize(self,method='anneal'):
