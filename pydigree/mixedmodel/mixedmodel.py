@@ -4,7 +4,7 @@ import numpy as np
 from blup import blup
 from likelihood import makeV, restricted_loglikelihood
 
-def is genetic_effect(effect):
+def is_genetic_effect(effect):
     return effect in set(['additive','dominance','mitochondrial'])
 
 class MixedModel(object):
@@ -18,25 +18,32 @@ class MixedModel(object):
       e is a vector of errors
     """
     def __init__(self, pedigrees=None, outcome=None, fixed_effects=None,
-                 random_effects=None, covariance_matrices):
+                 random_effects=None, covariance_matrices=None):
         self.maximized = False
         self.variance_components = [None] * len(random_effects)
         if not len(random_effects) == len(covariance_matrices):
             raise ValueError('Each random effect needs a covariance matrix, specify None for genetic effects')
         self.fit_model()
     def fit_model(self):
-        self.makeX()
+        self._makey()
+        self._makeX()
         self._makeZlist()
     def clear_model(self):
         """ Clears all parameters from the model """
         pass
     def observations(self):
         def has_all_fixefs(ind,effects):
-            return all(ind[effect] is not None for effect in effects)
-        obs = [x for x in self.pedigrees.individuals() if has_all_fixefs(x,self.fixed_effects)]
+            return all(ind.phenotypes[effect] is not None for effect in effects)
+        def has_outcome(ind):
+            return ind.phenotypes[self.outcome] is not None
+        obs = [x for x in self.pedigrees.individuals() \
+               if has_all_fixefs(x,self.fixed_effects) and has_outcome(x)]
         if not self.obs: self.obs = obs
         return obs
     def nobs(self): return len(self.observations())
+    def _makey(self):
+        obs = self.observations()
+        self.y = np.matrix([x.phenotypes[self.outcome] for x in obs]).transpose()
     def _makeX(self):
         """
         Builds the design matrix for the fixed effects in the mixed model.
@@ -68,10 +75,18 @@ class MixedModel(object):
                 Zlist.append(incidence_matrix)
             else: raise NotImplementedError('Arbitrary random effects not yet implemented')
         self.Zlist = Zlist
+    def set_outcome(self,outcome):
+        self.outcome = outcome
+        self._makey()
     def add_fixed_effects(self,effect):
-        pass
+        self.fixed_effects.append(effect)
+        self._makeX()
     def add_random_effect(self,effect,covariance_matrix):
-        pass
+        self.random_effects.append(effect)
+        self.covmats.append(covariance_matrix)
+        self._makeZs()
+    def add_genetic_effect(self,type='additive'):
+        self.add_random_effect(type,self.pedigrees.additive_relationship_matrix())
     def set_variance_components(self,variance_components):
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
@@ -82,8 +97,8 @@ class MixedModel(object):
     def likelihood(self,metric='REML'):
         pass
     def blup(self):
-        if not self.maximized:
-            raise ValueError('Model not maximized!')
+        if not all(self.variance_components):
+            raise ValueError('Variance components not specified! Maximize the model or set them yourself.')
         fe,re = blup(self.y,self.X,self.Zlist,self.covmats,self.variance_components)
         self.fixef_blues = fe
         self.ranef_blups = re 
