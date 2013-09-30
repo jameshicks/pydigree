@@ -17,15 +17,19 @@ class MixedModel(object):
       u_i is a vector of values corresponding to random effect i
       e is a vector of errors
     """
-    def __init__(self,pedigrees=None,outcome=None,fixed_effects=None,random_effects=None):
+    def __init__(self, pedigrees=None, outcome=None, fixed_effects=None,
+                 random_effects=None, covariance_matrices):
         self.maximized = False
-        self.obs = None
+        self.variance_components = [None] * len(random_effects)
+        if not len(random_effects) == len(covariance_matrices):
+            raise ValueError('Each random effect needs a covariance matrix, specify None for genetic effects')
+        self.fit_model()
+    def fit_model(self):
+        self.makeX()
+        self._makeZlist()
     def clear_model(self):
         """ Clears all parameters from the model """
-        self.maximized = False
-        self.obs = []
-        self.X = None
-        self.Zlist = []
+        pass
     def observations(self):
         def has_all_fixefs(ind,effects):
             return all(ind[effect] is not None for effect in effects)
@@ -47,7 +51,6 @@ class MixedModel(object):
         X = np.matrix(zip(*xmat))
         self.X = X
         return X
-    
     def _makeZs(self):
         """
         Makes the incidence matrix for random effects
@@ -65,8 +68,14 @@ class MixedModel(object):
                 Zlist.append(incidence_matrix)
             else: raise NotImplementedError('Arbitrary random effects not yet implemented')
         self.Zlist = Zlist
-    def add_fixed_effects(self):
+    def add_fixed_effects(self,effect):
         pass
+    def add_random_effect(self,effect,covariance_matrix):
+        pass
+    def set_variance_components(self,variance_components):
+        if not all(x is not None for x in variance_components):
+            raise ValueError('Not all variance components are specified')
+        self.variance_components = variance_components
     def maximize(self,method='anneal'):
         if self.maximized == method: return 
         pass
