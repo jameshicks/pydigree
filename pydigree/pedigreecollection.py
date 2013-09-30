@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from common import *
+from operator import add
 from pedigree import Pedigree
 from scipy.linalg import block_diag
 from collections import MutableMapping
@@ -21,6 +23,9 @@ class PedigreeCollection(MutableMapping):
         for pedigree in sorted(self,key=lambda x:x.label):
             inds.extend(sorted((x for x in pedigree),key=lambda x:x.id))
         return inds
+    def phenotypes(self):
+        """ Returns the available phenotypes for analysis """
+        return set(reduce(add,[x.phenotypes.keys() for x in self.individuals()]))
     ### Matrix functions
     ###
     def additive_relationship_matrix(self):
