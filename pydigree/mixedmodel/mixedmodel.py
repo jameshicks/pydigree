@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+from scipy.sparse import csr_matrix
 from blup import blup
 from likelihood import makeV, restricted_loglikelihood
 
@@ -81,7 +82,7 @@ class MixedModel(object):
                 incidence_matrix = np.matrix(np.eye(len(allinds)))[obsidx,:]
                 Zlist.append(incidence_matrix)
             else: raise NotImplementedError('Arbitrary random effects not yet implemented')
-        self.Zlist = Zlist
+        self.Zlist = [csr_matrix(Z) for Z in Zlist]
     def set_outcome(self,outcome):
         self.outcome = outcome
         self._makey()
