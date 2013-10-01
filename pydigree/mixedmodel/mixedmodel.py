@@ -5,6 +5,7 @@ from itertools import izip
 import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse import eye as sparseeye
+from scipy.optimize import anneal
 
 from blup import blup
 from likelihood import restricted_loglikelihood
@@ -34,6 +35,7 @@ class MixedModel(object):
         self.fixed_effects = fixed_effects if fixed_effects else []
         self.variance_components = [None] * len(self.random_effects)
         self.obs = []
+        self.V = None
     def fit_model(self):
         self._makeR()
         self._makey()
@@ -91,10 +93,13 @@ class MixedModel(object):
         self.Zlist = [csc_matrix(Z) for Z in Zlist]
     def _makeR(self):
         self.R = sparseeye(self.nobs())
-    def _makeV(self):
-        if not self.variance_components: raise ValueError('Variance components not set')
+    def _makeV(self,vcs=None):
+        if (not vcs) and (not self.variance_components):
+            raise ValueError('Variance components not set')
+        if not vcs: variance_components = self.variance_components
+        else: variance_components = vcs
         V = sum(sigma * Z * A * Z.T for sigma,Z,A in \
-                izip(self.variance_components, self.Zlist, self.covariance_matrices))
+                izip(variance_components, self.Zlist, self.covariance_matrices))
         V = V + self.residual_variance() * self.R
         self.V = V
     def set_outcome(self,outcome):
@@ -115,9 +120,12 @@ class MixedModel(object):
         self.variance_components = variance_components
     def maximize(self,method='anneal'):
         if self.maximized == method: return 
-        pass
-    def likelihood(self):
-        return restricted_loglikelihood(self.y,self.V,self.X)
+        return anneal(self.__reml_optimization_target,[.1],full_output=True,
+                      lower=0,upper=np.var(self.y),maxeval=100)
+    def likelihood(self,vmat=None):
+        if not vmat: V = self.V
+        else: V = vmat
+        return restricted_loglikelihood(self.y, V,self.X)
     def blup(self):
         if not all(self.variance_components):
             raise ValueError('Variance components not specified! Maximize the model or set them yourself.')
@@ -125,3 +133,6 @@ class MixedModel(object):
         self.fixef_blues = fe
         self.ranef_blups = re 
         return fe,re 
+    def __reml_optimization_target(self,vcs):
+        Q = self._makeV(vcs=vcs)
+        return -self.likelihood(vmat=Q)
