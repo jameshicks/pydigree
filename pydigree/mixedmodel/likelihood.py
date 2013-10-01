@@ -1,25 +1,16 @@
 #!/usr/bin/env python
 
-from itertools import izip
 from math import log as ln
 
 import numpy as np
-from numpy.linalg import inv,pinv,det
+from scipy.sparse import csr_matrix
+from scipy.linalg import pinv,inv
+from scipy.sparse.linalg import inv as sparse_inv
 
-def makeV(covariance_mats, incidence_mats, variance_components, residual_variance,R):
-    """
-    Returns the V matrix for the restricted loglikelihood function. For a
-    decent definition, see
-
-    Reference:
-    Lange, Westlake, & Spence. Extensions to pedigree analysis III. Variance components by the scoring method.
-    Ann Hum Genet. (1976). 39:4,485-491 DOI: 10.1111/j.1469-1809.1976.tb00156.x
-    """
-    V = sum(sigma * Z * A * Z.transpose()  \
-            for sigma,A,Z in \
-            izip(variance_components, covariance_mats,incidence_mats))
-    V = V + residual_variance * R 
-    return V
+def logdet(M):
+    """ Returns the log determinant of a matrix. """
+    sign,logdet = np.linalg.slogdet(M)
+    return logdet
 def restricted_loglikelihood(y,V,X):
     """
     Returns a value proportional to the restricted loglikelihood for mixed model estimation.
@@ -35,7 +26,7 @@ def restricted_loglikelihood(y,V,X):
     SAS documentation for PROC MIXED
     """
     
-    Vinverse = inv(V)
+    Vinverse = csr_matrix(inv(V.todense()))
     r = y - X * pinv(X.transpose() * Vinverse * X) * X.transpose() * Vinverse * y
     # This value is only proportional to the restricted likelihood. I'm saving some needless expense by
     # skipping some terms that are constant across all formulations of the variance components.
@@ -48,5 +39,5 @@ def restricted_loglikelihood(y,V,X):
     # 2) The term (n-p)ln(2pi) requires numpy.linalg.matrix_rank, which is not found in older
     #    versions of numpy. At some point I might require newer versions of numpy but, because of (1)
     #    I don't think i'll bother.
-    llik_restricted = ln(det(V)) + ln(det(X.transpose() * Vinverse * X)) + r.transpose() * Vinverse * r
-    return llik_restricted
+    llik_restricted = logdet(V.todense()) + logdet(X.transpose() * Vinverse * X) + r.transpose() * Vinverse * r
+    return scipy.matrix.item(llik_restricted)
