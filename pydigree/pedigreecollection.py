@@ -3,7 +3,7 @@
 from common import *
 from operator import add
 from pedigree import Pedigree
-from scipy.linalg import block_diag
+from scipy.sparse import block_diag
 from collections import MutableMapping
 
 class PedigreeCollection(MutableMapping):
@@ -33,17 +33,17 @@ class PedigreeCollection(MutableMapping):
         Returns a block diagonal matrix of additive relationships for each pedigree.
         See notes on Pedigree.additive_relationship_matrix
         """
-        return block_diag(*[x.additive_relationship_matrix() for x in self])
+        return block_diag([x.additive_relationship_matrix() for x in self],format='bsr')
     def dominance_relationship_matrix(self):
         """
         Returns a block diagonal matrix of dominance relationships for each pedigree.
         See notes on Pedigree.dominance_relationship_matrix
         """
-        return block_diag(*[x.dominance_relationship_matrix() for x in self])
+        return block_diag([x.dominance_relationship_matrix() for x in self],format='bsr')
     def mitochondrial_relationship_matrix(self):
         """
         Returns a block diagonal matrix of mitochondrial relationships for each pedigree.
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
-        return block_diag(*[x.mitochondrial_relationship_matrix() for x in self])
+        return block_diag([x.mitochondrial_relationship_matrix() for x in self],format='bsr')
     
