@@ -6,11 +6,13 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.linalg import pinv,inv
 from scipy.sparse.linalg import inv as sparse_inv
+from scipy import matrix
 
 def logdet(M):
     """ Returns the log determinant of a matrix. """
     sign,logdet = np.linalg.slogdet(M)
     return logdet
+
 def restricted_loglikelihood(y,V,X):
     """
     Returns a value proportional to the restricted loglikelihood for mixed model estimation.
@@ -40,4 +42,4 @@ def restricted_loglikelihood(y,V,X):
     #    versions of numpy. At some point I might require newer versions of numpy but, because of (1)
     #    I don't think i'll bother.
     llik_restricted = logdet(V.todense()) + logdet(X.transpose() * Vinverse * X) + r.transpose() * Vinverse * r
-    return scipy.matrix.item(llik_restricted)
+    return matrix.item(llik_restricted)
