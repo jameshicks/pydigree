@@ -17,22 +17,28 @@ class MixedModel(object):
       u_i is a vector of values corresponding to random effect i
       e is a vector of errors
     """
-    def __init__(self, pedigrees=None, outcome=None, fixed_effects=None,
+    def __init__(self, pedigrees, outcome=None, fixed_effects=None,
                  random_effects=None, covariance_matrices=None):
         self.maximized = False
-        self.variance_components = [None] * len(random_effects)
-        if not len(random_effects) == len(covariance_matrices):
-            raise ValueError('Each random effect needs a covariance matrix, specify None for genetic effects')
-        self.fit_model()
+        self.pedigrees = pedigrees
+        self.outcome = outcome
+        if not random_effects:
+            self.random_effects = []
+            self.covariance_matrices = []
+        else: self.random_effects = random_effects
+        self.fixed_effects = fixed_effects if fixed_effects else []
+        self.variance_components = [None] * len(self.random_effects)
+        self.obs = []
     def fit_model(self):
         self._makey()
         self._makeX()
-        self._makeZlist()
+        self._makeZs()
     def clear_model(self):
         """ Clears all parameters from the model """
         pass
     def observations(self):
         def has_all_fixefs(ind,effects):
+            if not effects: return True
             return all(ind.phenotypes[effect] is not None for effect in effects)
         def has_outcome(ind):
             return ind.phenotypes[self.outcome] is not None
@@ -54,7 +60,8 @@ class MixedModel(object):
         """
         obs = self.observations()
         xmat = [[1] * len(obs)]
-        for ob in obs: xmat.append([x.phenotypes[phen] for phen in self.fixed_effects])
+        for phen in self.fixed_effects: xmat.append([ob.phenotypes[phen] for ob in obs])
+        import pdb; pdb.set_trace()
         X = np.matrix(zip(*xmat))
         self.X = X
         return X
@@ -66,10 +73,10 @@ class MixedModel(object):
         Returns: A list of numpy matrixes
         """
         Zlist = []
-        for effect_name in random_effects:
+        for effect_name in self.random_effects:
             allinds = self.pedigrees.individuals()
             obs = frozenset(self.observations())
-            obsidx = [i for i,x in allinds if x in obs]
+            obsidx = [i for i,x in enumerate(allinds) if x in obs]
             if is_genetic_effect(effect_name):
                 incidence_matrix = np.matrix(np.eye(len(allinds)))[obsidx,:]
                 Zlist.append(incidence_matrix)
@@ -83,7 +90,7 @@ class MixedModel(object):
         self._makeX()
     def add_random_effect(self,effect,covariance_matrix):
         self.random_effects.append(effect)
-        self.covmats.append(covariance_matrix)
+        self.covariance_matrices.append(covariance_matrix)
         self._makeZs()
     def add_genetic_effect(self,type='additive'):
         self.add_random_effect(type,self.pedigrees.additive_relationship_matrix())
