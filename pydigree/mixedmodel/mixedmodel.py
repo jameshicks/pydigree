@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 
+from itertools import izip
+
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csc_matrix
+from scipy.sparse import eye as sparseeye
+
 from blup import blup
-from likelihood import makeV, restricted_loglikelihood
+from likelihood import restricted_loglikelihood
 
 def is_genetic_effect(effect):
     return effect in set(['additive','dominance','mitochondrial'])
@@ -31,6 +35,7 @@ class MixedModel(object):
         self.variance_components = [None] * len(self.random_effects)
         self.obs = []
     def fit_model(self):
+        self._makeR()
         self._makey()
         self._makeX()
         self._makeZs()
@@ -48,6 +53,8 @@ class MixedModel(object):
         if not self.obs: self.obs = obs
         return obs
     def nobs(self): return len(self.observations())
+    def residual_variance(self):
+        return np.var(self.y) - sum(self.variance_components) 
     def _makey(self):
         obs = self.observations()
         self.y = np.matrix([x.phenotypes[self.outcome] for x in obs]).transpose()
@@ -62,7 +69,6 @@ class MixedModel(object):
         obs = self.observations()
         xmat = [[1] * len(obs)]
         for phen in self.fixed_effects: xmat.append([ob.phenotypes[phen] for ob in obs])
-        import pdb; pdb.set_trace()
         X = np.matrix(zip(*xmat))
         self.X = X
         return X
@@ -82,7 +88,15 @@ class MixedModel(object):
                 incidence_matrix = np.matrix(np.eye(len(allinds)))[obsidx,:]
                 Zlist.append(incidence_matrix)
             else: raise NotImplementedError('Arbitrary random effects not yet implemented')
-        self.Zlist = [csr_matrix(Z) for Z in Zlist]
+        self.Zlist = [csc_matrix(Z) for Z in Zlist]
+    def _makeR(self):
+        self.R = sparseeye(self.nobs())
+    def _makeV(self):
+        if not self.variance_components: raise ValueError('Variance components not set')
+        V = sum(sigma * Z * A * Z.T for sigma,Z,A in \
+                izip(self.variance_components, self.Zlist, self.covariance_matrices))
+        V = V + self.residual_variance() * self.R
+        self.V = V
     def set_outcome(self,outcome):
         self.outcome = outcome
         self._makey()
@@ -102,12 +116,12 @@ class MixedModel(object):
     def maximize(self,method='anneal'):
         if self.maximized == method: return 
         pass
-    def likelihood(self,metric='REML'):
-        pass
+    def likelihood(self):
+        return restricted_loglikelihood(self.y,self.V,self.X)
     def blup(self):
         if not all(self.variance_components):
             raise ValueError('Variance components not specified! Maximize the model or set them yourself.')
-        fe,re = blup(self.y,self.X,self.Zlist,self.covmats,self.variance_components)
+        fe,re = blup(self.y,self.X,self.Zlist,self.covariance_matrices,self.variance_components)
         self.fixef_blues = fe
         self.ranef_blups = re 
         return fe,re 
