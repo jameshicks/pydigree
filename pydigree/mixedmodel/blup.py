@@ -3,7 +3,7 @@
 import numpy as np
 from itertools import izip
 
-def makeC(X,Zlist,Ginvlist,Rinv):
+def makeLHS(X,Zlist,Ginvlist,Rinv):
     predictors = [X] + Zlist
     Ginvlist = [0]+Ginvlist
     cmat = []
@@ -17,7 +17,7 @@ def makeC(X,Zlist,Ginvlist,Rinv):
             row.append(element)
         cmat.append(row)
     return np.bmat(cmat)
-def makeLHS(y,X,Zlist,Rinv):
+def makeRHS(y,X,Zlist,Rinv):
     """
     Makes the right-hand side (RHS) of the mixed model equations. See
     notes on pydigree.mixedmodel.blup
@@ -47,7 +47,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     X: an m x p design matrix of fixed effects
     Z: a list of n x m design matrices for random effects
     covariance_matrices: a list of n x n covariance matrices for the random effects
-    variance_components: a list of scalar ratios in the form sigma_e / sigma_a 
+    variance_components: a list of variance components associated with each random effect
     R: Matrix size n x n of residual errors for GLS approximation (not implemented!)
     """
     if not Zlist:
@@ -58,10 +58,10 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
         Rinv = np.matrix(np.eye(n))
     else: 
         Rinv = np.linalg.inv(R)
-    residual_variance = 1 - sum(variance_components)
+    residual_variance = np.var(y) - sum(variance_components)
     # Make the covariance matrices into G matrices
     Ginvmats = [ (residual_variance/lambd) * np.linalg.inv(covmat) \
-                 for lambd,covmat in izip(variance_components,covariance_matrices)]
+                 for vc,covmat in izip(variance_components,covariance_matrices)]
 
     # Hendersons Mixed Model equation looks like
     # Cp = RHS
@@ -79,7 +79,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     #       \            /      \     /    a: vector of BLUPs for random effect 1
     #                                      d: vector of BLUPs for random effect 2
     #
-    C = makeC(X,Zlist,Ginvmats,Rinv)
+    LHS = makeLHS(X,Zlist,Ginvmats,Rinv)
     RHS = makeRHS(y,X,Zlist,Rinv)
     predictions = np.linalg.solve(C,RHS).transpose().tolist()[0]
     BLUE = predictions[:nfixef]
