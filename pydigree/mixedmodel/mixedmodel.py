@@ -5,7 +5,7 @@ from itertools import izip
 import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse import eye as sparseeye
-from scipy.optimize import anneal
+from scipy.optimize import fmin_l_bfgs_b
 
 from blup import blup
 from likelihood import restricted_loglikelihood
@@ -100,8 +100,9 @@ class MixedModel(object):
         else: variance_components = vcs
         V = sum(sigma * Z * A * Z.T for sigma,Z,A in \
                 izip(variance_components, self.Zlist, self.covariance_matrices))
-        V = V + self.residual_variance() * self.R
-        self.V = V
+        V = V + (np.var(self.y) - sum(variance_components)) * self.R
+        if vcs is not None: return V
+        else: self.V = V
     def set_outcome(self,outcome):
         self.outcome = outcome
         self._makey()
@@ -118,12 +119,16 @@ class MixedModel(object):
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
         self.variance_components = variance_components
-    def maximize(self,method='anneal'):
-        if self.maximized == method: return 
-        return anneal(self.__reml_optimization_target,[.1],full_output=True,
-                      lower=0,upper=np.var(self.y),maxeval=100)
+    def maximize(self,method='L-BFGS-B'):
+        if self.maximized == method: return
+        starts = self.__starting_variance_components()
+        b = [(0,np.var(self.y))] * len(self.random_effects)
+        def cb(x): print x
+        r = fmin_l_bfgs_b(self.__reml_optimization_target,starts,bounds=b,approx_grad=1,callback=cb)
+        import pdb; pdb.set_trace()
+        self.variance_components = r[0].tolist()
     def likelihood(self,vmat=None):
-        if not vmat: V = self.V
+        if vmat is None: V = self.V
         else: V = vmat
         return restricted_loglikelihood(self.y, V,self.X)
     def blup(self):
@@ -134,5 +139,9 @@ class MixedModel(object):
         self.ranef_blups = re 
         return fe,re 
     def __reml_optimization_target(self,vcs):
-        Q = self._makeV(vcs=vcs)
-        return -self.likelihood(vmat=Q)
+        Q = self._makeV(vcs=vcs.tolist())
+        return self.likelihood(vmat=Q)
+    def __starting_variance_components(self):
+        v = np.var(self.y)
+        n = float(len(self.random_effects))
+        return [v/(n+1) for r in self.random_effects]
