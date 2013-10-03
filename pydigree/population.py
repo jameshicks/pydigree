@@ -62,8 +62,11 @@ class Population(MutableMapping):
     def __setitem__(self,key,value): self.population[key] = value
     def __delitem__(self,key): del self.population[key]
 
-    def size(self): return len(self.population)
+    def size(self):
+        """ Returns the number of individuals in the population. """ 
+        return len(self.population)
     def remove_ancestry(self):
+        """ Makes every individual in the population a founder """
         for x in self: x.remove_ancestry()
 
     ### Adding and removing people
@@ -92,8 +95,12 @@ class Population(MutableMapping):
     ### Chromosome functions
     ###
     ###
-    def add_chromosome(self,chrom): self.chromosomes.append(chrom)
-    def chromosome_count(self): return len(self.chromosomes)
+    def add_chromosome(self,chrom):
+        """ Adds a chromosome to the population """
+        self.chromosomes.append(chrom)
+    def chromosome_count(self):
+        """ Returns the number of chromosomes in this population """
+        return len(self.chromosomes)
     
     ### Chromosome pool functions
     ###
@@ -113,6 +120,10 @@ class Population(MutableMapping):
         population chromosomes then contains chromosomes from the
         new generation. 
 
+        Arguements:
+        gensize: The size of the next generation (rounded down to the integer)
+
+        Returns: Nothing
         """
         gensize = int(gensize)
         for i,c in enumerate(self.chromosomes):
@@ -196,6 +207,18 @@ class Population(MutableMapping):
         if allele not in freqtab: return 0
         return freqtab[allele] / float(len(alleles))
     def major_allele(self,location,constraint=None):
+        """
+        Returns the major allele in this population at a locus.
+
+        Arguments
+        -----
+        location: the position to find the major allele at
+        constraint: a constraint (see population.alleles)
+
+        Returns
+        -----
+        the major allele at a locus (type depending on how genotypes are stored)
+        """
         alleles = self.alleles(location,constraint=constraint)
         freqtab = table(alleles)
         return sorted(freqtab.keys(), key=lambda x:freqtab[x])[0]
@@ -220,6 +243,14 @@ class Population(MutableMapping):
         
         Alleles are in linkage equilibrium if any of these metrics are 0. 
 
+        Arguments
+        -----
+        locusa: The first locus
+        locusb: The second locus
+        allelea: The allele at the first locus (the major allele if not specified)
+        alleleb: The allele at the second locus (the major allele if not specified)
+        method: The metric of linkage disequilibrium (r2 [default], Dprime, or D)
+        
         Returns: a double
         """
         method = method.lower()

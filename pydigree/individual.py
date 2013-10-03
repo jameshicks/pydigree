@@ -40,7 +40,9 @@ class Individual(object):
 
     ### Functions about genotypes
     ###
-    def has_genotypes(self): return self.genotypes is not None
+    def has_genotypes(self):
+        """ Returns True if an individual has genotypes """
+        return self.genotypes is not None
     def __fail_on_observed_genos(self):
         if self.observed_genos:
             raise ValueError('Individual has observed genotypes')        
@@ -137,6 +139,7 @@ class Individual(object):
     ### Functions for breeding
     ###
     def gamete(self):
+        """ Provides a set of half-genotypes to use with method fertilize """
         if not self.genotypes: self.get_genotypes()
         def randbit(): random.choice([True,False])
         g = []
@@ -149,9 +152,14 @@ class Individual(object):
             g.append(chrom)
         return g
     def fertilize(self,father,mother):
+        """
+        Combines a set of half-genotypes (from method gamete) to a full
+        set of genotypes
+        """
         return [ [x,y] for x,y in itertools.izip(father,mother) ]
     ### Phenotype functions
     def predict_phenotype(self,trait):
+        """ Predicts phenotypes from a given trait architecture """
         self.phenotypes[trait.name] = trait.predict_phenotype(self)
     def clear_phenotypes(self):
         """ Removes phenotypes """
