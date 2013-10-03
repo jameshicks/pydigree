@@ -7,8 +7,6 @@ c_ext = Extension("pydigree._pydigree", ["pydigree/_pydigree.c"])
 setup(
     packages=['pydigree'],
     ext_modules=[c_ext],
-    requires=[
-    'numpy>=1.6',
-    'scipy']
+    requires=['numpy', 'scipy']
     )
     
