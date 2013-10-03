@@ -2,8 +2,6 @@
 Functions for computing likelihoods of linear mixed models
 """
 
-from math import log as ln
-
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.linalg import pinv,inv
