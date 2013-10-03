@@ -38,6 +38,12 @@ class MixedModel(object):
         self.obs = []
         self.V = None
     def fit_model(self):
+        """
+        Builds X, Z, Y, and R for the model
+
+        Arguements: None
+        Returns: Nothing
+        """
         self._makeR()
         self._makey()
         self._makeX()
@@ -49,6 +55,14 @@ class MixedModel(object):
         """ Clears all parameters from the model """
         pass
     def observations(self):
+        """
+        Returns a list of the fully observed individuals in the model
+        Fully observed individuals have observations for each fixed effect and
+        and observation for the outcome variable.
+
+        Arguements: None
+        Returns: The list of fully observed individuals
+        """
         def has_all_fixefs(ind,effects):
             if not effects: return True
             return all(ind.phenotypes[effect] is not None for effect in effects)
@@ -58,10 +72,18 @@ class MixedModel(object):
                if has_all_fixefs(x,self.fixed_effects) and has_outcome(x)]
         if not self.obs: self.obs = obs
         return obs
-    def nobs(self): return len(self.observations())
+    def nobs(self):
+        """
+        Returns the number of fully observed individuals in the pedigree
+        Arguements: None
+        Returns: An integer
+        """
+        return len(self.observations())
     def residual_variance(self):
+        """ Returns the variance in y not accounted for by random effects """
         return np.var(self.y) - sum(self.variance_components) 
     def _makey(self):
+        """ Prepares the vector of outcome variables for model estimation """
         obs = self.observations()
         self.y = np.matrix([x.phenotypes[self.outcome] for x in obs]).transpose()
     def _makeX(self):
@@ -107,32 +129,46 @@ class MixedModel(object):
         V = V + (np.var(self.y) - sum(variance_components)) * self.R
         if vcs is not None: return V
         else: self.V = V
-    def _makebeta(self): 
+    def _makebeta(self):
+        """ Calculates BLUEs for the fixed effects portion of the model """
         vinv = inv(self.V.todense())
         self.beta = pinv(self.X.T * vinv * self.X) * self.X.T * vinv * self.y 
     def set_outcome(self,outcome):
+        """ Sets the outcome for the mixed model """ 
         self.outcome = outcome
         self._makey()
     def add_fixed_effects(self,effect):
+        """ Adds a fixed effect to the model """
         self.fixed_effects.append(effect)
         self._makeX()
     def add_random_effect(self,effect,covariance_matrix):
+        """ Adds a random effect to the model """
         self.random_effects.append(effect)
         self.covariance_matrices.append(covariance_matrix)
         self._makeZs()
     def add_genetic_effect(self,type='additive'):
         self.add_random_effect(type,self.pedigrees.additive_relationship_matrix())
     def set_variance_components(self,variance_components):
+        """
+        Manually set variance components for each random effect in the model.
+        Useful if you know a priori, say a heritability, and just want to
+        predict breeding values for the trait. 
+        """
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
         self.variance_components = variance_components
     def maximize(self,method='L-BFGS-B'):
+        """
+        Finds the optimal values for variance components of the model by
+        restricted maximum likelihood estimation.
+        """
         if self.maximized == method: return
         starts = self.__starting_variance_components()
         b = [(0,np.var(self.y))] * len(self.random_effects)
         r = fmin_l_bfgs_b(self.__reml_optimization_target,starts,bounds=b,approx_grad=1)
         self.variance_components = r[0].tolist()
     def likelihood(self,vmat=None):
+        """ Returns the likelihood of the model with the current model parameters """
         if vmat is None: V = self.V
         else: V = vmat
         return restricted_loglikelihood(self.y, V,self.X)
@@ -142,6 +178,7 @@ class MixedModel(object):
         b = blup(self.y,self.X,self.Zlist,self.covariance_matrices,self.variance_components).transpose().tolist()[0]
         return b
     def summary(self):
+        """ Prints a summary of the current model """
         self._fit_results()
         print 'Fixed effects:'
         fixefnames = ['Intercept'] + self.fixed_effects
@@ -154,9 +191,14 @@ class MixedModel(object):
         for name,vc in zip(self.random_effects,self.variance_components):
             print '\t'.join(str(val) for val in [name, vc, vc/np.var(self.y)]) 
     def __reml_optimization_target(self,vcs):
+        """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
         return self.likelihood(vmat=Q)
     def __starting_variance_components(self):
+        """
+        Starting variance components in optimization.
+        Chooses all variance components (including residual variance) to be equal.
+        """
         v = np.var(self.y)
         n = float(len(self.random_effects))
         return [v/(n+1) for r in self.random_effects]
