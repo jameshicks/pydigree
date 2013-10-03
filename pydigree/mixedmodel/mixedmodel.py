@@ -132,10 +132,9 @@ class MixedModel(object):
     def blup(self):
         if not all(self.variance_components):
             raise ValueError('Variance components not specified! Maximize the model or set them yourself.')
-        fe,re = blup(self.y,self.X,self.Zlist,self.covariance_matrices,self.variance_components)
-        self.fixef_blues = fe
-        self.ranef_blups = re 
-        return fe,re 
+        b = blup(self.y,self.X,self.Zlist,self.covariance_matrices,self.variance_components).transpose().tolist()[0]
+        return b
+
     def summary(self):
         print 'Variance components:'
         print '\t'.join(['Component','Variance','% Variance'])

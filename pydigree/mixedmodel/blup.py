@@ -2,10 +2,11 @@
 
 import numpy as np
 from itertools import izip
+from scipy.linalg import inv,solve
 
 def makeLHS(X,Zlist,Ginvlist,Rinv):
     predictors = [X] + Zlist
-    Ginvlist = [0]+Ginvlist
+    Ginvlist = [0] + Ginvlist
     cmat = []
     for i,a in enumerate(predictors):
         row = []
@@ -52,7 +53,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     """
     if not Zlist:
         raise ValueError('No random effects. Are you looking for an OLS/GLS solver?')
-    m,p = X.shape
+    m,nfixef = X.shape
     n = Zlist[0].shape[0]
     if R is None:
         Rinv = np.matrix(np.eye(n))
@@ -60,9 +61,7 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
         Rinv = np.linalg.inv(R)
     residual_variance = np.var(y) - sum(variance_components)
     # Make the covariance matrices into G matrices
-    Ginvmats = [ (residual_variance/lambd) * np.linalg.inv(covmat) \
-                 for vc,covmat in izip(variance_components,covariance_matrices)]
-
+    Ginvmats = [1/v * inv(A.todense()) for v,A in izip(variance_components,  covariance_matrices)]
     # Hendersons Mixed Model equation looks like
     # Cp = RHS
     #
@@ -81,8 +80,5 @@ def blup(y,X,Zlist,covariance_matrices,variance_components,R=None):
     #
     LHS = makeLHS(X,Zlist,Ginvmats,Rinv)
     RHS = makeRHS(y,X,Zlist,Rinv)
-    predictions = np.linalg.solve(C,RHS).transpose().tolist()[0]
-    BLUE = predictions[:nfixef]
-    BLUPS = grouper(predictions[nfixef:], n)
-    
-    return BLUE,BLUPs
+    predictions = solve(LHS,RHS)
+    return predictions
