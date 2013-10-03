@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Functions for computing likelihoods of linear mixed models
+"""
 
 from math import log as ln
 
@@ -8,7 +10,7 @@ from scipy.linalg import pinv,inv
 from scipy import matrix
 
 def logdet(M):
-    """ Returns the log determinant of a matrix. """
+    """ Returns the (positive) log determinant of a matrix. """
     sign,logdet = np.linalg.slogdet(M)
     return logdet
 
