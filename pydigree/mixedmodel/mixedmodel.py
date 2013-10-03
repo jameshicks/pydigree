@@ -8,8 +8,8 @@ from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv,pinv
 from scipy.optimize import fmin_l_bfgs_b
 
-from blup import blup
-from likelihood import restricted_loglikelihood
+from pydigree.mixedmodel.blup import blup
+from pydigree.mixedmodel.likelihood import restricted_loglikelihood
 
 def is_genetic_effect(effect):
     return effect in set(['additive','dominance','mitochondrial'])
