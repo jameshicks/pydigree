@@ -123,9 +123,7 @@ class MixedModel(object):
         if self.maximized == method: return
         starts = self.__starting_variance_components()
         b = [(0,np.var(self.y))] * len(self.random_effects)
-        def cb(x): print x
-        r = fmin_l_bfgs_b(self.__reml_optimization_target,starts,bounds=b,approx_grad=1,callback=cb)
-        import pdb; pdb.set_trace()
+        r = fmin_l_bfgs_b(self.__reml_optimization_target,starts,bounds=b,approx_grad=1)
         self.variance_components = r[0].tolist()
     def likelihood(self,vmat=None):
         if vmat is None: V = self.V
