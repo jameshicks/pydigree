@@ -92,7 +92,7 @@ class MixedModel(object):
             else: raise NotImplementedError('Arbitrary random effects not yet implemented')
         self.Zlist = [csc_matrix(Z) for Z in Zlist]
     def _makeR(self):
-        self.R = sparseeye(self.nobs())
+        self.R = sparseeye(self.nobs(),self.nobs())
     def _makeV(self,vcs=None):
         if (not vcs) and (not self.variance_components):
             raise ValueError('Variance components not set')
