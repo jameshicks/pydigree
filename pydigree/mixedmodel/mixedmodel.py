@@ -136,6 +136,11 @@ class MixedModel(object):
         self.fixef_blues = fe
         self.ranef_blups = re 
         return fe,re 
+    def summary(self):
+        print 'Variance components:'
+        print '\t'.join(['Component','Variance','% Variance'])
+        for name,vc in zip(self.random_effects,self.variance_components):
+            print '\t'.join(str(val) for val in [name, vc, vc/np.var(self.y)]) 
     def __reml_optimization_target(self,vcs):
         Q = self._makeV(vcs=vcs.tolist())
         return self.likelihood(vmat=Q)
