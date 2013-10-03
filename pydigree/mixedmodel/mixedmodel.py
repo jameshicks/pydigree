@@ -5,6 +5,7 @@ from itertools import izip
 import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse import eye as sparseeye
+from scipy.linalg import inv,pinv
 from scipy.optimize import fmin_l_bfgs_b
 
 from blup import blup
@@ -41,6 +42,9 @@ class MixedModel(object):
         self._makey()
         self._makeX()
         self._makeZs()
+    def _fit_results(self): 
+        self._makeV()
+        self._makebeta()
     def clear_model(self):
         """ Clears all parameters from the model """
         pass
@@ -103,6 +107,9 @@ class MixedModel(object):
         V = V + (np.var(self.y) - sum(variance_components)) * self.R
         if vcs is not None: return V
         else: self.V = V
+    def _makebeta(self): 
+        vinv = inv(self.V.todense())
+        self.beta = pinv(self.X.T * vinv * self.X) * self.X.T * vinv * self.y 
     def set_outcome(self,outcome):
         self.outcome = outcome
         self._makey()
@@ -134,8 +141,14 @@ class MixedModel(object):
             raise ValueError('Variance components not specified! Maximize the model or set them yourself.')
         b = blup(self.y,self.X,self.Zlist,self.covariance_matrices,self.variance_components).transpose().tolist()[0]
         return b
-
     def summary(self):
+        self._fit_results()
+        print 'Fixed effects:'
+        fixefnames = ['Intercept'] + self.fixed_effects
+        betas = self.beta.T.tolist()[0]
+        print '\t'.join(['Name','Estimate'])
+        for name,beta in zip(fixefnames,betas):
+            print '\t'.join(str(q) for q in [name,beta])
         print 'Variance components:'
         print '\t'.join(['Component','Variance','% Variance'])
         for name,vc in zip(self.random_effects,self.variance_components):
