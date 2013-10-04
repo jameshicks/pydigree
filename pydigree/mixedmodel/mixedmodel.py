@@ -130,7 +130,13 @@ class MixedModel(object):
         if vcs is not None: return V
         else: self.V = V
     def _makebeta(self):
-        """ Calculates BLUEs for the fixed effects portion of the model """
+        """ 
+        Calculates BLUEs for the fixed effects portion of the model 
+        
+        Reference:
+        McCulloch & Seale. Generalized, Linear, and Mixed Models. (2001)
+        Equation 6.24
+        """
         vinv = inv(self.V.todense())
         self.beta = pinv(self.X.T * vinv * self.X) * self.X.T * vinv * self.y 
     def set_outcome(self,outcome):
