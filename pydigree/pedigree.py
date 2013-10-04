@@ -58,7 +58,7 @@ class Pedigree(Population):
         (See notes in pydigree.paths.kinship). For pedigree objects, results are stored
         to reduce the calculation time for kinship matrices.
 
-        This is a convenience wrapper for paths.kinship, which takes pedigree objects as
+        This is a convenience wrapper for paths.kinship, which takes individual objects as
         arguments. This function takes id labels and looks them up in the pedigree, and
         calls paths.kinship on those individual objects. 
 
