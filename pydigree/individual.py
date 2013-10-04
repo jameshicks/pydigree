@@ -26,7 +26,7 @@ class Individual(object):
         self.observed_genos = True
         self.phenotypes = {}
         self.children = []
-        self.inbreeding = None
+        self.inbreed = None
         if isinstance(self.father,Individual): self.father.register_child(self)
         if isinstance(self.mother,Individual): self.mother.register_child(self)
     def __str__(self):
