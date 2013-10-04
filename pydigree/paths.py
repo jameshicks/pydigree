@@ -78,6 +78,11 @@ def kinship(ind1, ind2):
     # they wouldn't be founders, right?). So we'll return 0 right away.
     if ind1.is_founder() and ind2.is_founder():
         return 0
+    # In paths.fraternity, it asks for kinships between parents. If the individual 
+    # is a founder, they won't send individual objects here, but instead Nonetypes. 
+    # We'll return 0 for that scenario.
+    if ind1 is None or ind2 is None: 
+        return 0
     # The number of meioses is the sum of one minus the lengths of the paths
     #  connecting the two individuals. The kinship coefficient is then
     #  .5 ** len(path)
