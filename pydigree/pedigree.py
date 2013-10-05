@@ -94,7 +94,7 @@ class Pedigree(Population):
         Returns: a double
         """
         ind = self[id]
-        if ind.is_founder: return 0.0
+        if ind.is_founder(): return 0.0
         if ind.father.is_founder() or ind.mother.is_founder(): return 0.0
         return self.kinship(ind.father.id,ind.mother.id)
     def additive_relationship_matrix(self, ids=None):
