@@ -19,8 +19,8 @@ Spain	MariaAnnaBavariaI	AlbertVBavaria		AnnaAustriaArch	2	0
 Spain	WilliamVBavaria		AlbertVBavaria		AnnaAustriaArch	1	0
 Spain	RenataLorraine		0			0		2	0
 Spain	PhilipIIISpain		PhilipIISpain		AnnaAustriaQueen	1	0
-Spain	MargaretAustria		CharlesIISpain		MariaAnnaBavariaI	2	0
-Spain	FerdinandIIHRE		CharlesIISpain		MariaAnnaBavariaI	1	0
+Spain	MargaretAustria		CharlesIIAustria	MariaAnnaBavariaI	2	0
+Spain	FerdinandIIHRE		CharlesIIAustria	MariaAnnaBavariaI	1	0
 Spain	MariaAnnaBavariaII	WilliamVBavaria		RenataLorraine		2	0
 Spain	PhilipIVSpain		PhilipIIISpain		MargaretAustria		1	0
 Spain	MariaAnnaSpain		PhilipIIISpain		MargaretAustria		2	0
