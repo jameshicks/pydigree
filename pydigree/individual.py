@@ -25,7 +25,7 @@ class Individual(object):
         self.genotypes = None
         self.observed_genos = True
         self.phenotypes = {}
-        self.children = []
+        self.attrib = {}
         self.inbreed = None
         if isinstance(self.father,Individual): self.father.register_child(self)
         if isinstance(self.mother,Individual): self.mother.register_child(self)
@@ -136,11 +136,11 @@ class Individual(object):
         # Two edge cases where inbreedings must be 0
         if self.is_founder(): return 0.0
         if self.father.is_founder() or self.mother.is_founder(): return 0.0
-        if self.inbreed is not None: 
-            return self.inbreed
+        if 'inbreed' in self.attrib: 
+            return self.attrib['inbreed']
         else: 
-            self.inbreed = kinship(self.father,self.mother)
-            return self.inbreed
+            self.attrib['inbreed'] = kinship(self.father,self.mother)
+            return self.attrib['inbreed']
     ### Functions for breeding
     ###
     def gamete(self):
