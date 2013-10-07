@@ -2,13 +2,13 @@
 
 # Common functions (cumsum, table, etc)
 from common import *
-from misc import read_ped,read_phenotypes
+from misc import read_ped, read_phenotypes
 # Functions for navigating pedigree structures
-from paths import path_downward,paths,paths_through_ancestor
-from paths import common_ancestors,kinship
+from paths import path_downward, paths, paths_through_ancestor
+from paths import common_ancestors, kinship
 
 # Population growth models
-from population import exponential_growth,logistic_growth
+from population import exponential_growth, logistic_growth
 
 # Classes
 from population import Population

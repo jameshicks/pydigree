@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
+
 class Architecture(object):
     """
-    Architecture is a static class that relates genotypes to phenotypes. 
+    Architecture is a static class that relates genotypes to phenotypes.
 
     Main Effects
     ------
-    For main (i.e non-epistatic) effects, you supply a tuple of (chromosome, position) to
-    indicate location. You also supply a dictionary of genotype/effect pairs. For example,
-    to add a fully dominant effect of allele A  that adds 1 to the trait value at chromosome 4,
-    position 50, you would prepare a dictionary in the form:
+    For main (i.e non-epistatic) effects, you supply a tuple of
+    (chromosome, position) to indicate location. You also supply a dictionary
+    of genotype/effect pairs. For example, to add a fully dominant effect of
+    allele A  that adds 1 to the trait value at chromosome 4, position 50,
+    you would prepare a dictionary in the form:
 
     effects = {('A','A'): 1, ('A','a'): 1, ('a','a'): 0}
     location = (4,50)
@@ -17,67 +19,84 @@ class Architecture(object):
     Then you would add the effect to the trait architecture with:
     t.add_effect_liability(location,effects)
 
-    For convenience, any genotype not found in the effects dictionary has no effect on the trait.
-    For example a fully reccessive effect of allele 'a' on the trait, giving an effect of 1
-    could be a dictionary that looks like this: {('a','a'): 1}
+    For convenience, any genotype not found in the effects dictionary has no
+    effect on the trait. For example a fully reccessive effect of allele 'a'
+    on the trait, giving an effect of 1 could be a dictionary that looks like
+    this: {('a','a'): 1}
 
     Epistatic Effects
     ------
-    Pydigree can also simulate epistatic effects. That is, combinations of genotypes that
-    add effects non additively. For these the locations are given as a list of (chr, pos) tuples
-    (as seen in the main effects section). The dictionary of effects is given as the key,value
-    pair of a list of genotypes and the effect of that genotype on the trait.
+    Pydigree can also simulate epistatic effects. That is, combinations of
+    genotypes that add effects non additively. For these the locations are
+    given as a list of (chr, pos) tuples (as seen in the main effects section).
+    The dictionary of effects is given as the key,value pair of a list of
+    genotypes and the effect of that genotype on the trait.
 
-    The list of genotypes reflects the order of the positions. That is, if you supply positions 1,2,3,
-    the genotypes should look like:
-    [(genotype at position 1), (genotype at position 2), genotype at position 3)]
+    The list of genotypes reflects the order of the positions. That is, if you
+    supply positions 1,2,3, the genotypes should look like:
+    [(genotype at position 1), (genotype at position 2),
+    (genotype at position 3)]
 
-    Like with the main effects, any genotype combination not in the effect dictionary is assumed to
-    have 0 effect on the trait. 
+    Like with the main effects, any genotype combination not in the effect
+    dictionary is assumed to have 0 effect on the trait.
     """
-    def __init__(self,name,traittype):
+    def __init__(self, name, traittype):
         self.name = name
         self.effects = {}
         self.epistatic_effects = {}
-        if traittype not in ['quantitative','dichotomous']:
+        if traittype not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
-        else: self.traittype = traittype
+        else:
+            self.traittype = traittype
         self.liability_threshold = None
+
     def __str__(self):
-        return "Trait %s (%s): %s main effects, %s epistatic effects" % (self.name,self.traittype,len(self.effects),len(self.epistatic_effects))
-    def __transformdict(self,d):
+        return "Trait %s (%s): %s main effects, %s epistatic effects" \
+            % (self.name, self.traittype,
+               len(self.effects), len(self.epistatic_effects))
+
+    def __transformdict(self, d):
         d2 = {}
         for k in d:
             d2[frozenset(k)] = d[k]
         return d2
-    def _geteffect(self,individual,location):
-        chr,pos = location
-        g = frozenset(individual.get_genotype((chr,pos)))
+
+    def _geteffect(self, individual, location):
+        chr, pos = location
+        g = frozenset(individual.get_genotype((chr, pos)))
         # If liability is not defined for the genotype configuration
         # we return 0. Check ahead of time to avoid the overhead from
         # raising a KeyError
         if g not in self.effects[location]:
             return 0
         return self.effects[location][g]
-    def _getepistaticeffects(self,individual,locations):
+
+    def _getepistaticeffects(self, individual, locations):
         locations = tuple(tuple(loc) for loc in locations)
-        g = tuple(frozenset(individual.get_genotype(chr,pos) for chr,pos in locations))
-        if g not in self.epistatic_effects[locations]: return 0
-    def set_liability_threshold(self,threshold):
+        g = tuple(frozenset(individual.get_genotype(chr, pos)
+                            for chr, pos in locations))
+        if g not in self.epistatic_effects[locations]:
+            return 0
+
+    def set_liability_threshold(self, threshold):
         if self.traittype != 'dichotomous':
-            raise ValueError('Liability thresholds only available for dichotomous traits')
-        else: self.liability_threshold = threshold
+            raise ValueError('Thresholds only for dichotomous traits')
+        else:
+            self.liability_threshold = threshold
+
     def add_effect_liability(self, location, liabilities):
-        chrom,marker=location
+        chrom, marker = location
         liabilities = self.__transformdict(liabilities)
-        self.effects[(chrom,marker)] = liabilities
+        self.effects[(chrom, marker)] = liabilities
+
     def add_epistatic_liability(self, locations, liabilities):
         locations = tuple(tuple(x) for x in locations)
         liabilities = self.__transformdict(liabilities)
         self.epistatic_effects[locations] = liabilities
-    def predict_phenotype(self,individual):
-        liability = [self._geteffect(individual,x) for x in self.effects]
-        liability += [self._getepistaticeffect(individual,x)
+
+    def predict_phenotype(self, individual):
+        liability = [self._geteffect(individual, x) for x in self.effects]
+        liability += [self._getepistaticeffect(individual, x)
                       for x in self.epistatic_effects]
         liabilitysum = sum(liability)
         if self.traittype == 'dichotomous':
