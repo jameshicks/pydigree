@@ -121,6 +121,17 @@ class Individual(object):
         """
         if self.is_founder(): return self.id
         else: return self.mother.matriline()
+    def depth(self):
+        """ 
+        Returns the depth of an individual in the pedigree, a rough measure of what
+        generation in the pedigree the individual is. Defined as:
+        depth = 0 if individual is a founder, else the maximum of the depth of each parent
+        
+        Arguements: None
+        Returns: An integer
+        """
+        if self.is_founder(): return 0
+        else: return 1 + max(self.father.depth(),self.mother.depth())
     def remove_ancestry(self):
         """
         Removes ancestry: makes a person a founder. Cannot be used on an individual in a
