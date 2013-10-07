@@ -1,6 +1,6 @@
 # setup.py
 
-from setuptools import setup,Extension
+from setuptools import setup, Extension
 
 c_ext = Extension("pydigree._pydigree", ["pydigree/_pydigree.c"])
 
@@ -9,4 +9,3 @@ setup(
     ext_modules=[c_ext],
     requires=['numpy', 'scipy']
     )
-    
