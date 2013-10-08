@@ -31,7 +31,6 @@ class Individual(object):
         self.phenotypes = {}
         self.attrib = {}
         self.children = []
-        self.inbreed = None
         if isinstance(self.father, Individual):
             self.father.register_child(self)
         if isinstance(self.mother, Individual):
