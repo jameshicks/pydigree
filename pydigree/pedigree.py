@@ -70,23 +70,40 @@ class Pedigree(Population):
     def kinship(self, id1, id2):
         """
         Get the Malecot coefficient of coancestry for two individuals in
-        the pedigree. (See notes in pydigree.paths.kinship). For pedigree
-        objects, results are stored to reduce the calculation time for kinship
-        matrices.
-
-        This is a convenience wrapper for paths.kinship, which takes individual
-        objects as arguments. This function takes id labels and looks them up
-        in the pedigree, and calls paths.kinship on those individual objects.
+        the pedigree. These are calculated recursively.
+        For pedigree objects, results are stored to reduce the calculation
+        time for kinship matrices.
 
         Returns: a double
         """
         pair = frozenset([id1, id2])
-        if pair not in self.kinmat:
-            k = kinship(self[id1], self[id2])
-            self.kinmat[pair] = k
-            return k
-        else:
+        if pair in self.kinmat:
             return self.kinmat[pair]
+        if id1 is None or id2 is None:
+            return 0
+
+        # Since with pedigree objects we're typically working with IDs,
+        # I define these functions to get parents for IDs by looking them
+        # up in the pedigree
+        def fa(id):
+            return self[id].father.id if self[id].father is not None else None
+
+        def mo(id):
+            return self[id].mother.id if self[id].mother is not None else None
+
+        # Use tuples here to take advantage of the implicit tuple ordering
+        # With depth as the first item, it assures that descendants aren't
+        # listed before their ancestors.
+        t1 = self[id1].depth(), id1
+        t2 = self[id2].depth(), id2
+        if id1 == id2:
+            k = (1 + self.kinship(fa(id1), mo(id1))) / 2.0
+        elif t1 < t2:
+            k = (self.kinship(id1, fa(id2)) + self.kinship(id1, mo(id2))) / 2.0
+        else:
+            k = (self.kinship(id2, fa(id1)) + self.kinship(id2, mo(id1))) / 2.0
+        self.kinmat[pair] = k
+        return k
 
     def fraternity(self, id1, id2):
         """

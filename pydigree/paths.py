@@ -79,6 +79,10 @@ def paths(ind1, ind2):
 
     This function consists of repeated calls to paths_through_ancestor
     for each common ancestor of ind1 and ind2
+
+    For pedigrees, where typically many kinship coefficients must be
+    calculated simulateously, kinships are calculated by this function.
+    See notes on pedigree.kinship for more information.
     """
     paths = path_downward(ind1, ind2) + path_downward(ind2, ind1)
     common = common_ancestors(ind1, ind2)
