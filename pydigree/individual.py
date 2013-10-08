@@ -165,6 +165,19 @@ class Individual(object):
         else:
             return self.mother.matriline()
 
+    def patriline(self):
+        """
+        Returns a label by recursively searching for the individual's mother's
+        father's father's etc. until it reaches a founder father, in which case
+        it returns that ancestor's id.
+
+        Analagous to individual.matriline.
+        """
+        if self.is_founder():
+            return self.id
+        else:
+            return self.father.matriline()
+
     def depth(self):
         """
         Returns the depth of an individual in the pedigree, a rough measure of
