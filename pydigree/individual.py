@@ -177,8 +177,12 @@ class Individual(object):
         """
         if self.is_founder():
             return 0
+        elif 'depth' in self.attrib:
+            return self.attrib['depth']
         else:
-            return 1 + max(self.father.depth(), self.mother.depth())
+            d = 1 + max(self.father.depth(), self.mother.depth())
+            self.attrib['depth'] = d
+            return d
 
     def remove_ancestry(self):
         """
