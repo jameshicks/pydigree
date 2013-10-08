@@ -30,6 +30,7 @@ class Individual(object):
         self.observed_genos = True
         self.phenotypes = {}
         self.attrib = {}
+        self.children = []
         self.inbreed = None
         if isinstance(self.father, Individual):
             self.father.register_child(self)
