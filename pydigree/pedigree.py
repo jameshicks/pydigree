@@ -74,7 +74,16 @@ class Pedigree(Population):
         For pedigree objects, results are stored to reduce the calculation
         time for kinship matrices.
 
+        Arguements
+        -----
+        id1: the label of individual 1
+        id2: the label of individual 2
+
         Returns: a double
+
+        Reference:
+        Lange. Mathematical and Statistical Methods for Genetic Analysis.
+        1997. Springer.
         """
         pair = frozenset([id1, id2])
         if pair in self.kinmat:
