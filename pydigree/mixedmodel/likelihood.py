@@ -14,6 +14,15 @@ def logdet(M):
     return logdet
 
 
+def makeP(y, X, V=None, Vinv=None):
+    """ Makes the P matrix commonly found in REML estimation """
+    if V is None and Vinv is None:
+        raise ValueError('Variance matrix not specified')
+    elif Vinv is None and V is not None:
+        Vinv = csr_matrix(inv(V.todense()))
+    return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
+
+
 def restricted_loglikelihood(y, V, X):
     """
     Returns a value proportional to the restricted loglikelihood for mixed
@@ -33,7 +42,7 @@ def restricted_loglikelihood(y, V, X):
     """
 
     Vinv = csr_matrix(inv(V.todense()))
-    r = y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
+    P = makeP(y, X, Vinv=Vinv)
     # This value is only proportional to the restricted likelihood.
     # I'm saving some needless expense by skipping some terms that are constant
     # across all formulations of the variance components.
@@ -49,5 +58,5 @@ def restricted_loglikelihood(y, V, X):
     #    not found in older versions of numpy. At some point I might require
     #    newer versions of numpy but, because of (1) I don't think I'll bother.
     llik_restricted = logdet(V.todense()) + logdet(X.transpose() * Vinv * X) \
-        + r.transpose() * Vinv * r
+        + P.transpose() * Vinv * P
     return matrix.item(llik_restricted)
