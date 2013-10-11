@@ -6,7 +6,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.linalg import pinv, inv
 from scipy import matrix
-
+np.seterr(invalid='ignore')
 
 def logdet(M):
     """ Returns the (positive) log determinant of a matrix. """
