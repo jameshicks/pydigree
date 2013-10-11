@@ -202,7 +202,7 @@ class MixedModel(object):
             raise ValueError('Not all variance components are specified')
         self.variance_components = variance_components
 
-    def maximize(self, method='L-BFGS-B'):
+    def maximize(self, method='L-BFGS-B', verbose=False):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation.
@@ -210,9 +210,15 @@ class MixedModel(object):
         if self.maximized == method:
             return
         starts = self.__starting_variance_components()
+        def cb(x):
+            if verbose:
+                print 'Iteration VC estimates: %s' % \
+                    ', '.join(str(y) for y in x.tolist())
         b = [(0, np.var(self.y))] * len(self.random_effects)
         r = fmin_l_bfgs_b(self.__reml_optimization_target,
-                          starts, bounds=b, approx_grad=1)
+                          starts, bounds=b, approx_grad=1, callback=cb)
+        if verbose:
+            print r
         self.variance_components = r[0].tolist()
 
     def likelihood(self, estimator='full', vmat=None):
