@@ -2,11 +2,17 @@
 Functions for computing likelihoods of linear mixed models
 """
 
+from math import log, pi
+
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.linalg import pinv, inv
 from scipy import matrix
 np.seterr(invalid='ignore')
+
+
+l2pi = log(2 * pi)
+
 
 def logdet(M):
     """ Returns the (positive) log determinant of a matrix. """
@@ -21,6 +27,19 @@ def makeP(y, X, V=None, Vinv=None):
     elif Vinv is None and V is not None:
         Vinv = csr_matrix(inv(V.todense()))
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
+
+
+def full_loglikelihood(y, V, X):
+    """
+    Returns the full loglikelihood of a mixed model
+
+    Ref: SAS documentation for PROC MIXED
+    """
+    Vinv = csr_matrix(inv(V.todense()))
+    P = makeP(y, X, Vinv=Vinv)
+    n = X.shape[0]
+    llik = -0.5 * (logdet(V.todense()) + P.transpose() * Vinv * P + n * l2pi)
+    return matrix.item(llik)
 
 
 def restricted_loglikelihood(y, V, X):

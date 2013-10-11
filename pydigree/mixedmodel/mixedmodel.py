@@ -10,6 +10,7 @@ from scipy.optimize import fmin_l_bfgs_b
 
 from pydigree.mixedmodel.blup import blup
 from pydigree.mixedmodel.likelihood import restricted_loglikelihood
+from pydigree.mixedmodel.likelihood import full_loglikelihood
 
 
 def is_genetic_effect(effect):
@@ -214,15 +215,19 @@ class MixedModel(object):
                           starts, bounds=b, approx_grad=1)
         self.variance_components = r[0].tolist()
 
-    def likelihood(self, vmat=None):
+    def likelihood(self, estimator='full', vmat=None):
         """
         Returns the likelihood of the model with the current model parameters
         """
+        estimator = estimator.lower()
         if vmat is None:
             V = self.V
         else:
             V = vmat
-        return restricted_loglikelihood(self.y, V, self.X)
+        if estimator == 'full':
+            return full_loglikelihood(self.y, V, self.X)
+        elif estimator == 'restricted':
+            return restricted_loglikelihood(self.y, V, self.X)
 
     def blup(self):
         if not all(self.variance_components):
@@ -241,15 +246,18 @@ class MixedModel(object):
         print '\t'.join(['Name', 'Estimate'])
         for name, beta in zip(fixefnames, betas):
             print '\t'.join(str(q) for q in [name, beta])
+        print
         print 'Variance components:'
         print '\t'.join(['Component', 'Variance', '% Variance'])
         for name, vc in zip(self.random_effects, self.variance_components):
             print '\t'.join(str(val) for val in [name, vc, vc/np.var(self.y)])
+        print
+        print 'Loglikelihood: %s' % self.likelihood()
 
     def __reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
-        return self.likelihood(vmat=Q)
+        return self.likelihood(estimator='restricted', vmat=Q)
 
     def __starting_variance_components(self):
         """
