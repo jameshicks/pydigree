@@ -61,7 +61,17 @@ class MixedModel(object):
 
     def clear_model(self):
         """ Clears all parameters from the model """
-        pass
+        self.random_effects = []
+        self.fixed_effects = []
+        self.covariance_matrices = []
+        self.Zlist = []
+        self.variance_components = []
+        self.X = None
+        self.y = None
+        self.beta = None
+        self.V = None
+        self.R = None
+        self.obs = None
 
     def observations(self):
         """
