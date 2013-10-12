@@ -29,20 +29,21 @@ def makeP(y, X, V=None, Vinv=None):
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
 
 
-def full_loglikelihood(y, V, X):
+def full_loglikelihood(y, V, X, Vinv=None):
     """
     Returns the full loglikelihood of a mixed model
 
     Ref: SAS documentation for PROC MIXED
     """
-    Vinv = csc_matrix(inv(V.todense()))
+    if not Vinv:
+        Vinv = csc_matrix(inv(V.todense()))
     P = makeP(y, X, Vinv=Vinv)
     n = X.shape[0]
     llik = -0.5 * (logdet(V.todense()) + P.transpose() * Vinv * P + n * l2pi)
     return matrix.item(llik)
 
 
-def restricted_loglikelihood(y, V, X):
+def restricted_loglikelihood(y, V, X, Vinv=None):
     """
     Returns the restricted loglikelihood for mixed model variance component
     estimation.
@@ -59,8 +60,8 @@ def restricted_loglikelihood(y, V, X):
 
     SAS documentation for PROC MIXED
     """
-
-    Vinv = csc_matrix(inv(V.todense()))
+    if not Vinv:
+        Vinv = csc_matrix(inv(V.todense()))
     P = makeP(y, X, Vinv=Vinv)
     n = X.shape[0]
     rank = np.linalg.matrix_rank(X)
