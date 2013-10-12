@@ -44,8 +44,8 @@ def full_loglikelihood(y, V, X):
 
 def restricted_loglikelihood(y, V, X):
     """
-    Returns a value proportional to the restricted loglikelihood for mixed
-    model estimation.
+    Returns the restricted loglikelihood for mixed model variance component
+    estimation.
 
     References:
 
@@ -62,6 +62,8 @@ def restricted_loglikelihood(y, V, X):
 
     Vinv = csc_matrix(inv(V.todense()))
     P = makeP(y, X, Vinv=Vinv)
+    n = X.shape[0]
+    rank = np.linalg.matrix_rank(X)
     # This value is only proportional to the restricted likelihood.
     # I'm saving some needless expense by skipping some terms that are constant
     # across all formulations of the variance components.
@@ -76,6 +78,8 @@ def restricted_loglikelihood(y, V, X):
     # 2) The term (n-p)ln(2pi) requires numpy.linalg.matrix_rank, which is
     #    not found in older versions of numpy. At some point I might require
     #    newer versions of numpy but, because of (1) I don't think I'll bother.
-    llik_restricted = logdet(V.todense()) + logdet(X.transpose() * Vinv * X) \
-        + P.transpose() * Vinv * P
+    llik_restricted = -0.5 * (logdet(V.todense())
+                              + logdet(X.transpose() * Vinv * X)
+                              + P.transpose() * Vinv * P
+                              + (n-rank) * l2pi)
     return matrix.item(llik_restricted)

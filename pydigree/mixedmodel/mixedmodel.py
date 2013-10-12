@@ -265,7 +265,7 @@ class MixedModel(object):
     def __reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
-        return self.likelihood(estimator='restricted', vmat=Q)
+        return -1.0 * self.likelihood(estimator='restricted', vmat=Q)
 
     def __starting_variance_components(self):
         """
