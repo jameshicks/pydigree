@@ -5,7 +5,7 @@ Functions for computing likelihoods of linear mixed models
 from math import log, pi
 
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csc_matrix
 from scipy.linalg import pinv, inv
 from scipy import matrix
 np.seterr(invalid='ignore')
@@ -25,7 +25,7 @@ def makeP(y, X, V=None, Vinv=None):
     if V is None and Vinv is None:
         raise ValueError('Variance matrix not specified')
     elif Vinv is None and V is not None:
-        Vinv = csr_matrix(inv(V.todense()))
+        Vinv = csc_matrix(inv(V.todense()))
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
 
 
@@ -35,7 +35,7 @@ def full_loglikelihood(y, V, X):
 
     Ref: SAS documentation for PROC MIXED
     """
-    Vinv = csr_matrix(inv(V.todense()))
+    Vinv = csc_matrix(inv(V.todense()))
     P = makeP(y, X, Vinv=Vinv)
     n = X.shape[0]
     llik = -0.5 * (logdet(V.todense()) + P.transpose() * Vinv * P + n * l2pi)
@@ -60,7 +60,7 @@ def restricted_loglikelihood(y, V, X):
     SAS documentation for PROC MIXED
     """
 
-    Vinv = csr_matrix(inv(V.todense()))
+    Vinv = csc_matrix(inv(V.todense()))
     P = makeP(y, X, Vinv=Vinv)
     # This value is only proportional to the restricted likelihood.
     # I'm saving some needless expense by skipping some terms that are constant
