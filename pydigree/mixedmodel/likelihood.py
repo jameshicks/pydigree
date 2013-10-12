@@ -65,20 +65,6 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
     P = makeP(y, X, Vinv=Vinv)
     n = X.shape[0]
     rank = np.linalg.matrix_rank(X)
-    # This value is only proportional to the restricted likelihood.
-    # I'm saving some needless expense by skipping some terms that are constant
-    # across all formulations of the variance components.
-    # To get the actual estimate of the likelihood, calculate:
-    #   -0.5(w + (n-p)*ln(2pi)), where:
-    #   n is the number of rows of X
-    #   p is the rank of X.
-    #
-    # I've left these terms out for two main reasons:
-    # 1) They don't change across different values of V. For optimization
-    #    purposes, they're irrelevant.
-    # 2) The term (n-p)ln(2pi) requires numpy.linalg.matrix_rank, which is
-    #    not found in older versions of numpy. At some point I might require
-    #    newer versions of numpy but, because of (1) I don't think I'll bother.
     llik_restricted = -0.5 * (logdet(V.todense())
                               + logdet(X.transpose() * Vinv * X)
                               + P.transpose() * Vinv * P
