@@ -258,7 +258,9 @@ class MixedModel(object):
         print 'Variance components:'
         print '\t'.join(['Component', 'Variance', '% Variance'])
         for name, vc in zip(self.random_effects, self.variance_components):
-            print '\t'.join(str(val) for val in [name, vc, vc/np.var(self.y)])
+            print '\t'.join(str(val) for val in [name,
+                                                 vc,
+                                                 100 * vc/np.var(self.y)])
         print
         print 'Loglikelihood: %s' % self.likelihood()
 
