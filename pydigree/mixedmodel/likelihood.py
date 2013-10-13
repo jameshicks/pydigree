@@ -20,14 +20,17 @@ def logdet(M):
     return logdet
 
 
-def makeP(y, X, V=None, Vinv=None):
-    """ Makes the P matrix commonly found in REML estimation """
+def makeR(y, X, V=None, Vinv=None):
+    """ Makes the R matrix commonly found in REML estimation """
     if V is None and Vinv is None:
         raise ValueError('Variance matrix not specified')
     elif Vinv is None and V is not None:
         Vinv = csc_matrix(inv(V.todense()))
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
 
+def makeP(X,Vinv):
+    """ Makes the P matrix commonly found in mixed model estimation """
+    return Vinv - Vinv * X * pinv(X.T * Vinv * X) * X.T * Vinv
 
 def full_loglikelihood(y, V, X, Vinv=None):
     """
@@ -37,9 +40,9 @@ def full_loglikelihood(y, V, X, Vinv=None):
     """
     if not Vinv:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(y, X, Vinv=Vinv)
+    R = makeR(y, X, Vinv=Vinv)
     n = X.shape[0]
-    llik = -0.5 * (logdet(V.todense()) + P.transpose() * Vinv * P + n * l2pi)
+    llik = -0.5 * (logdet(V.todense()) + R.transpose() * Vinv * R + n * l2pi)
     return matrix.item(llik)
 
 
