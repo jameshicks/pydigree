@@ -8,7 +8,7 @@ from pedigree import Pedigree
 from pedigreecollection import PedigreeCollection
 
 
-def read_ped(filename, population=None, affected_labels=None):
+def read_ped(filename, population=None, delimiter=None, affected_labels=None):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -32,7 +32,7 @@ def read_ped(filename, population=None, affected_labels=None):
             return None
     with open(filename) as f:
         for line in f:
-            fam, id, fa, mo, sex, aff = line.strip().split(None, 5)
+            fam, id, fa, mo, sex, aff = line.strip().split(delimiter, 5)
             # Give a special id for now, to prevent overwriting duplicated
             # ids between families
             id = (fam, id)
