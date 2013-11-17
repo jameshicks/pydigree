@@ -15,6 +15,15 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
     into a pydigree pedigree object, with optional population to
     assign to pedigree members. If you don't provide a population
     you can't simulate genotypes!
+
+    Arguements
+    -----
+    filename: The file to be read
+    population: The population to assign individuals to
+    delimiter: a string defining the field separator, default: any whitespace
+    affected_labels: The labels that determine affection status.
+
+    Returns: An object of class PedigreeCollection
     """
     p = Pedigree()
     pc = PedigreeCollection()
