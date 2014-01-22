@@ -38,7 +38,7 @@ class Chromosome(object):
         self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
-        return 'Chromosome object: %d markers, %f cM' % \
+        return 'Chromosome object: %s markers, %s cM' % \
             (len(self.frequencies), max(self.genetic_map))
 
     def _iinfo(self):
