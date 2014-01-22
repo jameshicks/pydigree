@@ -50,13 +50,9 @@ class PedigreeCollection(MutableMapping):
         return set(reduce(add, [x.phenotypes.keys() for x in
                                 self.individuals()]))
 
-    def population(self):
-        """ Returns the population all the pedigrees belong to. """
-        k = self.pedigrees.keys()[0]
-        return self.pedigres[k]
-
     def chromosomes(self):
-        return self.population.chromosomes
+        k = self.pedigrees.keys()[0]
+        return self.pedigrees[k].chromosomes
 
     def add_chromosome(self, chrom):
         for x in self:
