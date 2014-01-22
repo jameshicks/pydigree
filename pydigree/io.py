@@ -52,8 +52,6 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             ind.father = p[(fam, ind.father)] if ind.father != '0' else None
             ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
             ind.sex = sex_codes[ind.sex]
-            if population:
-                population.register_individual(p[id])
             ind.register_with_parents()
         for pedigree_label in set(ind.id[0] for ind in p):
             ped = Pedigree(pedigree_label)
@@ -61,6 +59,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             for ind in thisped:
                 ind.id = ind.id[1]
                 ped[ind.id] = ind
+                ind.population = ped
             pc[pedigree_label] = ped
     return pc
 
