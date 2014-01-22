@@ -199,6 +199,8 @@ class Population(MutableMapping):
     ###
     ###
     def get_founder_genotypes(self):
+        if not self.pool:
+            raise ValueError('Nothing in chromosome pool')
         g = []
         for i, x in enumerate(self.pool):
             g.append([random.choice(x), random.choice(x)])
