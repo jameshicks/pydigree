@@ -37,9 +37,10 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             return affected_labels[ph]
         else:
             return None
+
     with open(filename) as f:
         for line in f:
-            fam, id, fa, mo, sex, aff = line.strip().split(delimiter, 5)
+            fam, id, fa, mo, sex, aff = line.strip().split(delimiter)[0:6]
             # Give a special id for now, to prevent overwriting duplicated
             # ids between families
             id = (fam, id)
