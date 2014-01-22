@@ -2,6 +2,7 @@
 
 import random
 
+from common import *
 from population import Population
 from individual import Individual
 from pedigree import Pedigree
@@ -114,6 +115,28 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                     continue
                 fam, ind = d['famid'], d['ind']
                 pedigrees[fam][ind].phenotypes[k] = v
+
+
+def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True):
+    with open(pedfile, 'w') as f:
+        for pedigree in pedigrees:
+            for ind in pedigree:
+                outline = [ind.pedigree, ind.id, ind.father, ind.mother,
+                           1 if ind.sex == 'M' else 2,
+                           ind.phenotypes['AFFECTED']]
+                if genotypes:
+                    outline += flatten([zip(a, b) for a, b in ind.genotypes])
+                f.write(delim.join(outline) + '\n')
+    with open(mapfile, 'w') as f:
+        for ci, chromosome in enumerate(pedigrees.chromosomes):
+            for mi, marker in enumerate(chromosome._iinfo):
+                label, cm, mb, frequency = marker
+                if not mb:
+                    mb = int(cm * 10e6)
+                if not label:
+                    label = 'SNP%s-%s' % (chromosome, mi)
+                f.write('\t'.join(str(x) for x
+                                  in [chromosome, label, cm, mb]) + '\n')
 
 
 ### Extra genetics functions
