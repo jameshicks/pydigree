@@ -54,7 +54,7 @@ class Chromosome(object):
         self.physical_map.append(bp)
         self.labels.append(label)
 
-    def set_allele_frequencies(self, position, frequency):
+    def set_frequency(self, position, frequency):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
 
