@@ -23,7 +23,9 @@ class Chromosome(object):
     """
     def __init__(self):
         self.genetic_map = []
+        self.physical_map = []
         self.frequencies = []
+        self.labels = []
         self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
@@ -33,9 +35,11 @@ class Chromosome(object):
     def size(self):
         return self.genetic_map[-1] - self.genetic_map[0]
 
-    def add_genotype(self, frequency, map_position):
+    def add_genotype(self, frequency, map_position, label=None, bp=None):
         self.genetic_map.append(map_position)
         self.frequencies.append(frequency)
+        self.physical_map.append(bp)
+        self.labels.append(label)
 
     def linkageequilibrium_chromosome(self):
         # Returns a randomly generated chromosome
