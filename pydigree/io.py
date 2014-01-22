@@ -79,16 +79,20 @@ def read_map(mapfile):
     return chroms
 
 
-def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True):
+def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
             for ind in pedigree:
-                outline = [ind.pedigree, ind.id, ind.father, ind.mother,
+                outline = [pedigree.label, ind.id,
+                           ind.father if ind.father is not None else '0',
+                           ind.mother if ind.mother is not None else '0',
                            1 if ind.sex == 'M' else 2,
-                           ind.phenotypes['AFFECTED']]
+                           ind.phenotypes['affected']]
                 if genotypes:
                     outline += flatten([zip(a, b) for a, b in ind.genotypes])
-                f.write(delim.join(outline) + '\n')
+                f.write(delim.join(str(q) for q in outline) + '\n')
+    if not mapfile:
+        return
     with open(mapfile, 'w') as f:
         for ci, chromosome in enumerate(pedigrees.chromosomes):
             for mi, marker in enumerate(chromosome._iinfo):
