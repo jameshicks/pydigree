@@ -65,6 +65,10 @@ class Individual(object):
         if self.observed_genos:
             raise ValueError('Individual has observed genotypes')
 
+    def __fail_on_non_genotyped(self):
+        if not self.has_genotypes():
+            raise ValueError('Individual has no genotypes')
+
     def get_genotypes(self, linkeq=False):
         self.__fail_on_observed_genos()
         if self.has_genotypes():
@@ -95,7 +99,7 @@ class Individual(object):
 
     def set_genotype(self, location, genotype):
         """ Manually set a genotype """
-        self.__fail_on_observed_genos()
+        self.__fail_on_non_genotyped()
         chr, pos = location
         for allele, chromatid in izip(genotype, self.genotypes[chr]):
             chromatid[pos] = allele
