@@ -213,8 +213,8 @@ class Population(MutableMapping):
             x.get_genotypes()
 
     def get_linkage_equilibrium_genotypes(self):
-        return [[c.linkage_equilibrium_chromosome(),
-                 c.linkage_equilibrium_chromosome()]
+        return [[c.linkageequilibrium_chromosome(),
+                 c.linkageequilibrium_chromosome()]
                 for c in self.chromosomes]
 
     def clear_genotypes(self):
