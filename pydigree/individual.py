@@ -2,6 +2,8 @@
 
 import itertools
 import random
+from itertools import izip
+
 from recombination import recombine
 from paths import *
 
@@ -90,6 +92,13 @@ class Individual(object):
             raise ValueError('Individual has no genotypes!')
         chr, pos = location
         return tuple([x[pos] for x in self.genotypes[chr]])
+
+    def set_genotype(self, location, genotype):
+        """ Manually set a genotype """
+        self.__fail_on_observed_genos()
+        chr, pos = location
+        for allele, chromatid in izip(genotype, self.genotypes[chr]):
+            chromatid[pos] = allele
 
     def has_allele(self, location, allele):
         """
