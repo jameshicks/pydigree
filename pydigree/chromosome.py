@@ -23,10 +23,18 @@ class Chromosome(object):
     studies for linkage analysis.
     """
     def __init__(self):
+        # A list of floats that represent the position of the marker in cM
         self.genetic_map = []
+        # A list of integers that doesnt do anything. Just for decoration
         self.physical_map = []
+        # A list of floats representing minor allele frequencies
         self.frequencies = []
+        # List of marker names
         self.labels = []
+        # The typecode for the arrays. 'B' represents unsigned char, and can
+        # store one byte of data, so:
+        # 255 different values - 1 missing value = 254 possible alleles.
+        # B is the smallest typecode in terms of memory usage.
         self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
