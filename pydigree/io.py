@@ -54,7 +54,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             ind.sex = sex_codes[ind.sex]
             ind.register_with_parents()
         for pedigree_label in set(ind.id[0] for ind in p):
-            ped = Pedigree(pedigree_label)
+            ped = Pedigree(label=pedigree_label)
             thisped = [x for x in p if x.id[0] == pedigree_label]
             for ind in thisped:
                 ind.id = ind.id[1]
