@@ -254,8 +254,11 @@ class Individual(object):
 
     ### Phenotype functions
     def predict_phenotype(self, trait):
-        """ Predicts phenotypes from a given trait architecture """
-        self.phenotypes[trait.name] = trait.predict_phenotype(self)
+        """ Predicts phenotypes from a given trait architecture and sets it """
+        self.phenotypes[trait.name] = self.predicted_phenotype(trait)
+
+    def predicted_phenotype(self, trait):
+        return trait.predict_phenotype(self)
 
     def clear_phenotypes(self):
         """ Removes phenotypes """
