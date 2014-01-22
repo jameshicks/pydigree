@@ -2,7 +2,11 @@
 
 # Common functions (cumsum, table, etc)
 from common import *
-from misc import read_ped, read_phenotypes
+from misc import * 
+
+# Reading and writing files
+from io import *
+
 # Functions for navigating pedigree structures
 from paths import path_downward, paths, paths_through_ancestor
 from paths import common_ancestors, kinship
