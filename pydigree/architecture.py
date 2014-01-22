@@ -84,15 +84,25 @@ class Architecture(object):
         else:
             self.liability_threshold = threshold
 
-    def add_effect_liability(self, location, liabilities):
-        chrom, marker = location
-        liabilities = self.__transformdict(liabilities)
-        self.effects[(chrom, marker)] = liabilities
+    def add_effect(self, location, effects):
+        """
+        Add a main effect
 
-    def add_epistatic_liability(self, locations, liabilities):
+        Arguments
+        ------
+        location: a chromosome, index tuple
+        effects: a dictionary describing the effect for each genotype. eg:
+        Dominance: {(1,1): 1, (0,1): 1, (0,0): 0 }
+        Additive: {(1,1): 2, (0,1): 1, (0,0): 0 }
+        """
+        chrom, marker = location
+        effects = self.__transformdict(effects)
+        self.effects[(chrom, marker)] = effects
+
+    def add_epistatic_effect(self, locations, effects):
         locations = tuple(tuple(x) for x in locations)
-        liabilities = self.__transformdict(liabilities)
-        self.epistatic_effects[locations] = liabilities
+        effects = self.__transformdict(effects)
+        self.epistatic_effects[locations] = effects
 
     def predict_phenotype(self, individual):
         liability = [self._geteffect(individual, x) for x in self.effects]
