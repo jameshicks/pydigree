@@ -4,7 +4,6 @@ import pydigree
 import sys
 import random
 import time
-import pdb
 
 nmark = 50000
 chrom_length_cm = 150
@@ -18,8 +17,4 @@ for rx in range(1):
     pop.add_chromosome(c)
                 
 ped = pydigree.read_ped(sys.argv[1], pop)
-print ped.kinship(ped['115084'],ped['115086'])
-for x in ped.paths(ped['115084'],ped['115086']):
-#    import pdb;pdb.set_trace()
-    print '->'.join([y.id for y in x])
 
