@@ -101,8 +101,8 @@ class Individual(object):
         """ Manually set a genotype """
         self.__fail_on_non_genotyped()
         chr, pos = location
-        for allele, chromatid in izip(genotype, self.genotypes[chr]):
-            chromatid[pos] = allele
+        for i, allele in enumerate(genotype):
+            self.genotypes[chr][i][pos] = allele
 
     def has_allele(self, location, allele):
         """
