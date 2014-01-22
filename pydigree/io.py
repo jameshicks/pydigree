@@ -44,7 +44,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             # ids between families
             id = (fam, id)
             p[id] = Individual(population, id, fa, mo, sex)
-            p[id].phenotypes['aff'] = getph(aff)
+            p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
         for ind in p:
             fam, id = ind.id
