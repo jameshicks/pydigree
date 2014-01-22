@@ -112,5 +112,5 @@ class Architecture(object):
         if self.traittype == 'dichotomous':
             if self.liability_threshold is None:
                 raise ValueError('No liability threshold set')
-            return liabilitysum >= self.liability_threshold
+            return 1 if liabilitysum >= self.liability_threshold else 0
         return liabilitysum
