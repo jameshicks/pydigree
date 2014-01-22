@@ -27,6 +27,10 @@ class PedigreeCollection(MutableMapping):
         return len(self.pedigrees)
 
     def __setitem__(self, key, value):
+        # All pedigrees have to have the same population
+        if not all(ped.population is value.population for ped in self):
+            raise ValueError("Pop for %s doesn't match collection" % value)
+
         self.pedigrees[key] = value
 
     def __delitem__(self, key):
@@ -45,6 +49,14 @@ class PedigreeCollection(MutableMapping):
         """ Returns the available phenotypes for analysis """
         return set(reduce(add, [x.phenotypes.keys() for x in
                                 self.individuals()]))
+
+    def population(self):
+        """ Returns the population all the pedigrees belong to. """
+        k = self.pedigrees.keys()[0]
+        return self.pedigres[k]
+
+    def chromosomes(self):
+        return self.population.chromosomes
 
     ### Matrix functions
     ###
