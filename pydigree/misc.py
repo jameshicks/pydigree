@@ -6,6 +6,8 @@ from population import Population
 from individual import Individual
 from pedigree import Pedigree
 from pedigreecollection import PedigreeCollection
+from chromosome import Chromosome
+
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None):
@@ -65,6 +67,21 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
                 ped[ind.id] = ind
             pc[pedigree_label] = ped
     return pc
+
+
+def read_map(mapfile):
+    last_chr = None
+    chroms = []
+    chromosome = Chromosome()
+    with open(mapfile) as f:
+        for line in f:
+            line = line.strip().split()
+            chr, label, cm, pos = line
+            if chr != last_chr:
+                chroms.append(chromosome)
+                chromosome = Chromosome()
+            chromosome.add_genotype(None, cm, label=label, bp=pos)
+    return chroms
 
 
 def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
