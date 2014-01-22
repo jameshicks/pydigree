@@ -54,6 +54,10 @@ class Chromosome(object):
         self.physical_map.append(bp)
         self.labels.append(label)
 
+    def set_allele_frequencies(self, position, frequency):
+        """ Manually change an allele frequency """
+        self.frequencies[position] = frequency
+
     def linkageequilibrium_chromosome(self):
         # Returns a randomly generated chromosome
         return array(self.typecode,
