@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from array import array
+from itertools import izip
 from pydigree._pydigree import choice_with_probs
 
 
@@ -31,6 +32,10 @@ class Chromosome(object):
     def __str__(self):
         return 'Chromosome object: %d markers, %f cM' % \
             (len(self.frequencies), sum(self.genetic_map) * 100)
+
+    def _iinfo(self):
+        return izip(self.label, self.genetic_map, self.physical_map,
+                    self.frequencies)
 
     def size(self):
         return self.genetic_map[-1] - self.genetic_map[0]
