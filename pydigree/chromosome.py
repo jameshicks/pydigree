@@ -39,7 +39,7 @@ class Chromosome(object):
 
     def __str__(self):
         return 'Chromosome object: %d markers, %f cM' % \
-            (len(self.frequencies), sum(self.genetic_map) * 100)
+            (len(self.frequencies), max(self.genetic_map))
 
     def _iinfo(self):
         return izip(self.label, self.genetic_map, self.physical_map,
