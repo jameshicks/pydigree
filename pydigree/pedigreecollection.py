@@ -58,6 +58,10 @@ class PedigreeCollection(MutableMapping):
     def chromosomes(self):
         return self.population.chromosomes
 
+    def add_chromosome(self, chrom):
+        for x in self:
+            x.add_chromosome(chrom)
+
     def clear_genotypes(self):
         for x in self:
             x.clear_genotypes()
