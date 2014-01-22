@@ -59,7 +59,9 @@ class Chromosome(object):
         self.frequencies[position] = frequency
 
     def linkageequilibrium_chromosome(self):
-        # Returns a randomly generated chromosome
+        """ Returns a randomly generated chromosome """
+        if None in self.frequencies:
+            raise ValueError('Not all frequencies are specified')
         return array(self.typecode,
                      [choice_with_probs([1, 2], [1-f, f])
                       for f in self.frequencies])
