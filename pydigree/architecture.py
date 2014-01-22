@@ -40,14 +40,14 @@ class Architecture(object):
     Like with the main effects, any genotype combination not in the effect
     dictionary is assumed to have 0 effect on the trait.
     """
-    def __init__(self, name, traittype):
+    def __init__(self, name, type):
         self.name = name
         self.effects = {}
         self.epistatic_effects = {}
-        if traittype not in ['quantitative', 'dichotomous']:
+        if type not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
-            self.traittype = traittype
+            self.traittype = type
         self.liability_threshold = None
 
     def __str__(self):
