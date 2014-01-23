@@ -83,8 +83,8 @@ class Individual(object):
             else:
                 self.genotypes = pop.get_founder_genotypes()
         else:
-            self.genotypes = self.fertilize(self.father.gamete(),
-                                            self.mother.gamete())
+            self.genotypes = Individual.fertilize(self.father.gamete(),
+                                                  self.mother.gamete())
 
     def get_genotype(self, location):
         """
@@ -257,7 +257,8 @@ class Individual(object):
                                   self.population.chromosomes[i].genetic_map)
             g.append(chrom)
         return g
-
+    
+    @staticmethod
     def fertilize(self, father, mother):
         """
         Combines a set of half-genotypes (from method gamete) to a full
