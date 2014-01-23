@@ -5,9 +5,6 @@ import sys
 import time
 import itertools
 
-# The frequency isn't actually used here because we're using label_genotypes
-frequency = 0.5
-
 def sharepairs(ped, inds, loc):
     from pydigree import count,ibs
     npairs = float( len(inds) * (len(inds)-1)/2 ) 
