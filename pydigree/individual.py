@@ -124,8 +124,8 @@ class Individual(object):
         self.__fail_on_observed_genos()
         g = []
         for x in self.population.chromosomes:
-            g.append([['%sP' % self.id] * len(x.genetic_map),
-                      ['%sM' % self.id] * len(x.genetic_map)])
+            g.append([[(self.id, 'P')] * len(x.genetic_map),
+                      [(self.id, 'M')] * len(x.genetic_map)])
         self.genotypes = g
 
     def clear_genotypes(self):
