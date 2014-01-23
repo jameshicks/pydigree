@@ -116,6 +116,14 @@ class Population(MutableMapping):
         """ Returns list of females in population """
         return [x for x in self if x.sex == 1]
 
+    def founders(self):
+        """ Returns a list of founders in population """
+        return [x for x in self if x.is_founder()]
+
+    def nonfounders(self):
+        """ Returns a list of founders in population """
+        return [x for x in self if not x.is_founder()]
+
     ### Chromosome functions
     ###
     ###
