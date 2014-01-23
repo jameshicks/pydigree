@@ -104,6 +104,9 @@ class Individual(object):
         for i, allele in enumerate(genotype):
             self.genotypes[chr][i][pos] = allele
 
+    def _set_genotypes(self, gts):
+        self.genotypes = gts
+
     def has_allele(self, location, allele):
         """
         Returns True if individual has the specified allele at location
