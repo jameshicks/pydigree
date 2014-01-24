@@ -4,8 +4,9 @@ from pydigree import paths
 from pydigree import Individual
 
 class ConstrainedMendelianSimulation(Simulation):
-    def __init__(self, pedigrees):
-        for inds in pedigrees.individuals():
+    def __init__(self, template=None, replications=1000):
+        Simulation.__init__(self, template, replications)
+        for inds in self.template:
             if ind.is_founder():
                 continue
             if not ind.father.is_founder() and not ind.mother.is_founder():

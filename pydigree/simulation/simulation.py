@@ -1,13 +1,13 @@
 import random
 
-from common import *
+from pydigree.common import *
 from pydigree import write_ped
 from pydigree.individual import Individual
 
 # A base class for simulations to inherit from
-class Simulation(Object):
+class Simulation(object):
     
-    def __init__(self, template=pedigrees, replications=1000):
+    def __init__(self, template=None, replications=1000):
         self.template = template
         self.replications = replications
         self.constraints = {'genotype': [], 'ibd': []}

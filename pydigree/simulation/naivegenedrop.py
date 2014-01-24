@@ -1,9 +1,11 @@
 from __future__ import division
 
-from pydigree.simulation import Architecture
+from architecture import Architecture
 from simulation import Simulation, SimulationError
 
 class NaiveGeneDroppingSimulation(Simulation):
+    def __init__(self, template=None, replications=1000):
+        Simulation.__init__(self, template, replications)
 
     def replicate(self):
         self.template.clear_genotypes()
