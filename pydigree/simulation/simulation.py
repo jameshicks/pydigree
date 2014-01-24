@@ -1,6 +1,7 @@
 import random
 
 from common import *
+from pydigree import write_ped
 from pydigree.individual import Individual
 
 # A base class for simulations to inherit from
@@ -22,7 +23,11 @@ class Simulation(Object):
             self.replicate()
             self.write_data(x)
 
-    def self.predicted_trait_accuracy(self):
+    def write_data(self, replicatenumber):
+        filename = '{0}-{1}.ped'.format(self.prefix, replicatenumber)
+        write_ped(self.template, filename)
+
+    def predicted_trait_accuracy(self):
         calls = [(ind.predicted_phenotype(trait), ind.phenotypes['affected'])
                  for ind in ped if ind.phenotypes['affected'] is not None]
         # Remember: in python the bools True and False are actually alternate
@@ -69,7 +74,6 @@ class Simulation(Object):
     def add_ibd_constraint(self, ind, ancestor, location, allele):
         self.constraints['ibd'].append({'anchap': (location[0], location[1], anchap),
                                         'inds': (ind, ancestor)})
-
 
 
 class SimulationError(Exception):
