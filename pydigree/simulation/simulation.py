@@ -10,4 +10,5 @@ class Simulation(Object):
     def run(self):
         pass
 
-
+class SimulationError(Exception):
+    pass
