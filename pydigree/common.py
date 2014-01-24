@@ -3,6 +3,8 @@
 from itertools import izip_longest
 from operator import mul as multiply
 
+class IterationError(exception):
+    pass
 
 def count(val, iter):
     """ Counts how many times a value (val) occurs in an iterable """
