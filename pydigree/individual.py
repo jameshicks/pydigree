@@ -274,7 +274,7 @@ class Individual(object):
         return g
     
     @staticmethod
-    def fertilize(self, father, mother):
+    def fertilize(father, mother):
         """
         Combines a set of half-genotypes (from method gamete) to a full
         set of genotypes
