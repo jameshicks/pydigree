@@ -4,6 +4,7 @@ import pydigree
 import sys
 import random
 import time
+from pydigree.simulation import Architecture
 
 prefix = 'simulation'
 
@@ -13,7 +14,7 @@ causal_marker = 75
 
 
 # Dominant model
-trait = pydigree.Architecture('affected', type='dichotomous')
+trait = Architecture('affected', type='dichotomous')
 trait.add_effect((0, causal_marker), {(2,2): 1, (2,1): 1, (1,1): 0})
 trait.set_liability_threshold(.5)
 

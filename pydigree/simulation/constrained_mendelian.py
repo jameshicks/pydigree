@@ -1,15 +1,6 @@
-import random
-
-from common import *
+from pydigree.common import *
 from pydigree.path import paths
-from pydigree.individual import Individual
-
-class Simulation(Object):
-    def __init__(self):
-        pass
-    def run(self):
-        pass
-
+from pydigree import Individual
 
 class ConstrainedMendelianSimulation(Simulation, pedigrees):
     def __init__(self):

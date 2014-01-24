@@ -19,5 +19,4 @@ from population import Population
 from pedigree import Pedigree
 from individual import Individual
 from chromosome import Chromosome
-from architecture import Architecture
 from mixedmodel import MixedModel

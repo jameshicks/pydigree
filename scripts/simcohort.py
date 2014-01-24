@@ -5,6 +5,7 @@ import sys
 import random
 import time
 from pydigree import table
+from pydigree.simulation import Architecture
 
 nchrom = 1
 popsize = 500
@@ -16,7 +17,7 @@ for x in range(nchrom):
     c.add_genotype(0.1,0)
     pop.add_chromosome(c)
 
-trait = pydigree.Architecture('q','quantitative')
+trait = Architecture('q','quantitative')
 for i in range(nchrom):
     trait.add_effect_liability((i,0),{(1,1): 1, (0,1): 0, (0,0): -1 })
 print trait
