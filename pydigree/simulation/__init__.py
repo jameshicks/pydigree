@@ -1,2 +1,3 @@
 from architehture import Architecture
-from constrained_mendelian import Constrained MendelianSimulation
+from constrained_mendelian import ConstrainedMendelianSimulation
+from naivegenedrop import NaiveGeneDroppingSimulation
