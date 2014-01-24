@@ -151,6 +151,9 @@ class Individual(object):
         """ Returns true if individual is a founder """
         return self.father is None and self.mother is None
 
+    def parents(self):
+        return self.father, self.mother
+    
     def ancestors(self):
         """ Recursively searches for ancestors. """
         if self.is_founder():
