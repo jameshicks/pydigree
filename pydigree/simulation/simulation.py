@@ -21,6 +21,15 @@ class Simulation(Object):
             self.replicate()
             self.write_data(x)
 
+    def self.predicted_trait_accuracy(self):
+        calls = [(ind.predicted_phenotype(trait), ind.phenotypes['affected'])
+                 for ind in ped if ind.phenotypes['affected'] is not None]
+        # Remember: in python the bools True and False are actually alternate
+        # names for the integers 1 and 0, respectively, so you can do
+        # arithmetic with them if you so please. Here we sum up all the
+        # correct predictions and divide by the number of predictions made.
+        return sum(x==y for x,y in calls) / len(calls)
+
     def read_constraints(self, filename):
 
         if not self.template:
