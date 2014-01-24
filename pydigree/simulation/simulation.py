@@ -66,14 +66,24 @@ class Simulation(Object):
 
     def add_genotype_constraint(self, ind, location, allele,
                                 chromatid, method='set'):
+        if not ind.is_founder():
+            raise ValueError('Genotype constraints only for founders')
         if chromatid not in 'PM':
             raise ValueError('Not a valid haplotype. Choose P or M')
-        self.constraints['genotype'].append('allele': allele, 'chromatid': chromatid,
-                                            'ind': ind, 'location': location)
 
-    def add_ibd_constraint(self, ind, ancestor, location, allele):
-        self.constraints['ibd'].append({'anchap': (location[0], location[1], anchap),
-                                        'inds': (ind, ancestor)})
+        if ind not in self.constraints['genotype']:
+            self.constraints['genotype'][ind] = []
+        c = (locus, chromatid, allele, method)
+        self.constraints['genotype'][ind].append(c)
+
+    def add_ibd_constraint(self, ind, ancestor, location, anchap):
+        if anchap not in 'PM':
+            raise ValueError('Not a valid haplotype. Choose P or M')
+
+        if ind not in self.constraints['ibd']:
+            self.constraints['ibd'][ind] = []
+        c = (location, ancestor, anchap)
+        self.constraints['ibd'].append(c)
 
 
 class SimulationError(Exception):
