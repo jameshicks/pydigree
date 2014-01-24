@@ -9,6 +9,7 @@ class Simulation(Object):
     def __init__(self, template=pedigrees, replications=1000):
         self.template = template
         self.replications = replications
+        self.constraints = {'genotype': [], 'ibd': []}
 
     def set_trait(self, architecture):
         self.trait = architecture
