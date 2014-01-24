@@ -1,5 +1,6 @@
 from pydigree.common import *
-from pydigree.path import paths
+from simulation import *
+from pydigree import paths
 from pydigree import Individual
 
 class ConstrainedMendelianSimulation(Simulation, pedigrees):
@@ -43,12 +44,13 @@ class ConstrainedMendelianSimulation(Simulation, pedigrees):
                 ind.get_genotypes()
 
             # Now replace the label genotypes in founders with real ones.
-            for founder in ped.founders():
-                founder.clear_genotypes()
-                founder.get_genotypes()
-                # TODO: make sure founder genotype constraints get set
-                pass
-
+            geno_constraints = self.constraints['genotype']
+            for ind in ped.founders():
+                if ind not in geno_constraints:
+                    ind.get_genotypes()
+                else:
+                    ind.get_constrained_genotypes(geno_constraints,
+                                                  linkeq=True)
             # Now replace the label genotypes in the nonfounders with the
             # genotypes of the founders
             for nf in ped.nonfounders():
