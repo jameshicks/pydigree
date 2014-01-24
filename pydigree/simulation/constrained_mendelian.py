@@ -50,10 +50,6 @@ class ConstrainedMendelianSimulation(Simulation, pedigrees):
         self.constraints['ibd'].append({'anchap': (location[0], location[1], anchap),
                                         'inds': (ind, ancestor)})
 
-    def run(self):
-        for x in xrange(self.replicates):
-            output = self.replicate()
-
     def replicate(self):
         self.template.clear_genotypes()
         for ped in self.template:
