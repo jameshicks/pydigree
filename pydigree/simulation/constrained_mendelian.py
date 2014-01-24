@@ -3,8 +3,8 @@ from simulation import *
 from pydigree import paths
 from pydigree import Individual
 
-class ConstrainedMendelianSimulation(Simulation, pedigrees):
-    def __init__(self):
+class ConstrainedMendelianSimulation(Simulation):
+    def __init__(self, pedigrees):
         for inds in pedigrees.individuals():
             if ind.is_founder():
                 continue
