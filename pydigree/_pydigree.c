@@ -15,6 +15,9 @@ PyObject* random_pairs(PyObject* pop, long int numpairs);
 PyObject* choice_probs_interface(PyObject* self, PyObject* args);
 PyObject* choice_probs(PyObject* choices, PyObject* probs);
 
+PyObject* chromatid_delabeler_interface(PyObject* self, PyObject* args);
+PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx);
+
 
 /* docstrings */
 static char module_docstring[] =
@@ -25,13 +28,14 @@ static char haldane_docstring[] = "Takes 3 python lists, chromA, chromB, and map
 static char sample_repl_docstring[] = "Randomly choses n individuals (with replacement) from the population";
 static char pairs_docstring[] = "Returns a list of n pairs from sampled with replacement from population"; 
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
-
+static char chromatid_delabeler_docstring[] = "Replaces genotypes from label_genotypes with alleles from the ancestor"; 
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
   {"recombine_haldane", haldane_interface, METH_VARARGS, haldane_docstring},
   {"sample_with_replacement", sample_with_replacement_interface, METH_VARARGS, sample_repl_docstring},
   {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
+  {"chromatid_delabeler", chromatid_delabeler_interface, METH_VARARGS, chromatid_delabeler_docstring},
   {NULL, NULL, 0, NULL}
 };
 
@@ -181,3 +185,32 @@ PyObject* choice_probs(PyObject* choices, PyObject* probs) {
   return NULL;
 }
 
+PyObject* chromatid_delabeler_interface(PyObject* self, PyObject* args) {
+  PyObject *chromatid;
+  Py_ssize_t chromidx;
+  if (!PyArg_ParseTuple(args, "On", &chromatid, &chromidx)) return NULL;
+  PyObject* newchromatid = chromatid_delabeler(chromatid, chromidx);
+  return newchromatid;
+}
+
+PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
+  Py_ssize_t chromlength = PyList_Size(chromatid);
+  PyObject* newchromatid = PyList_New(chromlength);
+
+  Py_ssize_t i;
+  for (i=0; i < chromlength; i++) {
+    PyObject* listitem = PyList_GetItem(chromatid, i);
+    PyObject* ancestor = PyTuple_GetItem(listitem, 0);
+    long ancestral_hap = PyInt_AsLong(PyTuple_GetItem(listitem, 1));
+    
+    /* Get the genotypes of the ancestor, which are a list of pairs of lists */
+    PyObject* anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
+    PyObject* anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
+    PyObject* anc_chromosome = PySequence_GetItem(anc_chromosomes, (Py_ssize_t)ancestral_hap);
+    PyObject* allele = PySequence_GetItem(anc_chromosome, i);
+    PyList_SET_ITEM(newchromatid, i, allele);
+    Py_INCREF(allele);
+      
+  }
+  return newchromatid;
+}

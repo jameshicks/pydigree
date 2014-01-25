@@ -69,9 +69,4 @@ class ConstrainedMendelianSimulation(Simulation):
             # Now replace the label genotypes in the nonfounders with the
             # genotypes of the founders
             for nf in ped.nonfounders():
-                for chromoidx, chromosome in enumerate(nf.genotypes):
-                    for chromaidx, chromatid in enumerate(chromosome):
-                        for midx, marker in enumerate(chromatid):
-                            founder,which = marker
-                            founder_marker = founder.genotypes[chromoidx][which][midx]
-                            nf.genotypes[chromoidx][chromaidx][midx] = founder_marker
+                nf.delabel_genotypes()
