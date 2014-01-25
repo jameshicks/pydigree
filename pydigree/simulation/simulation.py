@@ -70,6 +70,7 @@ class Simulation(object):
             raise ValueError('Genotype constraints only for founders')
         if chromatid not in 'PM':
             raise ValueError('Not a valid haplotype. Choose P or M')
+        chromatid = 1 if chromatid == 'M' else 0
 
         if ind not in self.constraints['genotype']:
             self.constraints['genotype'][ind] = []
@@ -79,7 +80,7 @@ class Simulation(object):
     def add_ibd_constraint(self, ind, ancestor, location, anchap):
         if anchap not in 'PM':
             raise ValueError('Not a valid haplotype. Choose P or M')
-
+        anchap = 1 if anchap == 'M' else 0
         if ind not in self.constraints['ibd']:
             self.constraints['ibd'][ind] = []
         c = (ancestor, location, anchap)

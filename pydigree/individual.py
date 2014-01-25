@@ -101,7 +101,6 @@ class Individual(object):
         self.get_genotypes(linkeq=linkeq)
         for constraint in constraints:
             locus, chromatid, allele, method = constraint
-            chromatid = 0 if chromatid == 'P' else 1
             gt = list(self.get_genotype(locus))
             gt[chromatid] = allele
             self.set_genotype(locus, tuple(gt))
@@ -136,8 +135,8 @@ class Individual(object):
         self.__fail_on_observed_genos()
         g = []
         for x in self.population.chromosomes:
-            g.append([[(self, 'P')] * len(x.genetic_map),
-                      [(self, 'M')] * len(x.genetic_map)])
+            g.append([[(self, 0)] * len(x.genetic_map),
+                      [(self, 1)] * len(x.genetic_map)])
         self.genotypes = g
 
     def clear_genotypes(self):

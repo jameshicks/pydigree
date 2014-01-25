@@ -73,6 +73,5 @@ class ConstrainedMendelianSimulation(Simulation):
                     for chromaidx, chromatid in enumerate(chromosome):
                         for midx, marker in enumerate(chromatid):
                             founder,which = marker
-                            which = 0 if which == 'P' else 1
                             founder_marker = founder.genotypes[chromoidx][which][midx]
                             nf.genotypes[chromoidx][chromaidx][midx] = founder_marker
