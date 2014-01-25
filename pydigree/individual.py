@@ -6,7 +6,7 @@ from itertools import izip
 
 from recombination import recombine
 from paths import *
-
+from common import *
 
 def is_missing_genotype(g):
     return g == (0, 0)
@@ -271,6 +271,21 @@ class Individual(object):
                 chrom = recombine(chr2, chr1,
                                   self.population.chromosomes[i].genetic_map)
             g.append(chrom)
+        return g
+
+    def constrained_gamete(self, constraints, attempts=1000):
+        # Constraints here is a list of ((location, index), alleles) tuples
+        # for alleles that the gamete has to have
+        for x in xrange(attempts):
+            g = self.gamete()
+            for loc, allele in constraints:
+                chr, pos = loc
+                if g[chr][pos] != allele:
+                    break
+            else:
+                break
+        else:
+            raise IterationError('Ran out of constrained gamete attempts')
         return g
     
     @staticmethod
