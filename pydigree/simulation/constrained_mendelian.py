@@ -14,7 +14,7 @@ class ConstrainedMendelianSimulation(Simulation):
             if not ind.father.is_founder() and not ind.mother.is_founder():
                 raise ValueError("ConstrainedMendelian only available"
                                  "for outbred pedigrees")
-    
+    @profile
     def replicate(self):
         self.template.clear_genotypes()
         for ped in self.template:
@@ -46,7 +46,7 @@ class ConstrainedMendelianSimulation(Simulation):
                     else:
                         paternal_gamete = fa.gamete()
                     if mo in descent_path:
-                        maternal_gamete = fa.constrained_gamete(constraints)
+                        maternal_gamete = mo.constrained_gamete(constraints)
                     else:
                         maternal_gamete = mo.gamete()
 
