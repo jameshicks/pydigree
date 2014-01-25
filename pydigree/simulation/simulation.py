@@ -10,7 +10,7 @@ class Simulation(object):
     def __init__(self, template=None, replications=1000):
         self.template = template
         self.replications = replications
-        self.constraints = {'genotype': [], 'ibd': []}
+        self.constraints = {'genotype': {}, 'ibd': {}}
 
     def set_trait(self, architecture):
         self.trait = architecture
@@ -73,7 +73,7 @@ class Simulation(object):
 
         if ind not in self.constraints['genotype']:
             self.constraints['genotype'][ind] = []
-        c = (locus, chromatid, allele, method)
+        c = (location, chromatid, allele, method)
         self.constraints['genotype'][ind].append(c)
 
     def add_ibd_constraint(self, ind, ancestor, location, anchap):
@@ -82,8 +82,8 @@ class Simulation(object):
 
         if ind not in self.constraints['ibd']:
             self.constraints['ibd'][ind] = []
-        c = (location, ancestor, anchap)
-        self.constraints['ibd'].append(c)
+        c = (ancestor, location, anchap)
+        self.constraints['ibd'][ind].append(c)
 
 
 class SimulationError(Exception):

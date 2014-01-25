@@ -98,13 +98,13 @@ class Individual(object):
         return tuple([x[pos] for x in self.genotypes[chr]])
 
     def get_constrained_genotypes(self, constraints, linkeq=True):
-        self.get_genotypes()
+        self.get_genotypes(linkeq=linkeq)
         for constraint in constraints:
             locus, chromatid, allele, method = constraint
             chromatid = 0 if chromatid == 'P' else 1
-            gt = self.get_genotype(locus)
+            gt = list(self.get_genotype(locus))
             gt[chromatid] = allele
-            self.set_genotype(locus, gt)
+            self.set_genotype(locus, tuple(gt))
 
     def set_genotype(self, location, genotype):
         """ Manually set a genotype """
