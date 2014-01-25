@@ -3,7 +3,7 @@
 from itertools import izip_longest
 from operator import mul as multiply
 
-class IterationError(exception):
+class IterationError(Exception):
     pass
 
 def count(val, iter):
