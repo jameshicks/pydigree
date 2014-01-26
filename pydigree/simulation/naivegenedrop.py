@@ -30,5 +30,5 @@ class NaiveGeneDroppingSimulation(Simulation):
                         continue
                 break
             else:
-                raise SimualtionError('Ran out of gene dropping attempts!')
+                raise SimulationError('Ran out of gene dropping attempts!')
             
