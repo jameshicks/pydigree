@@ -62,14 +62,11 @@ class Architecture(object):
         return d2
 
     def _geteffect(self, individual, location):
-        chr, pos = location
-        g = frozenset(individual.get_genotype((chr, pos)))
-        # If liability is not defined for the genotype configuration
-        # we return 0. Check ahead of time to avoid the overhead from
-        # raising a KeyError
-        if g not in self.effects[location]:
+        g = frozenset(individual.get_genotype(location))
+        try:
+            return self.effects[location][g]
+        except KeyError:
             return 0
-        return self.effects[location][g]
 
     def _getepistaticeffects(self, individual, locations):
         locations = tuple(tuple(loc) for loc in locations)
