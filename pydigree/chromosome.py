@@ -2,7 +2,7 @@
 
 from array import array
 from itertools import izip
-from pydigree._pydigree import choice_with_probs
+from pydigree._pydigree import choice_with_probs, linkeq_chrom
 
 
 class Chromosome(object):
@@ -62,6 +62,5 @@ class Chromosome(object):
         """ Returns a randomly generated chromosome """
         if None in self.frequencies:
             raise ValueError('Not all frequencies are specified')
-        return array(self.typecode,
-                     [choice_with_probs([1, 2], [1-f, f])
-                      for f in self.frequencies])
+        chrom = linkeq_chrom(self.frequencies)
+        return array(self.typecode, chrom)
