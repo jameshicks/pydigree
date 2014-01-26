@@ -47,6 +47,7 @@ static PyMethodDef module_methods[] = {
 PyMODINIT_FUNC init_pydigree(void)
 {
   (void) Py_InitModule("pydigree._pydigree", module_methods);
+  srand(time(NULL));
 }
 
 
