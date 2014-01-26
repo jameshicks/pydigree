@@ -83,7 +83,7 @@ PyObject* haldane_interface(PyObject* self, PyObject* args) {
 
 PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l) {
   Py_ssize_t i;
-  unsigned char flipped = 0;
+  unsigned char flipped = (lrand48() & 1) ? 1 : 0;
   double recombination_site = rexp(0.01);
   PyObject* newchrom = PyList_New(l);
   for (i = 0; i < l; i++) {

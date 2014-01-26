@@ -139,7 +139,7 @@ class Individual(object):
             g.append([[(self, 0)] * len(x.genetic_map),
                       [(self, 1)] * len(x.genetic_map)])
         self.genotypes = g
-    
+
     def delabel_genotypes(self):
         for chromoidx, chromosome in enumerate(self.genotypes):
             for chromaidx, chromatid in enumerate(chromosome):
@@ -263,24 +263,15 @@ class Individual(object):
 
     ### Functions for breeding
     ###
+
     def gamete(self):
         """ Provides a set of half-genotypes to use with method fertilize """
         if not self.genotypes:
             self.get_genotypes()
 
-        def randbit():
-            random.choice([True, False])
+        g = [recombine(chr[0], chr[1], self.population.chromosomes[i].genetic_map)
+             for i, chr in enumerate(self.genotypes)]
 
-        g = []
-        for i, chr in enumerate(self.genotypes):
-            chr1, chr2 = chr
-            if randbit():
-                chrom = recombine(chr1, chr2,
-                                  self.population.chromosomes[i].genetic_map)
-            else:
-                chrom = recombine(chr2, chr1,
-                                  self.population.chromosomes[i].genetic_map)
-            g.append(chrom)
         return g
 
     def constrained_gamete(self, constraints, attempts=1000):
