@@ -71,7 +71,13 @@ class Individual(object):
             raise ValueError('Individual has no genotypes')
 
     def get_genotypes(self, linkeq=False):
+        """
+        Retrieve genotypes from a chromosome pool if present, or else a
+        chromosome generated under linkage equilibrium
+        """
         self.__fail_on_observed_genos()
+        if not self.population.pool:
+            linkeq = True
         if self.has_genotypes():
             return
         if self.is_founder() and self.population is None:
