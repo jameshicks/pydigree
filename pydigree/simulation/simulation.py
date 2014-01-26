@@ -10,6 +10,7 @@ class Simulation(object):
     def __init__(self, template=None, replications=1000):
         self.template = template
         self.replications = replications
+        self.accuracy_threshold = 0.9
         self.constraints = {'genotype': {}, 'ibd': {}}
 
     def set_trait(self, architecture):
@@ -27,8 +28,8 @@ class Simulation(object):
         filename = '{0}-{1}.ped'.format(self.prefix, replicatenumber)
         write_ped(self.template, filename)
 
-    def predicted_trait_accuracy(self):
-        calls = [(ind.predicted_phenotype(trait), ind.phenotypes['affected'])
+    def predicted_trait_accuracy(self, ped):
+        calls = [(ind.predicted_phenotype(self.trait), ind.phenotypes['affected'])
                  for ind in ped if ind.phenotypes['affected'] is not None]
         # Remember: in python the bools True and False are actually alternate
         # names for the integers 1 and 0, respectively, so you can do
