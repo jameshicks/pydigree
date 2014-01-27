@@ -23,12 +23,12 @@ class Simulation(object):
     def run(self, verbose=False):
         for x in xrange(self.replications):
             if verbose:
-                print 'Replicate %d' % x
+                print 'Replicate %d' % (x + 1)
             self.replicate()
             self.write_data(x)
 
     def write_data(self, replicatenumber):
-        filename = '{0}-{1}.ped'.format(self.prefix, replicatenumber)
+        filename = '{0}-{1}.ped'.format(self.prefix, (replicatenumber + 1) )
         write_ped(self.template, filename)
 
     def predicted_trait_accuracy(self, ped):
