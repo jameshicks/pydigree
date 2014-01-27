@@ -1,3 +1,5 @@
+from itertools import izip
+
 from pydigree.common import *
 from pydigree.population import Population
 from pydigree.individual import Individual
@@ -107,7 +109,9 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
                            1 if ind.sex == 'M' else 2,
                            aff]
                 if genotypes:
-                    outline += flatten([zip(a, b) for a, b in ind.genotypes])
+                    for chroma, chromb in ind.genotypes:
+                        for gt in izip(chroma, chromb):
+                            outline.extend(gt)
                 f.write(delim.join(str(q) for q in outline) + '\n')
     if not mapfile:
         return
