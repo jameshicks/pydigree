@@ -9,6 +9,20 @@ In addition to basic pedigree data manipulation, pydigree also includes submodul
 * __simulation__: Provides classes for simulating genetic data
 * __mixedmodel__: Provides classes for using mixed models with family data
 
+Classes
+-----
+* Invidiual: Models an individual with pedigree and phenotype data
+* Population: Models groups of Individuals with a common genetic background
+* Pedigree: A special case of Population for related individuals. Implements kinship/inbreeding functions
+* PedigreeCollection: A container class handling multiple pedigrees
+* Chromosome: Models a chromosome with information on allele frequency and marker position
+* MixedModel: A class for fitting mixed-effect models with related individuals
+* Architecture: A class describing the genetic architecture for a trait to be used in simulation
+* Simulation: A base class from which other simulation objects inherit
+** NaiveGeneDroppingSimulation: Simulates genetic data for pedigrees by random gene dropping
+** ConstrainedMendelianSimulation: Simulates genetic data for pedigrees from a prespecified inheritance structure
+
+
 Scripts
 -----
 Pydigree includes a few useful scripts for dealing with pedigree data including:
