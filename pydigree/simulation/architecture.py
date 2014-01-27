@@ -94,7 +94,10 @@ class Architecture(object):
         """
         chrom, marker = location
         effects = self.__transformdict(effects)
-        self.effects[(chrom, marker)] = effects
+        try:
+            self.effects[location].update(effects)
+        except KeyError:
+            self.effects[(chrom, marker)] = effects
 
     def add_epistatic_effect(self, locations, effects):
         locations = tuple(tuple(x) for x in locations)
@@ -111,3 +114,18 @@ class Architecture(object):
                 raise ValueError('No liability threshold set')
             return 1 if liabilitysum >= self.liability_threshold else 0
         return liabilitysum
+
+    @staticmethod
+    def from_file(filename):
+        with open(filename) as f:
+            type, name = f.readline().strip().split()
+            trait = Architecture(type, name)
+            for line in f:
+                l = line.strip().split()
+                if len(l) != 5:
+                    # TODO: implement epistatic effects in file
+                    raise NotImplementedError('Epistatic effects not yet implemented')
+                chr, pos, allele_a, allele_b, effect = line.strip().split()
+                locus = chr, pos
+                eff = {(allele_a, allele_b): effect}
+                trait.add_effect(locus, eff)
