@@ -19,8 +19,8 @@ Classes
 * MixedModel: A class for fitting mixed-effect models with related individuals
 * Architecture: A class describing the genetic architecture for a trait to be used in simulation
 * Simulation: A base class from which other simulation objects inherit
-** NaiveGeneDroppingSimulation: Simulates genetic data for pedigrees by random gene dropping
-** ConstrainedMendelianSimulation: Simulates genetic data for pedigrees from a prespecified inheritance structure
+.* NaiveGeneDroppingSimulation: Simulates genetic data for pedigrees by random gene dropping
+.* ConstrainedMendelianSimulation: Simulates genetic data for pedigrees from a prespecified inheritance structure
 
 
 Scripts
