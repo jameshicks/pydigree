@@ -28,6 +28,7 @@ class NaiveGeneDroppingSimulation(Simulation):
                     accuracy = self.predicted_trait_accuracy(ped)
                     if accuracy < self.accuracy_threshold:
                         continue
+                print 'Successful after %s gene dropping attempts' % (attempt)
                 break
             else:
                 raise SimulationError('Ran out of gene dropping attempts!')
