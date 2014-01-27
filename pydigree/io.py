@@ -100,11 +100,12 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
             for ind in pedigree:
+                aff = {1: '2', 0: '1', None: '-9'}[ind.phenotypes['affected']]
                 outline = [pedigree.label, ind.id,
                            ind.father.id if ind.father is not None else '0',
                            ind.mother.id if ind.mother is not None else '0',
                            1 if ind.sex == 'M' else 2,
-                           ind.phenotypes['affected']]
+                           aff]
                 if genotypes:
                     outline += flatten([zip(a, b) for a, b in ind.genotypes])
                 f.write(delim.join(str(q) for q in outline) + '\n')
