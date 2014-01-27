@@ -19,8 +19,10 @@ class Simulation(object):
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")
 
-    def run(self):
+    def run(self, verbose=False):
         for x in xrange(self.replicates):
+            if verbose:
+                print 'Replicate %d' % x
             self.replicate()
             self.write_data(x)
 
