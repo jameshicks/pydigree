@@ -12,6 +12,7 @@ class Simulation(object):
         self.replications = replications
         self.accuracy_threshold = 0.9
         self.constraints = {'genotype': {}, 'ibd': {}}
+        self.trait = None
 
     def set_trait(self, architecture):
         self.trait = architecture
@@ -20,7 +21,7 @@ class Simulation(object):
         raise NotImplementedError("This is a base class don't call me")
 
     def run(self, verbose=False):
-        for x in xrange(self.replicates):
+        for x in xrange(self.replications):
             if verbose:
                 print 'Replicate %d' % x
             self.replicate()
