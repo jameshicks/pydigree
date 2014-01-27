@@ -101,8 +101,8 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
         for pedigree in pedigrees:
             for ind in pedigree:
                 outline = [pedigree.label, ind.id,
-                           ind.father if ind.father is not None else '0',
-                           ind.mother if ind.mother is not None else '0',
+                           ind.father.id if ind.father is not None else '0',
+                           ind.mother.id if ind.mother is not None else '0',
                            1 if ind.sex == 'M' else 2,
                            ind.phenotypes['affected']]
                 if genotypes:
