@@ -94,15 +94,6 @@ PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t 
   double recombination_site = rexp(0.01);
   PyObject* newchrom = PyList_New(l);
   for (i = 0; i < l; i++) {
-    /* Get the alleles */
-    PyObject *a, *b;
-
-    /* 
-       FIXME: check if I'm leaking memory here. PyList used to return a
-       borrowed reference for GetItem, but PySequence returns a new reference!
-    */
-    a = PySequence_GetItem(A,i);
-    b = PySequence_GetItem(B,i);
 
     /* Do we cross over? */ 
     double position = PyFloat_AsDouble( PyList_GetItem(map,i) );
@@ -112,7 +103,12 @@ PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t 
     }
     
     /* Put it on the new chromatid */
-    PyObject* allele = flipped ? b : a;
+    /*
+       FIXME: check if I'm leaking memory here. PyList used to return a
+       borrowed reference for GetItem, but PySequence returns a new reference!
+    */
+
+    PyObject* allele = PySequence_GetItem(flipped ? B : A, i);
     Py_INCREF(allele);
     PyList_SET_ITEM(newchrom,i,allele);
 
