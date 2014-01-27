@@ -12,6 +12,7 @@ In addition to basic pedigree data manipulation, pydigree also includes submodul
 Scripts
 -----
 Pydigree includes a few useful scripts for dealing with pedigree data including:
+* __simulate\_pedigree\_data.py__: Simulates data from template pedigrees
 * __bitsize.py__: Calculates bit sizes for each pedigree
 * __kinship.py__: Caluclates inbreeding coefficients and pairwise kinship coefficients for pedigrees
 * __genedrop.py__: Performs gene dropping simulations to approximate the actual probability of an IBD configuration
