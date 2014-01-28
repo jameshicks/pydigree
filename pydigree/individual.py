@@ -153,10 +153,6 @@ class Individual(object):
             for chromaidx, chromatid in enumerate(chromosome):
                 newchromatid = chromatid_delabeler(chromatid, chromoidx)
                 self.genotypes[chromoidx][chromaidx] = newchromatid
-                #for midx, marker in enumerate(chromatid):
-                #    founder,which = marker
-                #    founder_marker = founder.genotypes[chromoidx][which][midx]
-                #    nf.genotypes[chromoidx][chromaidx][midx] = founder_marker
 
     def clear_genotypes(self):
         """ Removes genotypes """
