@@ -2,7 +2,7 @@
 # Simulate data under an autosomal dominant model
 # Usage: autodom.sh template.ped chromosome.template constraintfile
 
-~/pydigree/scripts/simulate_pedigree_data.py --template $1 \
+../scripts/simulate_pedigree_data.py --template $1 \
     --chromosome $2 --freq 0 19999 0.0 \
     --method constrained \
     --constraintfile $3 \
