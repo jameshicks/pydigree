@@ -287,15 +287,16 @@ class Individual(object):
         # for alleles that the gamete has to have
         for x in xrange(attempts):
             g = self.gamete()
+            success = True
             for loc, allele in constraints:
                 chr, pos = loc
                 if g[chr][pos] != allele:
-                    break
-            else:
-                break
+                    success = False
+                    continue
+            if success:
+                return g
         else:
             raise IterationError('Ran out of constrained gamete attempts')
-        return g
     
     @staticmethod
     def fertilize(father, mother):
