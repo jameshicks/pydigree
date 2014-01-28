@@ -202,8 +202,8 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
 
   Py_ssize_t i;
   for (i=0; i < chromlength; i++) {
-    PyObject* listitem = PyList_GetItem(chromatid, i);
-    PyObject* ancestor = PyTuple_GetItem(listitem, 0);
+    PyObject* listitem = PyList_GET_ITEM(chromatid, i);
+    PyObject* ancestor = PyTuple_GET_ITEM(listitem, 0);
     Py_ssize_t ancestral_hap = PyInt_AsSsize_t(PyTuple_GetItem(listitem, 1));
     
     /* Get the genotypes of the ancestor, which are a list of pairs of lists */
