@@ -1,4 +1,4 @@
-from itertools import izip
+from itertools import izip, chain, imap
 
 from pydigree.common import *
 from pydigree.population import Population
@@ -97,7 +97,6 @@ def read_gs_chromosome_template(templatef):
             c.add_genotype(float(minf), last_cm, label=label, bp=bp)
     return c
 
-
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
@@ -109,10 +108,12 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
                            1 if ind.sex == 'M' else 2,
                            aff]
                 if genotypes:
+                    g = []
                     for chroma, chromb in ind.genotypes:
-                        for gt in izip(chroma, chromb):
-                            outline.extend(gt)
-                f.write(delim.join(str(q) for q in outline) + '\n')
+                        g.extend(chain.from_iterable(izip(chroma, chromb)))
+                    outline.extend(g)
+                outline = imap(str, outline)
+                f.write(delim.join(outline) + '\n')
     if not mapfile:
         return
     with open(mapfile, 'w') as f:
