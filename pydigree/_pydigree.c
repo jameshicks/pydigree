@@ -204,12 +204,12 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
   for (i=0; i < chromlength; i++) {
     PyObject* listitem = PyList_GetItem(chromatid, i);
     PyObject* ancestor = PyTuple_GetItem(listitem, 0);
-    long ancestral_hap = PyInt_AsLong(PyTuple_GetItem(listitem, 1));
+    Py_ssize_t ancestral_hap = PyInt_AsSsize_t(PyTuple_GetItem(listitem, 1));
     
     /* Get the genotypes of the ancestor, which are a list of pairs of lists */
     PyObject* anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
     PyObject* anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
-    PyObject* anc_chromosome = PySequence_GetItem(anc_chromosomes, (Py_ssize_t)ancestral_hap);
+    PyObject* anc_chromosome = PySequence_GetItem(anc_chromosomes, ancestral_hap);
     PyObject* allele = PySequence_GetItem(anc_chromosome, i);
     PyList_SET_ITEM(newchromatid, i, allele);
     Py_INCREF(allele);
