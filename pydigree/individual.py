@@ -46,6 +46,8 @@ class Individual(object):
             return 'Individual %s (F:%s,M:%s)' % (self.id,
                                                   self.father.id,
                                                   self.mother.id)
+    def __repr__(self):
+        return self.__str__()
 
     def register_child(self, child):
         self.children.append(child)
