@@ -106,7 +106,7 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
                 outline = [pedigree.label, ind.id,
                            ind.father.id if ind.father is not None else '0',
                            ind.mother.id if ind.mother is not None else '0',
-                           1 if ind.sex == 'M' else 2,
+                           1 if ind.sex == 0 else 2,
                            aff]
                 if genotypes:
                     g = []
