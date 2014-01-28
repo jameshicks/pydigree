@@ -41,7 +41,8 @@ for freq in args.freqs:
     chr, idx, maf = freq
     maf = float(maf)
     chr, idx = int(chr), int(idx)
-    template.chromosomes()[chr].frequencies[idx] = maf
+    # TODO: Sort out frequency semantics
+    template.chromosomes()[chr].frequencies[idx] = 1-maf
     
 # Simulation method
 if args.method.lower() == 'constrained':
