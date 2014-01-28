@@ -12,4 +12,4 @@ print ' '.join(['GENOTYPE', fam, ancestor, chr, pos, allele, 'P', 'set'])
 for ind in peds.individuals():
     if not ind.phenotypes['affected']:
         continue
-    print ' '.join(['IBD', fam, ind.id, chr, pos, 'P'])
+    print ' '.join(['IBD', fam, ind.id, ancestor, chr, pos, 'P'])
