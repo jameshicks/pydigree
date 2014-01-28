@@ -25,7 +25,7 @@ class Simulation(object):
         for x in xrange(self.replications):
             if verbose:
                 print 'Replicate %d' % (x + 1)
-            self.replicate()
+            self.replicate(verbose=verbose)
             self.write_data(x)
 
     def write_data(self, replicatenumber):
