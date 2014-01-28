@@ -76,7 +76,8 @@ class Simulation(object):
         if chromatid not in 'PM':
             raise ValueError('Not a valid haplotype. Choose P or M')
         chromatid = 1 if chromatid == 'M' else 0
-
+        location = tuple(int(x) for x in location)
+        allele = int(allele)
         if ind not in self.constraints['genotype']:
             self.constraints['genotype'][ind] = []
         c = (location, chromatid, allele, method)
@@ -86,6 +87,7 @@ class Simulation(object):
         if anchap not in 'PM':
             raise ValueError('Not a valid haplotype. Choose P or M')
         anchap = 1 if anchap == 'M' else 0
+        location = tuple(int(x) for x in location)
         if ind not in self.constraints['ibd']:
             self.constraints['ibd'][ind] = []
         c = (ancestor, location, anchap)
