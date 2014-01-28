@@ -9,6 +9,7 @@ from paths import *
 from common import *
 from _pydigree import chromatid_delabeler
 
+
 def is_missing_genotype(g):
     return g == (0, 0)
 
@@ -46,6 +47,7 @@ class Individual(object):
             return 'Individual %s (F:%s,M:%s)' % (self.id,
                                                   self.father.id,
                                                   self.mother.id)
+
     def __repr__(self):
         return self.__str__()
 
@@ -167,7 +169,7 @@ class Individual(object):
 
     def parents(self):
         return self.father, self.mother
-    
+
     def ancestors(self):
         """ Recursively searches for ancestors. """
         if self.is_founder():
@@ -273,7 +275,9 @@ class Individual(object):
         if not self.genotypes:
             self.get_genotypes()
 
-        g = [recombine(chr[0], chr[1], self.population.chromosomes[i].genetic_map)
+        g = [recombine(chr[0],
+                       chr[1],
+                       self.population.chromosomes[i].genetic_map)
              for i, chr in enumerate(self.genotypes)]
 
         return g
@@ -293,7 +297,7 @@ class Individual(object):
                 return g
         else:
             raise IterationError('Ran out of constrained gamete attempts')
-    
+
     @staticmethod
     def fertilize(father, mother):
         """

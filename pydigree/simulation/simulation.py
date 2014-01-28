@@ -5,9 +5,9 @@ from pydigree.common import *
 from pydigree import write_ped
 from pydigree.individual import Individual
 
+
 # A base class for simulations to inherit from
 class Simulation(object):
-    
     def __init__(self, template=None, replications=1000):
         self.template = template
         self.replications = replications
@@ -29,17 +29,19 @@ class Simulation(object):
             self.write_data(x)
 
     def write_data(self, replicatenumber):
-        filename = '{0}-{1}.ped'.format(self.prefix, (replicatenumber + 1) )
+        filename = '{0}-{1}.ped'.format(self.prefix, (replicatenumber + 1))
         write_ped(self.template, filename)
 
     def predicted_trait_accuracy(self, ped):
-        calls = [(ind.predicted_phenotype(self.trait), ind.phenotypes['affected'])
-                 for ind in ped if ind.phenotypes['affected'] is not None]
+        calls = [(ind.predicted_phenotype(self.trait),
+                  ind.phenotypes['affected'])
+                 for ind in ped
+                 if ind.phenotypes['affected'] is not None]
         # Remember: in python the bools True and False are actually alternate
         # names for the integers 1 and 0, respectively, so you can do
         # arithmetic with them if you so please. Here we sum up all the
         # correct predictions and divide by the number of predictions made.
-        return sum(x==y for x,y in calls) / len(calls)
+        return sum(x == y for x, y in calls) / len(calls)
 
     def read_constraints(self, filename):
 
@@ -65,7 +67,8 @@ class Simulation(object):
                     locus = (chr, index)
                     ind = self.template[ped][id]
                     ancestor = self.template[ped][ancestor]
-                    self.add_ibd_constraint(ind, ancestor, locus, anc_chromatid)
+                    self.add_ibd_constraint(ind, ancestor,
+                                            locus, anc_chromatid)
                 else:
                     raise ValueError('Not a valid constraint (%s)' % l[0])
 

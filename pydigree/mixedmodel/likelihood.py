@@ -28,9 +28,11 @@ def makeR(y, X, V=None, Vinv=None):
         Vinv = csc_matrix(inv(V.todense()))
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
 
-def makeP(X,Vinv):
+
+def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
     return Vinv - Vinv * X * pinv(X.T * Vinv * X) * X.T * Vinv
+
 
 def full_loglikelihood(y, V, X, Vinv=None):
     """

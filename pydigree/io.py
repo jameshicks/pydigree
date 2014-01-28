@@ -84,8 +84,8 @@ def read_map(mapfile):
 
 def read_gs_chromosome_template(templatef):
     with open(templatef) as f:
-        f.readline() # The label and
-        f.readline() # the number of markers, both of which we dont need.
+        f.readline()  # The label and
+        f.readline()  # the number of markers, both of which we dont need.
         c = Chromosome()
         last_cm = 0
         for line in f:
@@ -96,6 +96,7 @@ def read_gs_chromosome_template(templatef):
             last_cm += cm
             c.add_genotype(float(minf), last_cm, label=label, bp=bp)
     return c
+
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
     with open(pedfile, 'w') as f:

@@ -124,7 +124,8 @@ class Architecture(object):
                 l = line.strip().split()
                 if len(l) != 5:
                     # TODO: implement epistatic effects in file
-                    raise NotImplementedError('Epistatic effects not yet implemented')
+                    raise NotImplementedError(
+                        'Epistatic effects not yet implemented')
                 chr, pos, allele_a, allele_b, effect = line.strip().split()
                 locus = chr, pos
                 eff = {(allele_a, allele_b): effect}

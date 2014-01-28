@@ -2,7 +2,7 @@
 
 # Common functions (cumsum, table, etc)
 from common import *
-from misc import * 
+from misc import *
 
 # Reading and writing files
 from io import *

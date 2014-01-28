@@ -5,6 +5,7 @@ from simulation import *
 from pydigree import paths
 from pydigree import Individual
 
+
 class ConstrainedMendelianSimulation(Simulation):
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)
@@ -31,16 +32,16 @@ class ConstrainedMendelianSimulation(Simulation):
 
                 # TODO: Multiple constraints per individual
                 # Right now we're only using the first ([0]) constraint
-                constraints = [(x[1], (x[0],x[2])) for x in constraints]
+                constraints = [(x[1], (x[0], x[2])) for x in constraints]
                 location, allele = constraints[0]
                 ancestor = allele[0]
                 descent_path = random.choice(paths(ancestor, ind))
-            
+
                 for pathindex, path_member in enumerate(descent_path):
                     if path_member.is_founder():
                         continue
                     fa, mo = path_member.parents()
-                    
+
                     if fa in descent_path:
                         paternal_gamete = fa.constrained_gamete(constraints)
                     else:

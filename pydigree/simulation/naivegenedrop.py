@@ -3,6 +3,7 @@ from __future__ import division
 from architecture import Architecture
 from simulation import Simulation, SimulationError
 
+
 class NaiveGeneDroppingSimulation(Simulation):
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)
@@ -20,8 +21,9 @@ class NaiveGeneDroppingSimulation(Simulation):
 
                 for founder in ped.founders():
                     if founder in self.constraints['genotype']:
-                        founder.get_constrained_genotypes(self.constraints['genotype'][founder],
-                                                      linkeq=True)
+                        founder.get_constrained_genotypes(
+                            self.constraints['genotype'][founder],
+                            linkeq=True)
                     else:
                         founder.get_genotypes()
 
@@ -36,8 +38,8 @@ class NaiveGeneDroppingSimulation(Simulation):
                     accuracy = self.predicted_trait_accuracy(ped)
                     if accuracy < self.accuracy_threshold:
                         continue
-                print 'Successful (%s%%) after %s gene dropping attempts' % (accuracy * 100,attempt)
+                print 'Success (%s%%) after %s attempts' % (accuracy * 100,
+                                                            attempt)
                 break
             else:
                 raise SimulationError('Ran out of gene dropping attempts!')
-            
