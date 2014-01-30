@@ -23,8 +23,7 @@ class Simulation(object):
 
     def run(self, verbose=False):
         for x in xrange(self.replications):
-            if verbose:
-                print 'Replicate %d' % (x + 1)
+            print 'Replicate %d' % (x + 1)
             self.replicate(verbose=verbose)
             self.write_data(x)
 

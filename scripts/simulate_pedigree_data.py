@@ -25,6 +25,8 @@ parser.add_argument('--liability-threshold', type=float, dest='lthresh')
 parser.add_argument('--freq', dest='freqs', nargs=3, action='append')
 parser.add_argument('--prefix', type=str, help='prefix for output file',
                     default='simulation')
+parser.add_argument('--verbose', action='store_true', dest='verbosity',
+                    help='Print verbose output')
 args = parser.parse_args()
 
 # Read the pedigrees
@@ -75,4 +77,4 @@ if args.constraintfile:
 
 sim.prefix = args.prefix
 
-sim.run(verbose=True)
+sim.run(verbose=args.verbosity)
