@@ -201,19 +201,29 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
   PyObject* newchromatid = PyList_New(chromlength);
 
   Py_ssize_t i;
+  PyObject* last_ancestor = NULL;
+  Py_ssize_t last_ah = NULL;
+  PyObject *anc_genotypes = NULL;
+  PyObject *anc_chromosomes = NULL;
+  PyObject *anc_chromosome = NULL;
   for (i=0; i < chromlength; i++) {
     PyObject* listitem = PyList_GET_ITEM(chromatid, i);
     PyObject* ancestor = PyTuple_GET_ITEM(listitem, 0);
     Py_ssize_t ancestral_hap = PyInt_AsSsize_t(PyTuple_GetItem(listitem, 1));
     
-    /* Get the genotypes of the ancestor, which are a list of pairs of lists */
-    PyObject* anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
-    PyObject* anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
-    PyObject* anc_chromosome = PySequence_GetItem(anc_chromosomes, ancestral_hap);
+    if (!(ancestor == last_ancestor && ancestral_hap == last_ah)) {
+      /* Get the genotypes of the ancestor, which are a list of pairs of lists */
+      anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
+      anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
+      anc_chromosome = PySequence_GetItem(anc_chromosomes, ancestral_hap);
+    }
+
     PyObject* allele = PySequence_GetItem(anc_chromosome, i);
     PyList_SET_ITEM(newchromatid, i, allele);
     Py_INCREF(allele);
-      
+
+    last_ancestor = ancestor;
+    last_ah = ancestral_hap;
   }
   return newchromatid;
 }
