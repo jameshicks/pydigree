@@ -49,6 +49,10 @@ class Chromosome(object):
         return self.genetic_map[-1] - self.genetic_map[0]
 
     def add_genotype(self, frequency, map_position, label=None, bp=None):
+        try:
+            frequency = float(frequency)
+        except ValueError:
+            raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
         self.frequencies.append(frequency)
         self.physical_map.append(bp)
