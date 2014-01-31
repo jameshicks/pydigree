@@ -2,7 +2,7 @@ from __future__ import division
 import random
 
 from pydigree.common import *
-from pydigree import write_ped
+from pydigree.io.plink import write_ped
 from pydigree.individual import Individual
 
 
