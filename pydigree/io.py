@@ -75,6 +75,8 @@ def read_map(mapfile):
         for line in f:
             line = line.strip().split()
             chr, label, cm, pos = line
+            if int(pos) < 0:
+                continue
             if chr != last_chr:
                 chroms.append(chromosome)
                 chromosome = Chromosome()
