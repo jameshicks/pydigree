@@ -20,7 +20,29 @@ def read_map(mapfile):
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
               predicate=None):
+    """
+    write_ped writes data in a plink-format PED file, and optionally a
+    plink-format map file.
 
+    Arguments
+    ------
+
+    pedigrees: An object of class PedigreeCollection containing what you
+        want to output
+    pedfile: a string giving the name out the file to output to.
+    mapfile: the name of a mapfile to output, if you want to output one.
+        an object that evaluates as False or None will skip the mapfile
+    genotypes: Should genotypes be output True/False
+    delim: Field seperator
+    predicate: Which inputs to include in the output file. If not specified
+        all are output. If the string is 'affected', only affected
+        individuals are output. If the string is 'phenotyped', all individuals
+        with phenotype information are output. Any other value of predicate
+        must be a function to perform on the individual that evaluates to
+        True/False for whether the individual should be output.
+
+    Returns: Nothing
+    """
     if not predicate:
         predicate = lambda x: True
     elif predicate == 'affected':
@@ -30,25 +52,33 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
     elif not callable(predicate):
         raise ValueError('Not a valid predicate!')
 
+    afflab = {1: '2', 0: '1', None: '-9'}
 
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
             for ind in pedigree:
-                aff = {1: '2', 0: '1', None: '-9'}[ind.phenotypes['affected']]
+                # Get the phenotype code
+                aff = afflab[ind.phenotypes['affected']]
+                # Prepare the 6-column identifier
                 outline = [pedigree.label, ind.id,
                            ind.father.id if ind.father is not None else '0',
                            ind.mother.id if ind.mother is not None else '0',
                            1 if ind.sex == 0 else 2,
                            aff]
+                # Get the genotypes in the format we need them
                 if genotypes:
                     g = []
                     for chroma, chromb in ind.genotypes:
                         g.extend(chain.from_iterable(izip(chroma, chromb)))
                     outline.extend(g)
+                # Make strings
                 outline = imap(str, outline)
+                # Write it out
                 f.write(delim.join(outline) + '\n')
+
     if not mapfile:
         return
+
     with open(mapfile, 'w') as f:
         for ci, chromosome in enumerate(pedigrees.chromosomes):
             for mi, marker in enumerate(chromosome._iinfo):
