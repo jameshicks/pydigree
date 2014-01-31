@@ -3,7 +3,7 @@ from itertools import izip, chain, imap
 import pydigree
 
 def read_map(mapfile):
-    last_chr = None
+    last_chr, last_pos = None, 0
     chroms = []
     chromosome = pydigree.Chromosome()
     with open(mapfile) as f:
@@ -15,8 +15,10 @@ def read_map(mapfile):
             if chr != last_chr:
                 chroms.append(chromosome)
                 chromosome = pydigree.Chromosome()
+            if pos < last_pos:
+                raise ValueError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
-            last_chr = chr
+            last_chr, last_pos = chr, pos
     return chroms
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
