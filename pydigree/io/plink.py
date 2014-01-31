@@ -18,7 +18,19 @@ def read_map(mapfile):
             chromosome.add_genotype(None, cm, label=label, bp=pos)
     return chroms
 
-def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' '):
+def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
+              predicate=None):
+
+    if not predicate:
+        predicate = lambda x: True
+    elif predicate == 'affected':
+        predicate = lambda x: x.phenotypes['affected'] == 1
+    elif predicate == 'phenotyped':
+        predicate = lambda x: x.phenotypes['affected'] in set([0, 1])
+    elif not callable(predicate):
+        raise ValueError('Not a valid predicate!')
+
+
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
             for ind in pedigree:
