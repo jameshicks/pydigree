@@ -1,10 +1,10 @@
-from pydigree import Chromosome
+import pydigree
 
 def read_gs_chromosome_template(templatef):
     with open(templatef) as f:
         f.readline()  # The label and
         f.readline()  # the number of markers, both of which we dont need.
-        c = Chromosome()
+        c = pydigree.Chromosome()
         last_cm = 0
         for line in f:
             if line == '\n':

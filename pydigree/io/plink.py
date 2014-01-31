@@ -1,11 +1,11 @@
 from itertools import izip, chain, imap
 
-from pydigree import Chromosome
+import pydigree
 
 def read_map(mapfile):
     last_chr = None
     chroms = []
-    chromosome = Chromosome()
+    chromosome = pydigree.Chromosome()
     with open(mapfile) as f:
         for line in f:
             line = line.strip().split()
@@ -14,7 +14,7 @@ def read_map(mapfile):
                 continue
             if chr != last_chr:
                 chroms.append(chromosome)
-                chromosome = Chromosome()
+                chromosome = pydigree.Chromosome()
             chromosome.add_genotype(None, cm, label=label, bp=pos)
     return chroms
 
