@@ -26,7 +26,7 @@ for rx in range(1):
     print c
     pop.add_chromosome(c)
                 
-ped = pydigree.read_ped(sys.argv[1], pop)
+ped = pydigree.io.read_ped(sys.argv[1], pop)
 affs = [x for x in ped if x.phenotypes['aff']]
 
 

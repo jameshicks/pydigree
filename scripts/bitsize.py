@@ -9,7 +9,7 @@ import sys
 # it takes to represent the inheritance vector in the Lander-Green
 # algorithm.
 
-ped = pydigree.read_ped(sys.argv[1])
+ped = pydigree.io.read_ped(sys.argv[1])
 
 for pedigree in sorted(ped,key=lambda x: x.label):
     print pedigree.label, pedigree.bit_size()

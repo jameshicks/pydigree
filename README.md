@@ -8,6 +8,9 @@ Submodules
 In addition to basic pedigree data manipulation, pydigree also includes submodules for more complicated tasks:
 * __simulation__: Provides classes for simulating genetic data
 * __mixedmodel__: Provides classes for using mixed models with family data
+* __io__: Provides functions for importing/exporting data from common data formats, including:
+ * `plink`: Functions for working with plink format PED/MAP data
+ * `genomesimla`: Includes a function for reading genomeSIMLA format chromosome templates
 
 Classes
 -----

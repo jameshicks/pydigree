@@ -5,7 +5,7 @@ import itertools
 import sys
 
 pop = pydigree.Population(5000)
-ped = pydigree.read_ped(sys.argv[1], pop)
+ped = pydigree.io.read_ped(sys.argv[1], pop)
 
 for pedigree in ped:
     lab = pedigree.label

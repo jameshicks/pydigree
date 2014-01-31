@@ -3,7 +3,8 @@
 import argparse
 
 import pydigree
-from pydigree.io import read_ped, read_gs_chromosome_template
+from pydigree.io import read_ped
+from pydigree.io.genomesimla import read_gs_chromosome_template
 from pydigree.simulation import ConstrainedMendelianSimulation
 from pydigree.simulation import NaiveGeneDroppingSimulation
 from pydigree.simulation import Architecture

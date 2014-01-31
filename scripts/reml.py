@@ -9,8 +9,8 @@ outcome = sys.argv[3]
 fixefs = sys.argv[4:]
 
 print 'Reading files'
-peds = pydigree.read_ped(pedf)
-pydigree.read_phenotypes(peds, phenf)
+peds = pydigree.io.read_ped(pedf)
+pydigree.io.read_phenotypes(peds, phenf)
 
 m = MixedModel(peds, outcome=outcome, fixed_effects=fixefs)
 print 'Calculating Kinships'

@@ -5,7 +5,7 @@ from common import *
 from misc import *
 
 # Reading and writing files
-from io import *
+import io
 
 # Functions for navigating pedigree structures
 from paths import path_downward, paths, paths_through_ancestor
