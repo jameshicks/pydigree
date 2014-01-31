@@ -35,9 +35,9 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
                            '-9': None}
 
     def getph(ph):
-        if ph in affected_labels:
+        try:
             return affected_labels[ph]
-        else:
+        except KeyError:
             return None
 
     with open(filename) as f:
