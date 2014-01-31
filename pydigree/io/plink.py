@@ -16,6 +16,7 @@ def read_map(mapfile):
                 chroms.append(chromosome)
                 chromosome = pydigree.Chromosome()
             chromosome.add_genotype(None, cm, label=label, bp=pos)
+            last_chr = chr
     return chroms
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
