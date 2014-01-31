@@ -60,6 +60,8 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
     with open(pedfile, 'w') as f:
         for pedigree in pedigrees:
             for ind in pedigree:
+                if not predicate(ind):
+                    continue
                 # Get the phenotype code
                 aff = afflab[ind.phenotypes['affected']]
                 # Prepare the 6-column identifier

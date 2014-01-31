@@ -28,6 +28,8 @@ parser.add_argument('--prefix', type=str, help='prefix for output file',
                     default='simulation')
 parser.add_argument('--verbose', action='store_true', dest='verbosity',
                     help='Print verbose output')
+parser.add_argument('--output-filter', dest='predicate', default=None,
+                    choices=('affected','phenotyped'), action='store')
 args = parser.parse_args()
 
 # Read the pedigrees
@@ -78,4 +80,4 @@ if args.constraintfile:
 
 sim.prefix = args.prefix
 
-sim.run(verbose=args.verbosity)
+sim.run(verbose=args.verbosity, output_predicate=args.predicate)
