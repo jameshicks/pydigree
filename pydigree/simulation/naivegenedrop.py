@@ -9,7 +9,7 @@ class NaiveGeneDroppingSimulation(Simulation):
         Simulation.__init__(self, template, replications)
         self.genedrop_attempts = 1000
 
-    def replicate(self):
+    def replicate(self, verbose=None):
         for ind in self.template.individuals():
             ind.clear_genotypes()
         for ped in self.template:
@@ -38,8 +38,9 @@ class NaiveGeneDroppingSimulation(Simulation):
                     accuracy = self.predicted_trait_accuracy(ped)
                     if accuracy < self.accuracy_threshold:
                         continue
-                print 'Success (%s%%) after %s attempts' % (accuracy * 100,
-                                                            attempt)
+                if verbose:
+                    print 'Success (%s%%) after %s attempts' % (accuracy * 100,
+                                                                attempt)
                 break
             else:
                 raise SimulationError('Ran out of gene dropping attempts!')
