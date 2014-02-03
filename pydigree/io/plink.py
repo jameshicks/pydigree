@@ -21,6 +21,7 @@ def read_map(mapfile):
             last_chr, last_pos = chr, pos
     return chroms
 
+
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
               predicate=None):
     """
@@ -79,7 +80,8 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
                 # Make strings
                 outline = imap(str, outline)
                 # Write it out
-                f.write(delim.join(outline) + '\n')
+                f.write(delim.join(outline))
+                f.write('\n')
 
     if not mapfile:
         return
