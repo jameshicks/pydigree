@@ -63,17 +63,19 @@ else:
     trait = Architecture('affected','dichotomous')
 
 # More effects. Specified effects override file effects.
-for effect in args.effects:
-    chr, pos, p, q, e = effect
-    locus = int(chr), int(pos)
-    p, q = int(p), int(q)
-    e = float(e)
-    eff = {(p,q): e}
-    trait.add_effect(locus, eff)
-if args.lthresh:
-    trait.set_liability_threshold(args.lthresh)
+if args.effects:
+    for effect in args.effects:
+        chr, pos, p, q, e = effect
+        locus = int(chr), int(pos)
+        p, q = int(p), int(q)
+        e = float(e)
+        eff = {(p,q): e}
+        trait.add_effect(locus, eff)
+    if args.lthresh:
+        trait.set_liability_threshold(args.lthresh)
 
-sim.set_trait(trait)
+if args.effects or args.effectfile:
+    sim.set_trait(trait)
 
 if args.constraintfile:
     sim.read_constraints(args.constraintfile)
