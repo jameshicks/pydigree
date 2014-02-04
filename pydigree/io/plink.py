@@ -2,6 +2,7 @@ from itertools import izip, chain, imap
 
 import pydigree
 
+
 def read_map(mapfile):
     last_chr, last_pos = None, 0
     chroms = []

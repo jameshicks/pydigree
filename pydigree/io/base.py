@@ -67,7 +67,6 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
     return pc
 
 
-
 def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
     """
     Reads a csv with header

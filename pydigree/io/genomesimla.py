@@ -1,5 +1,6 @@
 import pydigree
 
+
 def read_gs_chromosome_template(templatef):
     with open(templatef) as f:
         f.readline()  # The label and
@@ -14,4 +15,3 @@ def read_gs_chromosome_template(templatef):
             last_cm += cm
             c.add_genotype(float(minf), last_cm, label=label, bp=bp)
     return c
-
