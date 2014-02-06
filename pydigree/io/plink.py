@@ -4,6 +4,7 @@ import pydigree
 
 
 def read_map(mapfile):
+    """ Reads a PLINK map file into a list of chromosome objects """
     last_chr, last_pos = None, 0
     chroms = []
     chromosome = pydigree.Chromosome()
@@ -14,9 +15,12 @@ def read_map(mapfile):
             if int(pos) < 0:
                 continue
             if chr != last_chr:
+                # If this happens, we've moved on to a new chromosome
+                # We'll close up the old one and start working on a new
+                # object
                 chroms.append(chromosome)
                 chromosome = pydigree.Chromosome()
-            if pos < last_pos:
+            elif pos < last_pos:
                 raise ValueError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos

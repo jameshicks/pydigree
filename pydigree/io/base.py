@@ -34,6 +34,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
                            'X': None,
                            '-9': None}
 
+    # Tries to get a phenotype and returns unknown on failure
     def getph(ph):
         try:
             return affected_labels[ph]
@@ -41,6 +42,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             return None
 
     with open(filename) as f:
+        # Parse the lines in the file
         for line in f:
             fam, id, fa, mo, sex, aff = line.strip().split(delimiter)[0:6]
             # Give a special id for now, to prevent overwriting duplicated
@@ -49,6 +51,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             p[id] = Individual(population, id, fa, mo, sex)
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
+
+        # Fix the individual-level data
         for ind in p:
             fam, id = ind.id
             # Actually make the references instead of just pointing at strings
@@ -56,6 +60,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
             ind.sex = sex_codes[ind.sex]
             ind.register_with_parents()
+
+        # Place individuals into pedigrees
         for pedigree_label in set(ind.id[0] for ind in p):
             ped = Pedigree(label=pedigree_label)
             thisped = [x for x in p if x.id[0] == pedigree_label]
