@@ -15,22 +15,23 @@ def sharepairs(ped, inds, loc):
         r.append(ibs(g1,g2) > 0)
     return count(True,r)/npairs
 
-nmark = 1
-chrom_length_cm = 0
-intermark_dist_cm = (float(chrom_length_cm)/nmark)/100
 
 pop = pydigree.Population(5000)
-for rx in range(1):
-    c = pydigree.Chromosome()
-    for x in range(nmark): c.add_genotype(frequency,intermark_dist_cm)
-    print c
-    pop.add_chromosome(c)
                 
-ped = pydigree.io.read_ped(sys.argv[1], pop)
-affs = [x for x in ped if x.phenotypes['aff']]
+ped = pydigree.io.read_ped(sys.argv[1], pop)[sys.argv[2]]
+# Clear the genotypes, if present
+ped.clear_genotypes()
+
+c = pydigree.Chromosome()
+c.add_genotype(0.5, 0)
+print c
+ped.add_chromosome(c)
 
 
-niter= 10**4
+affs = [x for x in ped if x.phenotypes['affected']]
+
+
+niter= 100
 print "%s simulations" % niter
 
 sim_share = []
@@ -38,10 +39,19 @@ sim_share = []
 t = time.time()
 for x in range(niter):
     ped.simulate_ibd_states()
-    s = sharepairs(ped,affs,(0,0))
+    s = sharepairs(ped, affs, (0,0))
     ped.clear_genotypes()
     sim_share.append(s)
 t2 = time.time()-t
+
 print "Maximum simulated allele sharing: %s" % max(sim_share)
 print "Empiric P: %s" % (len([x for x in sim_share if x >= 1.0])/float(niter))
 print "Time: %s (time per pedigree: %s)" % (t2,t2/niter)
+
+
+ofilename = 'null.dist'
+print "Outputting distribution to %s" % ofilename
+with open(ofilename,'w') as of:
+    for s in sim_share:
+        of.write(str(s))
+        of.write('\n')
