@@ -144,10 +144,8 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        g = []
-        for x in self.population.chromosomes:
-            g.append([[(self, 0)] * len(x.genetic_map),
-                      [(self, 1)] * len(x.genetic_map)])
+        g = [ [[(self,0)]*len(x.genetic_map), [(self,1)]*len(x.genetic_map)]
+              for x in self.population.chromosomes ]
         self.genotypes = g
 
     def delabel_genotypes(self):
