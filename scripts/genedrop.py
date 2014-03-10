@@ -31,13 +31,15 @@ ped.add_chromosome(c)
 affs = [x for x in ped if x.phenotypes['affected']]
 
 
-niter= 100
+niter = 1000
 print "%s simulations" % niter
 
 sim_share = []
 
 t = time.time()
 for x in range(niter):
+    if x % 250 == 0:
+        print 'Simulation %s' % x
     ped.simulate_ibd_states()
     s = sharepairs(ped, affs, (0,0))
     ped.clear_genotypes()
