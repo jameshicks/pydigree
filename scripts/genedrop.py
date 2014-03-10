@@ -8,12 +8,9 @@ import itertools
 def sharepairs(ped, inds, loc):
     from pydigree import count,ibs
     npairs = float( len(inds) * (len(inds)-1)/2 ) 
-    r = []
-    for j,k in itertools.combinations(inds,2):
-        g1 = j.get_genotype(loc)
-        g2 = k.get_genotype(loc)
-        r.append(ibs(g1,g2) > 0)
-    return count(True,r)/npairs
+    r = [ibs(j.get_genotype(loc), k.get_genotype(loc)) for j,k
+         in itertools.combinations(inds,2)]
+    return count(True,r) / npairs
 
 
 pop = pydigree.Population(5000)
