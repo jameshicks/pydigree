@@ -11,6 +11,7 @@ In addition to basic pedigree data manipulation, pydigree also includes submodul
 * __io__: Provides functions for importing/exporting data from common data formats, including:
  * `plink`: Functions for working with plink format PED/MAP data
  * `genomesimla`: Includes a function for reading genomeSIMLA format chromosome templates
+* __sgs__: Functions for shared genomic segment data
 
 Classes
 -----

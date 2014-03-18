@@ -21,6 +21,9 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx);
 PyObject* linkeq_chrom_interface(PyObject* self, PyObject* args);
 PyObject* linkeq_chrom(PyObject *frequencies);
 
+PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark); 
+PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
+
 /* docstrings */
 static char module_docstring[] =
   "This sub-module provides C implementations of time-intensive pydigree functions";
@@ -32,7 +35,7 @@ static char pairs_docstring[] = "Returns a list of n pairs from sampled with rep
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
 static char chromatid_delabeler_docstring[] = "Replaces genotypes from label_genotypes with alleles from the ancestor"; 
 static char linkeq_chrom_docstring[] = "Returns a chromosome with all markers in linkage equilibrium"; 
-
+static char sgs_shares_docstring[] = "Returns the proportion of individual pairs IBD";
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
   {"recombine_haldane", haldane_interface, METH_VARARGS, haldane_docstring},
@@ -41,6 +44,7 @@ static PyMethodDef module_methods[] = {
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
   {"chromatid_delabeler", chromatid_delabeler_interface, METH_VARARGS, chromatid_delabeler_docstring},
   {"linkeq_chrom", linkeq_chrom_interface, METH_VARARGS, linkeq_chrom_docstring},
+  {"sgs_shares", sgs_shares_interface, METH_VARARGS, sgs_shares_docstring},
   {NULL, NULL, 0, NULL}
 };
 
@@ -249,4 +253,66 @@ PyObject* linkeq_chrom(PyObject* frequencies) {
   }
 
   return newchrom;
+}
+
+PyObject* sgs_shares_interface(PyObject* self, PyObject* args) {
+  PyObject *shared, *affecteds;
+  Py_ssize_t nmark;
+  if (!PyArg_ParseTuple(args, "OOn", &affecteds, &shared, &nmark)) return NULL;
+  return sgs_shares(affecteds, shared, nmark);
+
+}
+
+PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
+  Py_ssize_t i,j,k,m, nsegs, start, stop; 
+  PyObject *a, *b, *pairtuple, *pair;
+  PyObject *sharelocs, *loc, *nshareslist;
+
+  Py_ssize_t naff = PyList_Size(affecteds);
+  /* Initialize empty array */ 
+  unsigned long int shares[nmark];
+  for (i = 0; i < nmark; i++) {
+    shares[i] = 0;
+  }
+
+  /* Start incrementing */
+  for (i=0; i < naff; i++) {
+    a = PyList_GET_ITEM(affecteds, i);
+    for (j=i+1; j < naff; j++) {
+      b = PyList_GET_ITEM(affecteds, j); 
+      
+      /* Get shares between individuals */
+      pairtuple = PyTuple_Pack(2, a, b);
+      pair = PyFrozenSet_New(pairtuple);
+
+      sharelocs = PyDict_GetItem(shared, pair);
+      if (sharelocs == NULL) {
+	/* I'm expecting a KeyError here but in the case of anything
+	   I'm just going to skip it anyway
+	*/
+	PyErr_Clear();
+	goto finish;
+      }
+
+      /* For each share, increment the count inside it */
+      nsegs = PyList_Size(sharelocs);
+      for (k=0; k < nsegs; k++) {
+	loc = PyList_GET_ITEM(sharelocs, k);
+	start = PyInt_AsSsize_t(PyTuple_GET_ITEM(loc, 0));
+	stop = PyInt_AsSsize_t(PyTuple_GET_ITEM(loc, 1));
+	for (m=start; m <= stop; m++) {
+	  shares[m] += 1;
+	}
+      }
+    finish:
+      Py_XDECREF(pair);
+      Py_XDECREF(pairtuple);
+    }
+  }
+  /* Make into a python list */ 
+  nshareslist = PyList_New(nmark);
+  for (i=0; i < nmark; i++) {
+    PyList_SET_ITEM(nshareslist, i, PyLong_FromUnsignedLong(shares[i]));
+  }
+  return nshareslist;
 }
