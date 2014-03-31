@@ -1,1 +1,1 @@
-from shares import proportion_shares
+from shares import nshares
