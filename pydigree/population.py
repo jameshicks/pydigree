@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # Packages we're going to use
-import itertools
 import random
 import math
 
@@ -11,7 +10,6 @@ from collections import MutableMapping
 # Other pydigree objects
 from individual import Individual
 from chromosome import Chromosome
-from paths import kinship, fraternity
 from common import *
 from recombination import recombine
 
@@ -166,9 +164,9 @@ class Population(MutableMapping):
         gensize = int(gensize)
         for i, c in enumerate(self.chromosomes):
             # Chromosomes have a 1/2 chance of being recombined with another
-            def choose_chrom(pool, map):
+            def choose_chrom(pool, chrmap):
                 q, w = random.choice(pool), random.choice(pool)
-                return recombine(q, w, map)
+                return recombine(q, w, chrmap)
             np = [choose_chrom(self.pool[i], c.genetic_map)
                   for x in xrange(gensize)]
             self.pool[i] = np
@@ -233,8 +231,10 @@ class Population(MutableMapping):
     ### Frequency functions
     ###
     def missingness(self, location):
-        """ Returns the percentage of individuals in the population
-        missing a genotype at location. """
+        """
+        Returns the percentage of individuals in the population missing a
+        genotype at location.
+        """
         genotypes = [x.get_genotype(location) for x in self]
         tab = table(genotypes)
         return tab[(0, 0)] / float(len(genotypes))
@@ -283,9 +283,7 @@ class Population(MutableMapping):
         freqtab = table(alleles)
         return sorted(freqtab.keys(), key=lambda x: freqtab[x])[0]
 
-    def ld(self, locusa, locusb,
-           allelea=None, alleleb=None,
-           method='r2'):
+    def ld(self, locusa, locusb, allelea=None, alleleb=None, method='r2'):
         """
         Returns a measure of linkage disquilibirum between alleles at two
         loci, for methods in {D, Dprime, r2}. If alleles aren't specified,
@@ -340,7 +338,7 @@ class Population(MutableMapping):
         x = sum(1 for x in pop
                 if x.has_allele(locusa, allelea) and
                 x.has_allele(locusb, alleleb))
-        D = x - pa * qa
+        D = x - p1 * q1
         # All of these metrics are normalizations of D by dividing it by
         # some expression. If D==0 all of them will equal 0.
         if D == 0:
