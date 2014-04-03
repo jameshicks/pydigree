@@ -1,6 +1,7 @@
 #include <Python.h>
 #include <math.h>
 
+#include <numpy/arrayobject.h>
 /* Function Prototypes */ 
 
 PyObject* haldane_interface(PyObject* self, PyObject* args);
@@ -52,6 +53,7 @@ PyMODINIT_FUNC init_pydigree(void)
 {
   (void) Py_InitModule("pydigree._pydigree", module_methods);
   srand(time(NULL));
+  import_array();
 }
 
 
@@ -265,8 +267,9 @@ PyObject* sgs_shares_interface(PyObject* self, PyObject* args) {
 
 PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
   Py_ssize_t i,j,k,m, nsegs, start, stop; 
-  PyObject *a, *b, *pairtuple, *pair;
-  PyObject *sharelocs, *loc, *nshareslist;
+  PyObject *a, *b, *pair;
+  PyObject *sharelocs, *loc;
+  PyObject *nsharesarray;
 
   Py_ssize_t naff = PyList_Size(affecteds);
   /* Initialize empty array */ 
@@ -282,9 +285,9 @@ PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
       b = PyList_GET_ITEM(affecteds, j); 
       
       /* Get shares between individuals */
-      pairtuple = PyTuple_Pack(2, a, b);
-      pair = PyFrozenSet_New(pairtuple);
-
+      pair = PyFrozenSet_New(NULL);
+      PySet_Add(pair, a);
+      PySet_Add(pair, b);
       sharelocs = PyDict_GetItem(shared, pair);
       if (sharelocs == NULL) {
 	/* I'm expecting a KeyError here but in the case of anything
@@ -301,18 +304,21 @@ PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
 	start = PyInt_AsSsize_t(PyTuple_GET_ITEM(loc, 0));
 	stop = PyInt_AsSsize_t(PyTuple_GET_ITEM(loc, 1));
 	for (m=start; m <= stop; m++) {
-	  shares[m] += 1;
+	  shares[m]++;
 	}
       }
     finish:
       Py_XDECREF(pair);
-      Py_XDECREF(pairtuple);
     }
   }
-  /* Make into a python list */ 
-  nshareslist = PyList_New(nmark);
+
+  /* Make results into a numpy array */
+  npy_intp dims[1] = {nmark};
+  nsharesarray = PyArray_SimpleNew(1, &dims, NPY_UINT16);
   for (i=0; i < nmark; i++) {
-    PyList_SET_ITEM(nshareslist, i, PyLong_FromUnsignedLong(shares[i]));
+    void *itemPtr = PyArray_GETPTR1(nsharesarray, i);
+    PyArray_SETITEM(nsharesarray, itemPtr, PyLong_FromUnsignedLong(shares[i]));
   }
-  return nshareslist;
+
+  return PyArray_Return(nsharesarray);
 }
