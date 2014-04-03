@@ -272,6 +272,11 @@ PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
   PyObject *nsharesarray;
 
   Py_ssize_t naff = PyList_Size(affecteds);
+  PyObject *inds[naff];
+  for (i=0; i < naff; i++) {
+    inds[i] = PyList_GET_ITEM(affecteds, i);
+  }
+
   /* Initialize empty array */ 
   unsigned long int shares[nmark];
   for (i = 0; i < nmark; i++) {
@@ -280,10 +285,11 @@ PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
 
   /* Start incrementing */
   for (i=0; i < naff; i++) {
-    a = PyList_GET_ITEM(affecteds, i);
+    //a = PyList_GET_ITEM(affecteds, i);
+    a = inds[i];
     for (j=i+1; j < naff; j++) {
-      b = PyList_GET_ITEM(affecteds, j); 
-      
+      //b = PyList_GET_ITEM(affecteds, j); 
+      b = inds[j];
       /* Get shares between individuals */
       pair = PyFrozenSet_New(NULL);
       PySet_Add(pair, a);
