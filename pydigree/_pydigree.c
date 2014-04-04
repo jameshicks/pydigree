@@ -208,7 +208,7 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
 
   Py_ssize_t i;
   PyObject* last_ancestor = NULL;
-  Py_ssize_t last_ah = NULL;
+  Py_ssize_t last_ah = 0;
   PyObject *anc_genotypes = NULL;
   PyObject *anc_chromosomes = NULL;
   PyObject *anc_chromosome = NULL;
