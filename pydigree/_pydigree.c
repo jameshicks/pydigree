@@ -304,7 +304,7 @@ PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
       }
 
       /* For each share, increment the count inside it */
-      nsegs = PyList_Size(sharelocs);
+      nsegs = PyList_GET_SIZE(sharelocs);
       for (k=0; k < nsegs; k++) {
 	loc = PyList_GET_ITEM(sharelocs, k);
 	start = PyInt_AsSsize_t(PyTuple_GET_ITEM(loc, 0));
