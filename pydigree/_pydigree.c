@@ -22,7 +22,7 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx);
 PyObject* linkeq_chrom_interface(PyObject* self, PyObject* args);
 PyObject* linkeq_chrom(PyObject *frequencies);
 
-PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark); 
+inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark); 
 PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
 
 /* docstrings */
@@ -58,7 +58,7 @@ PyMODINIT_FUNC init_pydigree(void)
 
 
 /* Common functions */ 
-int rand_lim(int limit) {
+inline int rand_lim(int limit) {
   /* return a random number between 0 (inclusive) and limit (exclusive).
    */
   int divisor = RAND_MAX/(limit);
@@ -71,15 +71,15 @@ int rand_lim(int limit) {
   return retval;
 }
 
-int rand_int_range(int min, int max) {
+inline int rand_int_range(int min, int max) {
   return rand_lim(max) + min; 
 }
 
-int rand_bool(double prob) { 
+inline int rand_bool(double prob) { 
   return drand48() < prob; 
 }
 
-double rexp(double rate) { 
+inline double rexp(double rate) { 
   return log(1-drand48()) / (-rate);
 }
 
@@ -265,7 +265,7 @@ PyObject* sgs_shares_interface(PyObject* self, PyObject* args) {
 
 }
 
-PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
+inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark) {
   Py_ssize_t i,j,k,m, nsegs, start, stop; 
   PyObject *a, *b, *pair;
   PyObject *sharelocs, *loc;
