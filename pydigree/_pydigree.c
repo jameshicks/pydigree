@@ -134,13 +134,12 @@ PyObject* sample_with_replacement_interface(PyObject* self, PyObject* args) {
 
 
 PyObject* sample_with_replacement(PyObject* population, long int n) {
-  /* TODO: figureout my long int situation */ 
   PyObject* sample = PyList_New(n); 
   Py_ssize_t population_size = PyList_Size(population);   
   Py_ssize_t i; 
   for (i=0;i < n; i++) {
-    long int r = rand_int_range(0,(int)population_size-1); 
-    PyObject* draw = PyList_GetItem(population,r);
+    int r = rand_int_range(0,(int)population_size-1); 
+    PyObject* draw = PyList_GetItem(population,(Py_ssize_t)r);
     PyList_SET_ITEM(sample,i,draw);
     Py_INCREF(draw);
   }
@@ -212,6 +211,7 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
   PyObject *anc_genotypes = NULL;
   PyObject *anc_chromosomes = NULL;
   PyObject *anc_chromosome = NULL;
+
   for (i=0; i < chromlength; i++) {
     PyObject* listitem = PyList_GET_ITEM(chromatid, i);
     PyObject* ancestor = PyTuple_GET_ITEM(listitem, 0);
@@ -285,18 +285,18 @@ inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nm
 
   /* Start incrementing */
   for (i=0; i < naff; i++) {
-    //a = PyList_GET_ITEM(affecteds, i);
     a = inds[i];
     for (j=i+1; j < naff; j++) {
-      //b = PyList_GET_ITEM(affecteds, j); 
       b = inds[j];
+
       /* Get shares between individuals */
       pair = PyFrozenSet_New(NULL);
       PySet_Add(pair, a);
       PySet_Add(pair, b);
       sharelocs = PyDict_GetItem(shared, pair);
       if (sharelocs == NULL) {
-	/* I'm expecting a KeyError here but in the case of anything
+	/* 
+	   I'm expecting a KeyError here but in the case of anything
 	   I'm just going to skip it anyway
 	*/
 	PyErr_Clear();
@@ -321,10 +321,12 @@ inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nm
   /* Make results into a numpy array */
   npy_intp dims[1] = {nmark};
   nsharesarray = PyArray_SimpleNew(1, &dims, NPY_UINT16);
+
   for (i=0; i < nmark; i++) {
     void *itemPtr = PyArray_GETPTR1(nsharesarray, i);
     PyArray_SETITEM(nsharesarray, itemPtr, PyLong_FromUnsignedLong(shares[i]));
   }
+
 
   return PyArray_Return(nsharesarray);
 }
