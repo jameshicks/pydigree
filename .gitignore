@@ -1,3 +1,5 @@
+*DS_Store
+
 ###### Python ignores
 *.py[cod]
 
@@ -35,6 +37,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Profiles
+*.lprof
 
 ####### C ignores
 
