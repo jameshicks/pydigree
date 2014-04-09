@@ -102,7 +102,6 @@ class Individual(object):
         Returns a tuple of alleles, in the format:
         paternal allele, maternal allele
         """
-        self.__fail_on_observed_genos()
         if not self.has_genotypes():
             raise ValueError('Individual has no genotypes!')
         chr, pos = location
