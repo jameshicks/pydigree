@@ -196,8 +196,14 @@ class Population(MutableMapping):
             newpop[newind.id] = newind
         self.population = newpop
 
-    def _founder_ind(self):
-        return Individual(self, self.size(), None, None, random.choice([0, 1]))
+    def _founder_ind(self, register=True, sex=None):
+        if sex is not None:
+            sex = sex.tolower()
+        sexd = {'m': 0, 'f': 1, None: random.choice([0, 1])}
+        i = Individual(self, self.size(), None, None, sexd[sex])
+        if register:
+            self.register_individual(i)
+        return i
 
     def add_founder_individual(self):
         i = self._founder_ind()
