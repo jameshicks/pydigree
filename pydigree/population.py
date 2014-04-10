@@ -198,7 +198,7 @@ class Population(MutableMapping):
 
     def _founder_ind(self, register=True, sex=None):
         if sex is not None:
-            sex = sex.tolower()
+            sex = sex.lower()
         sexd = {'m': 0, 'f': 1, None: random.choice([0, 1])}
         i = Individual(self, self.size(), None, None, sexd[sex])
         if register:
