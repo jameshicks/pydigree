@@ -247,6 +247,20 @@ class Population(MutableMapping):
 
     def alleles(self, location, constraint=None):
         """
+        Returns the set of available alleles at a locus in the population.
+
+        The argument constraint is a function that acts on an individual. If
+        constraint(individual) can evaluate as True that person is included
+        """
+        if not constraint:
+            constraint = lambda x: True
+        gen = (x for x in self if constraint(x))
+        alleles = reduce(set.union, (set(x.get_genotype(location))
+            for x in gen if x.has_genotypes() )) - {0}
+        return alleles
+
+    def allele_list(self, location, constraint=None):
+        """
         The list of available alleles at a location in this population
 
         The argument constraint is a function that acts on an individual. If
@@ -266,7 +280,7 @@ class Population(MutableMapping):
         The argument constraint is a function that acts on an individual. If
         constraint(individual) can evaluate as True that person is included
         """
-        alleles = self.alleles(location, constraint=constraint)
+        alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
         if allele not in freqtab:
             return 0
@@ -285,7 +299,7 @@ class Population(MutableMapping):
         -----
         the major allele at a locus (type depends on how genotypes are stored)
         """
-        alleles = self.alleles(location, constraint=constraint)
+        alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
         return sorted(freqtab.keys(), key=lambda x: freqtab[x])[0]
 
