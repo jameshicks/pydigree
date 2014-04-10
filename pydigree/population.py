@@ -196,7 +196,7 @@ class Population(MutableMapping):
             newpop[newind.id] = newind
         self.population = newpop
 
-    def _founder_ind(self, register=True, sex=None):
+    def founder_individual(self, register=True, sex=None):
         if sex is not None:
             sex = sex.lower()
         sexd = {'m': 0, 'f': 1, None: random.choice([0, 1])}
@@ -204,10 +204,6 @@ class Population(MutableMapping):
         if register:
             self.register_individual(i)
         return i
-
-    def add_founder_individual(self):
-        i = self._founder_ind()
-        self.register_individual(i)
 
     ### Genotype Functions
     ###
