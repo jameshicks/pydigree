@@ -7,6 +7,7 @@ from pydigree import Individual
 
 
 class ConstrainedMendelianSimulation(Simulation):
+
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)
         for ind in self.template.individuals():
