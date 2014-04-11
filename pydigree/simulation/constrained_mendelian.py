@@ -12,7 +12,7 @@ class ConstrainedMendelianSimulation(Simulation):
         for ind in self.template.individuals():
             if ind.is_founder():
                 continue
-            if not ind.father.is_founder() and not ind.mother.is_founder():
+            if not (ind.father.is_founder() or ind.mother.is_founder()):
                 raise ValueError("ConstrainedMendelian only available"
                                  "for outbred pedigrees")
 
