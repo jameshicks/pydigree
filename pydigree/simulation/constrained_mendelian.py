@@ -17,7 +17,7 @@ class ConstrainedMendelianSimulation(Simulation):
                 raise ValueError("ConstrainedMendelian only available"
                                  "for outbred pedigrees")
 
-    def replicate(self, verbose=False):
+    def replicate(self, verbose=False, linkeq=True):
         self.template.clear_genotypes()
         for ped in self.template:
             for x in ped.founders():
@@ -64,10 +64,10 @@ class ConstrainedMendelianSimulation(Simulation):
             for ind in ped.founders():
                 ind.clear_genotypes()
                 if ind not in geno_constraints:
-                    ind.get_genotypes(linkeq=True)
+                    ind.get_genotypes(linkeq=linkeq)
                 else:
                     ind.get_constrained_genotypes(geno_constraints[ind],
-                                                  linkeq=True)
+                                                  linkeq=linkeq)
             # Now replace the label genotypes in the nonfounders with the
             # genotypes of the founders
             for nf in ped.nonfounders():
