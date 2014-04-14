@@ -17,12 +17,12 @@ from recombination import recombine
 from pydigree._pydigree import sample_with_replacement, random_pairs
 from pydigree._pydigree import choice_with_probs
 
-
+missing_genotype = (0, 0)
 def is_missing_genotype(g):
-    return g == (0, 0)
+    return g == missing_genotype
 
 
-### Population growth models.
+# Population growth models.
 # These are easy enough to supply your own if you wanted
 def exponential_growth(p, r, t):
     """
@@ -31,7 +31,7 @@ def exponential_growth(p, r, t):
     r: growth rate
     t: number of generations
     """
-    return p*math.exp(r*t)
+    return p * math.exp(r * t)
 
 
 def logistic_growth(p, r, k, t):
@@ -42,12 +42,13 @@ def logistic_growth(p, r, k, t):
     k: final population
     t: number of generations
     """
-    return (p*k) / (p + (k-p) * math.exp(-r*t))
+    return (p * k) / (p + (k - p) * math.exp(-r * t))
 
 
 # Classes
 class Population(MutableMapping):
-    ### Methods for mapping types
+    # Methods for mapping types
+
     def __init__(self, intial_pop_size=0, name=None):
         self.chromosomes = []
         self.pool = []
@@ -55,9 +56,9 @@ class Population(MutableMapping):
         self.n0 = intial_pop_size
         self.name = name
 
-    ### Things I have to implement for the ABC
-    ###
-    ###
+    # Things I have to implement for the ABC
+    #
+    #
     def __iter__(self):
         return iter(self.population.values())
 
@@ -85,9 +86,9 @@ class Population(MutableMapping):
         for x in self:
             x.remove_ancestry()
 
-    ### Adding and removing people
-    ###
-    ###
+    # Adding and removing people
+    #
+    #
     def register_individual(self, ind):
         if ind.id in self.population:
             raise ValueError('ID %s already in population!' % ind.id)
@@ -122,9 +123,9 @@ class Population(MutableMapping):
         """ Returns a list of founders in population """
         return [x for x in self if not x.is_founder()]
 
-    ### Chromosome functions
-    ###
-    ###
+    # Chromosome functions
+    #
+    #
     def add_chromosome(self, chrom):
         """ Adds a chromosome to the population """
         self.chromosomes.append(chrom)
@@ -133,9 +134,9 @@ class Population(MutableMapping):
         """ Returns the number of chromosomes in this population """
         return len(self.chromosomes)
 
-    ### Chromosome pool functions
-    ###
-    ###
+    # Chromosome pool functions
+    #
+    #
     def chrom_pool_size(self):
         """ Returns the size of the pool of available chromosomes """
         return len(self.pool[0])
@@ -171,9 +172,9 @@ class Population(MutableMapping):
                   for x in xrange(gensize)]
             self.pool[i] = np
 
-    ### Random mating
-    ###
-    ###
+    # Random mating
+    #
+    #
     def mate(self, ind1, ind2, id):
         """
         Creates an individual as the child of two specificied individual
@@ -205,9 +206,9 @@ class Population(MutableMapping):
             self.register_individual(i)
         return i
 
-    ### Genotype Functions
-    ###
-    ###
+    # Genotype Functions
+    #
+    #
     def get_founder_genotypes(self):
         if not self.pool:
             raise ValueError('Nothing in chromosome pool')
@@ -230,8 +231,8 @@ class Population(MutableMapping):
         for x in self:
             x.clear_genotypes()
 
-    ### Frequency functions
-    ###
+    # Frequency functions
+    #
     def missingness(self, location):
         """
         Returns the percentage of individuals in the population missing a
@@ -239,7 +240,7 @@ class Population(MutableMapping):
         """
         genotypes = [x.get_genotype(location) for x in self]
         tab = table(genotypes)
-        return tab[(0, 0)] / float(len(genotypes))
+        return tab[missing_genotype] / float(len(genotypes))
 
     def alleles(self, location, constraint=None):
         """
@@ -252,7 +253,7 @@ class Population(MutableMapping):
             constraint = lambda x: True
         gen = (x for x in self if constraint(x))
         alleles = reduce(set.union, (set(x.get_genotype(location))
-            for x in gen if x.has_genotypes() )) - {0}
+                                     for x in gen if x.has_genotypes())) - {0}
         return alleles
 
     def allele_list(self, location, constraint=None):
@@ -298,6 +299,11 @@ class Population(MutableMapping):
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
         return sorted(freqtab.keys(), key=lambda x: freqtab[x])[0]
+
+    def haplotype_frequency(self, *args):
+        matches = {x for x in self if
+                   all(x.has_allele(loc, allele) for loc, allele in args)}
+        return len(matches) / (2.0 * self.size())
 
     def ld(self, locusa, locusb, allelea=None, alleleb=None, method='r2'):
         """
@@ -363,16 +369,16 @@ class Population(MutableMapping):
             return D
         elif method == 'dprime':
             if D > 0:
-                Dmax = min(p1*q1, p2*q2)
+                Dmax = min(p1 * q1, p2 * q2)
             else:
-                Dmax = min(p2*q1, p1*q2)
+                Dmax = min(p2 * q1, p1 * q2)
             return D / Dmax
         elif method == 'r2':
-            return (D**2) / (p1 * p2 * q1 * q2)
+            return (D ** 2) / (p1 * p2 * q1 * q2)
 
-    ### Phenotype functions
-    ###
-    ###
+    # Phenotype functions
+    #
+    #
     def predict_phenotype(self, trait):
         """
         Shortcut function to call predict_phenotype(trait) for every individual
