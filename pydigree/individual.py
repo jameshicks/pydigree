@@ -10,8 +10,9 @@ from common import *
 from _pydigree import chromatid_delabeler
 
 
+missing_genotype = (0, 0)
 def is_missing_genotype(g):
-    return g == (0, 0)
+    return g == missing_genotype
 
 
 class Individual(object):
@@ -60,8 +61,8 @@ class Individual(object):
         self.father.register_child(self)
         self.mother.register_child(self)
 
-    ### Functions about genotypes
-    ###
+    # Functions about genotypes
+    #
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
         return self.genotypes is not None
@@ -143,8 +144,8 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        g = [ [[(self,0)]*len(x.genetic_map), [(self,1)]*len(x.genetic_map)]
-              for x in self.population.chromosomes ]
+        g = [[[(self, 0)] * len(x.genetic_map), [(self, 1)] * len(x.genetic_map)]
+             for x in self.population.chromosomes]
         self.genotypes = g
 
     def delabel_genotypes(self):
@@ -158,8 +159,8 @@ class Individual(object):
         self.observed_genos = False
         self.genotypes = None
 
-    ### Functions about ancestry and family
-    ###
+    # Functions about ancestry and family
+    #
     def is_founder(self):
         """ Returns true if individual is a founder """
         return self.father is None and self.mother is None
@@ -264,8 +265,8 @@ class Individual(object):
             self.attrib['inbreed'] = kinship(self.father, self.mother)
             return self.attrib['inbreed']
 
-    ### Functions for breeding
-    ###
+    # Functions for breeding
+    #
 
     def gamete(self):
         """ Provides a set of half-genotypes to use with method fertilize """
@@ -303,7 +304,7 @@ class Individual(object):
         """
         return [[x, y] for x, y in itertools.izip(father, mother)]
 
-    ### Phenotype functions
+    # Phenotype functions
     def predict_phenotype(self, trait):
         """ Predicts phenotypes from a given trait architecture and sets it """
         self.phenotypes[trait.name] = self.predicted_phenotype(trait)
