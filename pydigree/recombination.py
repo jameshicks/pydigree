@@ -5,6 +5,7 @@ import random
 from array import array
 from bisect import bisect_left
 
+import numpy as np
 
 def recombine(chr1, chr2, map):
     newchrom = _recombine_haldane(chr1, chr2, map)
@@ -18,10 +19,11 @@ def recombine(chr1, chr2, map):
 def _recombine_haldane(chr1, chr2, map):
     # The map is sorted list, and the last item will always be largest.
     maxmap = map[-1]
+    nmark = len(map)
+    newchrom = [None]*nmark
 
-    newchrom = [None]*len(map)
     # Randomly pick a chromosome to start from
-    flipped = random.choice([True, False])
+    flipped = random.choice((True, False))
     last_crossover_index = 0
     crossover_position = 0
     while True:
@@ -30,7 +32,10 @@ def _recombine_haldane(chr1, chr2, map):
         c = chr1 if flipped else chr2
 
         # Find the next crossover point
-        crossover_position += random.expovariate(0.01)
+        # np.random.exponential is parameterized with the RECIPROCAL of the
+        # rate parameter. With random.expovariate I would have used (0.01),
+        # here I supply 100 as an argument. 
+        crossover_position += np.random.exponential(100)
 
         if crossover_position > maxmap:
             # We've reached the end of our journey here.
@@ -38,7 +43,7 @@ def _recombine_haldane(chr1, chr2, map):
             break 
 
         # Find the next crossover point in the chromosome by binary search
-        nextidx = bisect_left(map, crossover_position)
+        nextidx = bisect_left(map, crossover_position, last_crossover_index, nmark)
         newchrom[last_crossover_index:nextidx] = c[last_crossover_index:nextidx]
         
         # Get ready to do it all over again
