@@ -4,8 +4,6 @@
 #include <numpy/arrayobject.h>
 /* Function Prototypes */ 
 
-PyObject* haldane_interface(PyObject* self, PyObject* args);
-PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l);
 
 PyObject* sample_with_replacement_interface(PyObject* self, PyObject* args);
 PyObject* sample_with_replacement(PyObject* population, long int n);
@@ -29,8 +27,6 @@ PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
 static char module_docstring[] =
   "This sub-module provides C implementations of time-intensive pydigree functions";
 
-static char haldane_docstring[] = "Takes 3 python lists, chromA, chromB, and map. The map is a list of floats indicating\
- the map position";
 static char sample_repl_docstring[] = "Randomly choses n individuals (with replacement) from the population";
 static char pairs_docstring[] = "Returns a list of n pairs from sampled with replacement from population"; 
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
@@ -39,7 +35,6 @@ static char linkeq_chrom_docstring[] = "Returns a chromosome with all markers in
 static char sgs_shares_docstring[] = "Returns the proportion of individual pairs IBD";
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
-  {"recombine_haldane", haldane_interface, METH_VARARGS, haldane_docstring},
   {"sample_with_replacement", sample_with_replacement_interface, METH_VARARGS, sample_repl_docstring},
   {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
@@ -85,42 +80,6 @@ static inline double rexp(double rate) {
 
 
 
-PyObject* haldane_interface(PyObject* self, PyObject* args) {
-  PyObject *chromA,*chromB, *map;
-  if (!PyArg_ParseTuple(args, "OOO", &chromA, &chromB, &map)) return NULL;
-  Py_ssize_t length = PySequence_Size(chromA);
-  PyObject* nc = recombine_haldane(chromA,chromB,map,length);
-  return nc;
-
-}
-
-PyObject* recombine_haldane(PyObject* A, PyObject* B, PyObject* map, Py_ssize_t l) {
-  Py_ssize_t i;
-  unsigned char flipped = (lrand48() & 1) ? 1 : 0;
-  double recombination_site = rexp(0.01);
-  PyObject* newchrom = PyList_New(l);
-  for (i = 0; i < l; i++) {
-
-    /* Do we cross over? */ 
-    double position = PyFloat_AsDouble( PyList_GetItem(map,i) );
-    if (recombination_site < position) {
-      flipped = !flipped;
-      recombination_site = rexp(0.01);
-    }
-    
-    /* Put it on the new chromatid */
-    /*
-       FIXME: check if I'm leaking memory here. PyList used to return a
-       borrowed reference for GetItem, but PySequence returns a new reference!
-    */
-
-    PyObject* allele = PySequence_GetItem(flipped ? B : A, i);
-    Py_INCREF(allele);
-    PyList_SET_ITEM(newchrom,i,allele);
-
-  }
-  return newchrom;
-}
 
 /* sampling with replacement */
 
