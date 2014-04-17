@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from common import table
+from pydigree.common import table
 
 ### Functions for finding paths through pedigrees
 

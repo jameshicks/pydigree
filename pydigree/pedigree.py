@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from common import *
-from population import Population
-from paths import kinship, fraternity
+from pydigree.common import *
+from pydigree.population import Population
+from pydigree.paths import kinship, fraternity
 
 
 class Pedigree(Population):

@@ -1,7 +1,8 @@
 import random
 
 from pydigree.common import *
-from simulation import *
+from pydigree.simulation import *
+from pydigree.simulation.simulation import Simulation, SimulationError
 from pydigree import paths
 from pydigree import Individual
 

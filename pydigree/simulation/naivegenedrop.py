@@ -1,7 +1,7 @@
 from __future__ import division
 
-from architecture import Architecture
-from simulation import Simulation, SimulationError
+from pydigree.simulation.architecture import Architecture
+from pydigree.simulation.simulation import Simulation, SimulationError
 
 
 class NaiveGeneDroppingSimulation(Simulation):

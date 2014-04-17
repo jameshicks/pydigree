@@ -4,10 +4,10 @@ import itertools
 import random
 from itertools import izip
 
-from recombination import recombine
-from paths import *
-from common import *
-from _pydigree import chromatid_delabeler
+from pydigree.recombination import recombine
+from pydigree.paths import *
+from pydigree.common import *
+from pydigree._pydigree import chromatid_delabeler
 
 
 missing_genotype = (0, 0)

@@ -1,1 +1,1 @@
-from shares import nshares
+from pydigree.sgs.shares import nshares

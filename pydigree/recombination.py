@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from array import array
-from _pydigree import recombine_haldane
+from pydigree._pydigree import recombine_haldane
 
 
 def recombine(chr1, chr2, map):

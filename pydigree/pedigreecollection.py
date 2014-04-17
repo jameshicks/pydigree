@@ -2,9 +2,11 @@
 
 from common import *
 from operator import add
-from pedigree import Pedigree
-from scipy.sparse import block_diag
 from collections import MutableMapping
+
+from scipy.sparse import block_diag
+
+from pydigree.pedigree import Pedigree
 
 
 class PedigreeCollection(MutableMapping):
