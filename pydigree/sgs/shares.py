@@ -1,4 +1,3 @@
-import numpy as np
 from pydigree._pydigree import sgs_shares
 
 def nshares(affecteds, shared, nmark):
