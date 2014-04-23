@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import random
-
 from array import array
 from bisect import bisect_left
 
@@ -23,7 +21,10 @@ def _recombine_haldane(chr1, chr2, map):
 
     newchrom = []
     # Randomly pick a chromosome to start from
-    flipped = random.choice((True, False))
+    # np.random.randint works on a half open interval, so the upper bound 
+    # specified is 2. We'll get zeros and ones out of it.
+    flipped = np.random.randint(0,2)
+
     last_crossover_index = 0
     crossover_position = 0
     while True:
