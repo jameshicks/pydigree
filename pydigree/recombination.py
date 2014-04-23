@@ -20,8 +20,8 @@ def _recombine_haldane(chr1, chr2, map):
     # The map is sorted list, and the last item will always be largest.
     maxmap = map[-1]
     nmark = len(map)
-    newchrom = [None]*nmark
 
+    newchrom = []
     # Randomly pick a chromosome to start from
     flipped = random.choice((True, False))
     last_crossover_index = 0
@@ -39,12 +39,12 @@ def _recombine_haldane(chr1, chr2, map):
 
         if crossover_position > maxmap:
             # We've reached the end of our journey here.
-            newchrom[last_crossover_index:] = c[last_crossover_index:]
+            newchrom.extend(c[last_crossover_index:])
             break 
 
         # Find the next crossover point in the chromosome by binary search
         nextidx = bisect_left(map, crossover_position, last_crossover_index, nmark)
-        newchrom[last_crossover_index:nextidx] = c[last_crossover_index:nextidx]
+        newchrom.extend(c[last_crossover_index:nextidx])
         
         # Get ready to do it all over again
         last_crossover_index = nextidx
