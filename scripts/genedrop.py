@@ -8,7 +8,7 @@ import itertools
 def sharepairs(ped, inds, loc):
     from pydigree import count,ibs
     npairs = float( len(inds) * (len(inds)-1)/2 ) 
-    r = [ibs(j.get_genotype(loc), k.get_genotype(loc)) for j,k
+    r = [ibs(j.get_genotype(loc), k.get_genotype(loc)) > 0 for j,k
          in itertools.combinations(inds,2)]
     return count(True,r) / npairs
 
