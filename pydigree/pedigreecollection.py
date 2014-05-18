@@ -29,10 +29,6 @@ class PedigreeCollection(MutableMapping):
         return len(self.pedigrees)
 
     def __setitem__(self, key, value):
-        # All pedigrees have to have the same population
-        if not all(ped.population is value.population for ped in self):
-            raise ValueError("Pop for %s doesn't match collection" % value)
-
         self.pedigrees[key] = value
 
     def __delitem__(self, key):
