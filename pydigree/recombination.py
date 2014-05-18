@@ -5,7 +5,7 @@ from bisect import bisect_left
 
 import numpy as np
 
-@profile
+
 def recombine(chr1, chr2, map):
     newchrom = _recombine_haldane(chr1, chr2, map)
     if isinstance(chr1, array) and isinstance(chr2, array):
@@ -14,7 +14,7 @@ def recombine(chr1, chr2, map):
         newchrom = array(chr1.typecode, newchrom)
     return newchrom
 
-@profile
+
 def _recombine_haldane(chr1, chr2, map):
     # An optimization for gene dropping procedures on IBD states.
     # If there is only one marker, choose one at random, and return that.
