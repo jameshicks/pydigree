@@ -3,6 +3,9 @@
 ###### Python ignores
 *.py[cod]
 
+# Line profiler output
+*.prof 
+
 # C extensions
 *.so
 
