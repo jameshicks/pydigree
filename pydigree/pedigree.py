@@ -8,6 +8,7 @@ from pydigree.paths import kinship, fraternity
 
 
 class Pedigree(Population):
+
     def __init__(self, label=None):
         Population.__init__(self)
         self.label = label
@@ -32,7 +33,7 @@ class Pedigree(Population):
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
 
-    ### Frequency
+    # Frequency
     def alleles(self, location, constraint=None, nonfounders=False):
         """
         Like Population.alleles, except constrained to founder individuals
@@ -65,8 +66,8 @@ class Pedigree(Population):
     def ld(self):
         raise NotImplementedError('LD not meaningful for pedigrees?')
 
-    ### Relationships
-    ###
+    # Relationships
+    #
     def kinship(self, id1, id2):
         """
         Get the Malecot coefficient of coancestry for two individuals in
@@ -262,9 +263,9 @@ class Pedigree(Population):
             mat.append(row)
         return np.matrix(mat)
 
-    ### Gene dropping
-    ###
-    def simulate_ibd_states(self):
+    # Gene dropping
+    #
+    def simulate_ibd_states(self, inds=None):
         """
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect
         the founder chromosome that they received the genotype from. You can
@@ -276,5 +277,9 @@ class Pedigree(Population):
         self.clear_genotypes()
         for x in self.founders():
             x.label_genotypes()
-        for x in self.nonfounders():
-            x.get_genotypes()
+        if inds:
+            for x in inds:
+                x.get_genotypes()
+        else:
+            for x in self.nonfounders():
+                x.get_genotypes()
