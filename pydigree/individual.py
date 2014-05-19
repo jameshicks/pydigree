@@ -11,6 +11,8 @@ from pydigree._pydigree import chromatid_delabeler
 
 
 missing_genotype = (0, 0)
+
+
 def is_missing_genotype(g):
     return g == missing_genotype
 
@@ -98,15 +100,16 @@ class Individual(object):
             self.genotypes = Individual.fertilize(self.father.gamete(),
                                                   self.mother.gamete())
 
-    def get_genotype(self, location):
+    def get_genotype(self, loc, checkhasgeno=True):
         """
         Returns a tuple of alleles, in the format:
         paternal allele, maternal allele
         """
-        if not self.has_genotypes():
+        if checkhasgeno and not self.has_genotypes():
             raise ValueError('Individual has no genotypes!')
-        chr, pos = location
-        return tuple([x[pos] for x in self.genotypes[chr]])
+
+        return (self.genotypes[loc[0]][0][loc[1]],
+                self.genotypes[loc[0]][1][loc[1]])
 
     def get_constrained_genotypes(self, constraints, linkeq=True):
         self.get_genotypes(linkeq=linkeq)
