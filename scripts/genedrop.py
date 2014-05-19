@@ -44,7 +44,7 @@ scorefunction = sbool
 
 pop = pydigree.Population(5000)
 peds = pydigree.io.read_ped(args.file, pop)
-for ped in peds:
+for ped in sorted(peds, key=lambda q: q.label):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
 
