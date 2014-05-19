@@ -273,6 +273,7 @@ class Pedigree(Population):
 
         Returns: Nothing
         """
+        self.clear_genotypes()
         for x in self.founders():
             x.label_genotypes()
         for x in self.nonfounders():
