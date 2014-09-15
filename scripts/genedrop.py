@@ -18,7 +18,7 @@ parser.add_argument('--only', metavar='PED',
                     nargs='*', dest='onlypeds')
 parser.add_argument('--obs', type=float, default=1.0,
                     help='Maximum observed value of test statistic')
-parser.add_argument('--writedist', action='store_true',
+parser.add_argument('--writedist', 
                     help='Write null distribution to file')
 args = parser.parse_args()
 
@@ -44,6 +44,9 @@ scorefunction = sbool
 
 pop = pydigree.Population(5000)
 peds = pydigree.io.read_ped(args.file, pop)
+
+nulldist = {}
+
 for ped in sorted(peds, key=lambda q: q.label):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
@@ -61,15 +64,12 @@ for ped in sorted(peds, key=lambda q: q.label):
 
     sim_share = [genedrop(ped, affs, scorefunction, x)
                  for x in xrange(args.niter)]
-
+    nulldist[ped.label] = sim_share
     print "Maximum simulated allele sharing: %s" % max(sim_share)
     print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
 
-    if not args.writedist:
-        continue
-    ofilename = '%s.null.dist' % ped.label
-    print "Outputting distribution to %s" % ofilename
-    with open(ofilename, 'w') as of:
-        for s in sim_share:
-            of.write(str(s))
-            of.write('\n')
+if args.writedist:
+    with open(args.writedist, 'w') as of:
+        print "Outputting distribution to %s" % args.writedist
+        for ped in sorted(peds, key=lambda q: q.label):
+            of.write('{} {}\n'.format(ped.label, ' '.join(str(x) for x in nulldist[ped.label])))
