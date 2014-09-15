@@ -11,7 +11,7 @@ from pydigree import ibs
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', required=True,
                     help='Pedigree file for simulations')
-parser.add_argument('-n', '--niter', type=int, default=10000,
+parser.add_argument('-n', '--niter', type=lambda x: int(float(x)), default=10000,
                     help='Number of simulations per pedigree')
 parser.add_argument('--only', metavar='PED',
                     help='Only simulate specified pedigrees',
