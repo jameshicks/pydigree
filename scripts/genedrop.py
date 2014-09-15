@@ -6,6 +6,8 @@ import time
 import itertools
 import argparse
 
+import numpy as np
+
 from pydigree import ibs
 
 parser = argparse.ArgumentParser()
@@ -62,13 +64,16 @@ for ped in sorted(peds, key=lambda q: q.label):
 
     print "Pedigree %s, %s simulations" % (ped.label, args.niter)
 
-    sim_share = [genedrop(ped, affs, scorefunction, x)
-                 for x in xrange(args.niter)]
+    sim_share = np.array([genedrop(ped, affs, scorefunction, x)
+                             for x in xrange(args.niter)])
     nulldist[ped.label] = sim_share
     print 
 #    print "Maximum simulated allele sharing: %s" % max(sim_share)
 #    print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
 
+print '\t'.join(['Pedigree','Min','Mean','Max'])
+for ped, dist in nulldist.iteritems():
+    print '\t'.join(str(q) for q in [ped, dist.min(), dist.mean(), dist.max()])
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
