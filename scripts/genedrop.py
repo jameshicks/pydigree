@@ -65,8 +65,10 @@ for ped in sorted(peds, key=lambda q: q.label):
     sim_share = [genedrop(ped, affs, scorefunction, x)
                  for x in xrange(args.niter)]
     nulldist[ped.label] = sim_share
-    print "Maximum simulated allele sharing: %s" % max(sim_share)
-    print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
+    print 
+#    print "Maximum simulated allele sharing: %s" % max(sim_share)
+#    print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
+
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
