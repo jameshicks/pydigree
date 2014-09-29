@@ -53,6 +53,10 @@ for ped in sorted(peds, key=lambda q: q.label):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
 
+    if len([x for x in ped if x.phenotypes['affected']]) < 2:
+        print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
+        continue
+
     # Clear the genotypes, if present
     ped.clear_genotypes()
 
