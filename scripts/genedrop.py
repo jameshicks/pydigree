@@ -75,9 +75,15 @@ for ped in sorted(peds, key=lambda q: q.label):
 #    print "Maximum simulated allele sharing: %s" % max(sim_share)
 #    print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
 
+def stringify(n):
+    if type(n) is str:
+        return n
+    else:
+        return "{:.1e}".format(n)
+
 print '\t'.join(['Pedigree','Min','Mean','Max'])
 for ped, dist in nulldist.iteritems():
-    print '\t'.join(str(q) for q in [ped, dist.min(), dist.mean(), dist.max()])
+    print '\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.max()])
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
