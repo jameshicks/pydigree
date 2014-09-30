@@ -49,7 +49,7 @@ peds = pydigree.io.read_ped(args.file, pop)
 
 nulldist = {}
 
-for ped in sorted(peds, key=lambda q: q.label):
+for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
 
@@ -66,7 +66,7 @@ for ped in sorted(peds, key=lambda q: q.label):
 
     affs = [x for x in ped if x.phenotypes['affected']]
 
-    print "Pedigree %s, %s simulations" % (ped.label, args.niter)
+    print "Pedigree %s (%s/%s), %s simulations" % (ped.label, i+1, len(peds),  args.niter)
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
                              for x in xrange(args.niter)])
