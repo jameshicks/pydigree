@@ -5,8 +5,13 @@ from bisect import bisect_left
 
 import numpy as np
 
-
 def recombine(chr1, chr2, map):
+    # An optimization for gene dropping procedures on IBD states.
+    # If there is only one marker, choose one at random, and return that.
+    # There's no need for searching through the map to find crossover points
+    if len(map) == 1:
+        return chr1 if np.random.randint(0, 2) else chr2
+
     newchrom = _recombine_haldane(chr1, chr2, map)
     if isinstance(chr1, array) and isinstance(chr2, array):
         if chr1.typecode != chr2.typecode:
@@ -16,12 +21,6 @@ def recombine(chr1, chr2, map):
 
 
 def _recombine_haldane(chr1, chr2, map):
-    # An optimization for gene dropping procedures on IBD states.
-    # If there is only one marker, choose one at random, and return that.
-    # There's no need for searching through the map to find crossover points
-    if len(map) == 1:
-        return chr1 if np.random.randint(0, 2) else chr2
-
     # The map is sorted list, and the last item will always be largest.
     maxmap = map[-1]
     nmark = len(map)
