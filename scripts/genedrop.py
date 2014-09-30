@@ -89,4 +89,7 @@ if args.writedist:
     with open(args.writedist, 'w') as of:
         print "Outputting distribution to %s" % args.writedist
         for ped in sorted(peds, key=lambda q: q.label):
-            of.write('{} {}\n'.format(ped.label, ' '.join(str(x) for x in nulldist[ped.label])))
+            try:
+                of.write('{} {}\n'.format(ped.label, ' '.join(str(x) for x in nulldist[ped.label])))
+            except KeyError:
+                pass
