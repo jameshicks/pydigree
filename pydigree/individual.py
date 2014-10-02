@@ -221,7 +221,7 @@ class Individual(object):
         if self.is_founder():
             return self.id
         else:
-            return self.father.matriline()
+            return self.father.patriline()
 
     def depth(self):
         """
