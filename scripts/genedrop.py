@@ -81,9 +81,9 @@ def stringify(n):
     else:
         return "{:.1e}".format(n)
 
-print '\t'.join(['Pedigree','Min','Mean','Max'])
+print '\t'.join(['Pedigree','Min','Mean','SD','Max'])
 for ped, dist in nulldist.iteritems():
-    print '\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.max()])
+    print '\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.std(), dist.max()])
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
