@@ -53,9 +53,6 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
 
-    if len([x for x in ped if x.phenotypes['affected']]) < 2:
-        print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
-        continue
 
     # Clear the genotypes, if present
     ped.clear_genotypes()
@@ -64,9 +61,19 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     c.add_genotype(0.5, 0)
     ped.add_chromosome(c)
 
-    affs = [x for x in ped if x.phenotypes['affected']]
 
-    print "Pedigree %s (%s/%s), %s simulations" % (ped.label, i+1, len(peds),  args.niter)
+    affs = {x for x in ped if x.phenotypes['affected']}
+    for ind in affs.copy():
+        if ind.is_marryin_founder():
+            print 'WARNING: affected individual {}:{} is a married-in founder and was removed from analysis'.format(ind.population.label, ind)
+            affs.remove(ind)
+
+    if len(affs) < 2:
+        print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
+        continue
+    
+
+    print "Pedigree %s (%s/%s), %s affecteds, %s simulations" % (ped.label, i+1, len(peds), len(affs), args.niter)
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
                              for x in xrange(args.niter)])

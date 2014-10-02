@@ -168,6 +168,16 @@ class Individual(object):
         """ Returns true if individual is a founder """
         return self.father is None and self.mother is None
 
+    def is_marryin_founder(self):
+        """
+        Returns true if an individual is a marry-in founder
+        i.e.: the individual is a founder (depth: 0) and has a child with 
+        depth > 1
+        """
+        if not self.is_founder():
+            return False
+        return any(x > 1 for x in self.children)
+
     def parents(self):
         return self.father, self.mother
 
