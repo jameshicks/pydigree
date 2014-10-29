@@ -87,3 +87,24 @@ def invcumsum(iter):
     True
     """
     return [x - iter[i-1] if i > 0 else 0 for i, x in enumerate(iter)]
+
+def runs(sequence, predicate, minlength=2):
+    """
+    Identifies runs of values for which predicate(value) evaluates True
+    and returns a 2-tuple of the start and end (inclusive) indices
+    """
+    inrun = False
+    for i,v in enumerate(sequence):
+        if not inrun and predicate(v):
+            inrun = True
+            start = i
+        elif inrun and not predicate(v):
+            inrun = False
+            stop = i - 1
+            if stop - start >= minlength:
+                yield start, stop
+
+    if predicate(v) and inrun:
+        stop = i
+        if stop - start >= minlength:
+            yield start, stop
