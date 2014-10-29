@@ -87,7 +87,7 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
         continue
     
 
-    print "Pedigree %s (%s/%s), %s affecteds, %s simulations" % (ped.label, i+1, len(peds), len(affs), args.niter)
+    print "Pedigree %s (%s/%s), %s affecteds, %s bits, %s simulations" % (ped.label, i+1, len(peds), len(affs), ped.bit_size(),  args.niter)
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
                              for x in xrange(args.niter)])
