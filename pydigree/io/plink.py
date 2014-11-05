@@ -1,6 +1,32 @@
 from itertools import izip, chain, imap
 
-import pydigree
+from pydigree.common import grouper
+from pydigree.io import read_ped
+
+
+def translate_allele(g):
+    return {'A': 1, 'C': 2, 'G': 3, 'T': 4}[g]
+
+
+def create_pop_handler_func(mapfile):
+    def pop_handler(pop):
+        pop.chromosomes = read_map(mapfile)
+    return pop_handler
+
+
+def plink_data_handler(ind, data):
+    genotypes = grouper(data, 2)
+    chromosomes = ind.population.chromosomes
+    try:
+        for c_idx, chromosome in enumerate(chromosomes):
+            for m_idx, marker in enumerate(chromosome):
+                geno = genotypes.next()
+                locus = c_idx, m_idx
+                ind.set_genotype(locus, geno)
+    except StopIteration:
+        raise ValueError('Ran out of genotypes!')
+    except KeyError:
+        raise ValueError('Invalid genotype: %s' % )
 
 
 def read_map(mapfile):
@@ -25,6 +51,11 @@ def read_map(mapfile):
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos
     return chroms
+
+
+def read_plink(pedfile, mapfile):
+    pop_handler = create_pop_handler_func(mapfile)
+    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler
 
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',

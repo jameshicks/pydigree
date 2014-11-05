@@ -8,7 +8,8 @@ from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.chromosome import Chromosome
 
 
-def read_ped(filename, population=None, delimiter=None, affected_labels=None):
+def read_ped(filename, population=None, delimiter=None, affected_labels=None,
+             population_handler=None, data_handler=None):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -51,6 +52,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None):
             p[id] = Individual(population, id, fa, mo, sex)
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
+            if callable(data_handler):
+                data_handler(p[id], population)
 
         # Fix the individual-level data
         for ind in p:

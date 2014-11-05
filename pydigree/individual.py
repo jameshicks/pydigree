@@ -65,6 +65,11 @@ class Individual(object):
 
     # Functions about genotypes
     #
+    def _init_genotypes(self):
+        """ Initializes genotypes so that all genotypes are missing """
+        self.genotypes = [ [ [None]*len(chrom.genetic_map), [None]*len(chrom.genetic_map) ] 
+                           for chrom in self.population.chromosomes] 
+    
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
         return self.genotypes is not None
