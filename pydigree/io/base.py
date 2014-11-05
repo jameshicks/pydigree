@@ -42,6 +42,10 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         except KeyError:
             return None
 
+    if population_handler:
+        population = Population()
+        population_handler(population)
+
     with open(filename) as f:
         # Parse the lines in the file
         for line in f:
@@ -53,7 +57,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
             if callable(data_handler):
-                data_handler(p[id], population)
+                data_handler(p[id], population, data)
 
         # Fix the individual-level data
         for ind in p:
