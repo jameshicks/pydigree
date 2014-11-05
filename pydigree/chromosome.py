@@ -41,6 +41,9 @@ class Chromosome(object):
         return 'Chromosome object: %s markers, %s cM' % \
             (len(self.frequencies), max(self.genetic_map))
 
+    def __iter__(self):
+        return izip(self.labels, self.genetic_map self.physical_map)
+
     def _iinfo(self):
         return izip(self.label, self.genetic_map, self.physical_map,
                     self.frequencies)
