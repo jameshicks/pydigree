@@ -42,7 +42,7 @@ class Chromosome(object):
             (len(self.frequencies), max(self.genetic_map))
 
     def __iter__(self):
-        return izip(self.labels, self.genetic_map self.physical_map)
+        return izip(self.labels, self.genetic_map, self.physical_map)
 
     def _iinfo(self):
         return izip(self.label, self.genetic_map, self.physical_map,
@@ -53,8 +53,8 @@ class Chromosome(object):
 
     def add_genotype(self, frequency, map_position, label=None, bp=None):
         try:
-            frequency = float(frequency)
-        except ValueError:
+            frequency = float(frequency) if frequency is not None else None
+        except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
         self.frequencies.append(frequency)

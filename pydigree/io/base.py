@@ -49,15 +49,17 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     with open(filename) as f:
         # Parse the lines in the file
         for line in f:
-            fam, id, fa, mo, sex, aff = line.strip().split(delimiter)[0:6]
+            split = line.strip().split(delimiter)
+            fam, id, fa, mo, sex, aff = split[0:6]
             # Give a special id for now, to prevent overwriting duplicated
             # ids between families
             id = (fam, id)
             p[id] = Individual(population, id, fa, mo, sex)
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
-            if callable(data_handler):
-                data_handler(p[id], population, data)
+            if callable(data_handler) and len(split) > 6:
+                data = split[6:]
+                data_handler(p[id],  data)
 
         # Fix the individual-level data
         for ind in p:

@@ -1,7 +1,8 @@
 from itertools import izip, chain, imap
 
 from pydigree.common import grouper
-from pydigree.io import read_ped
+from pydigree.chromosome import Chromosome
+from pydigree.io.base import read_ped
 
 
 def translate_allele(g):
@@ -15,47 +16,46 @@ def create_pop_handler_func(mapfile):
 
 
 def plink_data_handler(ind, data):
+    ind._init_genotypes()
     genotypes = grouper(data, 2)
     chromosomes = ind.population.chromosomes
-    try:
-        for c_idx, chromosome in enumerate(chromosomes):
-            for m_idx, marker in enumerate(chromosome):
-                geno = genotypes.next()
-                locus = c_idx, m_idx
-                ind.set_genotype(locus, geno)
-    except StopIteration:
-        raise ValueError('Ran out of genotypes!')
-    except KeyError:
-        raise ValueError('Invalid genotype: %s' % )
+    loci = ((c_idx, m_idx) for c_idx, chrom in enumerate(chromosomes)
+            for m_idx, marker in enumerate(chrom))
+    for locus, genotype in izip(loci, genotypes):
+        ind.set_genotype(locus, genotype)
 
 
 def read_map(mapfile):
     """ Reads a PLINK map file into a list of chromosome objects """
     last_chr, last_pos = None, 0
     chroms = []
-    chromosome = pydigree.Chromosome()
+    chromosome = None
     with open(mapfile) as f:
-        for line in f:
+        for i,line in enumerate(f):
             line = line.strip().split()
             chr, label, cm, pos = line
-            if int(pos) < 0:
+            cm, pos = float(cm), int(pos)
+            if pos < 0:
                 continue
             if chr != last_chr:
-                # If this happens, we've moved on to a new chromosome
-                # We'll close up the old one and start working on a new
-                # object
-                chroms.append(chromosome)
-                chromosome = pydigree.Chromosome()
+                # If this happens, we've moved on to a new chromosome,
+                # or we've just started. If we haven't just started, We'll 
+                # close up the old one
+                if i > 0:
+                    chroms.append(chromosome)
+                # Make the next chromosome
+                chromosome = Chromosome()
             elif pos < last_pos:
                 raise ValueError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos
+    chroms.append(chromosome)
     return chroms
 
 
 def read_plink(pedfile, mapfile):
     pop_handler = create_pop_handler_func(mapfile)
-    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler
+    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler)
 
 
 def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
