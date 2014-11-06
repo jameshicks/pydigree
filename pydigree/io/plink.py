@@ -44,7 +44,7 @@ def read_map(mapfile):
                 if i > 0:
                     chroms.append(chromosome)
                 # Make the next chromosome
-                chromosome = Chromosome()
+                chromosome = Chromosome(label=chr)
             elif pos < last_pos:
                 raise ValueError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)

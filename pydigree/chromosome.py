@@ -22,7 +22,9 @@ class Chromosome(object):
     initializing a population pool or when simulating purely family-based
     studies for linkage analysis.
     """
-    def __init__(self):
+    def __init__(self, label=None):
+        # Chromosome name
+        self.label = label
         # A list of floats that represent the position of the marker in cM
         self.genetic_map = []
         # A list of integers that doesnt do anything. Just for decoration
@@ -38,14 +40,15 @@ class Chromosome(object):
         self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
-        return 'Chromosome object: %s markers, %s cM' % \
-            (len(self.frequencies), max(self.genetic_map))
+        return 'Chromosome %s: %s markers, %s cM' % \
+            (self.label if self.label is not None else 'object',
+             len(self.frequencies), max(self.genetic_map))
 
     def __iter__(self):
         return izip(self.labels, self.genetic_map, self.physical_map)
 
     def _iinfo(self):
-        return izip(self.label, self.genetic_map, self.physical_map,
+        return izip(self.labels, self.genetic_map, self.physical_map,
                     self.frequencies)
 
     def size(self):
