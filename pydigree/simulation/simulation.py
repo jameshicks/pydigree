@@ -2,7 +2,7 @@ from __future__ import division
 import random
 
 from pydigree.common import *
-from pydigree.io.plink import write_ped
+from pydigree.io.plink import write_plink
 from pydigree.individual import Individual
 
 
@@ -28,8 +28,8 @@ class Simulation(object):
             self.write_data(x, predicate=output_predicate)
 
     def write_data(self, replicatenumber, predicate=None):
-        filename = '{0}-{1}.ped'.format(self.prefix, (replicatenumber + 1))
-        write_ped(self.template, filename, predicate=predicate)
+        filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
+        write_plink(self.template, filename, predicate=predicate)
 
     def predicted_trait_accuracy(self, ped):
         calls = [(ind.predicted_phenotype(self.trait),
