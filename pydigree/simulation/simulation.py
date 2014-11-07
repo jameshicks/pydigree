@@ -21,15 +21,15 @@ class Simulation(object):
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")
 
-    def run(self, verbose=False, output_predicate=None):
+    def run(self, verbose=False, output_predicate=None, compression=None):
         for x in xrange(self.replications):
             print 'Replicate %d' % (x + 1)
             self.replicate(verbose=verbose)
-            self.write_data(x, predicate=output_predicate)
+            self.write_data(x, predicate=output_predicate, compression=compression)
 
-    def write_data(self, replicatenumber, predicate=None):
+    def write_data(self, replicatenumber, predicate=None, compression=None):
         filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
-        write_plink(self.template, filename, predicate=predicate, mapfile=False)
+        write_plink(self.template, filename, predicate=predicate, mapfile=False, compression=compression)
 
     def predicted_trait_accuracy(self, ped):
         calls = [(ind.predicted_phenotype(self.trait),
