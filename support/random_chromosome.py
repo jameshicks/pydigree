@@ -28,4 +28,4 @@ freqs = random_float_range(args.minfreq, 1-args.minfreq)
 for i, data in enumerate(izip(positions_bp, freqs)):
     bp, freq = data
     cm = bp / 1e6
-    print args.name, 'marker{}'.format(i), cm, bp, freq, 1-freq
+    print 'marker{}'.format(i), freq, 1-freq, cm, bp
