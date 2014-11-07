@@ -29,7 +29,7 @@ class Simulation(object):
 
     def write_data(self, replicatenumber, predicate=None):
         filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
-        write_plink(self.template, filename, predicate=predicate)
+        write_plink(self.template, filename, predicate=predicate, mapfile=False)
 
     def predicted_trait_accuracy(self, ped):
         calls = [(ind.predicted_phenotype(self.trait),
