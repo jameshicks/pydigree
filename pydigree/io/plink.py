@@ -58,8 +58,13 @@ def read_plink(pedfile, mapfile):
     return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler)
 
 
-def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
-              predicate=None):
+def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False):
+    write_ped(pedigrees, filename_prefix + '.ped', predicate=predicate)
+    if mapfile:
+        write_map(pedigrees, filename_prefix + '.map')
+
+
+def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
     """
     write_ped writes data in a plink-format PED file, and optionally a
     plink-format map file.
@@ -108,23 +113,22 @@ def write_ped(pedigrees, pedfile, mapfile=None, genotypes=True, delim=' ',
                            1 if ind.sex == 0 else 2,
                            aff]
                 # Get the genotypes in the format we need them
-                if genotypes:
-                    g = []
-                    for chroma, chromb in ind.genotypes:
-                        g.extend(chain.from_iterable(izip(chroma, chromb)))
-                    outline.extend(g)
+                g = []
+                for chroma, chromb in ind.genotypes:
+                    g.extend(chain.from_iterable(izip(chroma, chromb)))
+                outline.extend(g)
+                
                 # Make strings
                 outline = imap(str, outline)
                 # Write it out
                 f.write(delim.join(outline))
                 f.write('\n')
 
-    if not mapfile:
-        return
 
+def write_map(pedigrees, mapfile):
     with open(mapfile, 'w') as f:
-        for ci, chromosome in enumerate(pedigrees.chromosomes):
-            for mi, marker in enumerate(chromosome._iinfo):
+        for ci, chromosome in enumerate(pedigrees.chromosomes()):
+            for mi, marker in enumerate(chromosome._iinfo()):
                 label, cm, mb, frequency = marker
                 if not mb:
                     mb = int(cm * 10e6)
