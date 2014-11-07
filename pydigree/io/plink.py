@@ -3,7 +3,7 @@ from itertools import izip, chain, imap
 from pydigree.common import grouper
 from pydigree.chromosome import Chromosome
 from pydigree.io.base import read_ped
-
+from pydigree.io.smartopen import smartopen as open
 
 def translate_allele(g):
     return {'A': 1, 'C': 2, 'G': 3, 'T': 4}[g]
@@ -58,8 +58,15 @@ def read_plink(pedfile, mapfile):
     return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler)
 
 
-def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False):
-    write_ped(pedigrees, filename_prefix + '.ped', predicate=predicate)
+def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
+                compression=None):
+
+    pedfile = filename_prefix + '.ped'
+    if compression in {'gzip', 'gz'}:
+        pedfile += '.gz'
+    elif compression in {'bzip2', 'bz2'}:
+        pedfile += '.bz2'
+    write_ped(pedigrees, pedfile, predicate=predicate)
     if mapfile:
         write_map(pedigrees, filename_prefix + '.map')
 
