@@ -1,4 +1,7 @@
 from itertools import izip
+
+import numpy as np
+
 from pydigree.common import runs
 from pydigree import Population, PedigreeCollection
 
@@ -11,9 +14,11 @@ def sgs_pedigrees(pc, phaseknown=False):
 def sgs_population(pop, phaseknown=False):
     shared = {}
     for ind1, ind2 in itertools.combinations(pop, 2):
-        for chridx,chromosome in enumerate(ind1.population.chromosomes):
-            shared[pair] = _sgs_unphased(ind1, ind2, chridx)
-                
+        shared[pair] = []
+        for chridx, chromosome in enumerate(ind1.population.chromosomes):
+            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx))
+            shared[pair].append(shares)
+    return shared
 
 def _sgs_unphased(ind1, ind2, chromosome_idx):
     ''' Returns IBD states for each marker along a chromosome '''
@@ -62,3 +67,21 @@ def join_gaps(seq, max_gap=1):
             prev_stop = stop
     yield prev_start, stop 
 
+def make_intervals(ibdarray):
+    ibdarray = ibdarray.copy()
+    # Get the intervals that are IBD=2 and remove them from the array
+    ibd2_tracts = [x for x in runs(ibdarray, lambda x: x==2)]
+    for start, stop in ibd2_tracts:
+        ibdarray[start:(stop+1)] -= 1
+    # Now get the remaining IBD=1 tracts and remove them from the array
+    ibd1_tracts = [x for x in runs(ibdarray, lambda x: x > 0)]
+    for start, stop in ibd1_tracts:
+        ibdarray[start:(stop+1)] -= 1
+
+    return ibd1_tracts + ibd2_tracts
+
+def intervals_to_array(intervals, nmark):
+    array = np.zeros(nmark)
+    for start, stop in interval:
+        array[start:(stop+1)] += 1
+    return array
