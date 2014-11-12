@@ -50,6 +50,9 @@ class Chromosome(object):
     def _iinfo(self):
         return izip(self.labels, self.genetic_map, self.physical_map,
                     self.frequencies)
+    
+    def nmark(self):
+        return len(self.genetic_map)
 
     def size(self):
         return self.genetic_map[-1] - self.genetic_map[0]
