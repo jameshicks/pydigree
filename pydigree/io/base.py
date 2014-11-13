@@ -26,8 +26,6 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
     Returns: An object of class PedigreeCollection
     """
-    p = Pedigree()
-    pc = PedigreeCollection()
     sex_codes = {'1': 0, '2': 1, 'M': 0, 'F': 1, '0': None}
     if not affected_labels:
         affected_labels = {'1': 0, '2': 1,
@@ -42,9 +40,12 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         except KeyError:
             return None
 
+    population = Population()
     if population_handler:
-        population = Population()
         population_handler(population)
+
+    p = Pedigree(basepopulation=population)
+    pc = PedigreeCollection()
 
     with open(filename) as f:
         # Parse the lines in the file
@@ -72,7 +73,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
         # Place individuals into pedigrees
         for pedigree_label in set(ind.id[0] for ind in p):
-            ped = Pedigree(label=pedigree_label)
+            ped = Pedigree(label=pedigree_label, basepopulation=population)
             thisped = [x for x in p if x.id[0] == pedigree_label]
             for ind in thisped:
                 ind.id = ind.id[1]
