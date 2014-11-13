@@ -30,7 +30,7 @@ parser.add_argument('--verbose', action='store_true', dest='verbosity',
                     help='Print verbose output')
 parser.add_argument('--output-filter', dest='predicate', default=None,
                     choices=('affected','phenotyped'), action='store')
-parser.add_argument('--compress', choices=('bzip2', 'gzip') action=store)
+parser.add_argument('--compress', choices=('bzip2', 'gzip'), action='store')
 args = parser.parse_args()
 
 # Read the pedigrees
