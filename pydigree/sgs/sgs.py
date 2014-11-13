@@ -1,8 +1,10 @@
-from itertools import izip
+from itertools import izip, combinations
 
 import numpy as np
 
 from pydigree.common import runs
+from pydigree.misc import ibs
+
 from pydigree import Population, PedigreeCollection
 
 def sgs_pedigrees(pc, phaseknown=False):
@@ -13,36 +15,36 @@ def sgs_pedigrees(pc, phaseknown=False):
 
 def sgs_population(pop, phaseknown=False):
     shared = {}
-    for ind1, ind2 in itertools.combinations(pop, 2):
+    for ind1, ind2 in combinations(pop, 2):
+        pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.population.chromosomes):
             shares = make_intervals(_sgs_unphased(ind1, ind2, chridx))
-            shared[pair].append(shares)
+            shared[pair].append(list(shares))
     return shared
 
 def _sgs_unphased(ind1, ind2, chromosome_idx):
     ''' Returns IBD states for each marker along a chromosome '''
-    min_seg = 100
+    min_seg = 256
     
-    genos1 = izip(ind1.genotypes[chromosome_idx])
-    genos2 = izip(ind2.genotypes[chromosome_idx])
+    genos1 = izip(*ind1.genotypes[chromosome_idx])
+    genos2 = izip(*ind2.genotypes[chromosome_idx])
     identical = [ibs(g1,g2)  for g1, g2 in izip(genos1, genos2)]
 
     ibd_states = np.zeros(ind1.population.chromosomes[chromosome_idx].nmark())
 
     # First get the segments that are IBD=1
-    ibd1 = _process_segments(identical, predicate=lambda x: x > 0 or x is None})
+    ibd1 = _process_segments(identical, min_seg=min_seg, predicate=lambda x: x > 0 or x is None)
     for start, stop in ibd1:
         ibd_states[start:(stop+1)] = 1
 
     # Then the segments that are IBD=2
-    ibd2 = _process_segments(identical, predicate=lambda x: x in {2, None})
+    ibd2 = _process_segments(identical, min_seg=min_seg, predicate=lambda x: x in {2, None})
     for start, stop in ibd2:
         ibd_states[start:(stop+1)] = 2
-    
     return ibd_states
 
-def _process_segments(identical, predicate=lambda x: x)    
+def _process_segments(identical, min_seg=100, predicate=lambda x: x):    
     # IBD segments are long runs of identical genotypes
     ibd = runs(identical, lambda x: x, minlength=min_seg)
     
@@ -56,10 +58,18 @@ def _process_segments(identical, predicate=lambda x: x)
 # Support functions
 
 def join_gaps(seq, max_gap=1):
-    seq = iter(seq)
+    seq = list(seq)
+
+    if not seq:
+        return
+    elif len(seq) == 1:
+        yield seq[0]
+        return
+
+    iseq = iter(seq)
     # Get the first item
-    prev_start, prev_stop = seq.next()
-    for start, stop in seq:
+    prev_start, prev_stop = iseq.next()
+    for start, stop in iseq:
         if start - prev_stop > max_gap:
             yield prev_start, prev_stop
             prev_start, prev_stop = start, stop
