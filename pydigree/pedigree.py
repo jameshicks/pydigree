@@ -18,7 +18,6 @@ class Pedigree(Population):
             # A population to inherit genotype information from
             self.basepopulation = basepopulation
             self.chromosomes = self.basepopulation.chromosomes
-            print 'detected basepop'
     def __prepare_nonfounder_contraint(self, con):
         if not con:
             return lambda x: x.is_founder()
