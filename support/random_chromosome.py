@@ -25,7 +25,13 @@ positions_bp = sorted(np.random.randint(0, high=args.size+1, size=args.nmark))
 # Generate allele freqs
 freqs = random_float_range(args.minfreq, 1-args.minfreq)
 
+# Print completely worthless header
+print '1'
+print args.nmark
+
+last_cm = 0
 for i, data in enumerate(izip(positions_bp, freqs)):
     bp, freq = data
     cm = bp / 1e6
-    print 'marker{}'.format(i), freq, 1-freq, cm, bp
+    print 'marker{}'.format(i), freq, 1-freq, (cm-last_cm), bp
+    last_cm = cm
