@@ -15,11 +15,19 @@ class NaiveGeneDroppingSimulation(Simulation):
         for ped in self.template:
 
             for attempt in xrange(self.genedrop_attempts):
-
+                
                 for ind in ped:
                     ind.clear_genotypes()
 
+                # Step 1: Segregate labeled markers so we can know the IBD states
                 for founder in ped.founders():
+                    founder.label_genotypes()
+                for nf in ped.nonfounders():
+                    nf.get_genotypes()
+
+                # Step 2: Fill in genotypes 
+                for founder in ped.founders():
+                    founder.clear_genotypes()
                     if founder in self.constraints['genotype']:
                         founder.get_constrained_genotypes(
                             self.constraints['genotype'][founder],
@@ -27,12 +35,9 @@ class NaiveGeneDroppingSimulation(Simulation):
                     else:
                         founder.get_genotypes()
 
-                for ind in ped:
-                    if not ind.is_founder():
-                        ind.clear_genotypes()
+                for nf in ped.nonfounders():
+                    nf.delabel_genotypes()
 
-                for ind in ped:
-                    ind.get_genotypes()
 
                 if self.trait:
                     accuracy = self.predicted_trait_accuracy(ped)
