@@ -9,7 +9,7 @@ class NaiveGeneDroppingSimulation(Simulation):
         Simulation.__init__(self, template, replications)
         self.genedrop_attempts = 1000
 
-    def replicate(self, verbose=None):
+    def replicate(self, writeibd=False, verbose=None, replicatenumber=0):
         for ind in self.template.individuals():
             ind.clear_genotypes()
         for ped in self.template:
@@ -24,7 +24,8 @@ class NaiveGeneDroppingSimulation(Simulation):
                     founder.label_genotypes()
                 for nf in ped.nonfounders():
                     nf.get_genotypes()
-
+                if writeibd:
+                    self._writeibd(replicatenumber)
                 # Step 2: Fill in genotypes 
                 for founder in ped.founders():
                     founder.clear_genotypes()

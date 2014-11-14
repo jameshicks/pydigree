@@ -18,6 +18,7 @@ parser.add_argument('--method',  required=True, help='Simulation method',
                     choices=('constrained','genedrop'))
 parser.add_argument('--replications', type=int, metavar='nrep',  
                     default=1000, help='Number of replicates')
+parser.add_argument('--ibd', action='store_true', help='Write IBD=0/1/2 status to file before simulating genotypes')
 parser.add_argument('--constraintfile', metavar='file',  help='Constriant file')
 parser.add_argument('--effectfile', dest='effectfile',
                     help='File containing marker effects for trait simulation')
@@ -83,4 +84,4 @@ if args.constraintfile:
 
 sim.prefix = args.prefix
 
-sim.run(verbose=args.verbosity, output_predicate=args.predicate, compression=args.compress)
+sim.run(verbose=args.verbosity, output_predicate=args.predicate, compression=args.compress, writeibd=args.ibd)

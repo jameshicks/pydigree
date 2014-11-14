@@ -1,8 +1,12 @@
 from __future__ import division
 import random
 
+from itertools import combinations_with_replacement, izip
+
 from pydigree.common import *
-from pydigree.io.plink import write_plink
+from pydigree.misc import ibs
+from pydigree.io.smartopen import smartopen
+from pydigree.io.plink import write_plink, write_map
 from pydigree.individual import Individual
 
 
@@ -21,15 +25,39 @@ class Simulation(object):
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")
 
-    def run(self, verbose=False, output_predicate=None, compression=None):
+    def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
+        write_map(self.template, '{0}.map'.format(self.prefix))
         for x in xrange(self.replications):
             print 'Replicate %d' % (x + 1)
-            self.replicate(verbose=verbose)
+            self.replicate(verbose=verbose, writeibd=writeibd, replicatenumber=x)
             self.write_data(x, predicate=output_predicate, compression=compression)
 
     def write_data(self, replicatenumber, predicate=None, compression=None):
         filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
         write_plink(self.template, filename, predicate=predicate, mapfile=False, compression=compression)
+
+    def _writeibd(self, replicatenumber):
+        # Warning: Don't call this function! If the individuals in the pedigree dont have 
+        # LABEL genotypes, you're just going to get IBS configurations at each locus, not 
+        # actual IBD calculations. 
+        #
+        # If you have data you want to identify IBD segments in, check pydigree.sgs
+        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber), 'w') as of:
+            for ped in self.template:
+                for ind1, ind2 in combinations_with_replacement(ped.individuals(), 2):
+                    identical = []
+                    for chrom_idx, chromosome in enumerate(ind1.population.chromosomes):
+                        if ind1 == ind2:
+                            genos = izip(*ind1.genotypes[chrom_idx])
+                            ibd = [2 * (x == y) for x,y in genos]
+                        else:
+                            genos1 = izip(*ind1.genotypes[chrom_idx])
+                            genos2 = izip(*ind2.genotypes[chrom_idx])
+                            ibd = [ibs(g1,g2)  for g1, g2 in izip(genos1, genos2)]
+                        identical.extend(ibd)
+                    outline = [ped.label, ind1.id, ind2.id] + identical
+                    outline = ' '.join([str(x) for x in outline])
+                    of.write('{}\n'.format(outline))
 
     def predicted_trait_accuracy(self, ped):
         calls = [(ind.predicted_phenotype(self.trait),
