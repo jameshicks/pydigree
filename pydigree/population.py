@@ -106,7 +106,8 @@ class Population(MutableMapping):
             if id not in self.population.keys():
                 yield id
             idx += 1
-
+    def individuals(self):
+        return [x for x in self]
     def males(self):
         """ Returns list of males in population """
         return [x for x in self if x.sex == 0]
