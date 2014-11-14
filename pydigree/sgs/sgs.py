@@ -91,6 +91,6 @@ def make_intervals(ibdarray):
 
 def intervals_to_array(intervals, nmark):
     array = np.zeros(nmark)
-    for start, stop in interval:
+    for start, stop in intervals:
         array[start:(stop+1)] += 1
     return array
