@@ -142,4 +142,4 @@ def write_map(pedigrees, mapfile):
                 if not label:
                     label = 'SNP%s-%s' % (chromosome, mi)
                 f.write('\t'.join(str(x) for x
-                                  in [chromosome, label, cm, mb]) + '\n')
+                                  in [chromosome.label, label, cm, mb]) + '\n')
