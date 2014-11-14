@@ -4,9 +4,9 @@ import pydigree
 def read_gs_chromosome_template(templatef):
     """ Reads a genomeSIMLA format chromosome template file """
     with open(templatef) as f:
-        f.readline()  # The label and
+        label = f.readline().strip()  # The label and
         f.readline()  # the number of markers, both of which we dont need.
-        c = pydigree.Chromosome()
+        c = pydigree.Chromosome(label=label)
         # genomeSIMLA chromosome files have marginal recombination probs
         # instead of map positions. We'll have to keep track of what the
         # last position was and add to it to get it into the shape we want
