@@ -91,7 +91,7 @@ def invcumsum(iter):
 def runs(sequence, predicate, minlength=2):
     """
     Identifies runs of values for which predicate(value) evaluates True
-    and returns a 2-tuple of the start and end (inclusive) indices
+    and yields 2-tuples of the start and end (inclusive) indices
     """
     inrun = False
     for i,v in enumerate(sequence):
