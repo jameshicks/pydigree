@@ -13,19 +13,18 @@ def sgs_pedigrees(pc, phaseknown=False):
         shared[pedigree] = sgs_population(pedigree)
     return shared
 
-def sgs_population(pop, phaseknown=False):
+def sgs_population(pop, min_seg=500, phaseknown=False):
     shared = {}
     for ind1, ind2 in combinations(pop, 2):
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.population.chromosomes):
-            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx))
+            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx, min_seg=min_seg))
             shared[pair].append(list(shares))
     return shared
 
-def _sgs_unphased(ind1, ind2, chromosome_idx):
+def _sgs_unphased(ind1, ind2, chromosome_idx, min_seg=200):
     ''' Returns IBD states for each marker along a chromosome '''
-    min_seg = 256
     
     genos1 = izip(*ind1.genotypes[chromosome_idx])
     genos2 = izip(*ind2.genotypes[chromosome_idx])
@@ -46,7 +45,7 @@ def _sgs_unphased(ind1, ind2, chromosome_idx):
 
 def _process_segments(identical, min_seg=100, predicate=lambda x: x):    
     # IBD segments are long runs of identical genotypes
-    ibd = runs(identical, lambda x: x, minlength=min_seg)
+    ibd = runs(identical, predicate, minlength=min_seg)
     
     # Genotype errors are things that happen. If theres a small gap between
     # two IBD segments, we'll chalk that up to a genotyping error and join
