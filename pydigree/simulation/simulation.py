@@ -42,7 +42,7 @@ class Simulation(object):
         # actual IBD calculations. 
         #
         # If you have data you want to identify IBD segments in, check pydigree.sgs
-        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber), 'w') as of:
+        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber+1), 'w') as of:
             for ped in self.template:
                 for ind1, ind2 in combinations_with_replacement(ped.individuals(), 2):
                     identical = []
