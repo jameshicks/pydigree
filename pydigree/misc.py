@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from itertools import izip
 
 
 # Extra genetics functions
@@ -17,3 +17,8 @@ def ibs(g1, g2, checkmissing=True):
     elif a == c or a == d:
         return 1
     return 0
+
+def get_ibs_states(ind1, ind2, chromosome_index):
+    genos1 = izip(*ind1.genotypes[chromosome_index])
+    genos2 = izip(*ind2.genotypes[chromosome_index])
+    return [ibs(x,y) for x,y in izip(genos1, genos2)]
