@@ -11,13 +11,14 @@ from pydigree.misc import ibs
 
 replicate = sys.argv[1]
 ms = int(sys.argv[2])
+prefix='null'
 
-peds = pyd.io.plink.read_plink('autodom-{}.ped'.format(replicate),'autodom.map')
+peds = pyd.io.plink.read_plink('{}-{}.ped'.format(prefix, replicate), '{}.map'.format(prefix))
 ped = peds['1']
 s = pyd.sgs.sgs_population(ped, min_seg=ms)
 
 
-with smartopen('autodom-{}.ibd.gz'.format(replicate)) as f:
+with smartopen('{}-{}.ibd.gz'.format(prefix, replicate)) as f:
     trueibd = {}
     for line in f:
         fam, id1, id2, ibd_states = line.strip().split(None, 3)
