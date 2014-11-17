@@ -20,6 +20,8 @@ class PedigreeCollection(MutableMapping):
         return (x for x in self.pedigrees.values())
 
     def __getitem__(self, key):
+        if isinstance(key, tuple) or isinstance(key, list):
+            return self.pedigrees[key[0]][key[1]]
         return self.pedigrees[key]
 
     def __contains__(self, item):
