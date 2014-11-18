@@ -13,7 +13,7 @@ def sgs_pedigrees(pc, phaseknown=False):
         shared[pedigree] = sgs_population(pedigree)
     return shared
 
-def sgs_population(pop, min_seg=500, phaseknown=False):
+def sgs_population(pop, seed_size=500, phaseknown=False):
     shared = {}
     for ind1, ind2 in combinations(pop, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
@@ -25,7 +25,7 @@ def sgs_population(pop, min_seg=500, phaseknown=False):
             shared[pair].append(list(shares))
     return shared
 
-def _sgs_unphased(ind1, ind2, chromosome_idx, min_seg=200):
+def _sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
     ''' Returns IBD states for each marker along a chromosome '''
     
     genos1 = izip(*ind1.genotypes[chromosome_idx])
@@ -35,12 +35,12 @@ def _sgs_unphased(ind1, ind2, chromosome_idx, min_seg=200):
     ibd_states = np.zeros(ind1.population.chromosomes[chromosome_idx].nmark())
 
     # First get the segments that are IBD=1
-    ibd1 = _process_segments(identical, min_seg=min_seg, predicate=lambda x: x > 0 or x is None)
+    ibd1 = _process_segments(identical, min_seg=seed_size, predicate=lambda x: x > 0 or x is None)
     for start, stop in ibd1:
         ibd_states[start:(stop+1)] = 1
 
     # Then the segments that are IBD=2
-    ibd2 = _process_segments(identical, min_seg=min_seg, predicate=lambda x: x in {2, None})
+    ibd2 = _process_segments(identical, min_seg=seed_size, predicate=lambda x: x in {2, None})
     for start, stop in ibd2:
         ibd_states[start:(stop+1)] = 2
     return ibd_states
