@@ -22,7 +22,6 @@ from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.pedigree import Pedigree
 from pydigree.individual import Individual
 from pydigree.chromosome import Chromosome
-from pydigree.mixedmodel import MixedModel
 
 
 # Functions for identifying shared genomic segments (SGS)
