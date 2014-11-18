@@ -134,7 +134,7 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
 
 def write_map(pedigrees, mapfile):
     with open(mapfile, 'w') as f:
-        for ci, chromosome in enumerate(pedigrees.chromosomes()):
+        for ci, chromosome in enumerate(pedigrees.chromosomes):
             for mi, marker in enumerate(chromosome._iinfo()):
                 label, cm, mb, frequency = marker
                 if not mb:

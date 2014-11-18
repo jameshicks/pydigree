@@ -49,7 +49,8 @@ class PedigreeCollection(MutableMapping):
         """ Returns the available phenotypes for analysis """
         return set(reduce(add, [x.phenotypes.keys() for x in
                                 self.individuals()]))
-
+    
+    @property
     def chromosomes(self):
         k = self.pedigrees.keys()[0]
         return self.pedigrees[k].chromosomes
