@@ -21,7 +21,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx, min_seg=min_seg))
+            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx, seed_size=seed_size))
             shared[pair].append(list(shares))
     return shared
 
