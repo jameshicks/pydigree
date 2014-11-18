@@ -65,10 +65,14 @@ class Individual(object):
 
     # Functions about genotypes
     #
+    @property
+    def chromosomes(self):
+        return self.population.chromosomes
+
     def _init_genotypes(self):
         """ Initializes genotypes so that all genotypes are missing """
         self.genotypes = [ [ [None]*len(chrom.genetic_map), [None]*len(chrom.genetic_map) ] 
-                           for chrom in self.population.chromosomes] 
+                           for chrom in self.chromosomes] 
     
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
@@ -153,7 +157,7 @@ class Individual(object):
         """
         self.__fail_on_observed_genos()
         g = [[[(self, 0)] * len(x.genetic_map), [(self, 1)] * len(x.genetic_map)]
-             for x in self.population.chromosomes]
+             for x in self.chromosomes]
         self.genotypes = g
 
     def delabel_genotypes(self):
@@ -293,7 +297,7 @@ class Individual(object):
 
         g = [recombine(chr[0],
                        chr[1],
-                       self.population.chromosomes[i].genetic_map)
+                       self.chromosomes[i].genetic_map)
              for i, chr in enumerate(self.genotypes)]
 
         return g

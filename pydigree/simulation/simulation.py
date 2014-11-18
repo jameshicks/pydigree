@@ -46,7 +46,7 @@ class Simulation(object):
             for ped in self.template:
                 for ind1, ind2 in combinations_with_replacement(ped.individuals(), 2):
                     identical = []
-                    for chrom_idx, chromosome in enumerate(ind1.population.chromosomes):
+                    for chrom_idx, chromosome in enumerate(ind1.chromosomes):
                         if ind1 == ind2:
                             genos = izip(*ind1.genotypes[chrom_idx])
                             ibd = [2 * (x == y) for x,y in genos]

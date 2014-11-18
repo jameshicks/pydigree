@@ -18,7 +18,7 @@ def create_pop_handler_func(mapfile):
 def plink_data_handler(ind, data):
     ind._init_genotypes()
     genotypes = grouper(data, 2)
-    chromosomes = ind.population.chromosomes
+    chromosomes = ind.chromosomes
     loci = ((c_idx, m_idx) for c_idx, chrom in enumerate(chromosomes)
             for m_idx, marker in enumerate(chrom))
     for locus, genotype in izip(loci, genotypes):

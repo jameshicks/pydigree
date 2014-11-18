@@ -20,7 +20,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
             continue
         pair = frozenset({ind1, ind2})
         shared[pair] = []
-        for chridx, chromosome in enumerate(ind1.population.chromosomes):
+        for chridx, chromosome in enumerate(ind1.chromosomes):
             shares = make_intervals(_sgs_unphased(ind1, ind2, chridx, min_seg=min_seg))
             shared[pair].append(list(shares))
     return shared
@@ -32,7 +32,7 @@ def _sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
     genos2 = izip(*ind2.genotypes[chromosome_idx])
     identical = [ibs(g1,g2)  for g1, g2 in izip(genos1, genos2)]
 
-    ibd_states = np.zeros(ind1.population.chromosomes[chromosome_idx].nmark())
+    ibd_states = np.zeros(ind1.chromosomes[chromosome_idx].nmark())
 
     # First get the segments that are IBD=1
     ibd1 = _process_segments(identical, min_seg=seed_size, predicate=lambda x: x > 0 or x is None)
