@@ -15,7 +15,7 @@ prefix='null'
 
 peds = pyd.io.plink.read_plink('{}-{}.ped'.format(prefix, replicate), '{}.map'.format(prefix))
 ped = peds['1']
-s = pyd.sgs.sgs_population(ped, min_seg=ms)
+s = pyd.sgs.sgs_population(ped, seed_size=ms)
 
 
 with smartopen('{}-{}.ibd.gz'.format(prefix, replicate)) as f:
