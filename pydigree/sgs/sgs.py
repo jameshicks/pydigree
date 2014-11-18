@@ -3,7 +3,7 @@ from itertools import izip, combinations
 import numpy as np
 
 from pydigree.common import runs
-from pydigree.misc import ibs
+from pydigree.misc import ibs, get_ibs_states
 
 from pydigree import Population, PedigreeCollection
 
@@ -28,9 +28,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
 def _sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
     ''' Returns IBD states for each marker along a chromosome '''
     
-    genos1 = izip(*ind1.genotypes[chromosome_idx])
-    genos2 = izip(*ind2.genotypes[chromosome_idx])
-    identical = [ibs(g1,g2)  for g1, g2 in izip(genos1, genos2)]
+    identical = get_ibs_states(ind1, ind2, chromosome_idx)
 
     ibd_states = np.zeros(ind1.chromosomes[chromosome_idx].nmark())
 
