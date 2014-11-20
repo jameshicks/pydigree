@@ -51,7 +51,7 @@ class Population(MutableMapping):
 
     def __init__(self, intial_pop_size=0, name=None):
         self.chromosomes = []
-        self.pool = []
+        self.pool = None
         self.population = {}
         self.n0 = intial_pop_size
         self.name = name
@@ -134,44 +134,6 @@ class Population(MutableMapping):
     def chromosome_count(self):
         """ Returns the number of chromosomes in this population """
         return len(self.chromosomes)
-
-    # Chromosome pool functions
-    #
-    #
-    def chrom_pool_size(self):
-        """ Returns the size of the pool of available chromosomes """
-        return len(self.pool[0])
-
-    def initialize_pool(self, size=None):
-        """ Initializes a pool of chromosomes for simulation """
-        if self.n0 and not size:
-            size = self.n0
-        self.pool = [None] * self.chromosome_count()
-        for i, q in enumerate(self.chromosomes):
-            self.pool[i] = [q.linkageequilibrium_chromosome()
-                            for x in xrange(2 * size)]
-
-    def iterate_pool(self, gensize):
-        """
-        Iterate pool simulates a generation of random mating
-        between chromosomes instead of individuals. The pool of
-        population chromosomes then contains chromosomes from the
-        new generation.
-
-        Arguements:
-        gensize: The size of the next generation (rounded down to the integer)
-
-        Returns: Nothing
-        """
-        gensize = int(gensize)
-        for i, c in enumerate(self.chromosomes):
-            # Chromosomes have a 1/2 chance of being recombined with another
-            def choose_chrom(pool, chrmap):
-                q, w = random.choice(pool), random.choice(pool)
-                return recombine(q, w, chrmap)
-            np = [choose_chrom(self.pool[i], c.genetic_map)
-                  for x in xrange(gensize)]
-            self.pool[i] = np
 
     # Random mating
     #
