@@ -2,6 +2,9 @@
 
 from array import array
 from itertools import izip
+
+import numpy as np
+
 from pydigree._pydigree import choice_with_probs, linkeq_chrom
 
 
@@ -30,7 +33,7 @@ class Chromosome(object):
         # A list of integers that doesnt do anything. Just for decoration
         self.physical_map = []
         # A list of floats representing minor allele frequencies
-        self.frequencies = []
+        self.frequencies = np.array([])
         # List of marker names
         self.labels = []
         # The typecode for the arrays. 'B' represents unsigned char, and can
@@ -59,11 +62,11 @@ class Chromosome(object):
 
     def add_genotype(self, frequency, map_position, label=None, bp=None):
         try:
-            frequency = float(frequency) if frequency is not None else None
+            frequency = float(frequency) if frequency is not None else -1
         except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
-        self.frequencies.append(frequency)
+        np.append(self.frequencies, frequency)
         self.physical_map.append(bp)
         self.labels.append(label)
 
@@ -73,7 +76,7 @@ class Chromosome(object):
 
     def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
-        if None in self.frequencies:
+        if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
         chrom = linkeq_chrom(self.frequencies)
         return array(self.typecode, chrom)
