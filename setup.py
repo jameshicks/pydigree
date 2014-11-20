@@ -43,5 +43,5 @@ fastio_ext = Extension('pydigree.io.fastio', fastio_sources)
 setup(
     packages=['pydigree'],
     ext_modules=[c_ext, fastio_ext],
-    requires=['numpy', 'scipy']
+    requires=['numpy', 'scipy', 'bitarray']
     )

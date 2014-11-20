@@ -74,9 +74,16 @@ class Chromosome(object):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
 
-    def linkageequilibrium_chromosome(self):
+    def linkageequilibrium_chromosome(self, bitarray=False):
         """ Returns a randomly generated chromosome """
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
+
+        if bitarray:
+            c = np.random.random(self.nmark()) < 0
+            b = bitarray()
+            ba.pack(c.tostring())
+            return ba
+
         chrom = linkeq_chrom(self.frequencies)
         return array(self.typecode, chrom)
