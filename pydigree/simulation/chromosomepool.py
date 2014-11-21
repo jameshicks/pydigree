@@ -3,24 +3,20 @@ import random
 import numpy as np
 from bitarray import bitarray
 
+from pydigree.recombination import recombine
+
 def __bitarray2ndarray(ba):
     return np.fromstring(ba.unpack(), dtype=np.int)
 
 class ChromosomePool(object):
-    def __init__(self, population=None, chromosomes=None, n0=0):
+    def __init__(self, population=None, chromosomes=None, size=0):
         if population:
-            self.generations = []
-            self.chromosome
-        pass
-
-    @property
-    def chromosomes(self):
-        if self.chromosomes:
-            return self.chromosomes
-        elif self.population:
-            return self.population.chromosomes
-        else:
-            return []
+            self.chromosomes = population.chromosomes
+        elif chromosomes:
+            self.chromosomes = chromosomes
+        self.pool = [ [] * len(self.chromosomes) ]
+        self.n0 = size
+        self.generations = []
 
     # Pool functions
     def size(self):
@@ -31,9 +27,8 @@ class ChromosomePool(object):
         """ Initializes a pool of chromosomes for simulation """
         if self.n0 and not size:
             size = self.n0
-        self.pool = [None] * len(self.chromosomes)
         for i, q in enumerate(self.chromosomes):
-            self.pool[i] = [q.linkageequilibrium_chromosome(bitarray=True)
+            self.pool[i] = [q.linkageequilibrium_chromosome(bits=True)
                             for x in xrange(2 * size)]
         self.generations.append(size)
 
@@ -56,10 +51,12 @@ class ChromosomePool(object):
             # Chromosomes have a 1/2 chance of being recombined with another
             def choose_chrom(pool, chrmap):
                 q, w = random.choice(pool), random.choice(pool)
-                return bitarray(recombine(q, w, chrmap))
+                r = recombine(q,w, chrmap)
+                b = bitarray(r)
+                return b
 
             newpool = [choose_chrom(self.pool[i], c.genetic_map)
-                  for x in xrange(gensize)]
+                       for x in xrange(gensize)]
             self.pool[i] = newpool
 
         self.generations.append(gensize)
