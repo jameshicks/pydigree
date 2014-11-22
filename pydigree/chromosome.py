@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from array import array
 from itertools import izip
 
 import numpy as np
@@ -37,11 +36,6 @@ class Chromosome(object):
         self.frequencies = np.array([])
         # List of marker names
         self.labels = []
-        # The typecode for the arrays. 'B' represents unsigned char, and can
-        # store one byte of data, so:
-        # 255 different values - 1 missing value = 254 possible alleles.
-        # B is the smallest typecode in terms of memory usage.
-        self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
         return 'Chromosome %s: %s markers, %s cM' % \
@@ -81,10 +75,10 @@ class Chromosome(object):
             raise ValueError('Not all frequencies are specified')
 
         if bits:
-            c = np.random.random(self.nmark()) < 0
+            c = np.random.random(self.nmark()) > self.frequencies
             ba = bitarray()
             ba.pack(c.tostring())
             return ba
+        else:
+            return (np.random.random(self.nmark()) > self.frequencies) + 1
 
-        chrom = linkeq_chrom(self.frequencies)
-        return array(self.typecode, chrom)

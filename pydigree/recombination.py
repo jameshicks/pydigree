@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from array import array
 from bisect import bisect_left
 
 import numpy as np
@@ -13,10 +12,6 @@ def recombine(chr1, chr2, map):
         return chr1 if np.random.randint(0, 2) else chr2
 
     newchrom = _recombine_haldane(chr1, chr2, map)
-    if isinstance(chr1, array) and isinstance(chr2, array):
-        if chr1.typecode != chr2.typecode:
-            raise ValueError('Chromosomes have two different typecodes!')
-        newchrom = array(chr1.typecode, newchrom)
     return newchrom
 
 
