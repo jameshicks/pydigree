@@ -67,7 +67,7 @@ class Chromosome(object):
         except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
-        np.append(self.frequencies, frequency)
+        self.frequencies = np.append(self.frequencies, frequency)
         self.physical_map.append(bp)
         self.labels.append(label)
 
