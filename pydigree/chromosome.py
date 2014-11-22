@@ -72,5 +72,5 @@ class Chromosome(object):
         """ Returns a randomly generated chromosome """
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
-        return (np.random.random(self.nmark()) > self.frequencies) + 1
+        return np.array(np.random.random(self.nmark()) > self.frequencies, dtype=np.uint8) + 1
 
