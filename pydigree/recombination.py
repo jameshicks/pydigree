@@ -20,7 +20,7 @@ def _recombine_haldane(chr1, chr2, map):
     maxmap = map[-1]
     nmark = len(map)
 
-    newchrom = []
+    newchrom = np.empty(nmark, dtype=np.uint8)
     # Randomly pick a chromosome to start from
     # np.random.randint works on a half open interval, so the upper bound 
     # specified is 2. We'll get zeros and ones out of it.
@@ -41,12 +41,12 @@ def _recombine_haldane(chr1, chr2, map):
 
         if crossover_position > maxmap:
             # We've reached the end of our journey here.
-            newchrom.extend(c[last_crossover_index:])
+            newchrom[last_crossover_index:] = c[last_crossover_index:]
             break 
 
         # Find the next crossover point in the chromosome by binary search
         nextidx = bisect_left(map, crossover_position, last_crossover_index, nmark)
-        newchrom.extend(c[last_crossover_index:nextidx])
+        newchrom[last_crossover_index:nextidx] = c[last_crossover_index:nextidx]
         
         # Get ready to do it all over again
         last_crossover_index = nextidx
