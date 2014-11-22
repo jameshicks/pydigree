@@ -3,7 +3,6 @@
 from itertools import izip
 
 import numpy as np
-from bitarray import bitarray
 
 from pydigree._pydigree import choice_with_probs, linkeq_chrom
 
@@ -69,16 +68,9 @@ class Chromosome(object):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
 
-    def linkageequilibrium_chromosome(self, bits=False):
+    def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
-
-        if bits:
-            c = np.random.random(self.nmark()) > self.frequencies
-            ba = bitarray()
-            ba.pack(c.tostring())
-            return ba
-        else:
-            return (np.random.random(self.nmark()) > self.frequencies) + 1
+        return (np.random.random(self.nmark()) > self.frequencies) + 1
 

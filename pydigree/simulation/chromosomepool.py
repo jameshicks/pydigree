@@ -1,12 +1,8 @@
 import random
 
 import numpy as np
-from bitarray import bitarray
 
 from pydigree.recombination import recombine
-
-def __bitarray2ndarray(ba):
-    return np.fromstring(ba.unpack(), dtype=np.int)
 
 class ChromosomePool(object):
     def __init__(self, population=None, chromosomes=None, size=0):
@@ -28,7 +24,7 @@ class ChromosomePool(object):
         if self.n0 and not size:
             size = self.n0
         for i, q in enumerate(self.chromosomes):
-            self.pool[i] = [q.linkageequilibrium_chromosome(bits=True)
+            self.pool[i] = [q.linkageequilibrium_chromosome()
                             for x in xrange(2 * size)]
         self.generations.append(size)
 
@@ -52,8 +48,7 @@ class ChromosomePool(object):
             def choose_chrom(pool, chrmap):
                 q, w = random.choice(pool), random.choice(pool)
                 r = recombine(q,w, chrmap)
-                b = bitarray(r)
-                return b
+                return r
 
             newpool = [choose_chrom(self.pool[i], c.genetic_map)
                        for x in xrange(gensize)]
@@ -63,11 +58,9 @@ class ChromosomePool(object):
     
     # Chromosome functions
     def chromosome(self, chromindex):
-        # Get a random bitarray chromomsome
-        c = random.choice(self.pool[chromindex])
-        # Convert to a numpy array and return it
-        return __bitarray2ndarray(c) + 1
-        
+        # Get a random chromomsome
+        return random.choice(self.pool[chromindex])
+
     def genotypes(self):
         ''' Gives a full set of genotypes drawn from the chromosome pool '''
         return [ [self.chromosome(i), self.chromosome(i)] 
