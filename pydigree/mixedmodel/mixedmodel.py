@@ -165,7 +165,7 @@ class MixedModel(object):
                 izip(variance_components,
                      self.Zlist,
                      self.covariance_matrices))
-        V = V + (np.var(self.y) - sum(variance_components)) * self.R
+        V = V + (self.residual_variance() * self.R)
         if vcs is not None:
             return V
         else:
