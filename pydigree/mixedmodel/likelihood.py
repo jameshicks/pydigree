@@ -67,7 +67,7 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
     """
     if not Vinv:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(y, X, Vinv=Vinv)
+    P = makeP(X, Vinv=Vinv)
     n = X.shape[0]
     rank = np.linalg.matrix_rank(X)
     llik_restricted = -0.5 * (logdet(V.todense())
