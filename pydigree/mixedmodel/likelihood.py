@@ -5,7 +5,7 @@ Functions for computing likelihoods of linear mixed models
 from math import log, pi
 
 import numpy as np
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, issparse
 from scipy.linalg import pinv, inv
 from scipy import matrix
 np.seterr(invalid='ignore')
@@ -16,7 +16,7 @@ l2pi = log(2 * pi)
 
 def logdet(M):
     """ Returns the (positive) log determinant of a matrix. """
-    sign, logdet = np.linalg.slogdet(M)
+    sign, logdet = np.linalg.slogdet(M.todense() if issparse(M) else M)
     return logdet
 
 
