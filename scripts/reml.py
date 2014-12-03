@@ -17,6 +17,6 @@ print 'Calculating Kinships'
 m.add_genetic_effect()
 print 'Done'
 m.fit_model()
-m.maximize()
+m.maximize(verbose=True)
 
 m.summary()
