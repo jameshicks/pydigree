@@ -17,9 +17,6 @@ PyObject* choice_probs(PyObject* choices, PyObject* probs);
 PyObject* chromatid_delabeler_interface(PyObject* self, PyObject* args);
 PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx);
 
-PyObject* linkeq_chrom_interface(PyObject* self, PyObject* args);
-PyObject* linkeq_chrom(PyObject *frequencies);
-
 static inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark); 
 PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
 
@@ -31,7 +28,6 @@ static char sample_repl_docstring[] = "Randomly choses n individuals (with repla
 static char pairs_docstring[] = "Returns a list of n pairs from sampled with replacement from population"; 
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
 static char chromatid_delabeler_docstring[] = "Replaces genotypes from label_genotypes with alleles from the ancestor"; 
-static char linkeq_chrom_docstring[] = "Returns a chromosome with all markers in linkage equilibrium"; 
 static char sgs_shares_docstring[] = "Returns the proportion of individual pairs IBD";
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
@@ -39,7 +35,6 @@ static PyMethodDef module_methods[] = {
   {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
   {"chromatid_delabeler", chromatid_delabeler_interface, METH_VARARGS, chromatid_delabeler_docstring},
-  {"linkeq_chrom", linkeq_chrom_interface, METH_VARARGS, linkeq_chrom_docstring},
   {"sgs_shares", sgs_shares_interface, METH_VARARGS, sgs_shares_docstring},
   {NULL, NULL, 0, NULL}
 };
@@ -193,28 +188,6 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
   return newchromatid;
 }
 
-PyObject* linkeq_chrom_interface(PyObject* self, PyObject* args) {
-  PyObject* frequencies;
-  if (!PyArg_ParseTuple(args, "O", &frequencies)) return NULL;
-  PyObject* chrom = linkeq_chrom(frequencies);
-  return chrom;
-}
-
-PyObject* linkeq_chrom(PyObject* frequencies) {
-  Py_ssize_t chromlen = PySequence_Size(frequencies);
-  PyObject* newchrom = PyList_New(chromlen);
-  Py_ssize_t marker; 
-
-  for (marker = 0; marker < chromlen; marker++) {
-    PyObject* freq = PySequence_GetItem(frequencies, marker);
-    double f = PyFloat_AS_DOUBLE(freq);
-    PyObject* allele = PyInt_FromLong(rand_bool(f) ? 1 : 2);
-    PyList_SET_ITEM(newchrom, marker, allele);
-    Py_INCREF(allele);
-  }
-
-  return newchrom;
-}
 
 PyObject* sgs_shares_interface(PyObject* self, PyObject* args) {
   PyObject *shared, *affecteds;

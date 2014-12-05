@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
-from array import array
 from itertools import izip
 
 import numpy as np
-from bitarray import bitarray
 
 from pydigree._pydigree import choice_with_probs, linkeq_chrom
 
@@ -37,11 +35,6 @@ class Chromosome(object):
         self.frequencies = np.array([])
         # List of marker names
         self.labels = []
-        # The typecode for the arrays. 'B' represents unsigned char, and can
-        # store one byte of data, so:
-        # 255 different values - 1 missing value = 254 possible alleles.
-        # B is the smallest typecode in terms of memory usage.
-        self.typecode = 'B'  # Unsigned char
 
     def __str__(self):
         return 'Chromosome %s: %s markers, %s cM' % \
@@ -67,24 +60,23 @@ class Chromosome(object):
         except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
-        np.append(self.frequencies, frequency)
+        self.frequencies = np.append(self.frequencies, frequency)
         self.physical_map.append(bp)
         self.labels.append(label)
 
     def set_frequency(self, position, frequency):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
-
-    def linkageequilibrium_chromosome(self, bits=False):
+    
+    def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
+        r = np.random.random(self.nmark())
+        return np.array(r > self.frequencies, dtype=np.uint8) + 1
 
-        if bits:
-            c = np.random.random(self.nmark()) < 0
-            ba = bitarray()
-            ba.pack(c.tostring())
-            return ba
-
-        chrom = linkeq_chrom(self.frequencies)
-        return array(self.typecode, chrom)
+    def linkageequilibrium_chromosome(self, nchrom):
+        """ Returns a numpy array of many randomly generated chromosomes """
+        chroms = np.random.random((nchrom, self.nmark()))
+        chroms = np.uint8((chroms > self.frequencies) + 1)
+        return chroms
