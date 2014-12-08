@@ -21,6 +21,49 @@ class MixedModelMixin(Object):
         return sorted(x for x in indlist if x.pedigree.label == self.label,
                       key=lambda x: (x.pedigree.label, x.id))
 
+    def incidence_matrix(self, variable=None, inds=None, onlylevels=None):
+        """
+        Generates an incidence matrix for a mixed model based on variable. If no variable is given, 
+        the individual is used.
+        """
+        if variable is None:
+            getvar = lambda ind: ind.id
+        else:
+            getvar = lambda ind: ind.phenotypes[variable]
+        
+        
+        levels = sorted({getvar(ind) for ind in self.individuals()})
+        
+        if onlylevels is not None:
+            onlylevels = set(onlylevels)
+        else:
+            # If we're not reducing the number of levels, we'll set onlylevels to 
+            # levels so the intersection of levels and onlylevels reduces to just 
+            # levels
+            onlylevels = levels
+
+        levels = sorted(levels & onlylevels)
+
+        # Test for cases incompatible for the mixed model
+        if not levels:
+            raise ValueError('No valid levels for variable!')
+        elif len(levels) == 1:
+            raise ValueError('Variable only has one level!')
+
+        if not inds:
+            inds = self.individuals()
+
+        Z = []
+        for ind in inds:
+            Z.append([getvar(ind) == level for level in levels])
+        
+        # Make sure everyone has a 1 in their row for the incidence matrix
+        if not all(sum(row) for row in Z):
+            raise ValueError('Individuals are missing values in random effects!')
+        
+        return np.matrix(Z, dtype=np.int8)
+                
+
     def vcov_matrix(self, incidence_matrices, covariance_matrices, variance_components):
         """ Returns the variance-covariance matrix (V) for individuals in a mixed model """
         return sum(sigma * Z * __getmatrix(G) * Z.T
