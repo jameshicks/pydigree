@@ -18,7 +18,7 @@ class MixedModelMixin(Object):
 
     def __sort_inds_in_ped(self, indlist):
         ''' Takes a list of individuals, filters out the ones in the current pedigree and sorts those '''
-        return sorted(x for x in indlist if x.pedigree.label == self.label,
+        return sorted((x for x in indlist if x.pedigree.label == self.label),
                       key=lambda x: (x.pedigree.label, x.id))
 
     def incidence_matrix(self, variable=None, inds=None, onlylevels=None):
