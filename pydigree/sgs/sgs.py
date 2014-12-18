@@ -21,11 +21,11 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = make_intervals(_sgs_unphased(ind1, ind2, chridx, seed_size=seed_size))
+            shares = make_intervals(sgs_unphased(ind1, ind2, chridx, seed_size=seed_size))
             shared[pair].append(list(shares))
     return shared
 
-def _sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
+def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
     ''' Returns IBD states for each marker along a chromosome '''
     
     identical = get_ibs_states(ind1, ind2, chromosome_idx)
