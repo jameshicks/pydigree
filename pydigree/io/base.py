@@ -9,7 +9,7 @@ from pydigree.chromosome import Chromosome
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
-             population_handler=None, data_handler=None):
+             population_handler=None, data_handler=None, connect_inds=True):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -64,6 +64,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
         # Fix the individual-level data
         for ind in p:
+            if not connect_inds:
+                continue
             fam, id = ind.id
             # Actually make the references instead of just pointing at strings
             ind.father = p[(fam, ind.father)] if ind.father != '0' else None
@@ -79,6 +81,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
                 ind.id = ind.id[1]
                 ped[ind.id] = ind
                 ind.population = ped
+                ind.pedigree = ped
             pc[pedigree_label] = ped
     return pc
 

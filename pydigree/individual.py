@@ -44,13 +44,15 @@ class Individual(object):
             self.mother.register_child(self)
 
     def __str__(self):
-        if self.is_founder():
-            return 'Individual %s (FOUNDER)' % self.id
-        else:
-            return 'Individual %s (F:%s,M:%s)' % (self.id,
-                                                  self.father.id,
-                                                  self.mother.id)
-
+        try:
+            if self.is_founder():
+                return 'Individual %s (FOUNDER)' % self.id
+            else:
+                return 'Individual %s (F:%s,M:%s)' % (self.id,
+                                                      self.father.id,
+                                                      self.mother.id)
+        except AttributeError:
+            return 'Individual %s (Unlinked)' % self.id
     def __repr__(self):
         return self.__str__()
 

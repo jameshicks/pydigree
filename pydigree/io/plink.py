@@ -53,9 +53,9 @@ def read_map(mapfile):
     return chroms
 
 
-def read_plink(pedfile, mapfile):
+def read_plink(pedfile, mapfile, **kwargs):
     pop_handler = create_pop_handler_func(mapfile)
-    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler)
+    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler, **kwargs)
 
 
 def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
