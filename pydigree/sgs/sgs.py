@@ -4,6 +4,8 @@ import numpy as np
 
 from pydigree.common import runs
 from pydigree.misc import ibs, get_ibs_states
+from pydigree.cyfuncs import set_intervals_to_value
+
 
 from pydigree import Population, PedigreeCollection
 
@@ -25,23 +27,22 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
             shared[pair].append(list(shares))
     return shared
 
-def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=200):
+def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=1000):
     ''' Returns IBD states for each marker along a chromosome '''
     
     identical = get_ibs_states(ind1, ind2, chromosome_idx)
 
-    ibd_states = np.zeros(ind1.chromosomes[chromosome_idx].nmark())
+    nmark = ind1.chromosomes[chromosome_idx].nmark()
 
     # First get the segments that are IBD=1
-    ibd1 = _process_segments(identical, min_seg=seed_size, predicate=lambda x: x > 0 or x is None)
-    for start, stop in ibd1:
-        ibd_states[start:(stop+1)] = 1
+    ibd1 = list(_process_segments(identical, min_seg=seed_size, predicate=lambda x: x > 0 or x is None))
+    ibd1 = set_intervals_to_value(ibd1, nmark, 1)
 
     # Then the segments that are IBD=2
-    ibd2 = _process_segments(identical, min_seg=seed_size, predicate=lambda x: x in {2, None})
-    for start, stop in ibd2:
-        ibd_states[start:(stop+1)] = 2
-    return ibd_states
+    ibd2 = list(_process_segments(identical, min_seg=seed_size, predicate=lambda x: x in {2, None}))
+    ibd2 = set_intervals_to_value(ibd2, nmark, 2)
+
+    return np.maximum(ibd1, ibd2)
 
 def _process_segments(identical, min_seg=100, predicate=lambda x: x):    
     # IBD segments are long runs of identical genotypes
