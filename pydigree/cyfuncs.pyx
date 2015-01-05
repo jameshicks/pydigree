@@ -4,12 +4,13 @@ from itertools import izip
 import numpy as np
 cimport numpy as np
 
-cpdef ibs(g1,g2):
+cpdef ibs(g1,g2, missingval=None):
+ ''' Returns how many alleles are identical-by-state between two genotypes, or missingval if either genotype is missing ''' 
  a,b = g1
  c,d = g2
  
  if not (a and b and c and d):
-    return None
+    return missingval
  if (a == c and b == d) or (a == d and b == c):
     return 2
  elif a == c or a == d or b == c or b == d:
