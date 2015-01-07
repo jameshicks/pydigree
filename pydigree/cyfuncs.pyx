@@ -17,10 +17,11 @@ cpdef ibs(g1,g2, missingval=None):
     return 1
  return 0
 
-def get_ibs_states(ind1, ind2, chromosome_index):
+def get_ibs_states(ind1, ind2, chromosome_index, missingval=None):
     genos1 = izip(*ind1.genotypes[chromosome_index])
     genos2 = izip(*ind2.genotypes[chromosome_index])
-    return [ibs(x,y) for x,y in izip(genos1, genos2)]
+    
+    return [ibs(x,y, missingval) for x,y in izip(genos1, genos2)]
 
 def runs(sequence, predicate, minlength=2):
     """
@@ -43,6 +44,26 @@ def runs(sequence, predicate, minlength=2):
         if stop - start >= minlength:
             yield start, stop
     
+def runs_gte(sequence, double minval, int minlength=2):
+    cdef int inrun = False
+    cdef int start, stop, i, l
+    #l = len(sequence)
+    i = 0
+    #while i < l:
+    for i in range(len(sequence)):
+        v = sequence[i]
+        if not inrun and v >= minval:
+            inrun = True
+            start = i
+        elif inrun and v < minval:
+            inrun = False
+            stop = i - 1
+            if stop - start >= minlength:
+                yield start, stop
+        i += 1
+    if inrun and v >= minlength:
+        yield start, i
+
 def set_intervals_to_value(intervals, size, value):
     DTYPE = np.int
     cdef int start = 0

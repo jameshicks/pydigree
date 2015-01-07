@@ -4,7 +4,7 @@ import numpy as np
 
 from pydigree.common import runs
 from pydigree.misc import ibs, get_ibs_states
-from pydigree.cyfuncs import set_intervals_to_value
+from pydigree.cyfuncs import set_intervals_to_value, runs_gte
 
 
 from pydigree import Population, PedigreeCollection
@@ -27,45 +27,52 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
             shared[pair].append(list(shares))
     return shared
 
-def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=1000):
+def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=1000,
+                 min_length=1, length_unit='mb', ):
     ''' Returns IBD states for each marker along a chromosome '''
     
-    identical = get_ibs_states(ind1, ind2, chromosome_idx)
-
-    nmark = ind1.chromosomes[chromosome_idx].nmark()
+    chromosome = ind1.chromosomes[chromosome_idx] 
+    identical = get_ibs_states(ind1, ind2, chromosome_idx, missingval=300)
+    #identical = [np.inf if x is None else x for x in identical] 
+    nmark = chromosome.nmark()
 
     # First get the segments that are IBD=1
-    ibd1 = list(_process_segments(identical, min_seg=seed_size, predicate=lambda x: x > 0 or x is None))
+    ibd1 = list(_process_segments(identical, min_seg=seed_size, min_val=1, chromobj=chromosome))
     ibd1 = set_intervals_to_value(ibd1, nmark, 1)
 
     # Then the segments that are IBD=2
-    ibd2 = list(_process_segments(identical, min_seg=seed_size, predicate=lambda x: x in {2, None}))
+    ibd2 = list(_process_segments(identical, min_seg=seed_size, min_val=2, chromobj=chromosome))
     ibd2 = set_intervals_to_value(ibd2, nmark, 2)
 
     return np.maximum(ibd1, ibd2)
 
-def _process_segments(identical, min_seg=100, predicate=lambda x: x):    
+def _process_segments(identical, min_seg=100, min_val=1, chromobj=None):    
     # IBD segments are long runs of identical genotypes
-    ibd = runs(identical, predicate, minlength=min_seg)
+    ibd = runs_gte(identical, min_val, minlength=min_seg)
     
     # Genotype errors are things that happen. If theres a small gap between
     # two IBD segments, we'll chalk that up to a genotyping error and join
     # them together.
     ibd = join_gaps(ibd, max_gap=2)
+    
+    if chromobj:
+        ibd = filter_segments(chromobj, ibd)
 
     return ibd
 
 def filter_segments(chromosome, intervals,  min_size=1, min_density=100, size_unit='mb'):
     if size_unit == 'mb':
-        locations = np.array(chrom.physical_map) / 1e6
+        locations = np.array(chromosome.physical_map) / 1e6
     elif size_unit == 'cm':
-        locations = np.array(chrom.genetic_map)
+        locations = np.array(chromosome.genetic_map)
     else:
         raise ValueError('Invalid size unit: {}'.format(size_unit))
     
     for start, stop in intervals:
+        nmarkers = stop - start
         size = locations[stop] - locations[start]
-        if size < min_size or marker_density < min_density:
+        density = nmarkers / float(size)
+        if size < min_size or density < min_density:
             continue
         yield start, stop
 
