@@ -71,11 +71,16 @@ class Individual(object):
     def chromosomes(self):
         return self.population.chromosomes
 
-    def _init_genotypes(self):
-        """ Initializes genotypes so that all genotypes are missing """
-        self.genotypes = [ [ [None]*len(chrom.genetic_map), [None]*len(chrom.genetic_map) ] 
-                           for chrom in self.chromosomes] 
-    
+    def _init_genotypes(self, blankchroms=True):
+        """ 
+        Initializes genotypes so that all genotypes are missing if blankchroms is true,
+        otherwise, just sets what would be the chromosome to None
+        """
+        if blankchroms:
+            self.genotypes = [ [ [None]*len(chrom.genetic_map), [None]*len(chrom.genetic_map) ] 
+                               for chrom in self.chromosomes] 
+        else:
+            self.genotypes = [ (None, None) for chrom in self.chromosomes ]
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
         return self.genotypes is not None
