@@ -19,20 +19,21 @@ def create_pop_handler_func(mapfile):
 
 def plink_data_handler(ind, data):
     ind._init_genotypes(blankchroms=False)
-
     strand_a = data[0::2]
     strand_b = data[1::2]
 
     chromosomes = ind.chromosomes 
     sizes = [x.nmark() for x in chromosomes]
     starts = cumsum(sizes)
+    
 
-    for i, loc in enumerate(izip(starts, sizes)):
-        start, size = loc
+    start = 0
+    for i, size in enumerate(sizes):
         stop = start + size
         chroma = strand_a[start:stop]
         chromb = strand_b[start:stop]
         ind.genotypes[i] = chroma, chromb
+        start += size
 
 def read_map(mapfile):
     """ Reads a PLINK map file into a list of chromosome objects """
