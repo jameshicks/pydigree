@@ -8,7 +8,8 @@ from pydigree.io.base import read_ped
 from pydigree.io.smartopen import smartopen as open
 
 def translate_allele(g):
-    return {'A': 1, 'C': 2, 'G': 3, 'T': 4}[g]
+    return {'A': 1, 'C': 2,
+            'G': 3, 'T': 4, '0': 0}[g]
 
 
 def create_pop_handler_func(mapfile):
