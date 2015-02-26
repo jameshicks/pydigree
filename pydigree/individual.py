@@ -35,6 +35,7 @@ class Individual(object):
         self.pedigree = None
         self.genotypes = None
         self.observed_genos = True
+        self.translated_alleles = False
         self.phenotypes = {}
         self.attrib = {}
         self.children = []

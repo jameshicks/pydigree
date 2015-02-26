@@ -8,9 +8,21 @@ from pydigree.io.base import read_ped
 from pydigree.io.smartopen import smartopen as open
 
 def translate_allele(g):
-    return {'A': 1, 'C': 2,
-            'G': 3, 'T': 4, '0': 0}[g]
+    try:
+        return {'A': 1, 'C': 2,
+                'G': 3, 'T': 4, '0': 0}[g]
+    except KeyError:
+        raise ValueError('Invalid allele code in file: {}'.format(g))
 
+def reverse_translate_allele(a):
+    try:
+        return {1: 'A', 2: 'C',
+                3: 'G', 4: 'T', 0: '0'}[g]
+    except KeyError:
+        raise ValueError('Invalid allele code in data: {}'.format(g))
+
+def letter_allele_coding(data):
+    return 'A' in data or 'C' in data or 'G' in data or 'T' in data
 
 def create_pop_handler_func(mapfile):
     def pop_handler(pop):
@@ -20,6 +32,13 @@ def create_pop_handler_func(mapfile):
 
 def plink_data_handler(ind, data):
     ind._init_genotypes(blankchroms=False)
+
+    if letter_allele_coding(data):
+        ind.translated_alleles = True
+        data = np.array([translate_allele(a) for a in data])
+    else:
+        data = np.array(data)
+
     strand_a = data[0::2]
     strand_b = data[1::2]
 
@@ -133,6 +152,9 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
                 # Get the genotypes in the format we need them
                 g = []
                 for chroma, chromb in ind.genotypes:
+                    if ind.translated_alleles:
+                        chroma = [reverse_translate_allele(a) for a in chroma]
+                        chromb = [reverse_translate_allele(a) for a in chromb]
                     g.extend(chain.from_iterable(izip(chroma, chromb)))
                 outline.extend(g)
                 
