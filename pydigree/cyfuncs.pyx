@@ -17,11 +17,6 @@ cpdef ibs(g1,g2, missingval=None):
     return 1
  return 0
 
-def get_ibs_states(ind1, ind2, chromosome_index, missingval=None):
-    genos1 = izip(*ind1.genotypes[chromosome_index])
-    genos2 = izip(*ind2.genotypes[chromosome_index])
-    
-    return [ibs(x,y, missingval) for x,y in izip(genos1, genos2)]
 
 def runs(sequence, predicate, minlength=2):
     """
