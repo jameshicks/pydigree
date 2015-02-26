@@ -37,7 +37,7 @@ def plink_data_handler(ind, data):
         ind.translated_alleles = True
         data = np.array([translate_allele(a) for a in data])
     else:
-        data = np.array(data)
+        data = np.array([int(x) for x in data])
 
     strand_a = data[0::2]
     strand_b = data[1::2]
