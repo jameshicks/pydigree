@@ -25,6 +25,14 @@ def py_ibs(g1, g2, checkmissing=True):
 
 
 def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
+    '''
+    Efficiently returns IBS states across an entire chromsome.
+    
+    Arguments: Two individuals, and the index of the chromosome to scan. 
+    
+    Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS between
+    missing values coded as missingval
+    '''
     a, b = ind1.genotypes[chromosome_index]
     c, d = ind2.genotypes[chromosome_index]
 
@@ -35,10 +43,13 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
 
     ibs_states = np.zeros(a.shape[0], dtype=np.uint8)
     
-    # Catch which genotypes are missing so we can mark them later
-    missing = (a == 0) | (b == 0) | (c == 0) | (d == 0) 
+    # Catch which genotypes are missing (i.e. no '0' alleles)
+    # so we can mark them later in the output
+    missing = ~ reduce(np.logical_and, (a,b,c,d))
+
     # Any cross-genotype sharing is sufficient to be IBS=1 
     ibs1 = a_eq_c | a_eq_d | b_eq_c | b_eq_d
+    
     # Both alleles are IBS for IBS=2. 
     ibs2 = (a_eq_c & b_eq_d) | (a_eq_d & b_eq_c) 
 
