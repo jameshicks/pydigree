@@ -42,9 +42,9 @@ def runs(sequence, predicate, minlength=2):
 def runs_gte(sequence, double minval, int minlength=2):
     cdef int inrun = False
     cdef int start, stop, i, l
-    #l = len(sequence)
+
     i = 0
-    #while i < l:
+
     for i in range(len(sequence)):
         v = sequence[i]
         if not inrun and v >= minval:
@@ -55,8 +55,7 @@ def runs_gte(sequence, double minval, int minlength=2):
             stop = i - 1
             if stop - start >= minlength:
                 yield start, stop
-        i += 1
-    if inrun and v >= minlength:
+    if inrun and (stop - start) >= minlength:
         yield start, i
 
 def set_intervals_to_value(intervals, size, value):
