@@ -7,6 +7,7 @@ from itertools import izip
 from pydigree.recombination import recombine
 from pydigree.paths import *
 from pydigree.common import *
+from pydigree.genotypes import GenotypedChromosome
 from pydigree._pydigree import chromatid_delabeler
 
 
@@ -164,7 +165,10 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        g = [[[(self, 0)] * len(x.genetic_map), [(self, 1)] * len(x.genetic_map)]
+        haplab_A = (self, 0)
+        haplab_B = (self, 1)
+
+        g = [(GenotypedChromosome([haplab_A] * len(x.genetic_map)), GenotypedChromosome([haplab_B] * len(x.genetic_map)))
              for x in self.chromosomes]
         self.genotypes = g
 

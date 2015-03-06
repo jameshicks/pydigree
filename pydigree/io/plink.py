@@ -6,23 +6,7 @@ from pydigree.common import grouper, cumsum
 from pydigree.chromosome import Chromosome
 from pydigree.io.base import read_ped
 from pydigree.io.smartopen import smartopen as open
-
-def translate_allele(g):
-    try:
-        return {'A': 1, 'C': 2,
-                'G': 3, 'T': 4, '0': 0}[g]
-    except KeyError:
-        raise ValueError('Invalid allele code in file: {}'.format(g))
-
-def reverse_translate_allele(a):
-    try:
-        return {1: 'A', 2: 'C',
-                3: 'G', 4: 'T', 0: '0'}[g]
-    except KeyError:
-        raise ValueError('Invalid allele code in data: {}'.format(g))
-
-def letter_allele_coding(data):
-    return 'A' in data or 'C' in data or 'G' in data or 'T' in data
+from pydigree.genotypes import GenotypedChromosome
 
 def create_pop_handler_func(mapfile):
     def pop_handler(pop):
@@ -32,12 +16,6 @@ def create_pop_handler_func(mapfile):
 
 def plink_data_handler(ind, data):
     ind._init_genotypes(blankchroms=False)
-
-    if letter_allele_coding(data):
-        ind.translated_alleles = True
-        data = np.array([translate_allele(a) for a in data])
-    else:
-        data = np.array([int(x) for x in data])
 
     strand_a = data[0::2]
     strand_b = data[1::2]
@@ -50,8 +28,8 @@ def plink_data_handler(ind, data):
     start = 0
     for i, size in enumerate(sizes):
         stop = start + size
-        chroma = strand_a[start:stop]
-        chromb = strand_b[start:stop]
+        chroma = GenotypedChromosome(strand_a[start:stop])
+        chromb = GenotypedChromosome(strand_b[start:stop])
         ind.genotypes[i] = chroma, chromb
         start += size
 
