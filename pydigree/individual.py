@@ -140,9 +140,8 @@ class Individual(object):
     def set_genotype(self, location, genotype):
         """ Manually set a genotype """
         self.__fail_on_non_genotyped()
-        chr, pos = location
-        for i, allele in enumerate(genotype):
-            self.genotypes[chr][i][pos] = allele
+        self.genotypes[chrom][0][pos] = genotype[0]
+        self.genotypes[chrom][1][pos] = genotype[1]
 
     def _set_genotypes(self, gts):
         self.genotypes = gts
