@@ -74,7 +74,7 @@ class Chromosome(object):
         r = np.random.random(self.nmark())
         return np.array(r > self.frequencies, dtype=np.uint8) + 1
 
-    def linkageequilibrium_chromosome(self, nchrom):
+    def linkageequilibrium_chromosomes(self, nchrom):
         """ Returns a numpy array of many randomly generated chromosomes """
         chroms = np.random.random((nchrom, self.nmark()))
         chroms = np.uint8((chroms > self.frequencies) + 1)
