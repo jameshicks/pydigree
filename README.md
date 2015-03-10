@@ -10,6 +10,7 @@ In addition to basic pedigree data manipulation, pydigree also includes submodul
 * __mixedmodel__: Provides classes for using mixed models with family data
 * __io__: Provides functions for importing/exporting data from common data formats, including:
  * `plink`: Functions for working with plink format PED/MAP data
+ * `vcf`: Functions for working with the VCF genotype format 
  * `genomesimla`: Includes a function for reading genomeSIMLA format chromosome templates
 * __sgs__: Functions for shared genomic segment data
 
