@@ -4,7 +4,6 @@ from itertools import izip
 
 import numpy as np
 
-from pydigree._pydigree import choice_with_probs
 
 
 class Chromosome(object):
