@@ -67,6 +67,9 @@ class Chromosome(object):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
     
+    def empty_chromosome(self, dtype=np.uint8):
+        return GenotypedChromosome(np.zeros(self.nmark(), dtype=dtype))
+
     def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
         if (self.frequencies < 0).any():
