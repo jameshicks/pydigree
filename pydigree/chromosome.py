@@ -4,7 +4,7 @@ from itertools import izip
 
 import numpy as np
 
-
+from pydigree.genotypes import GenotypedChromosome
 
 class Chromosome(object):
     """
@@ -72,10 +72,11 @@ class Chromosome(object):
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
         r = np.random.random(self.nmark())
-        return np.array(r > self.frequencies, dtype=np.uint8) + 1
+        r = np.array(r > self.frequencies, dtype=np.uint8) + 1
+        return GenotypedChromosome(r)
 
     def linkageequilibrium_chromosomes(self, nchrom):
         """ Returns a numpy array of many randomly generated chromosomes """
         chroms = np.random.random((nchrom, self.nmark()))
         chroms = np.uint8((chroms > self.frequencies) + 1)
-        return chroms
+        return [GenotypedChromosome(r) for r in chroms]
