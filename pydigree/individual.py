@@ -20,7 +20,7 @@ def is_missing_genotype(g):
 
 class Individual(object):
 
-    def __init__(self, population, id, father, mother, sex):
+    def __init__(self, population, id, father=None, mother=None, sex=None):
         # Every individual is observed within a population with certain
         # genotypes available. This makes recombination book-keeping easier.
         self.population = population
