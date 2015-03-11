@@ -4,6 +4,21 @@ from pydigree import Chromosome, Population, Individual
 from pydigree.io import smartopen as open 
 
 
+class VCFRecord(object):
+    def __init__(self, line):
+        chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip().split('\t', 9)
+        self.chrom = chromid
+        self.pos = pos
+        self.label = varid
+        self.ref = ref
+        self.alt = alt
+        self.qual = qual
+        self.filter_passed = filter_passed == 'PASS'
+        self.info = info
+        self.format = format
+        self.data = data.split('\t')
+
+
 def read_vcf(filename):
     with open(filename) as f:
         pop = Population()
@@ -40,18 +55,17 @@ def read_vcf(filename):
                     ind._init_genotypes(dtype='S')
                 continue
             
-            l = line.strip().split()
-            chrom = l[0]
-            if chrom != last_chrom:
+
+            r = VCFRecord(line)
+            if r.chrom != last_chrom:
                 chr_idx += 1
                 pos_idx = 0
 
             loc = (chr_idx, pos_idx)
 
-            data_format = l[8]
-            gtidx = data_format.split(':').index('GT')
+            gtidx = r.format.split(':').index('GT')
             
-            for ind, data in izip(inds, l[9:]):
+            for ind, data in izip(inds, r.data):
                 data = data.split(':')
 
                 # The genotypes come in the form A|C or A/C depending on phasing.
@@ -61,6 +75,6 @@ def read_vcf(filename):
                 ind.set_genotype(loc, gt)
             
             pos_idx += 1
-            last_chrom = chrom
+            last_chrom = r.chrom
 
         return pop
