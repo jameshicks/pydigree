@@ -72,7 +72,7 @@ def read_vcf(filename):
             row = [x.split('/' if '/' in x else '|') for x in row]
             row = chain.from_iterable(row)
             row = list(row)
-            genotypes_from_sequential_alleles(ind, row)
+            genotypes_from_sequential_alleles(ind, row, missing_code='.')
             
 
         return pop

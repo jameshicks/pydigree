@@ -117,7 +117,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 fam, ind = d['famid'], d['ind']
                 pedigrees[fam][ind].phenotypes[k] = v
 
-def genotypes_from_sequential_alleles(ind, data):
+def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     '''
     Takes a series of alleles and turns them into genotypes.
     
@@ -142,5 +142,11 @@ def genotypes_from_sequential_alleles(ind, data):
         stop = start + size
         chroma = GenotypedChromosome(strand_a[start:stop])
         chromb = GenotypedChromosome(strand_b[start:stop])
+        
+        # Set missing alleles to empty string
+        if np.issubtype(chroma.dtype, str):
+            chroma[chroma == missing_code] = '' 
+            chromb[chromb == missing_code] = ''
+
         ind.genotypes[i] = chroma, chromb
         start += size

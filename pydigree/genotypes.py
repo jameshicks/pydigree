@@ -26,4 +26,4 @@ class GenotypedChromosome(np.ndarray):
         if np.issubdtype(self.dtype, np.integer):
             return self == 0 
         else:
-            return self == '0'
+            return self == ''

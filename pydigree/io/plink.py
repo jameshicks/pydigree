@@ -11,7 +11,7 @@ def create_pop_handler_func(mapfile):
     return pop_handler
 
 def plink_data_handler(ind, data):
-    return genotypes_from_sequential_alleles(ind, data)
+    return genotypes_from_sequential_alleles(ind, data, missing_code='0')
 
 def read_map(mapfile):
     """ Reads a PLINK map file into a list of chromosome objects """
