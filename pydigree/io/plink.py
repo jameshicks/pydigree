@@ -1,37 +1,17 @@
 from itertools import izip, chain, imap
 
-import numpy as np
-
 from pydigree.common import grouper, cumsum
 from pydigree.chromosome import Chromosome
-from pydigree.io.base import read_ped
+from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.io.smartopen import smartopen as open
-from pydigree.genotypes import GenotypedChromosome
 
 def create_pop_handler_func(mapfile):
     def pop_handler(pop):
         pop.chromosomes = read_map(mapfile)
     return pop_handler
 
-
 def plink_data_handler(ind, data):
-    ind._init_genotypes(blankchroms=False)
-
-    strand_a = data[0::2]
-    strand_b = data[1::2]
-
-    chromosomes = ind.chromosomes 
-    sizes = [x.nmark() for x in chromosomes]
-    starts = cumsum(sizes)
-    
-
-    start = 0
-    for i, size in enumerate(sizes):
-        stop = start + size
-        chroma = GenotypedChromosome(strand_a[start:stop])
-        chromb = GenotypedChromosome(strand_b[start:stop])
-        ind.genotypes[i] = chroma, chromb
-        start += size
+    return genotypes_from_sequential_alleles(ind, data)
 
 def read_map(mapfile):
     """ Reads a PLINK map file into a list of chromosome objects """

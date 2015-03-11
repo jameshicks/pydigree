@@ -6,7 +6,7 @@ from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.chromosome import Chromosome
-
+from pydigree.genotypes import GenotypedChromosome
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
              population_handler=None, data_handler=None, connect_inds=True):
@@ -116,3 +116,31 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                     continue
                 fam, ind = d['famid'], d['ind']
                 pedigrees[fam][ind].phenotypes[k] = v
+
+def genotypes_from_sequential_alleles(ind, data):
+    '''
+    Takes a series of alleles and turns them into genotypes.
+    
+    For example: 
+    The series '1 2 1 2 1 2' becomes 
+    chrom1 = [1,1,1]
+    chrom2 = [2,2,2]
+
+    These are added as the genotypes for ind.
+    '''
+
+    ind._init_genotypes(blankchroms=False)
+
+    strand_a = data[0::2]
+    strand_b = data[1::2]
+
+    chromosomes = ind.chromosomes 
+    sizes = [x.nmark() for x in chromosomes]
+
+    start = 0
+    for i, size in enumerate(sizes):
+        stop = start + size
+        chroma = GenotypedChromosome(strand_a[start:stop])
+        chromb = GenotypedChromosome(strand_b[start:stop])
+        ind.genotypes[i] = chroma, chromb
+        start += size
