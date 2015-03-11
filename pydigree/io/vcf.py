@@ -1,8 +1,10 @@
-from itertools import izip
+from itertools import izip, chain
+
+import numpy as np
 
 from pydigree import Chromosome, Population, Individual
 from pydigree.io import smartopen as open 
-
+from pydigree.io.base import genotypes_from_sequential_alleles
 
 class VCFRecord(object):
     def __init__(self, line):
@@ -17,6 +19,11 @@ class VCFRecord(object):
         self.info = info
         self.format = format
         self.data = data.split('\t')
+
+    @property
+    def genotypes(self):
+        gtidx = self.format.split(':').index('GT')
+        return [x.split(':')[gtidx] for x in self.data]
 
 
 def read_vcf(filename):
@@ -38,7 +45,7 @@ def read_vcf(filename):
             last_chromid = chromid
         pop.add_chromosome(chromobj)
 
-        # Pass 2: Add genotypes for individuals
+        # Pass 2: Build the individuals
         f.seek(0) # Return to start of file
         last_chrom = None
         chr_idx = -1 
@@ -54,27 +61,18 @@ def read_vcf(filename):
                     # Initialize new genotypes with a string datatype
                     ind._init_genotypes(dtype='S')
                 continue
+        
+        # Pass 3: Add the genotypes
+        f.seek(0)
+        genotypes = np.array([VCFRecord(x).genotypes for x in f if not x.startswith('#')])
+        # Get them in the shape we need (inds in columns and SNPs and rows), then
+        # transpose so we have inds in rows and SNPs in columns
+        genotypes.reshape((-1,2)).T
+        for ind, row in izip(inds, genotypes):
+            row = [x.split('/' if '/' in x else '|') for x in row]
+            row = chain.from_iterable(row)
+            row = list(row)
+            genotypes_from_sequential_alleles(ind, row)
             
-
-            r = VCFRecord(line)
-            if r.chrom != last_chrom:
-                chr_idx += 1
-                pos_idx = 0
-
-            loc = (chr_idx, pos_idx)
-
-            gtidx = r.format.split(':').index('GT')
-            
-            for ind, data in izip(inds, r.data):
-                data = data.split(':')
-
-                # The genotypes come in the form A|C or A/C depending on phasing.
-                # I treat all genotypes as phased (or unphased, I guess) so I'm 
-                # not doing anything with that. 
-                gt = data[gtidx][0:3:2]
-                ind.set_genotype(loc, gt)
-            
-            pos_idx += 1
-            last_chrom = r.chrom
 
         return pop
