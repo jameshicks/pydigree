@@ -18,8 +18,6 @@ parser.add_argument('-n', '--niter', type=lambda x: int(float(x)), default=10000
 parser.add_argument('--only', metavar='PED',
                     help='Only simulate specified pedigrees',
                     nargs='*', dest='onlypeds')
-parser.add_argument('--obs', type=float, default=1.0,
-                    help='Maximum observed value of test statistic')
 parser.add_argument('--writedist', 
                     help='Write null distribution to file')
 parser.add_argument('--include-marryins', dest='remove_mif', action='store_false',
@@ -94,8 +92,7 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     nulldist[ped.label] = sim_share
 
     print 
-#    print "Maximum simulated allele sharing: %s" % max(sim_share)
-#    print "Empiric P: %s" % (len([x for x in sim_share if x >= args.obs]) / float(args.niter))
+
 
 def stringify(n):
     if type(n) is str:
