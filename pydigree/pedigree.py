@@ -9,15 +9,12 @@ from pydigree.paths import kinship, fraternity
 
 class Pedigree(Population):
 
-    def __init__(self, label=None, basepopulation=None):
+    def __init__(self, label=None):
         Population.__init__(self)
         self.label = label
         self.kinmat = {}
         self.fratmat = {}
-        if basepopulation is not None:
-            # A population to inherit genotype information from
-            self.basepopulation = basepopulation
-            self.chromosomes = self.basepopulation.chromosomes
+
     def __prepare_nonfounder_contraint(self, con):
         if not con:
             return lambda x: x.is_founder()

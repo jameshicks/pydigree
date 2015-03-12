@@ -43,7 +43,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     if population_handler:
         population_handler(population)
 
-    p = Pedigree(basepopulation=population)
+    p = Pedigree()
     pc = PedigreeCollection()
 
     with open(filename) as f:
@@ -74,7 +74,9 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
         # Place individuals into pedigrees
         for pedigree_label in set(ind.id[0] for ind in p):
-            ped = Pedigree(label=pedigree_label, basepopulation=population)
+            ped = Pedigree(label=pedigree_label)
+            # Set as a copy
+            ped.chromosomes = population.chromosomes[:]
             thisped = [x for x in p if x.id[0] == pedigree_label]
             for ind in thisped:
                 ind.id = ind.id[1]
