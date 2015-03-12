@@ -9,7 +9,6 @@ from collections import MutableMapping
 
 # Other pydigree objects
 from pydigree.individual import Individual
-from pydigree.chromosome import Chromosome
 from pydigree.common import *
 from pydigree.recombination import recombine
 

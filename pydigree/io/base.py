@@ -5,7 +5,6 @@ from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
-from pydigree.chromosome import Chromosome
 from pydigree.genotypes import GenotypedChromosome
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
