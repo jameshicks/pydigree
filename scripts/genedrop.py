@@ -29,17 +29,15 @@ args = parser.parse_args()
 
 def spairs(ped, inds, loc):
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
-             k.get_genotype(loc, checkhasgeno=False),
-             checkmissing=False) for j, k 
-         in itertools.combinations(inds, 2)]
+             k.get_genotype(loc, checkhasgeno=False)) 
+         for j, k in itertools.combinations(inds, 2)]
     return sum(r)
 
 def sbool(ped, inds, loc):
     npairs = float(len(inds) * (len(inds) - 1) / 2)
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
-             k.get_genotype(loc, checkhasgeno=False),
-             checkmissing=False) > 0 for j, k
-         in itertools.combinations(inds, 2)]
+             k.get_genotype(loc, checkhasgeno=False)) > 0
+         for j, k in itertools.combinations(inds, 2)]
     return sum(r) / npairs
 
 
@@ -56,7 +54,13 @@ except KeyError:
     print "Invalid score function {}".format(args.scorefunc)
 
 pop = pydigree.Population(5000)
+
+
 peds = pydigree.io.read_ped(args.file, pop)
+c = pydigree.ChromosomeTemplate()
+c.add_genotype(0.5, 0)
+peds.add_chromosome(c)
+
 
 nulldist = {}
 
@@ -68,9 +72,6 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     # Clear the genotypes, if present
     ped.clear_genotypes()
 
-    c = pydigree.ChromosomeTemplate()
-    c.add_genotype(0.5, 0)
-    ped.add_chromosome(c)
 
 
     affs = {x for x in ped if x.phenotypes['affected']}
