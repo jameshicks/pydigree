@@ -24,7 +24,7 @@ class ConstrainedMendelianSimulation(Simulation):
             for x in ped.founders():
                 x.label_genotypes()
             for ind in sorted(self.constraints['ibd'],
-                              key=lambda x: x.depth(), reverse=True):
+                              key=lambda x: x.depth, reverse=True):
                 if ind.has_genotypes():
                     # If the individual we're looking at has genotypes
                     # already, we've seen them earlier while getting

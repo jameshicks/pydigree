@@ -107,8 +107,8 @@ class Pedigree(Population):
         # Use tuples here to take advantage of the implicit tuple ordering
         # With depth as the first item, it assures that descendants aren't
         # listed before their ancestors.
-        t1 = self[id1].depth(), id1
-        t2 = self[id2].depth(), id2
+        t1 = self[id1].depth, id1
+        t2 = self[id2].depth, id2
         if id1 == id2:
             k = (1 + self.kinship(fa(id1), mo(id1))) / 2.0
         elif t1 < t2:

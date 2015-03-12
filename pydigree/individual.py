@@ -196,7 +196,7 @@ class Individual(object):
         """
         if not self.is_founder():
             return False
-        return any(x > 1 for x in self.children)
+        return any(x.depth > 1 for x in self.children)
 
     def parents(self):
         return self.father, self.mother
@@ -252,7 +252,8 @@ class Individual(object):
             return self.id
         else:
             return self.father.patriline()
-
+    
+    @property
     def depth(self):
         """
         Returns the depth of an individual in the pedigree, a rough measure of
@@ -268,7 +269,7 @@ class Individual(object):
         elif 'depth' in self.attrib:
             return self.attrib['depth']
         else:
-            d = 1 + max(self.father.depth(), self.mother.depth())
+            d = 1 + max(self.father.depth, self.mother.depth)
             self.attrib['depth'] = d
             return d
 
