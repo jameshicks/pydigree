@@ -17,7 +17,7 @@ intermark_dist_cm = (float(chrom_length_cm)/nmark)/100
 
 pop = pydigree.Population(n)
 for rx in range(1):
-    c = pydigree.Chromosome()
+    c = pydigree.ChromosomeTemplate()
     for x in range(nmark): c.add_genotype(random.random(),intermark_dist_cm)
     print c
     pop.add_chromosome(c)

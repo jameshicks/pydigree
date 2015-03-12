@@ -70,7 +70,7 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     # Clear the genotypes, if present
     ped.clear_genotypes()
 
-    c = pydigree.Chromosome()
+    c = pydigree.ChromosomeTemplate()
     c.add_genotype(0.5, 0)
     ped.add_chromosome(c)
 

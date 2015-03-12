@@ -1,7 +1,7 @@
 from itertools import izip, chain, imap
 
 from pydigree.common import grouper, cumsum
-from pydigree.chromosome import Chromosome
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.io.smartopen import smartopen as open
 
@@ -14,7 +14,7 @@ def plink_data_handler(ind, data):
     return genotypes_from_sequential_alleles(ind, data, missing_code='0')
 
 def read_map(mapfile):
-    """ Reads a PLINK map file into a list of chromosome objects """
+    """ Reads a PLINK map file into a list of ChromosomeTemplate objects """
     last_chr, last_pos = None, 0
     chroms = []
     chromosome = None
@@ -32,7 +32,7 @@ def read_map(mapfile):
                 if i > 0:
                     chroms.append(chromosome)
                 # Make the next chromosome
-                chromosome = Chromosome(label=chr)
+                chromosome = ChromosomeTemplate(label=chr)
             elif pos < last_pos:
                 raise ValueError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)

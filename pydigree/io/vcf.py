@@ -2,7 +2,8 @@ from itertools import izip, chain
 
 import numpy as np
 
-from pydigree import Chromosome, Population, Individual
+from pydigree import Population, Individual
+from pydgiree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open 
 from pydigree.io.base import genotypes_from_sequential_alleles
 
@@ -39,7 +40,7 @@ def read_vcf(filename):
             if chromid != last_chromid:
                 if last_chromid is not None:
                     pop.add_chromosome(chromobj)
-                chromobj = Chromosome()
+                chromobj = ChromosomeTemplate()
              
             chromobj.add_genotype(None, None, bp=pos, label=varid)
             last_chromid = chromid

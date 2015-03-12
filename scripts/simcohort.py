@@ -13,7 +13,7 @@ ngen = 100
 
 pop = pydigree.Population(popsize)
 for x in range(nchrom):
-    c = pydigree.Chromosome()
+    c = pydigree.ChromosomeTemplate()
     c.add_genotype(0.1,0)
     pop.add_chromosome(c)
 
