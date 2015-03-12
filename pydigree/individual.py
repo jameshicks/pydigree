@@ -71,7 +71,10 @@ class Individual(object):
     #
     @property
     def chromosomes(self):
-        return self.population.chromosomes
+        if self.pedigree is not None:
+            return self.pedigree.chromosomes
+        else:
+            return self.population.chromosomes
 
     def _init_genotypes(self, blankchroms=True, dtype=None):
         """ 
