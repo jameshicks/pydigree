@@ -55,7 +55,7 @@ def runs_gte(sequence, double minval, int minlength=2):
             stop = i - 1
             if stop - start >= minlength:
                 yield start, stop
-    if inrun and (stop - start) >= minlength:
+    if inrun and (i - start) >= minlength:
         yield start, i
 
 def set_intervals_to_value(intervals, size, value):
