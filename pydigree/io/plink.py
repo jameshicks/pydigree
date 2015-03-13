@@ -6,8 +6,12 @@ from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.io.smartopen import smartopen as open
 
 def create_pop_handler_func(mapfile):
+    chromosomes = read_map(mapfile)
+
     def pop_handler(pop):
-        pop.chromosomes = read_map(mapfile)
+        for chrom in chromosomes:
+            pop.add_chromosome(chrom)
+
     return pop_handler
 
 def plink_data_handler(ind, data):
