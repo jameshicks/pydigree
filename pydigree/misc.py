@@ -39,7 +39,7 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     a_eq_c = a == c
     a_eq_d = a == d
     b_eq_c = b == c
-    b_eq_d = d == c
+    b_eq_d = b == d
 
     ibs_states = np.zeros(a.shape[0], dtype=np.uint8)
     
