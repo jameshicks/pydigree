@@ -32,8 +32,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=1000,
     ''' Returns IBD states for each marker along a chromosome '''
     
     chromosome = ind1.chromosomes[chromosome_idx] 
-    identical = get_ibs_states(ind1, ind2, chromosome_idx, missingval=300)
-    #identical = [np.inf if x is None else x for x in identical] 
+    identical = get_ibs_states(ind1, ind2, chromosome_idx)
     nmark = chromosome.nmark()
 
     # First get the segments that are IBD=1
