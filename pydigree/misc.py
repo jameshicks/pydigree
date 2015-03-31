@@ -45,7 +45,7 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     
     # Catch which genotypes are missing (i.e. no '0' alleles)
     # so we can mark them later in the output
-    missing = ~ reduce(np.logical_and, (a.missing, b.missing, c.missing, d.missing))
+    missing = a.missing | b.missing | c.missing | d.missing
 
     # Any cross-genotype sharing is sufficient to be IBS=1 
     ibs1 = a_eq_c | a_eq_d | b_eq_c | b_eq_d
@@ -54,9 +54,9 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     ibs2 = (a_eq_c & b_eq_d) | (a_eq_d & b_eq_c) 
 
     ibs_states = np.zeros(a.shape[0])
-    ibs_states[missing] = missingval
     ibs_states[ibs1] = 1
     ibs_states[ibs2] = 2 
+    ibs_states[missing] = missingval
     
     return ibs_states
 
