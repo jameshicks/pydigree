@@ -1,5 +1,7 @@
 from itertools import izip, chain, imap
 
+import numpy as np
+
 from pydigree.common import *
 from pydigree.population import Population
 from pydigree.individual import Individual
