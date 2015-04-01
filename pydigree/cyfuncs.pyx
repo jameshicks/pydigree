@@ -3,6 +3,7 @@ test='test'
 from itertools import izip
 import numpy as np
 cimport numpy as np
+cimport cython 
 
 cpdef ibs(g1,g2, missingval=None):
  ''' Returns how many alleles are identical-by-state between two genotypes, or missingval if either genotype is missing ''' 
@@ -44,7 +45,7 @@ def runs_gte(sequence, double minval, int minlength=2):
     cdef int start, stop, i, l
 
     i = 0
-
+    out = [] 
     for i in range(len(sequence)):
         v = sequence[i]
         if not inrun and v >= minval:
@@ -54,9 +55,32 @@ def runs_gte(sequence, double minval, int minlength=2):
             inrun = False
             stop = i - 1
             if stop - start >= minlength:
-                yield start, stop
+                out.append((start, stop))
     if inrun and (i - start) >= minlength:
-        yield start, i
+        out.append((start, i))
+    return out
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def runs_gte_uint8(np.ndarray[np.uint8_t] sequence, np.uint8_t minval, Py_ssize_t minlength=1):
+    cdef int inrun = False
+    cdef Py_ssize_t start, stop, i
+    cdef np.uint8_t v
+    i = 0
+    out = []
+    for i in range(sequence.shape[0]):
+        v = sequence[i]
+        if not inrun and v > minval:
+            inrun = True
+            start = i
+        elif inrun and v <= minval:
+            inrun = False
+            stop = i - 1
+            if stop - start >= minlength:
+                out.append((start, stop))
+    if inrun and (i - start) >= minlength:
+        out.append((start, i))
+    return out
 
 def set_intervals_to_value(intervals, size, value):
     DTYPE = np.int
