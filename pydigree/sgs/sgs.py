@@ -28,7 +28,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
     return shared
 
 
-def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=1000,
+def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                  min_length=1, length_unit='mb'):
     ''' Returns IBD states for each marker along a chromosome '''
     
