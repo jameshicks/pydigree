@@ -85,7 +85,7 @@ class Individual(object):
             self.genotypes = [(chrom.empty_chromosome(dtype=dtype), chrom.empty_chromosome(dtype=dtype))
                               for chrom in self.chromosomes] 
         else:
-            self.genotypes = [ (None, None) for chrom in self.chromosomes ]
+            self.genotypes = [ (None, None) for chrom in self.chromosomes]
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
         return self.genotypes is not None
@@ -170,7 +170,7 @@ class Individual(object):
         haplab_A = (self, 0)
         haplab_B = (self, 1)
 
-        g = [(GenotypedChromosome([haplab_A] * len(x.genetic_map)), GenotypedChromosome([haplab_B] * len(x.genetic_map)))
+        g = [(GenotypedChromosome((haplab_A) * len(x.genetic_map)), GenotypedChromosome((haplab_B) * len(x.genetic_map)))
              for x in self.chromosomes]
         self.genotypes = g
 
