@@ -9,7 +9,7 @@ peds = pydigree.read_ped(sys.argv[1])
 fam, ancestor, chr, pos, allele = sys.argv[2:]
 print ' '.join(['GENOTYPE', fam, ancestor, chr, pos, allele, 'P', 'set'])
 
-for ind in peds.individuals():
+for ind in peds.individuals:
     if not ind.phenotypes['affected']:
         continue
     print ' '.join(['IBD', fam, ind.id, ancestor, chr, pos, 'P'])

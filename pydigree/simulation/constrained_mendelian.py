@@ -11,7 +11,7 @@ class ConstrainedMendelianSimulation(Simulation):
 
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)
-        for ind in self.template.individuals():
+        for ind in self.template.individuals:
             if ind.is_founder():
                 continue
             if not (ind.father.is_founder() or ind.mother.is_founder()):

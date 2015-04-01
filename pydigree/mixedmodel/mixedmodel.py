@@ -92,7 +92,7 @@ class MixedModel(object):
         def has_outcome(ind):
             return ind.phenotypes[self.outcome] is not None
 
-        obs = [x for x in self.pedigrees.individuals()
+        obs = [x for x in self.pedigrees.individuals
                if has_all_fixefs(x, self.fixed_effects) and has_outcome(x)]
         if not self.obs:
             self.obs = obs
@@ -141,7 +141,7 @@ class MixedModel(object):
         """
         Zlist = []
         for effect_name in self.random_effects:
-            allinds = self.pedigrees.individuals()
+            allinds = self.pedigrees.individuals
             obs = frozenset(self.observations())
             obsidx = [i for i, x in enumerate(allinds) if x in obs]
             if is_genetic_effect(effect_name):

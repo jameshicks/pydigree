@@ -32,7 +32,7 @@ class MixedModelMixin(Object):
             getvar = lambda ind: ind.phenotypes[variable]
         
         
-        levels = sorted({getvar(ind) for ind in self.individuals()})
+        levels = sorted({getvar(ind) for ind in self.individuals})
         
         if onlylevels is not None:
             onlylevels = set(onlylevels)
@@ -51,7 +51,7 @@ class MixedModelMixin(Object):
             raise ValueError('Variable only has one level!')
 
         if not inds:
-            inds = self.individuals()
+            inds = self.individuals
 
         Z = []
         for ind in inds:

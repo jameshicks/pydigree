@@ -39,6 +39,7 @@ class PedigreeCollection(MutableMapping):
     def keys(self):
         return self.pedigrees.keys()
 
+    @property
     def individuals(self):
         inds = []
         for pedigree in sorted(self, key=lambda x: x.label):

@@ -10,8 +10,10 @@ class NaiveGeneDroppingSimulation(Simulation):
         self.genedrop_attempts = 1000
 
     def replicate(self, writeibd=False, verbose=None, replicatenumber=0):
-        for ind in self.template.individuals():
+
+        for ind in self.template.individuals:
             ind.clear_genotypes()
+
         for ped in self.template:
 
             for attempt in xrange(self.genedrop_attempts):
