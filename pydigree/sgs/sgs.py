@@ -60,23 +60,29 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None):
 
     return ibd
 
-def filter_segments(chromosome, intervals,  min_size=1, min_density=100, size_unit='mb'):
+
+def filter_segments(chromosome, intervals,  min_size=1.0, min_density=100, size_unit='mb'):
     if size_unit == 'mb':
-        locations = np.array(chromosome.physical_map) / 1e6
+        locations = chromosome.physical_map
+        min_size *= 1e6
+        min_density /= 1e6
+
     elif size_unit == 'cm':
-        locations = np.array(chromosome.genetic_map)
+        locations = chromosome.genetic_map
     else:
         raise ValueError('Invalid size unit: {}'.format(size_unit))
-    for start, stop in intervals:
+    
+    def meets_criteria(seg):
+        start, stop = seg
         nmarkers = stop - start
         size = locations[stop] - locations[start]
         density = nmarkers / float(size)
-        if size < min_size or density < min_density:
-            continue
-        yield start, stop
+        return size >= min_size and density >= min_density
+    
+    return [seg for seg in intervals if meets_criteria(seg)]
+
 
 # Support functions
-
 def join_gaps(seq, max_gap=1):
     seq = list(seq)
 
