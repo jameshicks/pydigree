@@ -44,7 +44,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     population = Population()
     
     p = Pedigree()
-    population_handler(p)
+    if callable(population_handler):
+        population_handler(p)
     
     pc = PedigreeCollection()
 
@@ -77,7 +78,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         # Place individuals into pedigrees
         for pedigree_label in set(ind.id[0] for ind in p):
             ped = Pedigree(label=pedigree_label)
-            population_handler(ped)
+            if callable(population_handler):
+                population_handler(ped)
 
             thisped = [x for x in p if x.id[0] == pedigree_label]
             for ind in thisped:
