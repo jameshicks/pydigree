@@ -3,7 +3,7 @@ from itertools import izip, chain
 import numpy as np
 
 from pydigree import Population, Individual
-from pydgiree.genotypes import ChromosomeTemplate
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open 
 from pydigree.io.base import genotypes_from_sequential_alleles
 
