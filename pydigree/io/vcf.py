@@ -75,5 +75,6 @@ def read_vcf(filename):
             row = list(row)
             genotypes_from_sequential_alleles(ind, row, missing_code='.')
             
-
+        for ind in inds:
+            pop.register_individual(ind)
         return pop
