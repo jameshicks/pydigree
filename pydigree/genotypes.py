@@ -32,6 +32,7 @@ class GenotypedChromosome(np.ndarray):
 
 class SparseGenotypedChromosome(object):
     def __init__(self, data):
+        data = np.array(data)
         self.dtype = data.dtype
         self.size = data.shape[0]
         self.non_refalleles = self.__array2nonref(data)
