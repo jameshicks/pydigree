@@ -40,7 +40,8 @@ class SparseGenotypedChromosome(object):
 
     def __array2nonref(self, data):
         refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
-        return [(i,x) for i,x in enumerate(data) if x != refcode]
+        return {i: x for i,x in enumerate(data)
+                if x != refcode and x != ''}
     
     def __array2missing(self, data): 
         return [i for i,x in enumerate(data) if x == '']
@@ -56,8 +57,8 @@ class SparseGenotypedChromosome(object):
             raise ValueError('Trying to compare different-sized chromosomes')
         base = np.ones(self.size, dtype=np.bool_)
         
-        nonreflocs_a = {x[0] for x in self.non_refalleles}
-        nonreflocs_b = {x[0] for x in other.non_refalleles}
+        nonreflocs_a = set(self.non_refalleles)
+        nonreflocs_b = set(other.non_refalleles)
         for i in set.symmetric_difference(nonreflocs_a, nonreflocs_b):
             base[i] = 0
 
