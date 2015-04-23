@@ -149,6 +149,14 @@ class Individual(object):
     def _set_genotypes(self, gts):
         self.genotypes = gts
 
+
+    def update(self, other):
+        '''
+        Takes another individual object, merges/updates phenotypes with the other
+        individual object and REPLACES self's genotypes with other's
+        '''
+        self.phenotypes.update(other.phenotypes)
+
     def has_allele(self, location, allele):
         """
         Returns True if individual has the specified allele at location
