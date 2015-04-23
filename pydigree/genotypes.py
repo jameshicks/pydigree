@@ -30,6 +30,50 @@ class GenotypedChromosome(np.ndarray):
         else:
             return self == ''
 
+class SparseGenotypedChromosome(object):
+    def __init__(self, data):
+        self.dtype = data.dtype
+        self.size = data.shape[0]
+        self.non_refalleles = self.__array2nonref(data)
+        self.missingindices = self.__array2missing(data)
+
+    def __array2nonref(self, data):
+        refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
+        return [(i,x) for i,x in enumerate(data) if x != refcode]
+    
+    def __array2missing(self, data): 
+        return [i for i,x in enumerate(data) if x == '']
+
+    @property
+    def missing(self):
+        base = np.zeros(self.size, dtype=np.bool_)
+        base[self.missingindices] = 1
+        return base
+
+    def __eq__(self, other):
+        if self.size != other.size: 
+            raise ValueError('Trying to compare different-sized chromosomes')
+        base = np.ones(self.size, dtype=np.bool_)
+        
+        nonreflocs_a = {x[0] for x in self.non_refalleles}
+        nonreflocs_b = {x[0] for x in other.non_refalleles}
+        for i in set.symmetric_difference(nonreflocs_a, nonreflocs_b):
+            base[i] = 0
+
+        for i in set.intersection(nonreflocs_a, nonreflocs_b):
+            if self.non_refalleles[i] != other.non_refalleles[i]:
+                base[i] = 0
+        return base
+        
+    def __neq__(self, other):
+        return np.logical_not(self == other)
+
+    def todense(self):
+        arr = np.zeroes(self.nmark, dtype=self.dtype)
+        for i,x in self.nonref_alleles:
+            arr[i] = x
+        return arr
+
 class ChromosomeTemplate(object):
     """
     Chromsome is a class that keeps track of marker frequencies and distances.
