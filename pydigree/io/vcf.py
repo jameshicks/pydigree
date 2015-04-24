@@ -11,11 +11,11 @@ class VCFRecord(object):
     def __init__(self, line):
         chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip().split('\t', 9)
         self.chrom = chromid
-        self.pos = pos
+        self.pos = int(pos)
         self.label = varid
         self.ref = ref
         self.alt = alt
-        self.qual = qual
+        self.qual = float(qual)
         self.filter_passed = filter_passed == 'PASS'
         self.info = info
         self.format = format
