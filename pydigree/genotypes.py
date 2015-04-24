@@ -24,11 +24,12 @@ class GenotypedChromosome(np.ndarray):
         raise NotMeaningfulError('Value comparisions not meaningful for genotypes')
 
     @property
+    def missingcode(self):
+        return 0 if np.issubdtype(self.dtype, np.integer) else ''
+    
+    @property
     def missing(self):
-        if np.issubdtype(self.dtype, np.integer):
-            return self == 0 
-        else:
-            return self == ''
+        return self == self.missingcode
 
 class SparseGenotypedChromosome(object):
     def __init__(self, data):
@@ -45,6 +46,10 @@ class SparseGenotypedChromosome(object):
     
     def __array2missing(self, data): 
         return [i for i,x in enumerate(data) if x == '']
+
+    @property 
+    def missingcode(self):
+        return 0 if np.issubdtype(self.dtype, np.integer) else '' 
 
     @property
     def missing(self):
