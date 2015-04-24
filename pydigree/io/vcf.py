@@ -61,7 +61,7 @@ def read_vcf(filename, sparse=True):
                 for ind in inds:
                     # Initialize new genotypes with a string datatype
                     ind._init_genotypes(dtype='S')
-                continue
+                break
         
         # Pass 3: Add the genotypes
         f.seek(0)
