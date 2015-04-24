@@ -31,63 +31,54 @@ def read_vcf(filename, sparse=True):
     with open(filename) as f:
         pop = Population()
 
-        # Pass 1: build the chromosomes
-        last_chromid = None
-        for i, line in enumerate(f):
-            if line.startswith('#'):
-                continue
-            chromid, pos, varid, ref, alt, qual, filter_passed, rest = line.strip().split(None, 7)
-            if chromid != last_chromid:
-                if last_chromid is not None:
-                    pop.add_chromosome(chromobj)
-                chromobj = ChromosomeTemplate()
-             
-            chromobj.add_genotype(None, None, bp=pos, label=varid)
-            last_chromid = chromid
-        pop.add_chromosome(chromobj)
-
-        # Pass 2: Build the individuals
-        f.seek(0) # Return to start of file
         last_chrom = None
-        chr_idx = -1 
+        genotypes = [] 
         for i, line in enumerate(f):
+
             if line.startswith('##'):
-                # Skip the header lines
                 continue
-            
+
             elif line.startswith('#'):
                 ind_ids = line.strip().split()[9:]
                 inds = [Individual(pop, ind_id) for ind_id in ind_ids]
                 for ind in inds:
                     # Initialize new genotypes with a string datatype
-                    ind._init_genotypes(dtype='S')
-                break
-        
-        # Pass 3: Add the genotypes
-        f.seek(0)
-        genotypes = np.array([VCFRecord(x).genotypes for x in f if not x.startswith('#')])
-        # Get them in the shape we need (inds in columns and SNPs and rows), then
-        # transpose so we have inds in rows and SNPs in columns
-        genotypes = genotypes.reshape((-1,len(inds))).T
+                    ind._init_genotypes(dtype='S')                
+                    pop.register_individual(ind)
+                continue
 
-        genotype_handler = sparse_genotypes_from_vcf_alleles if sparse else genotypes_from_sequential_alleles
-        for ind, row in izip(inds, genotypes):
-            row = [vcf_allele_parser(x) for x in row]
-            row = chain.from_iterable(row)
-            row = list(row)
-            genotype_handler(ind, row, missing_code='.')
+            else:
+                record = VCFRecord(line)
+
+                if record.chrom != last_chrom:
+                    if last_chrom is not None:
+                        pop.add_chromosome(chromobj)
+                    chromobj = ChromosomeTemplate()
+             
+                chromobj.add_genotype(None, None, bp=record.pos, label=record.label)
+                genotypes.extend(record.genotypes)
+            last_chrom = record.chrom
+
+        pop.add_chromosome(chromobj) # Add the last chromosome object
+
+    # Get them in the shape we need (inds in columns and SNPs and rows), then
+    # transpose so we have inds in rows and SNPs in columns
+    genotypes = np.array(genotypes)
+    genotypes = genotypes.reshape((-1,len(inds))).T
+
+    genotype_handler = sparse_genotypes_from_vcf_alleles if sparse else genotypes_from_sequential_alleles
+    for ind, row in izip(inds, genotypes):
+        row = [vcf_allele_parser(x) for x in row]
+        row = chain.from_iterable(row)
+        row = list(row)
+        genotype_handler(ind, row, missing_code='.')
             
-        for ind in inds:
-            pop.register_individual(ind)
-    
     return pop
 
 
 def vcf_allele_parser(genotype):
-    if genotype == '0/0' or genotype == '0|0':
-        return ('0', '0')
-    elif genotype == './.' or genotype == '.|.':
-        return ('', '')
+    if len(genotype) == 3:
+        return genotype[0], genotype[2]
     else:
         return genotype.split('/' if '/' in genotype else '|')
 
