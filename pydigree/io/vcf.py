@@ -21,13 +21,30 @@ class VCFRecord(object):
         self.format = format
         self.data = data.split()
 
-    @property
-    def genotypes(self):
-        gtidx = self.format.split(':').index('GT')
+    def genotypes(self, minqual=20, mindepth=8):
+        format = self.format.split(':')
+        
+        # Get the indices of the fields we're looking for
+        dpidx = format.index('DP')
+        gqidx = format.index('GQ')
+        gtidx = format.index('GT')
+        
+        def get_gt(gtfield):
+            gtfield = gtfield.split(':')
+        
+            dp = float(gtfield[dpidx])
+            gq = float(gtfield[gqidx])
+
+            if float(gq) < minqual or float(dp) < mindepth:
+                # If it doesn't meet our criteria, mark it missing
+                return './.'
+            else:
+                return gtfield[gtidx]
+
         return [x.split(':')[gtidx] for x in self.data]
+    
 
-
-def read_vcf(filename, sparse=True):
+def read_vcf(filename, minqual=20, require_pass=False, sparse=True, ind_minqual=20, ind_mindepth=9):
     with open(filename) as f:
         pop = Population()
 
@@ -49,14 +66,19 @@ def read_vcf(filename, sparse=True):
 
             else:
                 record = VCFRecord(line)
-
+                
+                if record.qual < minqual:
+                    continue
+                if require_pass and not record.filter_passed:
+                    continue
+                
                 if record.chrom != last_chrom:
                     if last_chrom is not None:
                         pop.add_chromosome(chromobj)
                     chromobj = ChromosomeTemplate()
              
                 chromobj.add_genotype(None, None, bp=record.pos, label=record.label)
-                genotypes.extend(record.genotypes)
+                genotypes.extend(record.genotypes(minqual=ind_minqual, mindepth=ind_mindepth))
             last_chrom = record.chrom
 
         pop.add_chromosome(chromobj) # Add the last chromosome object
