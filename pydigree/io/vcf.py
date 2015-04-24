@@ -9,7 +9,7 @@ from pydigree.io.base import genotypes_from_sequential_alleles
 
 class VCFRecord(object):
     def __init__(self, line):
-        chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip().split('\t', 9)
+        chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip().split(None, 9)
         self.chrom = chromid
         self.pos = int(pos)
         self.label = varid
@@ -19,7 +19,7 @@ class VCFRecord(object):
         self.filter_passed = filter_passed == 'PASS'
         self.info = info
         self.format = format
-        self.data = data.split('\t')
+        self.data = data.split()
 
     @property
     def genotypes(self):
