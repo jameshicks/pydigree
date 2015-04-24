@@ -76,9 +76,12 @@ class SparseGenotypedChromosome(object):
         return np.logical_not(self == other)
 
     def todense(self):
-        arr = np.zeroes(self.nmark, dtype=self.dtype)
-        for i,x in self.nonref_alleles:
-            arr[i] = x
+        arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
+        for loc,allele in self.non_refalleles.iteritems():
+            arr[loc] = allele
+
+        arr[self.missing] = self.missingcode
+
         return arr
 
 class ChromosomeTemplate(object):
