@@ -72,7 +72,7 @@ def read_vcf(filename, sparse=True):
 
         genotype_handler = sparse_genotypes_from_vcf_alleles if sparse else genotypes_from_sequential_alleles
         for ind, row in izip(inds, genotypes):
-            row = [x.split('/' if '/' in x else '|') for x in row]
+            row = [vcf_allele_parser(x) for x in row]
             row = chain.from_iterable(row)
             row = list(row)
             genotype_handler(ind, row, missing_code='.')
