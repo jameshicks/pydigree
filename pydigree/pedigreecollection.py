@@ -72,6 +72,10 @@ class PedigreeCollection(MutableMapping):
         for x in self:
             x.get_genotypes()
 
+    def merge(self, pop):
+        for ped in self:
+            ped.merge(pop)
+
     ### Matrix functions
     ###
     def additive_relationship_matrix(self):

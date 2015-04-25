@@ -105,7 +105,26 @@ class Population(MutableMapping):
             if id not in self.population.keys():
                 yield id
             idx += 1
-    
+
+    def merge(self, other):
+        '''
+        Merges two datasets (i.e. performs Individual.update for each individual in the pedigree)
+        
+        Assumes unique individual IDs
+        '''
+        self.chromosomes =  other.chromosomes
+        self.clear_genotypes()
+        
+        selfids = {x.id for x in self}
+        otherids = {x.id for x in other}
+        overlap = set.intersection(selfids, otherids)
+
+        if not overlap:
+            return
+        
+        for x in overlap:
+            self.population[x].update(other[x])
+
     @property
     def individuals(self):
         return [x for x in self]
