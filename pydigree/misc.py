@@ -44,8 +44,6 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     b_eq_c = b == c
     b_eq_d = b == d
 
-    ibs_states = np.zeros(a.shape[0], dtype=np.uint8)
-    
     # Catch which genotypes are missing (i.e. no '0' alleles)
     # so we can mark them later in the output
     missing = a.missing | b.missing | c.missing | d.missing
