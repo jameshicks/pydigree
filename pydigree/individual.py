@@ -156,6 +156,7 @@ class Individual(object):
         individual object and REPLACES self's genotypes with other's
         '''
         self.phenotypes.update(other.phenotypes)
+        self.genotypes = other.genotypes
 
     def has_allele(self, location, allele):
         """
