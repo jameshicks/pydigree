@@ -54,7 +54,7 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     # Both alleles are IBS for IBS=2. 
     ibs2 = (a_eq_c & b_eq_d) | (a_eq_d & b_eq_c) 
 
-    ibs_states = np.zeros(a.shape[0], dtype=np.uint8)
+    ibs_states = np.zeros(a.nmark(), dtype=np.uint8)
     ibs_states[ibs1] = 1
     ibs_states[ibs2] = 2 
     ibs_states[missing] = missingval

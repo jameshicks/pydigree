@@ -31,6 +31,9 @@ class GenotypedChromosome(np.ndarray):
     def missing(self):
         return self == self.missingcode
 
+    def nmark(self):
+        return self.shape[0]
+
 class SparseGenotypedChromosome(object):
     def __init__(self, data):
         data = np.array(data)
@@ -74,6 +77,9 @@ class SparseGenotypedChromosome(object):
         
     def __neq__(self, other):
         return np.logical_not(self == other)
+    
+    def nmark(self):
+        return self.size
 
     def todense(self):
         arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
