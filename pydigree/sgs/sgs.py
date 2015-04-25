@@ -17,7 +17,7 @@ def sgs_pedigrees(pc, phaseknown=False):
 
 def sgs_population(pop, seed_size=500, phaseknown=False):
     shared = {}
-    for ind1, ind2 in combinations(pop, 2):
+    for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
             continue
         pair = frozenset({ind1, ind2})
