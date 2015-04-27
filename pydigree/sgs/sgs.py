@@ -66,7 +66,10 @@ def filter_segments(chromosome, intervals,  min_size=1.0, min_density=100, size_
         locations = chromosome.physical_map
         min_size *= 1e6
         min_density /= 1e6
-
+    elif size_unit == 'kb':
+        locations = chromosome.physical_map
+        min_size *= 1000
+        min_density /= 1e3
     elif size_unit == 'cm':
         locations = chromosome.genetic_map
     else:
