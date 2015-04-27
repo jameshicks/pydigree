@@ -15,7 +15,7 @@ def sgs_pedigrees(pc, phaseknown=False):
         shared[pedigree] = sgs_population(pedigree)
     return shared
 
-def sgs_population(pop, seed_size=500, phaseknown=False):
+def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit='mb', min_density=100):
     shared = {}
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
@@ -23,13 +23,14 @@ def sgs_population(pop, seed_size=500, phaseknown=False):
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = make_intervals(sgs_unphased(ind1, ind2, chridx, seed_size=seed_size))
+            shares = make_intervals(sgs_unphased(ind1, ind2, chridx, seed_size=seed_size, 
+                                                 min_length=min_length, size_unit=size_unit, min_density=min_density))
             shared[pair].append(list(shares))
     return shared
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
-                 min_length=1, length_unit='mb'):
+                 min_length=1, size_unit='mb', min_density=100):
     ''' Returns IBD states for each marker along a chromosome '''
     
     chromosome = ind1.chromosomes[chromosome_idx] 
@@ -37,21 +38,28 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
     nmark = chromosome.nmark()
 
     # First get the segments that are IBD=1
-    ibd1 = list(_process_segments(identical, min_seg=seed_size, min_val=1, chromobj=chromosome))
+    ibd1 = list(_process_segments(identical, min_seg=seed_size,
+                                  min_val=1, chromobj=chromosome, 
+                                  min_length=min_length, size_unit=size_unit, min_density=min_density))
     ibd1 = set_intervals_to_value(ibd1, nmark, 1)
 
     # Then the segments that are IBD=2
-    ibd2 = list(_process_segments(identical, min_seg=seed_size, min_val=2, chromobj=chromosome))
+    ibd2 = list(_process_segments(identical, min_seg=seed_size,
+                                  min_val=2, chromobj=chromosome, 
+                                  min_length=min_length, size_unit=size_unit, min_density=min_density))
     ibd2 = set_intervals_to_value(ibd2, nmark, 2)
-    return np.maximum(ibd1, ibd2)
+    
+    ibd = np.maximum(ibd1, ibd2)
+    return ibd
 
-
-def _process_segments(identical, min_seg=100, min_val=1, chromobj=None):    
+def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
+                      min_density=100, size_unit='mb', min_length=1):    
     # IBD segments are long runs of identical genotypes
     ibd = runs_gte_uint8(identical, min_val, minlength=min_seg)
 
     if chromobj:
-        ibd = filter_segments(chromobj, ibd)
+        ibd = filter_segments(chromobj, ibd, min_length=min_length,
+                              size_unit=size_unit, min_density=min_density)
     
     # Genotype errors are things that happen. If theres a small gap between
     # two IBD segments, we'll chalk that up to a genotyping error and join
@@ -61,14 +69,14 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None):
     return ibd
 
 
-def filter_segments(chromosome, intervals,  min_size=1.0, min_density=100, size_unit='mb'):
+def filter_segments(chromosome, intervals,  min_length=1.0, min_density=100, size_unit='mb'):
     if size_unit == 'mb':
         locations = chromosome.physical_map
-        min_size *= 1e6
+        min_length *= 1e6
         min_density /= 1e6
     elif size_unit == 'kb':
         locations = chromosome.physical_map
-        min_size *= 1000
+        min_length *= 1000
         min_density /= 1e3
     elif size_unit == 'cm':
         locations = chromosome.genetic_map
@@ -80,7 +88,7 @@ def filter_segments(chromosome, intervals,  min_size=1.0, min_density=100, size_
         nmarkers = stop - start
         size = locations[stop] - locations[start]
         density = nmarkers / float(size)
-        return size >= min_size and density >= min_density
+        return size >= min_length and density >= min_density
     
     return [seg for seg in intervals if meets_criteria(seg)]
 
