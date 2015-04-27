@@ -70,6 +70,7 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
 
 
 def filter_segments(chromosome, intervals,  min_length=1.0, min_density=100, size_unit='mb'):
+    size_unit = size_unit.lower()
     if size_unit == 'mb':
         locations = chromosome.physical_map
         min_length *= 1e6
