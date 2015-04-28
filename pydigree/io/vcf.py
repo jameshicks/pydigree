@@ -76,7 +76,7 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True, ind_minqual=
                 if record.chrom != last_chrom:
                     if last_chrom is not None:
                         pop.add_chromosome(chromobj)
-                    chromobj = ChromosomeTemplate()
+                    chromobj = ChromosomeTemplate(label=record.chrom)
              
                 chromobj.add_genotype(None, None, bp=record.pos, label=record.label)
                 genotypes.extend(record.genotypes(minqual=ind_minqual, mindepth=ind_mindepth))
