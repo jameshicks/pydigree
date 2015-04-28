@@ -67,6 +67,10 @@ class Individual(object):
         self.father.register_child(self)
         self.mother.register_child(self)
 
+    @property
+    def full_label(self):
+        return (self.population.label, self.id)
+
     # Functions about genotypes
     #
     @property
