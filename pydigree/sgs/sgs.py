@@ -9,6 +9,30 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 
 from pydigree import Population, PedigreeCollection
 
+class Segment(object):
+    def __init__(self, chromobj, startidx, stopidx):
+        self.chromosome = chromobj
+        self.start = startidx
+        self.stop = stopidx
+
+    @property
+    def physical_location(self):
+        return self.chromosome.physical_map[self.start], self.chromosome.physical_map[self.stop]
+    
+    @property
+    def genetic_location(self):
+        return self.chromosome.genetic_map[self.start], self.chromosome.genetic_map[self.stop]
+    
+    @property
+    def physical_size(self):
+        start, stop = self.physical_location
+        return stop - start
+    
+    @property
+    def genetic_size(self):
+        start, stop = self.genetic_location
+        return stop - start
+
 def sgs_pedigrees(pc, phaseknown=False):
     shared = {}
     for pedigree in pedigrees:
@@ -23,14 +47,14 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = make_intervals(sgs_unphased(ind1, ind2, chridx, seed_size=seed_size, 
-                                                 min_length=min_length, size_unit=size_unit, min_density=min_density))
-            shared[pair].append(list(shares))
+            shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size, 
+                                  min_length=min_length, size_unit=size_unit, min_density=min_density)
+            shared[pair].append(shares)
     return shared
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
-                 min_length=1, size_unit='mb', min_density=100):
+                 min_length=1, size_unit='mb', min_density=100, array=False):
     ''' Returns IBD states for each marker along a chromosome '''
     
     chromosome = ind1.chromosomes[chromosome_idx] 
@@ -38,19 +62,22 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
     nmark = chromosome.nmark()
 
     # First get the segments that are IBD=1
-    ibd1 = list(_process_segments(identical, min_seg=seed_size,
+    ibd1_segs = list(_process_segments(identical, min_seg=seed_size,
                                   min_val=1, chromobj=chromosome, 
                                   min_length=min_length, size_unit=size_unit, min_density=min_density))
-    ibd1 = set_intervals_to_value(ibd1, nmark, 1)
+    ibd1 = set_intervals_to_value(ibd1_segs, nmark, 1)
 
     # Then the segments that are IBD=2
-    ibd2 = list(_process_segments(identical, min_seg=seed_size,
+    ibd2_segs = list(_process_segments(identical, min_seg=seed_size,
                                   min_val=2, chromobj=chromosome, 
                                   min_length=min_length, size_unit=size_unit, min_density=min_density))
-    ibd2 = set_intervals_to_value(ibd2, nmark, 2)
-    
+    ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
     ibd = np.maximum(ibd1, ibd2)
-    return ibd
+    if array:
+        return ibd
+    
+    segs = [Segment(chromosome, start, stop) for start, stop in make_intervals(ibd)]
+    return segs
 
 def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
                       min_density=100, size_unit='mb', min_length=1):    
