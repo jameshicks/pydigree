@@ -1,4 +1,4 @@
-from itertoolOAs import izip, combinations
+from itertools import izip, combinations
 
 import numpy as np
 
@@ -10,7 +10,9 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree import Population, PedigreeCollection
 
 class Segment(object):
-    def __init__(self, chromobj, startidx, stopidx):
+    def __init__(self, ind1, ind2, chromobj, startidx, stopidx):
+        self.ind1 = ind1
+        self.ind2 = ind2
         self.chromosome = chromobj
         self.start = startidx
         self.stop = stopidx
@@ -80,7 +82,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
     if array:
         return ibd
     
-    segs = [Segment(chromosome, start, stop) for start, stop in make_intervals(ibd)]
+    segs = [Segment(ind1, ind2, chromosome, start, stop) for start, stop in make_intervals(ibd)]
     return segs
 
 def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
