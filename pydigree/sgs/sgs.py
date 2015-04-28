@@ -1,4 +1,4 @@
-from itertools import izip, combinations
+from itertoolOAs import izip, combinations
 
 import numpy as np
 
@@ -32,6 +32,10 @@ class Segment(object):
     def genetic_size(self):
         start, stop = self.genetic_location
         return stop - start
+
+    @property
+    def nmark(self):
+        return self.stop - self.start
 
 def sgs_pedigrees(pc, phaseknown=False):
     shared = {}
