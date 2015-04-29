@@ -14,6 +14,7 @@ class Segment(object):
         self.ind1 = ind1
         self.ind2 = ind2
         self.chromosome = chromobj
+        self._chridx = ind1.chromosomes.index(chromobj)
         self.start = startidx
         self.stop = stopidx
 
@@ -38,6 +39,18 @@ class Segment(object):
     @property
     def nmark(self):
         return self.stop - self.start
+
+    @property
+    def missing(self):
+        chridx = self._chridx
+        miss1 = ind1.genotypes[chridx][0].missing | ind1.genotypes[chridx][1].missing
+        miss2 = ind2.genotypes[chridx][0].missing | ind2.genotypes[chridx][1].missing
+        miss = miss1 | miss2
+        return miss[self.start:(self.stop+1)]
+
+    @property
+    def missing_rate(self):
+        return self.missing.sum() / float(self.nmark)
 
 def sgs_pedigrees(pc, phaseknown=False):
     shared = {}
