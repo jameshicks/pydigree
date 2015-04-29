@@ -93,14 +93,18 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
     # IBD segments are long runs of identical genotypes
     ibd = runs_gte_uint8(identical, min_val, minlength=min_seg)
 
-    if chromobj:
-        ibd = filter_segments(chromobj, ibd, min_length=min_length,
-                              size_unit=size_unit, min_density=min_density)
-    
+    if not ibd: 
+        return ibd
+
     # Genotype errors are things that happen. If theres a small gap between
     # two IBD segments, we'll chalk that up to a genotyping error and join
     # them together.
     ibd = join_gaps(ibd, max_gap=2)
+
+
+    if chromobj:
+        ibd = filter_segments(chromobj, ibd, identical, min_length=min_length,
+                              size_unit=size_unit, min_density=min_density, maxmiss=0.25)
 
     return ibd
 
