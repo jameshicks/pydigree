@@ -45,7 +45,7 @@ def sgs_pedigrees(pc, phaseknown=False):
         shared[pedigree] = sgs_population(pedigree)
     return shared
 
-def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit='mb', min_density=100):
+def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit='mb', min_density=100, maxmiss=0.25):
     shared = {}
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
@@ -54,13 +54,14 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
             shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size, 
-                                  min_length=min_length, size_unit=size_unit, min_density=min_density)
+                                  min_length=min_length, size_unit=size_unit, min_density=min_density, maxmiss=0.25)
             shared[pair].append(shares)
     return shared
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
-                 min_length=1, size_unit='mb', min_density=100, array=False):
+                 min_length=1, size_unit='mb', min_density=100,
+                 maxmiss=0.25, array=False):
     ''' Returns IBD states for each marker along a chromosome '''
     
     chromosome = ind1.chromosomes[chromosome_idx] 
@@ -69,14 +70,16 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
 
     # First get the segments that are IBD=1
     ibd1_segs = list(_process_segments(identical, min_seg=seed_size,
-                                  min_val=1, chromobj=chromosome, 
-                                  min_length=min_length, size_unit=size_unit, min_density=min_density))
+                                       min_val=1, chromobj=chromosome, 
+                                       min_length=min_length, size_unit=size_unit,
+                                       min_density=min_density, maxmiss=0.25))
     ibd1 = set_intervals_to_value(ibd1_segs, nmark, 1)
 
     # Then the segments that are IBD=2
     ibd2_segs = list(_process_segments(identical, min_seg=seed_size,
-                                  min_val=2, chromobj=chromosome, 
-                                  min_length=min_length, size_unit=size_unit, min_density=min_density))
+                                       min_val=2, chromobj=chromosome, 
+                                       min_length=min_length, size_unit=size_unit,
+                                       min_density=min_density, maxmiss=0.25))
     ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
     ibd = np.maximum(ibd1, ibd2)
     if array:
@@ -86,7 +89,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
     return segs
 
 def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
-                      min_density=100, size_unit='mb', min_length=1):    
+                      min_density=100, size_unit='mb', min_length=1, maxmiss=0.25):    
     # IBD segments are long runs of identical genotypes
     ibd = runs_gte_uint8(identical, min_val, minlength=min_seg)
 
@@ -102,7 +105,7 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
     return ibd
 
 
-def filter_segments(chromosome, intervals,  min_length=1.0, min_density=100, size_unit='mb'):
+def filter_segments(chromosome, intervals, identical, min_length=1.0, min_density=100, size_unit='mb', maxmiss=0.25):
     size_unit = size_unit.lower()
     if size_unit == 'mb':
         locations = chromosome.physical_map
