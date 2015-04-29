@@ -124,12 +124,14 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0, min_densit
     else:
         raise ValueError('Invalid size unit: {}'.format(size_unit))
     
+    missing = identical > 2
     def meets_criteria(seg):
         start, stop = seg
         nmarkers = stop - start
         size = locations[stop] - locations[start]
         density = nmarkers / float(size)
-        return size >= min_length and density >= min_density
+        missrate = missing[start:stop].sum() / float(nmarkers)
+        return size >= min_length and density >= min_density and missrate <= maxmiss
     
     return [seg for seg in intervals if meets_criteria(seg)]
 
