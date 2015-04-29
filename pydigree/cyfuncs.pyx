@@ -68,10 +68,10 @@ def runs_gte_uint8(np.ndarray[np.uint8_t] sequence, np.uint8_t minval, Py_ssize_
     out = []
     for i in range(sequence.shape[0]):
         v = sequence[i]
-        if not inrun and v > minval:
+        if not inrun and v >= minval:
             inrun = True
             start = i
-        elif inrun and v <= minval:
+        elif inrun and v < minval:
             inrun = False
             stop = i - 1
             if stop - start >= minlength:
