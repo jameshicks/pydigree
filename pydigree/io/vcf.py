@@ -2,6 +2,7 @@ from itertools import izip, chain
 
 import numpy as np
 
+from pydigree.common import count
 from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, SparseGenotypedChromosome
@@ -45,7 +46,8 @@ class VCFRecord(object):
         return [x.split(':')[gtidx] for x in self.data]
     
 
-def read_vcf(filename, minqual=20, require_pass=False, sparse=True, ind_minqual=20, ind_mindepth=9):
+def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
+             ind_minqual=20, ind_mindepth=9, geno_missrate=0):
     with open(filename) as f:
         pop = Population()
 
@@ -73,13 +75,21 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True, ind_minqual=
                 if require_pass and not record.filter_passed:
                     continue
                 
+                genorow = record.genotypes(minqual=ind_minqual, mindepth=ind_mindepth)
+                
+                if geno_missrate:
+                    missrate = count('./.', genorow) / float(len(genorow))
+                    if missrate > geno_missrate:
+                        continue
+
                 if record.chrom != last_chrom:
                     if last_chrom is not None:
                         pop.add_chromosome(chromobj)
                     chromobj = ChromosomeTemplate(label=record.chrom)
-             
+
                 chromobj.add_genotype(None, None, bp=record.pos, label=record.label)
-                genotypes.extend(record.genotypes(minqual=ind_minqual, mindepth=ind_mindepth))
+                genotypes.extend(genorow)
+
             last_chrom = record.chrom
 
         pop.add_chromosome(chromobj) # Add the last chromosome object
