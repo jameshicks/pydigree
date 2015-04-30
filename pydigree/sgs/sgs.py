@@ -94,11 +94,12 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                                        min_length=min_length, size_unit=size_unit,
                                        min_density=min_density, maxmiss=0.25))
     ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
-    ibd = np.maximum(ibd1, ibd2)
+    ibd = np.maximum(ibd1, ibd2, dtype=np.uint8)
     if array:
         return ibd
     
-    segs = [Segment(ind1, ind2, chromosome, start, stop) for start, stop in make_intervals(ibd)]
+    segs = make_intervals(ibd)
+    segs = [Segment(ind1, ind2, chromosome, start, stop) for start, stop in segs]
     return segs
 
 def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
@@ -170,14 +171,15 @@ def join_gaps(seq, max_gap=1):
             prev_stop = stop
     yield prev_start, stop 
 
+
 def make_intervals(ibdarray):
     ibdarray = ibdarray.copy()
     # Get the intervals that are IBD=2 and remove them from the array
-    ibd2_tracts = [x for x in runs(ibdarray, lambda x: x==2)]
+    ibd2_tracts = [x for x in runs_gte_uint8(ibdarray, 2)]
     for start, stop in ibd2_tracts:
         ibdarray[start:(stop+1)] -= 1
     # Now get the remaining IBD=1 tracts and remove them from the array
-    ibd1_tracts = [x for x in runs(ibdarray, lambda x: x > 0)]
+    ibd1_tracts = [x for x in runs_gte_uint8(ibdarray, 1)]
     for start, stop in ibd1_tracts:
         ibdarray[start:(stop+1)] -= 1
 
