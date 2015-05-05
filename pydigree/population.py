@@ -116,7 +116,7 @@ class Population(MutableMapping):
         self.clear_genotypes()
         
         selfids = {x.id for x in self}
-        otherids = {x.id for x in other}
+        otherids = {x.id for x in other.individuals}
         overlap = set.intersection(selfids, otherids)
 
         if not overlap:
