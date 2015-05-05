@@ -45,7 +45,11 @@ def read_map(mapfile):
     return chroms
 
 
-def read_plink(pedfile, mapfile, **kwargs):
+def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
+    if prefix:
+        pedfile = prefix + '.ped'
+        mapfile = prefix + '.map'
+
     pop_handler = create_pop_handler_func(mapfile)
     return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler, **kwargs)
 
