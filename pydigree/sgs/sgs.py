@@ -10,6 +10,7 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree import Population, PedigreeCollection
 
 class Segment(object):
+    __slots__ = ['ind1', 'ind2', 'chromosome', 'start', 'stop', '_chridx']
     def __init__(self, ind1, ind2, chromobj, startidx, stopidx):
         self.ind1 = ind1
         self.ind2 = ind2
