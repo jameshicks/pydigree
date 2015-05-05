@@ -10,7 +10,7 @@ from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.genotypes import GenotypedChromosome
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
-             population_handler=None, data_handler=None, connect_inds=True):
+             population_handler=None, data_handler=None, connect_inds=True, onlyinds=None):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -57,6 +57,10 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             # Give a special id for now, to prevent overwriting duplicated
             # ids between families
             id = (fam, id)
+
+            if onlyinds and (id not in onlyinds):
+                continue
+
             p[id] = Individual(population, id, fa, mo, sex)
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
