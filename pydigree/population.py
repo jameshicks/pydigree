@@ -123,7 +123,10 @@ class Population(MutableMapping):
             return
         
         for x in overlap:
-            self.population[x].update(other[x])
+            self.population[x].update(other._getindividual(x))
+
+    def _getindividual(self, label):
+        return self[label]
 
     @property
     def individuals(self):

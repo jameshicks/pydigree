@@ -46,6 +46,11 @@ class PedigreeCollection(MutableMapping):
             inds.extend(sorted((x for x in pedigree), key=lambda x: x.id))
         return inds
 
+    def _getindividual(self, label):
+        for x in self.individuals:
+            if x.id == label: return x
+        raise KeyError('Individual not in collection')
+
     def phenotypes(self):
         """ Returns the available phenotypes for analysis """
         return set(reduce(add, [x.phenotypes.keys() for x in
