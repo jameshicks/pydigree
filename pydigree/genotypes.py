@@ -2,31 +2,38 @@ from itertools import izip
 
 import numpy as np
 
+
 class NotMeaningfulError(Exception):
     pass
 
+
 class GenotypedChromosome(np.ndarray):
+
     ''' A class for holding genotypes '''
     def __new__(cls, data):
         obj = np.asarray(data).view(cls)
         return obj
 
     def __lt__(self, other):
-        raise NotMeaningfulError('Value comparisions not meaningful for genotypes')
-        
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
     def __gt__(self, other):
-        raise NotMeaningfulError('Value comparisions not meaningful for genotypes')
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
 
     def __lte__(self, other):
-        raise NotMeaningfulError('Value comparisions not meaningful for genotypes')
-    
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
     def __gte__(self, other):
-        raise NotMeaningfulError('Value comparisions not meaningful for genotypes')
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
 
     @property
     def missingcode(self):
         return 0 if np.issubdtype(self.dtype, np.integer) else ''
-    
+
     @property
     def missing(self):
         return self == self.missingcode
@@ -34,7 +41,9 @@ class GenotypedChromosome(np.ndarray):
     def nmark(self):
         return self.shape[0]
 
+
 class SparseGenotypedChromosome(object):
+
     def __init__(self, data):
         data = np.array(data)
         self.dtype = data.dtype
@@ -44,15 +53,15 @@ class SparseGenotypedChromosome(object):
 
     def __array2nonref(self, data):
         refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
-        return {i: x for i,x in enumerate(data)
+        return {i: x for i, x in enumerate(data)
                 if x != refcode and x != ''}
-    
-    def __array2missing(self, data): 
-        return [i for i,x in enumerate(data) if x == '']
 
-    @property 
+    def __array2missing(self, data):
+        return [i for i, x in enumerate(data) if x == '']
+
+    @property
     def missingcode(self):
-        return 0 if np.issubdtype(self.dtype, np.integer) else '' 
+        return 0 if np.issubdtype(self.dtype, np.integer) else ''
 
     @property
     def missing(self):
@@ -61,10 +70,10 @@ class SparseGenotypedChromosome(object):
         return base
 
     def __eq__(self, other):
-        if self.size != other.size: 
+        if self.size != other.size:
             raise ValueError('Trying to compare different-sized chromosomes')
         base = np.ones(self.size, dtype=np.bool_)
-        
+
         nonreflocs_a = set(self.non_refalleles)
         nonreflocs_b = set(other.non_refalleles)
         for i in set.symmetric_difference(nonreflocs_a, nonreflocs_b):
@@ -74,23 +83,25 @@ class SparseGenotypedChromosome(object):
             if self.non_refalleles[i] != other.non_refalleles[i]:
                 base[i] = 0
         return base
-        
+
     def __neq__(self, other):
         return np.logical_not(self == other)
-    
+
     def nmark(self):
         return self.size
 
     def todense(self):
         arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
-        for loc,allele in self.non_refalleles.iteritems():
+        for loc, allele in self.non_refalleles.iteritems():
             arr[loc] = allele
 
         arr[self.missing] = self.missingcode
 
         return arr
 
+
 class ChromosomeTemplate(object):
+
     """
     Chromsome is a class that keeps track of marker frequencies and distances.
     Not an actual chromosome with genotypes, which you would find under
@@ -107,6 +118,7 @@ class ChromosomeTemplate(object):
     initializing a population pool or when simulating purely family-based
     studies for linkage analysis.
     """
+
     def __init__(self, label=None):
         # Chromosome name
         self.label = label
@@ -130,7 +142,7 @@ class ChromosomeTemplate(object):
     def _iinfo(self):
         return izip(self.labels, self.genetic_map, self.physical_map,
                     self.frequencies)
-    
+
     def nmark(self):
         return len(self.genetic_map)
 
@@ -150,7 +162,7 @@ class ChromosomeTemplate(object):
     def set_frequency(self, position, frequency):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
-    
+
     def empty_chromosome(self, dtype=np.uint8):
         return GenotypedChromosome(np.zeros(self.nmark(), dtype=dtype))
 

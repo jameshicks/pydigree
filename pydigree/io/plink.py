@@ -5,6 +5,7 @@ from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.io.smartopen import smartopen as open
 
+
 def create_pop_handler_func(mapfile):
     chromosomes = read_map(mapfile)
 
@@ -14,8 +15,10 @@ def create_pop_handler_func(mapfile):
 
     return pop_handler
 
+
 def plink_data_handler(ind, data):
     return genotypes_from_sequential_alleles(ind, data, missing_code='0')
+
 
 def read_map(mapfile):
     """ Reads a PLINK map file into a list of ChromosomeTemplate objects """
@@ -23,7 +26,7 @@ def read_map(mapfile):
     chroms = []
     chromosome = None
     with open(mapfile) as f:
-        for i,line in enumerate(f):
+        for i, line in enumerate(f):
             line = line.strip().split()
             chr, label, cm, pos = line
             cm, pos = float(cm), int(pos)
@@ -31,7 +34,7 @@ def read_map(mapfile):
                 continue
             if chr != last_chr:
                 # If this happens, we've moved on to a new chromosome,
-                # or we've just started. If we haven't just started, We'll 
+                # or we've just started. If we haven't just started, We'll
                 # close up the old one
                 if i > 0:
                     chroms.append(chromosome)
@@ -123,7 +126,7 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
                         chromb = [reverse_translate_allele(a) for a in chromb]
                     g.extend(chain.from_iterable(izip(chroma, chromb)))
                 outline.extend(g)
-                
+
                 # Make strings
                 outline = imap(str, outline)
                 # Write it out

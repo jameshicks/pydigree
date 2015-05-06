@@ -1,5 +1,6 @@
 from pydigree.genotypes import ChromosomeTemplate
 
+
 def read_gs_chromosome_template(templatef):
     """ Reads a genomeSIMLA format chromosome template file """
     with open(templatef) as f:

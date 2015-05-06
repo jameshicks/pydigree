@@ -2,7 +2,7 @@
 
 from pydigree.common import table
 
-### Functions for finding paths through pedigrees
+# Functions for finding paths through pedigrees
 
 
 def common_ancestors(ind1, ind2):

@@ -5,6 +5,7 @@ from pydigree.genotypes import GenotypedChromosome
 
 import numpy as np
 
+
 def recombine(chr1, chr2, map):
     # An optimization for gene dropping procedures on IBD states.
     # If there is only one marker, choose one at random, and return that.
@@ -23,9 +24,9 @@ def _recombine_haldane(chr1, chr2, map):
 
     newchrom = GenotypedChromosome(np.empty(nmark, dtype=np.uint8))
     # Randomly pick a chromosome to start from
-    # np.random.randint works on a half open interval, so the upper bound 
+    # np.random.randint works on a half open interval, so the upper bound
     # specified is 2. We'll get zeros and ones out of it.
-    flipped = np.random.randint(0,2)
+    flipped = np.random.randint(0, 2)
 
     last_crossover_index = 0
     crossover_position = 0
@@ -37,18 +38,20 @@ def _recombine_haldane(chr1, chr2, map):
         # Find the next crossover point
         # np.random.exponential is parameterized with the RECIPROCAL of the
         # rate parameter. With random.expovariate I would have used (0.01),
-        # here I supply 100 as an argument. 
+        # here I supply 100 as an argument.
         crossover_position += np.random.exponential(100)
 
         if crossover_position > maxmap:
             # We've reached the end of our journey here.
             newchrom[last_crossover_index:] = c[last_crossover_index:]
-            break 
+            break
 
         # Find the next crossover point in the chromosome by binary search
-        nextidx = bisect_left(map, crossover_position, last_crossover_index, nmark)
-        newchrom[last_crossover_index:nextidx] = c[last_crossover_index:nextidx]
-        
+        nextidx = bisect_left(
+            map, crossover_position, last_crossover_index, nmark)
+        newchrom[last_crossover_index:nextidx] = c[
+            last_crossover_index:nextidx]
+
         # Get ready to do it all over again
         last_crossover_index = nextidx
 

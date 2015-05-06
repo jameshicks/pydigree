@@ -14,7 +14,7 @@ class PedigreeCollection(MutableMapping):
     def __init__(self):
         self.pedigrees = {}
 
-    ### Things I have to implement for the ABC
+    # Things I have to implement for the ABC
     ###
     def __iter__(self):
         return (x for x in self.pedigrees.values())
@@ -48,14 +48,15 @@ class PedigreeCollection(MutableMapping):
 
     def _getindividual(self, label):
         for x in self.individuals:
-            if x.id == label: return x
+            if x.id == label:
+                return x
         raise KeyError('Individual not in collection')
 
     def phenotypes(self):
         """ Returns the available phenotypes for analysis """
         return set(reduce(add, [x.phenotypes.keys() for x in
                                 self.individuals]))
-    
+
     @property
     def chromosomes(self):
         k = self.pedigrees.keys()[0]
@@ -81,7 +82,7 @@ class PedigreeCollection(MutableMapping):
         for ped in self:
             ped.merge(pop)
 
-    ### Matrix functions
+    # Matrix functions
     ###
     def additive_relationship_matrix(self):
         """

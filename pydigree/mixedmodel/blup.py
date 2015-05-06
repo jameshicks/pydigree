@@ -94,7 +94,7 @@ def blup(y, X, Zlist, covariance_matrices, variance_components, R=None):
         Rinv = np.linalg.inv(R)
     residual_variance = np.var(y) - sum(variance_components)
     # Make the covariance matrices into G matrices
-    Ginvmats = [1/v * inv(A.todense())
+    Ginvmats = [1 / v * inv(A.todense())
                 for v, A in izip(variance_components,  covariance_matrices)]
     LHS = makeLHS(X, Zlist, Ginvmats, Rinv)
     RHS = makeRHS(y, X, Zlist, Rinv)

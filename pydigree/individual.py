@@ -55,6 +55,7 @@ class Individual(object):
                                                       self.mother.id)
         except AttributeError:
             return 'Individual %s (Unlinked)' % self.id
+
     def __repr__(self):
         return self.__str__()
 
@@ -87,9 +88,10 @@ class Individual(object):
         """
         if blankchroms:
             self.genotypes = [(chrom.empty_chromosome(dtype=dtype), chrom.empty_chromosome(dtype=dtype))
-                              for chrom in self.chromosomes] 
+                              for chrom in self.chromosomes]
         else:
-            self.genotypes = [ (None, None) for chrom in self.chromosomes]
+            self.genotypes = [(None, None) for chrom in self.chromosomes]
+
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
         return self.genotypes is not None
@@ -152,7 +154,6 @@ class Individual(object):
 
     def _set_genotypes(self, gts):
         self.genotypes = gts
-
 
     def update(self, other):
         '''
@@ -268,7 +269,7 @@ class Individual(object):
             return self.id
         else:
             return self.father.patriline()
-    
+
     @property
     def depth(self):
         """

@@ -9,8 +9,10 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 
 from pydigree import Population, PedigreeCollection
 
+
 class Segment(object):
     __slots__ = ['ind1', 'ind2', 'chromosome', 'start', 'stop', '_chridx']
+
     def __init__(self, ind1, ind2, chromobj, startidx, stopidx):
         self.ind1 = ind1
         self.ind2 = ind2
@@ -22,16 +24,16 @@ class Segment(object):
     @property
     def physical_location(self):
         return self.chromosome.physical_map[self.start], self.chromosome.physical_map[self.stop]
-    
+
     @property
     def genetic_location(self):
         return self.chromosome.genetic_map[self.start], self.chromosome.genetic_map[self.stop]
-    
+
     @property
     def physical_size(self):
         start, stop = self.physical_location
         return stop - start
-    
+
     @property
     def genetic_size(self):
         start, stop = self.genetic_location
@@ -44,20 +46,24 @@ class Segment(object):
     @property
     def missing(self):
         chridx = self._chridx
-        miss1 = ind1.genotypes[chridx][0].missing | ind1.genotypes[chridx][1].missing
-        miss2 = ind2.genotypes[chridx][0].missing | ind2.genotypes[chridx][1].missing
+        miss1 = ind1.genotypes[chridx][
+            0].missing | ind1.genotypes[chridx][1].missing
+        miss2 = ind2.genotypes[chridx][
+            0].missing | ind2.genotypes[chridx][1].missing
         miss = miss1 | miss2
-        return miss[self.start:(self.stop+1)]
+        return miss[self.start:(self.stop + 1)]
 
     @property
     def missing_rate(self):
         return self.missing.sum() / float(self.nmark)
+
 
 def sgs_pedigrees(pc, phaseknown=False):
     shared = {}
     for pedigree in pedigrees:
         shared[pedigree] = sgs_population(pedigree)
     return shared
+
 
 def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit='mb', min_density=100, maxmiss=0.25):
     shared = {}
@@ -67,7 +73,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit
         pair = frozenset({ind1, ind2})
         shared[pair] = []
         for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size, 
+            shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size,
                                   min_length=min_length, size_unit=size_unit, min_density=min_density, maxmiss=0.25)
             shared[pair].append(shares)
     return shared
@@ -77,45 +83,46 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                  min_length=1, size_unit='mb', min_density=100,
                  maxmiss=0.25, array=False):
     ''' Returns IBD states for each marker along a chromosome '''
-    
-    chromosome = ind1.chromosomes[chromosome_idx] 
+
+    chromosome = ind1.chromosomes[chromosome_idx]
     identical = get_ibs_states(ind1, ind2, chromosome_idx)
     nmark = chromosome.nmark()
 
     # First get the segments that are IBD=1
     ibd1_segs = list(_process_segments(identical, min_seg=seed_size,
-                                       min_val=1, chromobj=chromosome, 
+                                       min_val=1, chromobj=chromosome,
                                        min_length=min_length, size_unit=size_unit,
                                        min_density=min_density, maxmiss=0.25))
     ibd1 = set_intervals_to_value(ibd1_segs, nmark, 1)
 
     # Then the segments that are IBD=2
     ibd2_segs = list(_process_segments(identical, min_seg=seed_size,
-                                       min_val=2, chromobj=chromosome, 
+                                       min_val=2, chromobj=chromosome,
                                        min_length=min_length, size_unit=size_unit,
                                        min_density=min_density, maxmiss=0.25))
     ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
     ibd = np.maximum(ibd1, ibd2, dtype=np.uint8)
     if array:
         return ibd
-    
+
     segs = make_intervals(ibd)
-    segs = [Segment(ind1, ind2, chromosome, start, stop) for start, stop in segs]
+    segs = [Segment(ind1, ind2, chromosome, start, stop)
+            for start, stop in segs]
     return segs
 
-def _process_segments(identical, min_seg=100, min_val=1, chromobj=None, 
-                      min_density=100, size_unit='mb', min_length=1, maxmiss=0.25):    
+
+def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
+                      min_density=100, size_unit='mb', min_length=1, maxmiss=0.25):
     # IBD segments are long runs of identical genotypes
     ibd = runs_gte_uint8(identical, min_val, minlength=min_seg)
 
-    if not ibd: 
+    if not ibd:
         return ibd
 
     # Genotype errors are things that happen. If theres a small gap between
     # two IBD segments, we'll chalk that up to a genotyping error and join
     # them together.
     ibd = join_gaps(ibd, max_gap=2)
-
 
     if chromobj:
         ibd = filter_segments(chromobj, ibd, identical, min_length=min_length,
@@ -138,8 +145,9 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0, min_densit
         locations = chromosome.genetic_map
     else:
         raise ValueError('Invalid size unit: {}'.format(size_unit))
-    
+
     missing = identical > 2
+
     def meets_criteria(seg):
         start, stop = seg
         nmarkers = stop - start
@@ -147,7 +155,7 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0, min_densit
         density = nmarkers / float(size)
         missrate = missing[start:stop].sum() / float(nmarkers)
         return size >= min_length and density >= min_density and missrate <= maxmiss
-    
+
     return [seg for seg in intervals if meets_criteria(seg)]
 
 
@@ -170,7 +178,7 @@ def join_gaps(seq, max_gap=1):
             prev_start, prev_stop = start, stop
         else:
             prev_stop = stop
-    yield prev_start, stop 
+    yield prev_start, stop
 
 
 def make_intervals(ibdarray):
@@ -178,16 +186,17 @@ def make_intervals(ibdarray):
     # Get the intervals that are IBD=2 and remove them from the array
     ibd2_tracts = [x for x in runs_gte_uint8(ibdarray, 2)]
     for start, stop in ibd2_tracts:
-        ibdarray[start:(stop+1)] -= 1
+        ibdarray[start:(stop + 1)] -= 1
     # Now get the remaining IBD=1 tracts and remove them from the array
     ibd1_tracts = [x for x in runs_gte_uint8(ibdarray, 1)]
     for start, stop in ibd1_tracts:
-        ibdarray[start:(stop+1)] -= 1
+        ibdarray[start:(stop + 1)] -= 1
 
     return ibd1_tracts + ibd2_tracts
+
 
 def intervals_to_array(intervals, nmark):
     array = np.zeros(nmark)
     for start, stop in intervals:
-        array[start:(stop+1)] += 1
+        array[start:(stop + 1)] += 1
     return array

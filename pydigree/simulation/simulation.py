@@ -12,6 +12,7 @@ from pydigree.individual import Individual
 
 # A base class for simulations to inherit from
 class Simulation(object):
+
     def __init__(self, template=None, replications=1000):
         self.template = template
         self.replications = replications
@@ -29,31 +30,36 @@ class Simulation(object):
         write_map(self.template, '{0}.map'.format(self.prefix))
         for x in xrange(self.replications):
             print 'Replicate %d' % (x + 1)
-            self.replicate(verbose=verbose, writeibd=writeibd, replicatenumber=x)
-            self.write_data(x, predicate=output_predicate, compression=compression)
+            self.replicate(
+                verbose=verbose, writeibd=writeibd, replicatenumber=x)
+            self.write_data(
+                x, predicate=output_predicate, compression=compression)
 
     def write_data(self, replicatenumber, predicate=None, compression=None):
         filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
-        write_plink(self.template, filename, predicate=predicate, mapfile=False, compression=compression)
+        write_plink(self.template, filename, predicate=predicate,
+                    mapfile=False, compression=compression)
 
     def _writeibd(self, replicatenumber):
-        # Warning: Don't call this function! If the individuals in the pedigree dont have 
-        # LABEL genotypes, you're just going to get IBS configurations at each locus, not 
-        # actual IBD calculations. 
+        # Warning: Don't call this function! If the individuals in the pedigree dont have
+        # LABEL genotypes, you're just going to get IBS configurations at each locus, not
+        # actual IBD calculations.
         #
-        # If you have data you want to identify IBD segments in, check pydigree.sgs
-        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber+1), 'w') as of:
+        # If you have data you want to identify IBD segments in, check
+        # pydigree.sgs
+        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber + 1), 'w') as of:
             for ped in self.template:
                 for ind1, ind2 in combinations_with_replacement(ped.individuals, 2):
                     identical = []
                     for chrom_idx, chromosome in enumerate(ind1.chromosomes):
                         if ind1 == ind2:
                             genos = izip(*ind1.genotypes[chrom_idx])
-                            ibd = [2 * (x == y) for x,y in genos]
+                            ibd = [2 * (x == y) for x, y in genos]
                         else:
                             genos1 = izip(*ind1.genotypes[chrom_idx])
                             genos2 = izip(*ind2.genotypes[chrom_idx])
-                            ibd = [ibs(g1,g2)  for g1, g2 in izip(genos1, genos2)]
+                            ibd = [ibs(g1, g2)
+                                   for g1, g2 in izip(genos1, genos2)]
                         identical.extend(ibd)
                     outline = [ped.label, ind1.id, ind2.id] + identical
                     outline = ' '.join([str(x) for x in outline])

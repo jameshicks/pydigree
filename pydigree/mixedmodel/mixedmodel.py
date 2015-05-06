@@ -18,6 +18,7 @@ def is_genetic_effect(effect):
 
 
 class MixedModel(object):
+
     """
     Fits linear models in the form of y = X * b + sum(Z_i * u_i) + e, where:
       y is the vector of outcomes
@@ -270,7 +271,7 @@ class MixedModel(object):
         for name, vc in zip(self.random_effects, self.variance_components):
             print '\t'.join(str(val) for val in [name,
                                                  vc,
-                                                 100 * vc/np.var(self.y)])
+                                                 100 * vc / np.var(self.y)])
         print
         print 'Loglikelihood: %s' % self.likelihood()
 
@@ -286,4 +287,4 @@ class MixedModel(object):
         """
         v = np.var(self.y)
         n = float(len(self.random_effects))
-        return [v/(n+1) for r in self.random_effects]
+        return [v / (n + 1) for r in self.random_effects]

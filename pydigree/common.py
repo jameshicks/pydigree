@@ -4,6 +4,7 @@ from itertools import izip_longest
 from operator import mul as multiply
 from pydigree.cyfuncs import runs
 
+
 class IterationError(Exception):
     pass
 
@@ -86,5 +87,4 @@ def invcumsum(iter):
     >>> pydigree.invcumsum(pydigree.cumsum(a)) == a
     True
     """
-    return [x - iter[i-1] if i > 0 else 0 for i, x in enumerate(iter)]
-
+    return [x - iter[i - 1] if i > 0 else 0 for i, x in enumerate(iter)]

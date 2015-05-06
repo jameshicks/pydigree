@@ -17,6 +17,8 @@ from pydigree._pydigree import sample_with_replacement, random_pairs
 from pydigree._pydigree import choice_with_probs
 
 missing_genotype = (0, 0)
+
+
 def is_missing_genotype(g):
     return g == missing_genotype
 
@@ -109,19 +111,19 @@ class Population(MutableMapping):
     def merge(self, other):
         '''
         Merges two datasets (i.e. performs Individual.update for each individual in the pedigree)
-        
+
         Assumes unique individual IDs
         '''
-        self.chromosomes =  other.chromosomes
+        self.chromosomes = other.chromosomes
         self.clear_genotypes()
-        
+
         selfids = {x.id for x in self}
         otherids = {x.id for x in other.individuals}
         overlap = set.intersection(selfids, otherids)
 
         if not overlap:
             return
-        
+
         for x in overlap:
             self.population[x].update(other._getindividual(x))
 
@@ -131,7 +133,7 @@ class Population(MutableMapping):
     @property
     def individuals(self):
         return [x for x in self]
-    
+
     def males(self):
         """ Returns list of males in population """
         return [x for x in self if x.sex == 0]

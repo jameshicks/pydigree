@@ -5,6 +5,7 @@ from pydigree.simulation.simulation import Simulation, SimulationError
 
 
 class NaiveGeneDroppingSimulation(Simulation):
+
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)
         self.genedrop_attempts = 1000
@@ -17,18 +18,19 @@ class NaiveGeneDroppingSimulation(Simulation):
         for ped in self.template:
 
             for attempt in xrange(self.genedrop_attempts):
-                
+
                 for ind in ped:
                     ind.clear_genotypes()
 
-                # Step 1: Segregate labeled markers so we can know the IBD states
+                # Step 1: Segregate labeled markers so we can know the IBD
+                # states
                 for founder in ped.founders():
                     founder.label_genotypes()
                 for nf in ped.nonfounders():
                     nf.get_genotypes()
                 if writeibd:
                     self._writeibd(replicatenumber)
-                # Step 2: Fill in genotypes 
+                # Step 2: Fill in genotypes
                 for founder in ped.founders():
                     founder.clear_genotypes()
                     if founder in self.constraints['genotype']:
@@ -40,7 +42,6 @@ class NaiveGeneDroppingSimulation(Simulation):
 
                 for nf in ped.nonfounders():
                     nf.delabel_genotypes()
-
 
                 if self.trait:
                     accuracy = self.predicted_trait_accuracy(ped)

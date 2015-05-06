@@ -2,6 +2,7 @@
 
 
 class Architecture(object):
+
     """
     Architecture is a static class that relates genotypes to phenotypes.
 
@@ -40,6 +41,7 @@ class Architecture(object):
     Like with the main effects, any genotype combination not in the effect
     dictionary is assumed to have 0 effect on the trait.
     """
+
     def __init__(self, name, type):
         self.name = name
         self.effects = {}

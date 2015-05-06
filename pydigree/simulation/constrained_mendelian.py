@@ -59,7 +59,7 @@ class ConstrainedMendelianSimulation(Simulation):
             # Get genotypes for everybody else that we're not constraining.
             for ind in ped:
                 ind.get_genotypes()
-            
+
             if writeibd:
                 self._writeibd(replicatenumber)
 

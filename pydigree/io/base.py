@@ -9,6 +9,7 @@ from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.genotypes import GenotypedChromosome
 
+
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
              population_handler=None, data_handler=None, connect_inds=True, onlyinds=None):
     """
@@ -42,11 +43,11 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             return None
 
     population = Population()
-    
+
     p = Pedigree()
     if callable(population_handler):
         population_handler(p)
-    
+
     pc = PedigreeCollection()
 
     with open(filename) as f:
@@ -127,10 +128,11 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 fam, ind = d['famid'], d['ind']
                 pedigrees[fam][ind].phenotypes[k] = v
 
+
 def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     '''
     Takes a series of alleles and turns them into genotypes.
-    
+
     For example: 
     The series '1 2 1 2 1 2' becomes 
     chrom1 = [1,1,1]
@@ -143,7 +145,7 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     strand_a = data[0::2]
     strand_b = data[1::2]
 
-    chromosomes = ind.chromosomes 
+    chromosomes = ind.chromosomes
     sizes = [x.nmark() for x in chromosomes]
 
     start = 0
@@ -151,10 +153,10 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
         stop = start + size
         chroma = GenotypedChromosome(strand_a[start:stop])
         chromb = GenotypedChromosome(strand_b[start:stop])
-        
+
         # Set missing alleles to empty string
         if np.issubdtype(chroma.dtype, str):
-            chroma[chroma == missing_code] = '' 
+            chroma[chroma == missing_code] = ''
             chromb[chromb == missing_code] = ''
 
         ind.genotypes[i] = chroma, chromb
