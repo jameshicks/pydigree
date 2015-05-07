@@ -9,7 +9,7 @@ from pydigree.paths import *
 from pydigree.common import *
 from pydigree.genotypes import GenotypedChromosome
 from pydigree._pydigree import chromatid_delabeler
-
+from pydigree.exceptions import IterationError
 
 missing_genotype = (0, 0)
 

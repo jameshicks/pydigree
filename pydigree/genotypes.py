@@ -2,9 +2,7 @@ from itertools import izip
 
 import numpy as np
 
-
-class NotMeaningfulError(Exception):
-    pass
+from pydigree.exceptions import NotMeaningfulError
 
 
 class GenotypedChromosome(np.ndarray):

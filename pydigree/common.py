@@ -5,10 +5,6 @@ from operator import mul as multiply
 from pydigree.cyfuncs import runs
 
 
-class IterationError(Exception):
-    pass
-
-
 def count(val, iter):
     """ Counts how many times a value (val) occurs in an iterable """
     return sum(1 for x in (y for y in iter if y is not None) if val == x)

@@ -8,6 +8,7 @@ from pydigree.misc import ibs
 from pydigree.io.smartopen import smartopen
 from pydigree.io.plink import write_plink, write_map
 from pydigree.individual import Individual
+from pydigree.exceptions import SimulationError
 
 
 # A base class for simulations to inherit from
@@ -128,7 +129,3 @@ class Simulation(object):
             self.constraints['ibd'][ind] = []
         c = (ancestor, location, anchap)
         self.constraints['ibd'][ind].append(c)
-
-
-class SimulationError(Exception):
-    pass
