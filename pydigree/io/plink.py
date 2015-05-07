@@ -3,6 +3,7 @@ from itertools import izip, chain, imap
 from pydigree.common import grouper, cumsum
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
+from pydigree.exceptions import FileFormatError
 from pydigree.io.smartopen import smartopen as open
 
 
@@ -31,7 +32,7 @@ def read_map(mapfile):
             chr, label, cm, pos = line
             cm, pos = float(cm), int(pos)
             if pos < 0:
-                raise ValueError('Invalid position: {}'.format(pos)
+                raise FileFormatError('Invalid position: {}'.format(pos)
             if chr != last_chr:
                 # If this happens, we've moved on to a new chromosome,
                 # or we've just started. If we haven't just started, We'll
@@ -41,7 +42,7 @@ def read_map(mapfile):
                 # Make the next chromosome
                 chromosome = ChromosomeTemplate(label=chr)
             elif pos < last_pos:
-                raise ValueError('Map file not sorted')
+                raise FileFormatError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos
     chroms.append(chromosome)

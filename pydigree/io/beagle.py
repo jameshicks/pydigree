@@ -5,6 +5,7 @@ from itertools import izip
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, GenotypedChromosome
 from pydigree.io import smartopen as open
+from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
 
 class BeagleMarkerRecord(object):
@@ -33,9 +34,9 @@ def read_beagle_markerfile(filename, label=None):
             rec = BeagleMarkerRecord(line)
 
             if rec.pos < 0:
-                raise ValueError('Bad position for genotype: {}'.format(rec.pos))
+                raise FileFormatError('Bad position for genotype: {}'.format(rec.pos))
             elif rec.pos <= last_pos:
-                raise ValueError('Makers in file out of order')
+                raise FileFormatError('Makers in file out of order')
 
             
             chrom.add_genotype(None, cm=None, label=rec.label, bp=rec.pos)

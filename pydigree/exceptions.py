@@ -8,3 +8,7 @@ class NotMeaningfulError(Exception):
 
 class SimulationError(Exception):
     pass
+
+
+class FileFormatError(Exception):
+    pass
