@@ -31,7 +31,7 @@ def read_map(mapfile):
             chr, label, cm, pos = line
             cm, pos = float(cm), int(pos)
             if pos < 0:
-                continue
+                raise ValueError('Invalid position: {}'.format(pos)
             if chr != last_chr:
                 # If this happens, we've moved on to a new chromosome,
                 # or we've just started. If we haven't just started, We'll
