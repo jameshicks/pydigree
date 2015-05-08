@@ -67,6 +67,8 @@ def cumsum(iter):
     >>> pydigree.cumsum([0,1,2,3,4])
     [0, 1, 3, 6, 10]
     """
+    if not iter:
+        return []
     value = 0
     g = [None] * len(iter)
     for idx, x in enumerate(iter):
@@ -83,4 +85,6 @@ def invcumsum(iter):
     >>> pydigree.invcumsum(pydigree.cumsum(a)) == a
     True
     """
+    if not iter:
+        return []
     return [x - iter[i - 1] if i > 0 else 0 for i, x in enumerate(iter)]
