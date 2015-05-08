@@ -32,7 +32,7 @@ def read_map(mapfile):
             chr, label, cm, pos = line
             cm, pos = float(cm), int(pos)
             if pos < 0:
-                raise FileFormatError('Invalid position: {}'.format(pos)
+                raise FileFormatError('Invalid position: {}'.format(pos))
             if chr != last_chr:
                 # If this happens, we've moved on to a new chromosome,
                 # or we've just started. If we haven't just started, We'll
@@ -55,7 +55,8 @@ def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
         mapfile = prefix + '.map'
 
     pop_handler = create_pop_handler_func(mapfile)
-    return read_ped(pedfile, population_handler=pop_handler, data_handler=plink_data_handler, **kwargs)
+    return read_ped(pedfile, population_handler=pop_handler,
+                    data_handler=plink_data_handler, **kwargs)
 
 
 def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
