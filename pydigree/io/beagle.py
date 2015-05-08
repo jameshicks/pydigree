@@ -8,8 +8,10 @@ from pydigree.io import smartopen as open
 from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
 
+
 class BeagleMarkerRecord(object):
     __slots__ = ['label', 'pos', 'alleles']
+
     def __init__(self, line):
         name, pos, alleles = line.strip().split(None, 2)
         alleles = alleles.split()
@@ -17,8 +19,10 @@ class BeagleMarkerRecord(object):
         self.pos = int(pos)
         self.alleles = alleles
 
+
 class BeagleGenotypeRecord(object):
     __slots__ = ['identifier', 'label', 'data']
+
     def __init__(self, line):
         l = line.strip().split()
         self.identifier = l[0]
@@ -33,35 +37,36 @@ class BeagleGenotypeRecord(object):
 def read_beagle_markerfile(filename, label=None):
     with open(filename) as f:
         chrom = ChromosomeTemplate(label=label)
-        
+
         last_pos = -1
         for line in f:
             rec = BeagleMarkerRecord(line)
 
             if rec.pos < 0:
-                raise FileFormatError('Bad position for genotype: {}'.format(rec.pos))
+                raise FileFormatError(
+                    'Bad position for genotype: {}'.format(rec.pos))
             elif rec.pos <= last_pos:
                 raise FileFormatError('Makers in file out of order')
 
-            
             chrom.add_genotype(None, cm=None, label=rec.label, bp=rec.pos)
             last_pos = rec.pos
 
     return chrom
 
+
 def read_beagle_genotypefile(filename, pop, missingcode='0'):
     with open(filename) as f:
         for line in f:
-            rec =  BeagleGenotypeRecord(line)
-            
+            rec = BeagleGenotypeRecord(line)
+
             if rec.identifier == 'I':
-                inds = [Individual(pop, label) for label in  rec.data[::2]]
+                inds = [Individual(pop, label) for label in rec.data[::2]]
             elif rec.is_phenotype_record:
                 for ind, pheno_status in izip(inds, rec.data[::2]):
-                    if rec.identifier == 'A': 
+                    if rec.identifier == 'A':
                         pheno_status = pheno_status == '2'
                     else:
-                        try: 
+                        try:
                             pheno_status = float(pheno_status)
                         except ValueError:
                             pass
@@ -74,7 +79,9 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
                   for x in f if x.startswith('M')]
         genotypes = izip(*gtrows)
         for ind, sequentialalleles in izip(inds, genotypes):
-            genotypes_from_sequential_alleles(ind, sequentialalleles, missingcode=missingcode)
+            genotypes_from_sequential_alleles(ind, sequentialalleles,
+                                              missingcode=missingcode)
+
 
 def read_beagle(genofile, markerfile):
     pop = Population()
