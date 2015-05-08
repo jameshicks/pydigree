@@ -25,6 +25,11 @@ class BeagleGenotypeRecord(object):
         self.label = l[1]
         self.data = l[2:]
 
+    @profile
+    def is_phenotype_record(self):
+        return self.identifier in 'ACT'
+
+
 def read_beagle_markerfile(filename, label=None):
     with open(filename) as f:
         chrom = ChromosomeTemplate(label=label)
@@ -51,8 +56,15 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
             
             if rec.identifier == 'I':
                 inds = [Individual(pop, label) for label in  rec.data[::2]]
-            elif rec.identifier == 'A':
+            elif rec.is_phenotype_record:
                 for ind, pheno_status in izip(inds, rec.data[::2]):
+                    if rec.identifier == 'A': 
+                        pheno_status = pheno_status == '2'
+                    else:
+                        try: 
+                            pheno_status = float(pheno_status)
+                        except ValueError:
+                            pass
                     ind.phenotypes[rec.label] = pheno_status
             else:
                 # We've reached the genotypes, and we're skipping out
