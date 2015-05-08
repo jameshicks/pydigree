@@ -2,7 +2,7 @@
 
 from itertools import izip_longest
 from operator import mul as multiply
-from pydigree.cyfuncs import runs
+from pydigree.cyfuncs import runs, runs_gte
 
 
 def count(val, iter):
