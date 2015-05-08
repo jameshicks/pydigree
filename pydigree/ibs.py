@@ -22,7 +22,7 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     return chromwide_ibs(a, b, c, d, missingval=missingval)
 
 
-def chromwide_ibs(a, b, c, d, missingval=64)
+def chromwide_ibs(a, b, c, d, missingval=64):
     a_eq_c = a == c
     a_eq_d = a == d
     b_eq_c = b == c
