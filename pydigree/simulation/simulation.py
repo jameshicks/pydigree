@@ -4,7 +4,7 @@ import random
 from itertools import combinations_with_replacement, izip
 
 from pydigree.common import *
-from pydigree.misc import ibs
+from pydigree.ibs import ibs
 from pydigree.io.smartopen import smartopen
 from pydigree.io.plink import write_plink, write_map
 from pydigree.individual import Individual

@@ -2,7 +2,7 @@
 
 # Common functions (cumsum, table, etc)
 from pydigree.common import *
-from pydigree.misc import *
+from pydigree.ibs import ibs
 
 
 # Functions for navigating pedigree structures

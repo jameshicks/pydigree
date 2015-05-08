@@ -7,7 +7,7 @@ import numpy as np
 import pydigree as pyd
 from pydigree.io import smartopen
 from pydigree.sgs.sgs import intervals_to_array
-from pydigree.misc import ibs
+from pydigree.ibs import ibs
 
 replicate = sys.argv[1]
 ms = int(sys.argv[2])

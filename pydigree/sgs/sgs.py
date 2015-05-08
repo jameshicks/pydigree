@@ -3,7 +3,7 @@ from itertools import izip, combinations
 import numpy as np
 
 from pydigree.common import runs
-from pydigree.misc import ibs, get_ibs_states
+from pydigree.ibs import ibs, get_ibs_states
 from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 
 

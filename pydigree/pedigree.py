@@ -269,7 +269,7 @@ class Pedigree(Population):
         """
         Simulate IBD patterns by gene dropping: Everyone's genotypes reflect
         the founder chromosome that they received the genotype from. You can
-        then use misc.ibs to determine IBD state. This effectively an
+        then use the ibs function to determine IBD state. This effectively an
         infinite-alleles simulation.
 
         Returns: Nothing

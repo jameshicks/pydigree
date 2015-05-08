@@ -8,7 +8,7 @@ import argparse
 
 import numpy as np
 
-from pydigree import ibs
+from pydigree.ibs import ibs
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', required=True,
