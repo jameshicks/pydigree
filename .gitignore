@@ -44,6 +44,10 @@ nosetests.xml
 # Profiles
 *.lprof
 
+####### Cython ignores
+cyfuncs.c
+cyfuncs.html
+
 ####### C ignores
 
 # Object files
