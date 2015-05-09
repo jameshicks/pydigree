@@ -41,6 +41,10 @@ class PedigreeCollection(MutableMapping):
 
     @property
     def individuals(self):
+        '''
+        Returns a list of the individuals represented by all pedigrees, 
+        sorted by pedigree label, id label 
+        '''
         inds = []
         for pedigree in sorted(self, key=lambda x: x.label):
             inds.extend(sorted((x for x in pedigree), key=lambda x: x.id))

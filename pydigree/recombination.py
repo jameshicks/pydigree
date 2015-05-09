@@ -7,6 +7,10 @@ import numpy as np
 
 
 def recombine(chr1, chr2, map):
+    '''
+    Takes two chromatids and returns a simulated one by an exponential process
+    '''
+    
     # An optimization for gene dropping procedures on IBD states.
     # If there is only one marker, choose one at random, and return that.
     # There's no need for searching through the map to find crossover points

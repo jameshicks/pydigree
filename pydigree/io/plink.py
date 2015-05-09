@@ -18,11 +18,19 @@ def create_pop_handler_func(mapfile):
 
 
 def plink_data_handler(ind, data):
+    ''' A function to handle the data payload from a plink line '''
     return genotypes_from_sequential_alleles(ind, data, missing_code='0')
 
 
 def read_map(mapfile):
-    """ Reads a PLINK map file into a list of ChromosomeTemplate objects """
+    """
+    Reads a PLINK map file into a list of ChromosomeTemplate objects
+    
+    Arguments:
+    mapfile: The file to be read
+
+    Returns: a list of ChromosomeTemplate objects
+    """
     last_chr, last_pos = None, 0
     chroms = []
     chromosome = None
@@ -50,6 +58,19 @@ def read_map(mapfile):
 
 
 def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
+    '''
+    Read a plink file by specifying pedfile and mapfile directly,
+    or by using a prefix. Pass additional arguments to 
+    pydigree.io.base.read_ped with kwargs
+
+    Arguments:
+    pedfile: a plink PED file to be read
+    mapfile: a plink MAP file to be read
+    prefix: sets mapfile to 'prefix.map' and pedfile to 'prefix.ped'
+    kwargs: additional arguments passed to read_ped
+
+    Returns: A PedigreeCollection object
+    '''
     if prefix:
         pedfile = prefix + '.ped'
         mapfile = prefix + '.map'
@@ -61,7 +82,22 @@ def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
 
 def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
                 compression=None):
+    '''
+    Write individual genotypes to a file in plink PED data format.
+    Optionally outputs the genotype locations to the mapfile.
 
+    Args:
+    ------
+    pedigrees: the pedigrees to be written
+    filename_prefix: The output ped file ('.ped' will be appended)
+    predicate: a callable that evaluates True when the individual 
+      should be outputted to the file
+    mapfile: True if the plink MAP file should be written
+    compression: Compress the data? Options are bz2 and gzip2,
+      otherwise data will be written uncompressed
+
+    Returns: Nothing
+    '''
     pedfile = filename_prefix + '.ped'
     if compression in {'gzip', 'gz'}:
         pedfile += '.gz'
@@ -137,6 +173,16 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
 
 
 def write_map(pedigrees, mapfile):
+    '''
+    Writes the genotype location data to a PLINK MAP file
+    
+    Arguments
+    ------
+    pedigrees: the population containing the data to be written
+    mapfile: the name of the file to be output to
+
+    Returns: Nothing
+    '''
     with open(mapfile, 'w') as f:
         for ci, chromosome in enumerate(pedigrees.chromosomes):
             for mi, marker in enumerate(chromosome._iinfo()):

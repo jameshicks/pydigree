@@ -37,7 +37,15 @@ def flatten(x):
 
 
 def grouper(iterable, n, fillvalue=None):
-    "Collect data into fixed-length chunks or blocks"
+    """
+    Collect data into fixed-length chunks or blocks
+    Iterable: input iterable
+    n: size of the groups (an integer)
+    fillvalue: Value to pad the last group with if len(iterable) % n != 0
+    
+    Returns: a generator
+    """
+    
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
     args = [iter(iterable)] * n
     return izip_longest(fillvalue=fillvalue, *args)
@@ -47,6 +55,12 @@ def invert_dict(d):
     """
     Makes the keys the values and the values the keys
     WARNING: No guarantee of dictionary structure if mappings are not unique
+    
+    Arguments
+    ------
+    d: Input dictionary
+
+    Returns: a dictionary
     """
     return dict((y, x) for x, y in d.items())
 
@@ -66,6 +80,12 @@ def cumsum(iter):
     Cumulative sum:
     >>> pydigree.cumsum([0,1,2,3,4])
     [0, 1, 3, 6, 10]
+    
+    Arguments
+    ------
+    iter: the iterable to be cumsum'ed
+    
+    Returns: a list of the cumulative sums
     """
     if not iter:
         return []

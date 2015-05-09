@@ -2,7 +2,15 @@ from pydigree.genotypes import ChromosomeTemplate
 
 
 def read_gs_chromosome_template(templatef):
-    """ Reads a genomeSIMLA format chromosome template file """
+    """
+    Reads a genomeSIMLA format chromosome template file
+    
+    Arguments
+    ------
+    templatef: The filename of the template file
+
+    Returns: A ChromosomeTemplate object corresponding to the file
+    """
     with open(templatef) as f:
         label = f.readline().strip()  # The label and
         f.readline()  # the number of markers, both of which we dont need.

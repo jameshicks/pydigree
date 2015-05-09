@@ -19,12 +19,18 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     assign to pedigree members. If you don't provide a population
     you can't simulate genotypes!
 
-    Arguements
+    Arguments
     -----
     filename: The file to be read
     population: The population to assign individuals to
     delimiter: a string defining the field separator, default: any whitespace
     affected_labels: The labels that determine affection status.
+    population_handler: a function to set up the population 
+    data_handler: a function to turn the data into useful individual information
+    connect_inds: build references between individuals. Requires all
+        individuals be present in the file
+    onlyinds: a list of individuals to be processed, allows skipping parts
+        of a file
 
     Returns: An object of class PedigreeCollection
     """
@@ -102,7 +108,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
     Reads a csv with header
     famid,ind,phen,phen,phen,phen etc etc
 
-    Arguements
+    Arguments
     ------
     Pedigrees:   An object of class PedigreeCollection
     csvfile:     the filename of the file containing phenotypes.
@@ -139,6 +145,13 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     chrom2 = [2,2,2]
 
     These are added as the genotypes for ind.
+    
+    Arguments
+    ------
+    ind: The Individual object to recieve genotypes
+    data: The allels to be turned into genotypes
+
+    Returns: Nothing
     '''
     ind._init_genotypes(blankchroms=False)
 

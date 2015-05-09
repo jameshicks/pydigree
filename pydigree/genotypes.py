@@ -34,14 +34,23 @@ class GenotypedChromosome(np.ndarray):
 
     @property
     def missing(self):
+        ''' Returns a numpy array indicating which markers have missing data '''
         return self == self.missingcode
 
     def nmark(self):
+        '''
+        Return the number of markers represented by the
+        GenotypedChromosome object
+        '''
         return self.shape[0]
 
 
 class SparseGenotypedChromosome(object):
-
+    '''
+    An object representing a set of haploid genotypes efficiently by 
+    storing allele differences from a reference. Useful for manipulating
+    genotypes from sequence data (e.g. VCF files)
+    '''
     def __init__(self, data):
         data = np.array(data)
         self.dtype = data.dtype
@@ -63,6 +72,7 @@ class SparseGenotypedChromosome(object):
 
     @property
     def missing(self):
+        ''' Returns a numpy array indicating which markers have missing data '''
         base = np.zeros(self.size, dtype=np.bool_)
         base[self.missingindices] = 1
         return base
@@ -86,9 +96,18 @@ class SparseGenotypedChromosome(object):
         return np.logical_not(self == other)
 
     def nmark(self):
+        '''
+        Return the number of markers (both reference and non-reference)
+        represented by the SparseGenotypedChromosome object
+        ''' 
         return self.size
 
     def todense(self):
+        '''
+        Returns a non-sparse GenotypeChromosome equivalent
+        to a SparseGenotypedChromosome object.
+        '''
+
         arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
         for loc, allele in self.non_refalleles.iteritems():
             arr[loc] = allele
@@ -142,9 +161,11 @@ class ChromosomeTemplate(object):
                     self.frequencies)
 
     def nmark(self):
+        ''' Returns the number of markers on the chromosome '''
         return len(self.genetic_map)
 
     def size(self):
+        ''' Returns the size of the chromosome in centimorgans '''
         return self.genetic_map[-1] - self.genetic_map[0]
 
     def add_genotype(self, frequency, map_position, label=None, bp=None):

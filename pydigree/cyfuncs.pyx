@@ -5,8 +5,8 @@ cimport cython
 
 cpdef ibs(g1,g2, missingval=None):
     '''
-    Returns how many alleles are identical-by-state between
-    two genotypes, or missingval if either genotype is missing
+    Returns how many alleles (0, 1, or 2) are identical-by-state between
+    two diploid genotypes, or missingval if either genotype is missing
     '''
     a, b = g1
     c, d = g2
@@ -22,8 +22,9 @@ cpdef ibs(g1,g2, missingval=None):
 
 def runs(sequence, predicate, minlength=2):
     """
-    Identifies runs of values for which predicate(value) evaluates True
-    and yields 2-tuples of the start and end (inclusive) indices
+    Identifies runs of values in an interable for which predicate(value) 
+    evaluates True and yields 2-tuples of the start and end (inclusive)
+    indices
     """
     cdef int inrun = False
     cdef int start, stop
@@ -46,6 +47,11 @@ def runs(sequence, predicate, minlength=2):
 
     
 def runs_gte(sequence, double minval, int minlength=2):
+    """
+    Identifies runs of values in an iterable where each value is greater
+    than or equal to a value minval, and returns a list of 2-tuples with
+    the start and end (inclusive) indices of the runs
+    """
     cdef int inrun = False
     cdef int start, stop, i, l
 
@@ -90,6 +96,11 @@ def runs_gte_uint8(np.ndarray[np.uint8_t] sequence, np.uint8_t minval, Py_ssize_
 
 
 def set_intervals_to_value(intervals, size, value):
+    '''
+    Creates a numpy integer array and sets intervals to a value
+    Intervals should be in the format (start_idx, stop_idx_inclusive)
+    '''
+
     DTYPE = np.int
     cdef int start = 0
     cdef int stop = 0

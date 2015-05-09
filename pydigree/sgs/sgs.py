@@ -23,24 +23,29 @@ class Segment(object):
 
     @property
     def physical_location(self):
+        ''' Locations of the start and end of the segment in base pairs '''
         return self.chromosome.physical_map[self.start], self.chromosome.physical_map[self.stop]
 
     @property
     def genetic_location(self):
+        ''' Locations of the start and end of the segment in centimorgans '''
         return self.chromosome.genetic_map[self.start], self.chromosome.genetic_map[self.stop]
 
     @property
     def physical_size(self):
+        ''' The size of the segmend in base pairs '''
         start, stop = self.physical_location
         return stop - start
 
     @property
     def genetic_size(self):
+        ''' The size of the segment in centimorgans '''
         start, stop = self.genetic_location
         return stop - start
 
     @property
     def nmark(self):
+        ''' The number of markers in the segment '''
         return self.stop - self.start
 
     @property
@@ -55,17 +60,21 @@ class Segment(object):
 
     @property
     def missing_rate(self):
+        ''' The number of missing genotypes in the segment '''
         return self.missing.sum() / float(self.nmark)
 
 
 def sgs_pedigrees(pc, phaseknown=False):
+    ''' Performs within-pedigree SGS for each pedigree in a pedigree collection '''
     shared = {}
     for pedigree in pedigrees:
         shared[pedigree] = sgs_population(pedigree)
     return shared
 
 
-def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1, size_unit='mb', min_density=100, maxmiss=0.25):
+def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
+                   size_unit='mb', min_density=100, maxmiss=0.25):
+    ''' Performs SGS between all individuals in a population or pedigree '''
     shared = {}
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
@@ -131,7 +140,9 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
     return ibd
 
 
-def filter_segments(chromosome, intervals, identical, min_length=1.0, min_density=100, size_unit='mb', maxmiss=0.25):
+def filter_segments(chromosome, intervals, identical, min_length=1.0,
+                    min_density=100, size_unit='mb', maxmiss=0.25):
+    ''' Perform quality control filtering on SGS results '''
     size_unit = size_unit.lower()
     if size_unit == 'mb':
         locations = chromosome.physical_map

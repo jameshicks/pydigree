@@ -70,12 +70,14 @@ class Individual(object):
 
     @property
     def full_label(self):
+        ''' Returns a 2-tuple of pedigree label and individual label '''
         return (self.population.label, self.id)
 
     # Functions about genotypes
     #
     @property
     def chromosomes(self):
+        ''' Returns a list of the individuals ChromosomeTemplate objects '''
         if self.pedigree is not None:
             return self.pedigree.chromosomes
         else:
@@ -139,6 +141,11 @@ class Individual(object):
                 self.genotypes[loc[0]][1][loc[1]])
 
     def get_constrained_genotypes(self, constraints, linkeq=True):
+        '''
+        Gets genotypes from parents (or population if the individual is a
+        founder) subject to constraints. Used by the simulation objects
+        in pydigree.simulation
+        '''
         self.get_genotypes(linkeq=linkeq)
         for constraint in constraints:
             locus, chromatid, allele, method = constraint
@@ -189,6 +196,10 @@ class Individual(object):
         self.genotypes = g
 
     def delabel_genotypes(self):
+        '''
+        When an individual has label genotypes, replaces the labels with 
+        the ancestral allele corresponding to the label
+        '''
         for chromoidx, chromosome in enumerate(self.genotypes):
             for chromaidx, chromatid in enumerate(chromosome):
                 newchromatid = chromatid_delabeler(chromatid, chromoidx)
@@ -216,10 +227,16 @@ class Individual(object):
         return any(x.depth > 1 for x in self.children)
 
     def parents(self):
+        ''' Returns the individual's father and mother in a 2-tuple '''
         return self.father, self.mother
 
     def ancestors(self):
-        """ Recursively searches for ancestors. """
+        """
+        Recursively searches for ancestors.
+        
+        Returns: A set object with Individual objects for all the ancestors
+        of this Individual object
+        """
         if self.is_founder():
             return set()
         return set([self.father, self.mother]) | \
@@ -227,7 +244,12 @@ class Individual(object):
             self.mother.ancestors()
 
     def descendants(self):
-        """ Recursively searches for descendants. """
+        """
+        Recursively searches for descendants.
+        
+        Returns: a set of individual objects for all the descendants
+        of this individual
+        """
         return set(self.children + list(flatten([x.descendants()
                                                  for x in self.children])))
 

@@ -11,7 +11,7 @@ from pydigree.io.base import genotypes_from_sequential_alleles
 
 
 class VCFRecord(object):
-
+    ''' A class for parsing lines in VCF files '''
     def __init__(self, line):
         chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip(
         ).split(None, 9)
@@ -27,6 +27,7 @@ class VCFRecord(object):
         self.data = data.split()
 
     def genotypes(self, minqual=20, mindepth=8):
+        ''' Extract the genotypes from a VCF record '''
         format = self.format.split(':')
 
         # Get the indices of the fields we're looking for
@@ -51,6 +52,10 @@ class VCFRecord(object):
 
 def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
              ind_minqual=20, ind_mindepth=9, geno_missrate=0):
+    '''
+    Reads a VCF file and returns a Population object with the
+    individuals represented in the file
+    '''
     with open(filename) as f:
         pop = Population()
 

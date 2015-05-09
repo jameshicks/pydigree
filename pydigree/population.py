@@ -91,11 +91,13 @@ class Population(MutableMapping):
     #
     #
     def register_individual(self, ind):
+        ''' Adds an individual to the population '''
         if ind.id in self.population:
             raise ValueError('ID %s already in population!' % ind.id)
         self.population[ind.id] = ind
 
     def remove_individual(self, ind):
+        ''' Removes an individual from the population '''
         del self[ind.id]
 
     def random_identifier(self):
@@ -132,6 +134,7 @@ class Population(MutableMapping):
 
     @property
     def individuals(self):
+        ''' Returns a list of individuals in the population '''
         return [x for x in self]
 
     def males(self):
@@ -187,6 +190,7 @@ class Population(MutableMapping):
         self.population = newpop
 
     def founder_individual(self, register=True, sex=None):
+        ''' Creates a new founder individual and adds to the population '''
         if sex is not None:
             sex = sex.lower()
         sexd = {'m': 0, 'f': 1, None: random.choice([0, 1])}
@@ -199,6 +203,8 @@ class Population(MutableMapping):
     #
     #
     def get_founder_genotypes(self):
+        ''' Gives genotypes to each founder in the population
+        with chromosomes from the chromosome pool '''
         if not self.pool:
             raise ValueError('Nothing in chromosome pool')
         g = []
@@ -207,16 +213,24 @@ class Population(MutableMapping):
         return g
 
     def get_genotypes(self):
+        ''' 
+        Causes each Individual object in the pedigree to request genotypes
+        from its parents
+        '''
         for x in self:
             x.get_genotypes()
 
     def get_linkage_equilibrium_genotypes(self):
+        '''
+        Returns a set of genotypes for an individual
+        in linkage equilibrium
+        '''
         return [[c.linkageequilibrium_chromosome(),
                  c.linkageequilibrium_chromosome()]
                 for c in self.chromosomes]
 
     def clear_genotypes(self):
-        """ Clears genotypes for every one in population """
+        """ Clears genotypes for every Individual object in population """
         for x in self:
             x.clear_genotypes()
 

@@ -35,6 +35,17 @@ class BeagleGenotypeRecord(object):
 
 
 def read_beagle_markerfile(filename, label=None):
+    ''' 
+    Reads marker locations from a beagle format file
+    
+    Arguments
+    -----
+    filename: The file to be read
+    label: An optional label to give the chromosome, since the BEAGLE
+        format does not require it
+
+    Returns: a ChromosomeTemplate object
+    '''
     with open(filename) as f:
         chrom = ChromosomeTemplate(label=label)
 
@@ -55,6 +66,17 @@ def read_beagle_markerfile(filename, label=None):
 
 
 def read_beagle_genotypefile(filename, pop, missingcode='0'):
+    '''
+    Reads BEAGLE formatted genotype files
+    
+    Arguments
+    ------
+    filename: Filename of BEAGLE genotype file
+    pop: the population to add these individuals to
+    missingcode: The value that indicates a missing genotype
+
+    Returns: Nothing
+    '''
     with open(filename) as f:
         for line in f:
             rec = BeagleGenotypeRecord(line)
@@ -84,6 +106,16 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
 
 
 def read_beagle(genofile, markerfile):
+    '''
+    Reads BEAGLE formatted genotype data
+
+    Arguments
+    ------
+    genofile: File containing genotype information for individuals
+    markerfile: File containing marker location and allele information
+
+    Returns: a Population object
+    '''
     pop = Population()
     pop.chromosomes.append(read_beagle_markerfile(markerfile))
 
