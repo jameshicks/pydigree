@@ -1,3 +1,6 @@
+from pydigree.io import smartopen as open
+
+
 def read_kinship(filename):
     kindict = {}
     with open(filename) as f:
