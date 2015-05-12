@@ -3,6 +3,7 @@ from itertools import izip
 import numpy as np
 
 from pydigree.exceptions import NotMeaningfulError
+from pydigree.cyfuncs import fastfirstitem
 
 
 class GenotypedChromosome(np.ndarray):
@@ -46,11 +47,13 @@ class GenotypedChromosome(np.ndarray):
 
 
 class SparseGenotypedChromosome(object):
+
     '''
     An object representing a set of haploid genotypes efficiently by 
     storing allele differences from a reference. Useful for manipulating
     genotypes from sequence data (e.g. VCF files)
     '''
+
     def __init__(self, data):
         data = np.array(data)
         self.dtype = data.dtype
@@ -80,16 +83,21 @@ class SparseGenotypedChromosome(object):
     def __eq__(self, other):
         if self.size != other.size:
             raise ValueError('Trying to compare different-sized chromosomes')
+
+        # SparseGenotypedChromosome saves differences from a reference,
+        # so all reference sites are equal, and we mark everything True
+        # to start, and go through and set any differences to False
         base = np.ones(self.size, dtype=np.bool_)
 
-        nonreflocs_a = set(self.non_refalleles)
-        nonreflocs_b = set(other.non_refalleles)
-        for i in set.symmetric_difference(nonreflocs_a, nonreflocs_b):
-            base[i] = 0
+        nonref_a = self.non_refalleles.viewitems()
+        nonref_b = other.non_refalleles.viewitems()
 
-        for i in set.intersection(nonreflocs_a, nonreflocs_b):
-            if self.non_refalleles[i] != other.non_refalleles[i]:
-                base[i] = 0
+        # Get the alleles that are in nonref_a or nonref_b but not both
+        neq_alleles = (nonref_a ^ nonref_b)
+        neq_sites = fastfirstitem(neq_alleles)
+
+        base[neq_sites] = 0
+
         return base
 
     def __neq__(self, other):
@@ -99,7 +107,7 @@ class SparseGenotypedChromosome(object):
         '''
         Return the number of markers (both reference and non-reference)
         represented by the SparseGenotypedChromosome object
-        ''' 
+        '''
         return self.size
 
     def todense(self):

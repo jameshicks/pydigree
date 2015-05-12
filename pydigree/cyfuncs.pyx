@@ -94,6 +94,18 @@ def runs_gte_uint8(np.ndarray[np.uint8_t] sequence, np.uint8_t minval, Py_ssize_
         out.append((start, i))
     return out
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def fastfirstitem(tuple2d):
+    cdef Py_ssize_t i, l
+    tuple2d = list(tuple2d)
+    l = len(tuple2d)
+    out = [-1]*l
+    for i in range(l):
+        out[i] = tuple2d[i][0]
+
+    return out
+
 
 def set_intervals_to_value(intervals, size, value):
     '''
