@@ -8,7 +8,7 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
     '''
     Efficiently returns IBS states across an entire chromsome.
 
-    Arguments: Two individuals, and the index of the chromosome to scan. 
+    Arguments: Two individuals, and the index of the chromosome to scan.
 
     Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS between
     missing values coded as missingval
@@ -21,11 +21,12 @@ def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):
 
 
 def chromwide_ibs(a, b, c, d, missingval=64):
-    ''' 
+    '''
     Efficiently evaluates IBS across a diploid set of chromosomes,
     sets IBS where one genotype is missing to missingval.
 
-    Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS between                                                                                                                                          missing values coded as missingval 
+    Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS
+    between missing values coded as missingval
     '''
 
     if not 0 <= missingval <= 255:
