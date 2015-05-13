@@ -47,7 +47,7 @@ class VCFRecord(object):
             else:
                 return gtfield[gtidx]
 
-        return [x.split(':')[gtidx] for x in self.data]
+        return [get_gt(x) for x in self.data]
 
 
 def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
