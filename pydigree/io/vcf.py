@@ -24,7 +24,7 @@ class VCFRecord(object):
         self.filter_passed = filter_passed == 'PASS'
         self.info = info
         self.format = format
-        self.data = data.split()
+        self.data = data.split('\t')
 
     def genotypes(self, minqual=20, mindepth=8):
         ''' Extract the genotypes from a VCF record '''
