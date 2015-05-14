@@ -1,5 +1,8 @@
-from pydigree import product, cumsum
+from pydigree.common import product, cumsum
+from pydigree.common import runs, runs_gte
+from pydigree.cyfuncs import runs_gte_uint8
 
+import numpy as np
 
 def test_product():
     assert product([1,2,3,4,5]) == 120
@@ -10,3 +13,18 @@ def test_cumsums():
     assert cumsum([]) == []
     assert cumsum([1,2,3]) == [1,3,6]
 
+def test_runs():
+    dregion = (10,20)
+    i = [1 if dregion[0] <= x <= dregion[1] else 0 for x in xrange(100)] 
+    assert runs(i, lambda x: x>0) == [dregion]
+    assert runs_gte(i, 1) == [dregion]
+    assert runs_gte(i, 1, 20) == []
+    assert runs_gte([], 1) == []
+    assert runs([], lambda x: True) == []
+    
+
+    i = [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1]
+    ir = [(4,8), (14, 16)]
+    assert runs(i, lambda x: x > 0) == ir
+    assert runs_gte(i, 1) == ir
+    assert runs_gte_uint8(np.array(i, dtype=np.uint8), 1) == ir
