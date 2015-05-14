@@ -67,7 +67,7 @@ class SparseGenotypedChromosome(object):
                 if x != refcode and x != ''}
 
     def __array2missing(self, data):
-        return [i for i, x in enumerate(data) if x == '']
+        return [i for i, x in enumerate(data) if x == self.missingcode]
 
     @property
     def missingcode(self):
