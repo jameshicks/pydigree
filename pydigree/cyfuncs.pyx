@@ -29,6 +29,7 @@ def runs(sequence, predicate, minlength=2):
     cdef int inrun = False
     cdef int start, stop
     
+    out = []
     for i,v in enumerate(sequence):
         if not inrun and predicate(v):
             inrun = True
@@ -38,12 +39,14 @@ def runs(sequence, predicate, minlength=2):
             inrun = False
             stop = i - 1
             if stop - start >= minlength:
-                yield start, stop
+                out.append((start, stop))
 
     if predicate(v) and inrun:
         stop = i
         if stop - start >= minlength:
-            yield start, stop
+            out.append((start, stop))
+    return out
+    
 
     
 def runs_gte(sequence, double minval, int minlength=2):
