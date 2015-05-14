@@ -95,16 +95,3 @@ def cumsum(iter):
         value += x
         g[idx] = value
     return g
-
-
-def invcumsum(iter):
-    """
-    Inverse of cumsum. iter can't be a generator currently
-
-    >>> a = range(5)
-    >>> pydigree.invcumsum(pydigree.cumsum(a)) == a
-    True
-    """
-    if not iter:
-        return []
-    return [x - iter[i - 1] if i > 0 else 0 for i, x in enumerate(iter)]
