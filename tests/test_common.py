@@ -1,4 +1,4 @@
-from pydigree.common import product, cumsum
+from pydigree.common import product, cumsum, flatten, invert_dict
 from pydigree.common import runs, runs_gte
 from pydigree.cyfuncs import runs_gte_uint8
 
@@ -28,3 +28,13 @@ def test_runs():
     assert runs(i, lambda x: x > 0) == ir
     assert runs_gte(i, 1) == ir
     assert runs_gte_uint8(np.array(i, dtype=np.uint8), 1) == ir
+
+def test_flatten():
+    assert list(flatten([1,2,2,3,4,4,5])) == [1,2,2,3,4,4,5]
+    assert list(flatten([(1,2),2,3,(4,4,5)])) == [1,2,2,3,4,4,5]
+    assert list(flatten([(1,(2,(2,(3,4)))),4,5])) == [1,2,2,3,4,4,5]
+    assert list(flatten([])) == []
+
+def test_invertdict():
+    assert invert_dict({}) == {}
+    assert invert_dict({1: 'a', 2: 'b'}) == {'a': 1, 'b': 2}
