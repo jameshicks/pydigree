@@ -135,7 +135,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 pedigrees[fam][ind].phenotypes[k] = v
 
 
-def genotypes_from_sequential_alleles(chromosomes, data, missing_code=0, sparse=False):
+def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', sparse=False):
     '''
     Takes a series of alleles and turns them into genotypes.
 
@@ -155,9 +155,14 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code=0, sparse=
     Returns: A list of 2-tuples of GenotypedChromosome objects
     '''
     Chromobj = SparseGenotypedChromosome if sparse else GenotypedChromosome
+
     genotypes = []
 
     data = np.array(data)
+    
+    if not np.issubdtype(type(missing_code), data.dtype):
+        raise ValueError('Invalid type for missing code: {}. Expected: {}'.format([type(missing_code), data.dtype]))
+
     if np.issubdtype(data.dtype, str):
         data[data == missing_code] = ''
     else:
