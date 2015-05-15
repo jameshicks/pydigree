@@ -114,7 +114,7 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
         row = [vcf_allele_parser(x) for x in row]
         row = chain.from_iterable(row)
         row = list(row)
-        genotype_handler(ind, row, missing_code='.')
+        ind.genotypes = genotype_handler(ind.chromosomes, row, missing_code='.')
 
     return pop
 
@@ -126,8 +126,8 @@ def vcf_allele_parser(genotype):
         return genotype.split('/' if '/' in genotype else '|')
 
 
-def sparse_genotypes_from_vcf_alleles(ind, data, missing_code='.'):
-    ind._init_genotypes(blankchroms=False)
+def sparse_genotypes_from_vcf_alleles(chromosomes, data, missing_code='.'):
+    genotypes = []
 
     data = np.array(data)
     data[data == missing_code] = ''
@@ -135,7 +135,6 @@ def sparse_genotypes_from_vcf_alleles(ind, data, missing_code='.'):
     strand_a = data[0::2]
     strand_b = data[1::2]
 
-    chromosomes = ind.chromosomes
     sizes = [x.nmark() for x in chromosomes]
 
     start = 0
@@ -144,5 +143,7 @@ def sparse_genotypes_from_vcf_alleles(ind, data, missing_code='.'):
         chroma = SparseGenotypedChromosome(strand_a[start:stop])
         chromb = SparseGenotypedChromosome(strand_b[start:stop])
 
-        ind.genotypes[i] = chroma, chromb
+        genotypes.append((chroma, chromb))
         start += size
+
+    return genotypes

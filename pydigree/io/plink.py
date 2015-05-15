@@ -19,7 +19,7 @@ def create_pop_handler_func(mapfile):
 
 def plink_data_handler(ind, data):
     ''' A function to handle the data payload from a plink line '''
-    return genotypes_from_sequential_alleles(ind, data, missing_code='0')
+    ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes, data, missing_code='0')
 
 
 def read_map(mapfile):

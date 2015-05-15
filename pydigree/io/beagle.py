@@ -101,8 +101,9 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
                   for x in f if x.startswith('M')]
         genotypes = izip(*gtrows)
         for ind, sequentialalleles in izip(inds, genotypes):
-            genotypes_from_sequential_alleles(ind, sequentialalleles,
-                                              missingcode=missingcode)
+            ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes,
+                                                              sequentialalleles,
+                                                              missingcode=missingcode)
 
 
 def read_beagle(genofile, markerfile):

@@ -144,21 +144,20 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     chrom1 = [1,1,1]
     chrom2 = [2,2,2]
 
-    These are added as the genotypes for ind.
+    These are returned in the a list in the form [(chroma, chromb), (chroma, chromb)...]
     
     Arguments
     ------
-    ind: The Individual object to recieve genotypes
-    data: The allels to be turned into genotypes
+    chromosome: A list of ChromosomeTemplate objects corresponding to the genotypes
+    data: The alleles to be turned into genotypes
 
-    Returns: Nothing
+    Returns: A list of 2-tuples of GenotypedChromosome objects
     '''
-    ind._init_genotypes(blankchroms=False)
+    genotypes = []
 
     strand_a = data[0::2]
     strand_b = data[1::2]
 
-    chromosomes = ind.chromosomes
     sizes = [x.nmark() for x in chromosomes]
 
     start = 0
@@ -172,5 +171,6 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
             chroma[chroma == missing_code] = ''
             chromb[chromb == missing_code] = ''
 
-        ind.genotypes[i] = chroma, chromb
+        genotypes.append((chroma, chromb))
         start += size
+    return genotypes
