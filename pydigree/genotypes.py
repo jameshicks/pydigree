@@ -155,6 +155,11 @@ class ChromosomeTemplate(object):
         self.frequencies = np.array([])
         # List of marker names
         self.labels = []
+        # Reference Alleles
+        self.reference = []
+        # Alternates
+        self.alternates = []
+        
 
     def __str__(self):
         return 'Chromosome %s: %s markers, %s cM' % \
@@ -176,7 +181,8 @@ class ChromosomeTemplate(object):
         ''' Returns the size of the chromosome in centimorgans '''
         return self.genetic_map[-1] - self.genetic_map[0]
 
-    def add_genotype(self, frequency=None, map_position=None, label=None, bp=None):
+    def add_genotype(self, frequency=None, map_position=None, label=None,
+                     bp=None, reference=None, alternates=None):
         try:
             frequency = float(frequency) if frequency is not None else -1
         except TypeError:
@@ -185,6 +191,8 @@ class ChromosomeTemplate(object):
         self.frequencies = np.append(self.frequencies, frequency)
         self.physical_map.append(bp)
         self.labels.append(label)
+        self.reference.append(reference)
+        self.alternates.append(alternates)
 
     def set_frequency(self, position, frequency):
         """ Manually change an allele frequency """

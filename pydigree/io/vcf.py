@@ -19,7 +19,7 @@ class VCFRecord(object):
         self.pos = int(pos)
         self.label = varid
         self.ref = ref
-        self.alt = alt
+        self.alt = alt.split(',')
         self.qual = float(qual)
         self.filter_passed = filter_passed == 'PASS'
         self.info = info
@@ -97,7 +97,8 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
                     chromobj = ChromosomeTemplate(label=record.chrom)
 
                 chromobj.add_genotype(
-                    None, None, bp=record.pos, label=record.label)
+                    None, None, bp=record.pos, label=record.label,
+                    reference=record.ref, alternates=record.alt)
                 genotypes.extend(genorow)
 
             last_chrom = record.chrom

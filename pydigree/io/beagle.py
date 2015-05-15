@@ -19,6 +19,13 @@ class BeagleMarkerRecord(object):
         self.pos = int(pos)
         self.alleles = alleles
 
+    @property
+    def reference(self):
+        return alleles[0]
+
+    @property
+    def alternates(self):
+        return allels[1:]
 
 class BeagleGenotypeRecord(object):
     __slots__ = ['identifier', 'label', 'data']
@@ -59,7 +66,8 @@ def read_beagle_markerfile(filename, label=None):
             elif rec.pos <= last_pos:
                 raise FileFormatError('Makers in file out of order')
 
-            chrom.add_genotype(None, cm=None, label=rec.label, bp=rec.pos)
+            chrom.add_genotype(None, cm=None, label=rec.label, bp=rec.pos,
+                               reference=rec.reference, alternates=rec.alternates)
             last_pos = rec.pos
 
     return chrom
