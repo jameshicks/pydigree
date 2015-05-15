@@ -7,7 +7,7 @@ from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
-from pydigree.genotypes import GenotypedChromosome
+from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
@@ -135,7 +135,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 pedigrees[fam][ind].phenotypes[k] = v
 
 
-def genotypes_from_sequential_alleles(ind, data, missing_code=0):
+def genotypes_from_sequential_alleles(ind, data, missing_code=0, sparse=False):
     '''
     Takes a series of alleles and turns them into genotypes.
 
@@ -150,10 +150,18 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     ------
     chromosome: A list of ChromosomeTemplate objects corresponding to the genotypes
     data: The alleles to be turned into genotypes
+    sparse: Return SparseGenotypedChromosomes instead of non-sparse
 
     Returns: A list of 2-tuples of GenotypedChromosome objects
     '''
+    Chromobj = SparseGenotypedChromosome if sparse else GenotypedChromosome
     genotypes = []
+
+    data = np.array(data)
+    if np.issubdtype(data.dtype, str):
+        data[data == missingcode] = ''
+    else:
+        data[data == missingcode] = 0
 
     strand_a = data[0::2]
     strand_b = data[1::2]
@@ -163,8 +171,8 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
     start = 0
     for i, size in enumerate(sizes):
         stop = start + size
-        chroma = GenotypedChromosome(strand_a[start:stop])
-        chromb = GenotypedChromosome(strand_b[start:stop])
+        chroma = Chromobj(strand_a[start:stop])
+        chromb = Chromobj(strand_b[start:stop])
 
         # Set missing alleles to empty string
         if np.issubdtype(chroma.dtype, str):
@@ -173,4 +181,5 @@ def genotypes_from_sequential_alleles(ind, data, missing_code=0):
 
         genotypes.append((chroma, chromb))
         start += size
+
     return genotypes

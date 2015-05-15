@@ -5,7 +5,7 @@ import numpy as np
 from pydigree.common import count
 from pydigree.population import Population
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate, SparseGenotypedChromosome
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open
 from pydigree.io.base import genotypes_from_sequential_alleles
 
@@ -109,12 +109,12 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
     genotypes = np.array(genotypes)
     genotypes = genotypes.reshape((-1, len(inds))).T
 
-    genotype_handler = sparse_genotypes_from_vcf_alleles if sparse else genotypes_from_sequential_alleles
     for ind, row in izip(inds, genotypes):
         row = [vcf_allele_parser(x) for x in row]
         row = chain.from_iterable(row)
         row = list(row)
-        ind.genotypes = genotype_handler(ind.chromosomes, row, missing_code='.')
+        ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes, row,
+                                                          missing_code='.', sparse=sparse)
 
     return pop
 
