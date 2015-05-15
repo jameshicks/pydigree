@@ -176,7 +176,7 @@ class ChromosomeTemplate(object):
         ''' Returns the size of the chromosome in centimorgans '''
         return self.genetic_map[-1] - self.genetic_map[0]
 
-    def add_genotype(self, frequency, map_position, label=None, bp=None):
+    def add_genotype(self, frequency=None, map_position=None, label=None, bp=None):
         try:
             frequency = float(frequency) if frequency is not None else -1
         except TypeError:
