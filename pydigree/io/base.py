@@ -171,13 +171,12 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', spars
     strand_a = data[0::2]
     strand_b = data[1::2]
 
-    sizes = [x.nmark() for x in chromosomes]
-
     start = 0
-    for i, size in enumerate(sizes):
+    for i, chrom in enumerate(chromosomes):
+        size = chrom.nmark()
         stop = start + size
-        chroma = Chromobj(strand_a[start:stop])
-        chromb = Chromobj(strand_b[start:stop])
+        chroma = Chromobj(strand_a[start:stop], template=chrom)
+        chromb = Chromobj(strand_b[start:stop], template=chrom)
 
         genotypes.append((chroma, chromb))
         start += size

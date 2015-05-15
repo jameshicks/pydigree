@@ -9,8 +9,9 @@ from pydigree.cyfuncs import fastfirstitem
 class GenotypedChromosome(np.ndarray):
 
     ''' A class for holding genotypes '''
-    def __new__(cls, data):
+    def __new__(cls, data, template=None):
         obj = np.asarray(data).view(cls)
+        obj.template = template
         return obj
 
     def __lt__(self, other):
@@ -54,7 +55,9 @@ class SparseGenotypedChromosome(object):
     genotypes from sequence data (e.g. VCF files)
     '''
 
-    def __init__(self, data):
+    def __init__(self, data, template=None):
+        self.template = template
+
         data = np.array(data)
         self.dtype = data.dtype
         self.size = data.shape[0]
