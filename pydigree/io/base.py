@@ -174,11 +174,6 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code=0, sparse=
         chroma = Chromobj(strand_a[start:stop])
         chromb = Chromobj(strand_b[start:stop])
 
-        # Set missing alleles to empty string
-        if np.issubdtype(chroma.dtype, str):
-            chroma[chroma == missing_code] = ''
-            chromb[chromb == missing_code] = ''
-
         genotypes.append((chroma, chromb))
         start += size
 
