@@ -1,6 +1,8 @@
 from itertools import chain
+import os
 
 from pydigree.io.base import genotypes_from_sequential_alleles
+from pydigree.io import read_plink
 from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome, ChromosomeTemplate
 
 def blank_chromosome(size=2):
@@ -24,3 +26,27 @@ def test_seqalleles():
     assert (gts[0][1] == ['2','1']).all()
     assert (gts[1][0] == ['2','2']).all()
     assert (gts[1][1] == ['2','1']).all()
+
+def test_plink():
+    plinkped = os.path.join('test_data', 'plink_test.ped')
+    plinkmap = os.path.join('test_data', 'plink_test.map')
+    
+    peds = read_plink(pedfile=plinkped, mapfile=plinkmap)
+    assert len(peds.chromosomes) == 2
+    assert [x.nmark() for x in peds.chromosomes] == [2, 2]
+    assert len(peds.individuals) == 2
+    
+    # Test individual 1 genotypes
+    assert (peds['1','1'].genotypes[0][0] == ['1', '1']).all()
+    assert (peds['1','1'].genotypes[0][1] == ['2', '1']).all()
+    assert (peds['1','1'].genotypes[1][0] == ['2', '']).all()
+    assert (peds['1','1'].genotypes[1][1] == ['2', '']).all()
+
+    # Test individual 2 genotypes
+    assert (peds['1', '2'].genotypes[0][0] == ['2', '2']).all()
+    assert (peds['1', '2'].genotypes[0][1] == ['2', '2']).all()
+    assert (peds['1', '2'].genotypes[1][0] == ['1', '']).all()
+    assert (peds['1', '2'].genotypes[1][1] == ['2', '']).all()
+
+    assert (peds['1','1'].genotypes[0][0].missing == [False, False]).all()
+    assert (peds['1','1'].genotypes[1][0].missing == [False, True]).all()
