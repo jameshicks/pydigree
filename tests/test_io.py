@@ -2,7 +2,7 @@ from itertools import chain
 import os
 
 from pydigree.io.base import genotypes_from_sequential_alleles
-from pydigree.io import read_plink
+from pydigree.io import read_plink, read_vcf
 from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome, ChromosomeTemplate
 
 def blank_chromosome(size=2):
@@ -50,3 +50,11 @@ def test_plink():
 
     assert (peds['1','1'].genotypes[0][0].missing == [False, False]).all()
     assert (peds['1','1'].genotypes[1][0].missing == [False, True]).all()
+
+def test_vcf():
+    testvcf = os.path.join('test_data', 'test.vcf')
+    
+    pop = read_vcf(testvcf)
+    assert len(pop.individuals) == 3
+    assert len(pop.chromosomes) == 2
+    pop.individuals['NA00001'].genotypes[1][0].todense() == [0,0,1,0,0,0,1] 
