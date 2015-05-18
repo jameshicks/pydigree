@@ -77,7 +77,8 @@ def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
 
     pop_handler = create_pop_handler_func(mapfile)
     return read_ped(pedfile, population_handler=pop_handler,
-                    data_handler=plink_data_handler, **kwargs)
+                    data_handler=plink_data_handler, connect_inds=False,
+                    **kwargs)
 
 
 def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
