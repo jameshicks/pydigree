@@ -125,7 +125,7 @@ class SparseGenotypedChromosome(object):
 
         arr[self.missing] = self.missingcode
 
-        return arr
+        return GenotypedChromosome(arr, template=self.template)
 
 
 class ChromosomeTemplate(object):
