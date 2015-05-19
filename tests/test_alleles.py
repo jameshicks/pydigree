@@ -3,7 +3,7 @@ from nose.tools import raises
 from pydigree.genotypes import Alleles, SparseAlleles
 import numpy as np
 
-def test_genotypedchromosome():
+def test_alleles():
     a = Alleles(['1', '2', '3', ''])
     b = Alleles(['1', '3', '2', ''])
 
@@ -17,7 +17,7 @@ def test_genotypedchromosome():
     eq = (a == b)
     assert (eq == np.array([True, False, False, True])).all()
     
-def test_sparsegenotypedchromosome():
+def test_sparsealleles():
     a = SparseAlleles(['1', '2', '3', ''])
     b = SparseAlleles(['1', '3', '2', ''])
 
@@ -36,11 +36,11 @@ def test_sparsegenotypedchromosome():
     assert ((a == b.todense()) == np.array([True, False, False, True])).all()
 
 @raises(ValueError)
-def test_sparsegc_wrongtypecomparsion():
+def test_sparse_wrongtypecomparsion():
     a = SparseAlleles(['1', '2', '3', ''])
     a == 3
 
 @raises(ValueError)
-def test_sparsegc_norefscalarcomparison():
+def test_sparse_norefscalarcomparison():
     a = SparseAlleles(['1', '2', '3', ''])
     a == '3'
