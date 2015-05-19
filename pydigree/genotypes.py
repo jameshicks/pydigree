@@ -68,11 +68,15 @@ class SparseAlleles(object):
 
     @staticmethod
     def _array2nonref(data, refcode):
+        '''
+        Returns a dict of the form index: value where the data is different than a reference
+        '''  
         return {i: x for i, x in enumerate(data)
                 if x != refcode and x != ''}
 
     @staticmethod
     def _array2missing(data, missingcode):
+        ''' Returns a list of indices where there are missingvalues '''
         return [i for i, x in enumerate(data) if x == missingcode]
 
     @property
