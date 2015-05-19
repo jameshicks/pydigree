@@ -44,3 +44,14 @@ def test_sparse_wrongtypecomparsion():
 def test_sparse_norefscalarcomparison():
     a = SparseAlleles(['1', '2', '3', ''])
     a == '3'
+
+def test_array2missing():
+    missingcode = 0
+    vals = np.array([0,1,0,0,1,0,2], dtype=np.uint)
+    assert SparseAlleles._array2missing(vals, missingcode) == [0, 2, 3, 5]
+
+def test_array2nonref():
+    refcode = 0 
+    vals = np.array([0,1,0,0,1,0,2], dtype=np.uint)
+    o = SparseAlleles._array2nonref(vals, refcode)
+    assert o == {1:1, 4:1, 6:2}

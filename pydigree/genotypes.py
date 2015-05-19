@@ -61,16 +61,19 @@ class SparseAlleles(object):
         data = np.array(data)
         self.dtype = data.dtype
         self.size = data.shape[0]
-        self.non_refalleles = self.__array2nonref(data)
-        self.missingindices = self.__array2missing(data)
-
-    def __array2nonref(self, data):
+        
         refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
+        self.non_refalleles = self._array2nonref(data, refcode)
+        self.missingindices = self._array2missing(data, self.missingcode)
+
+    @staticmethod
+    def _array2nonref(data, refcode):
         return {i: x for i, x in enumerate(data)
                 if x != refcode and x != ''}
 
-    def __array2missing(self, data):
-        return [i for i, x in enumerate(data) if x == self.missingcode]
+    @staticmethod
+    def _array2missing(data, missingcode):
+        return [i for i, x in enumerate(data) if x == missingcode]
 
     @property
     def missingcode(self):
