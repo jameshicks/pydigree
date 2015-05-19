@@ -84,6 +84,24 @@ class SparseGenotypedChromosome(object):
         return base
 
     def __eq__(self, other):
+        if isinstance(other, SparseGenotypedChromosome):
+            return self.__speq__(other)
+        elif isinstance(other, GenotypedChromosome):
+            return (self.todense() == other)
+        elif np.issubdtype(type(other), self.dtype):
+            if self.template is None:
+                raise ValueError('Trying to compare values to sparse without reference')
+            
+            eq = np.array(self.template.reference, dtype=self.dtype) == other
+            neq_altsites = [k for k, v in self.non_refalleles if k != other]
+            eq_altsites = [k for k, v in self.non_refalleles if k == other]
+            eq[neq_altsites] = False
+            eq[eq_altsites] = True
+            return eq
+        else:
+            raise ValueError('Uncomparable types: {} and {}'.format(self.dtype, type(other)))
+
+    def __speq__(self, other):
         if self.size != other.size:
             raise ValueError('Trying to compare different-sized chromosomes')
 
