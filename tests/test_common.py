@@ -7,7 +7,7 @@ import numpy as np
 def test_product():
     assert product([1,2,3,4,5]) == 120
     assert product([0,1,2,3,4]) ==  0
-
+    assert product([]) == 1
 
 def test_cumsums():
     assert cumsum([]) == []

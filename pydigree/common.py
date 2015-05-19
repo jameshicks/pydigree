@@ -72,6 +72,9 @@ def product(iter):
     multiplication instead of addition.
     """
     # This should really be a python builtiin
+    if not iter:
+        # sum([]) returns 0, so this will return 1
+        return 1
     return reduce(multiply, iter)
 
 
