@@ -34,6 +34,12 @@ def test_runs():
     assert runs_gte(i, 1) == []
     assert runs_gte_uint8(np.uint8(i),1) == []
 
+    i = [1] * 100
+    ir = [(0,99)]
+    assert runs(i, lambda x: x>0) == ir
+    assert runs_gte(i, 1) == ir
+    assert runs_gte_uint8(np.array(i, dtype=np.uint8), 1) == ir
+
 def test_flatten():
     assert list(flatten([1,2,2,3,4,4,5])) == [1,2,2,3,4,4,5]
     assert list(flatten([(1,2),2,3,(4,4,5)])) == [1,2,2,3,4,4,5]
