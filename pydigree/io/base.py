@@ -7,7 +7,7 @@ from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
-from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome
+from pydigree.genotypes import Alleles, SparseAlleles
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
@@ -150,11 +150,11 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', spars
     ------
     chromosomes: A list of ChromosomeTemplate objects corresponding to the genotypes
     data: The alleles to be turned into genotypes
-    sparse: Return SparseGenotypedChromosomes instead of non-sparse
+    sparse: Return SparseAlleless instead of non-sparse
 
-    Returns: A list of 2-tuples of GenotypedChromosome objects
+    Returns: A list of 2-tuples of Alleles objects
     '''
-    Chromobj = SparseGenotypedChromosome if sparse else GenotypedChromosome
+    Chromobj = SparseAlleles if sparse else Alleles
 
     genotypes = []
 

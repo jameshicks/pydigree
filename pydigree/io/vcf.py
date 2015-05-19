@@ -141,8 +141,8 @@ def sparse_genotypes_from_vcf_alleles(chromosomes, data, missing_code='.'):
     start = 0
     for i, size in enumerate(sizes):
         stop = start + size
-        chroma = SparseGenotypedChromosome(strand_a[start:stop])
-        chromb = SparseGenotypedChromosome(strand_b[start:stop])
+        chroma = SparseAlleles(strand_a[start:stop])
+        chromb = SparseAlleles(strand_b[start:stop])
 
         genotypes.append((chroma, chromb))
         start += size

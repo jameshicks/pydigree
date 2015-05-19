@@ -3,7 +3,7 @@ import os
 
 from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.io import read_plink, read_vcf
-from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome, ChromosomeTemplate
+from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 
 def blank_chromosome(size=2):
     ch = ChromosomeTemplate()
@@ -18,8 +18,8 @@ def test_seqalleles():
     spgts = genotypes_from_sequential_alleles(chroms, seqalleles, sparse=True)
     
     # Test to make sure the types returned are correct
-    assert all(type(x) is GenotypedChromosome for x in chain.from_iterable(gts))
-    assert all(type(x) is SparseGenotypedChromosome for x in chain.from_iterable(spgts))
+    assert all(type(x) is Alleles for x in chain.from_iterable(gts))
+    assert all(type(x) is SparseAlleles for x in chain.from_iterable(spgts))
 
     # Test to make sure the values are correct
     assert (gts[0][0] == ['1','1']).all()

@@ -1,5 +1,5 @@
 from pydigree.ibs import ibs, chromwide_ibs
-from pydigree.genotypes import GenotypedChromosome, SparseGenotypedChromosome
+from pydigree.genotypes import Alleles, SparseAlleles
 
 import numpy as np
 
@@ -17,12 +17,12 @@ def test_chromwide_ibs():
     g1 = [(2,2), (1,2), (1,2), (1,1), (0, 0)]
     g2 = [(2,2), (1,2), (2,2), (2,2), (1, 1)]
 
-    a, b = [GenotypedChromosome(x) for x in zip(*g1)]
-    c, d = [GenotypedChromosome(x) for x in zip(*g2)]
+    a, b = [Alleles(x) for x in zip(*g1)]
+    c, d = [Alleles(x) for x in zip(*g2)]
 
     expected = np.array([2,2,1,0,64])
     assert (chromwide_ibs(a,b,c,d) == expected).all()
 
-    spa, spb = [SparseGenotypedChromosome(x) for x in zip(*g1)]
-    spc, spd = [SparseGenotypedChromosome(x) for x in zip(*g2)]
+    spa, spb = [SparseAlleles(x) for x in zip(*g1)]
+    spc, spd = [SparseAlleles(x) for x in zip(*g2)]
     assert (chromwide_ibs(spa, spb, spc, spd) == expected).all()

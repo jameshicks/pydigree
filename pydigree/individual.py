@@ -7,7 +7,7 @@ from itertools import izip
 from pydigree.recombination import recombine
 from pydigree.paths import *
 from pydigree.common import *
-from pydigree.genotypes import GenotypedChromosome
+from pydigree.genotypes import Alleles
 from pydigree._pydigree import chromatid_delabeler
 from pydigree.exceptions import IterationError
 
@@ -191,7 +191,7 @@ class Individual(object):
         haplab_A = (self, 0)
         haplab_B = (self, 1)
 
-        g = [(GenotypedChromosome((haplab_A) * len(x.genetic_map)), GenotypedChromosome((haplab_B) * len(x.genetic_map)))
+        g = [(Alleles((haplab_A) * len(x.genetic_map)), Alleles((haplab_B) * len(x.genetic_map)))
              for x in self.chromosomes]
         self.genotypes = g
 

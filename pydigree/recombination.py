@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from bisect import bisect_left
-from pydigree.genotypes import GenotypedChromosome
+from pydigree.genotypes import Alleles
 
 import numpy as np
 
@@ -26,7 +26,7 @@ def _recombine_haldane(chr1, chr2, map):
     maxmap = map[-1]
     nmark = len(map)
 
-    newchrom = GenotypedChromosome(np.empty(nmark, dtype=np.uint8))
+    newchrom = Alleles(np.empty(nmark, dtype=np.uint8))
     # Randomly pick a chromosome to start from
     # np.random.randint works on a half open interval, so the upper bound
     # specified is 2. We'll get zeros and ones out of it.

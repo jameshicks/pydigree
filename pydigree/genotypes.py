@@ -6,7 +6,7 @@ from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 
 
-class GenotypedChromosome(np.ndarray):
+class Alleles(np.ndarray):
 
     ''' A class for holding genotypes '''
     def __new__(cls, data, template=None):
@@ -42,12 +42,12 @@ class GenotypedChromosome(np.ndarray):
     def nmark(self):
         '''
         Return the number of markers represented by the
-        GenotypedChromosome object
+        Alleles object
         '''
         return self.shape[0]
 
 
-class SparseGenotypedChromosome(object):
+class SparseAlleles(object):
 
     '''
     An object representing a set of haploid genotypes efficiently by 
@@ -84,9 +84,9 @@ class SparseGenotypedChromosome(object):
         return base
 
     def __eq__(self, other):
-        if isinstance(other, SparseGenotypedChromosome):
+        if isinstance(other, SparseAlleles):
             return self.__speq__(other)
-        elif isinstance(other, GenotypedChromosome):
+        elif isinstance(other, Alleles):
             return (self.todense() == other)
         elif np.issubdtype(type(other), self.dtype):
             if self.template is None:
@@ -105,7 +105,7 @@ class SparseGenotypedChromosome(object):
         if self.size != other.size:
             raise ValueError('Trying to compare different-sized chromosomes')
 
-        # SparseGenotypedChromosome saves differences from a reference,
+        # SparseAlleles saves differences from a reference,
         # so all reference sites are equal, and we mark everything True
         # to start, and go through and set any differences to False
         base = np.ones(self.size, dtype=np.bool_)
@@ -127,14 +127,14 @@ class SparseGenotypedChromosome(object):
     def nmark(self):
         '''
         Return the number of markers (both reference and non-reference)
-        represented by the SparseGenotypedChromosome object
+        represented by the SparseAlleles object
         '''
         return self.size
 
     def todense(self):
         '''
         Returns a non-sparse GenotypeChromosome equivalent
-        to a SparseGenotypedChromosome object.
+        to a SparseAlleles object.
         '''
 
         arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
@@ -143,7 +143,7 @@ class SparseGenotypedChromosome(object):
 
         arr[self.missing] = self.missingcode
 
-        return GenotypedChromosome(arr, template=self.template)
+        return Alleles(arr, template=self.template)
 
 
 class ChromosomeTemplate(object):
@@ -220,7 +220,7 @@ class ChromosomeTemplate(object):
         self.frequencies[position] = frequency
 
     def empty_chromosome(self, dtype=np.uint8):
-        return GenotypedChromosome(np.zeros(self.nmark(), dtype=dtype))
+        return Alleles(np.zeros(self.nmark(), dtype=dtype))
 
     def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
@@ -228,10 +228,10 @@ class ChromosomeTemplate(object):
             raise ValueError('Not all frequencies are specified')
         r = np.random.random(self.nmark())
         r = np.array(r > self.frequencies, dtype=np.uint8) + 1
-        return GenotypedChromosome(r)
+        return Alleles(r)
 
     def linkageequilibrium_chromosomes(self, nchrom):
         """ Returns a numpy array of many randomly generated chromosomes """
         chroms = np.random.random((nchrom, self.nmark()))
         chroms = np.uint8((chroms > self.frequencies) + 1)
-        return [GenotypedChromosome(r) for r in chroms]
+        return [Alleles(r) for r in chroms]

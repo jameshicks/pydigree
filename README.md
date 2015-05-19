@@ -21,6 +21,8 @@ Classes
  * `Pedigree`: A special case of Population for related individuals. Implements kinship/inbreeding functions
 * `PedigreeCollection`: A container class handling multiple pedigrees
 * `ChromosomeTemplate`: Models a chromosome with information on allele frequency and marker position
+* `Alleles`: Stores a haploid set of alleles
+ * `SparseAlleles`: Stores a haploid set of alleles as differences from a reference
 * `MixedModel`: A class for fitting mixed-effect models with related individuals
 * `Architecture`: A class describing the genetic architecture for a trait to be used in simulation
 * `Simulation`: A base class from which other simulation objects inherit

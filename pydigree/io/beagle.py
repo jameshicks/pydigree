@@ -3,7 +3,7 @@ import numpy as np
 from itertools import izip
 
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate, GenotypedChromosome
+from pydigree.genotypes import ChromosomeTemplate, Alleles
 from pydigree.io import smartopen as open
 from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
