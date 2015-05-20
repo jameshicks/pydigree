@@ -126,25 +126,3 @@ def vcf_allele_parser(genotype):
     else:
         return genotype.split('/' if '/' in genotype else '|')
 
-
-def sparse_genotypes_from_vcf_alleles(chromosomes, data, missing_code='.'):
-    genotypes = []
-
-    data = np.array(data)
-    data[data == missing_code] = ''
-
-    strand_a = data[0::2]
-    strand_b = data[1::2]
-
-    sizes = [x.nmark() for x in chromosomes]
-
-    start = 0
-    for i, size in enumerate(sizes):
-        stop = start + size
-        chroma = SparseAlleles(strand_a[start:stop])
-        chromb = SparseAlleles(strand_b[start:stop])
-
-        genotypes.append((chroma, chromb))
-        start += size
-
-    return genotypes
