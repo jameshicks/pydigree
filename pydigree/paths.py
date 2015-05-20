@@ -112,6 +112,10 @@ def kinship(ind1, ind2):
     if ind1 is None or ind2 is None:
         return 0
 
+    # Kinship with yourself (or a clone of you) is 1/2
+    if ind1 == ind2:
+        return 0.5
+
     # The most common edge case is when both individuals are founders.
     # In that scenario, the inds are unrelated by definition (or else
     # they wouldn't be founders, right?). So we'll return 0 right away.
