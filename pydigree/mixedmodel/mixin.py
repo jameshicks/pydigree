@@ -9,7 +9,7 @@ from scipy.sparse import issparse
 from scipy.sparse.linalg import inv as spinv
 
 
-class MixedModelMixin(Object):
+class MixedModelMixin(object):
 
     def __getmatrix(self, mtype):
         if mtype == 'additive':
