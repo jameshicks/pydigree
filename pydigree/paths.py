@@ -149,6 +149,8 @@ def fraternity(ind1, ind2):
     where x_m represents the mother of x, etc. and k(x,y) represents the
     Malecot kinship between x and y.
     """
+    if ind1 is None or ind2 is None:
+        return 0
     if ind1.is_founder() and ind2.is_founder():
         return 0
     a = kinship(ind1.mother, ind2.mother) * kinship(ind1.father, ind2.father)
