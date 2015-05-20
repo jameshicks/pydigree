@@ -1,9 +1,16 @@
 from pydigree.common import product, cumsum, flatten, invert_dict
+from pydigree.common import count, grouper
 from pydigree.common import runs, runs_gte
 from pydigree.cyfuncs import runs_gte_uint8
 
 import numpy as np
 
+def test_count():
+    assert count(1, [0,0,0,1,1,1,0,0,0]) == 3
+    assert count(1, [0]*10) == 0
+    assert count('a', 'abba') == 2
+    assert count(1, []) == 0
+    
 def test_product():
     assert product([1,2,3,4,5]) == 120
     assert product([0,1,2,3,4]) ==  0
@@ -12,6 +19,14 @@ def test_product():
 def test_cumsums():
     assert cumsum([]) == []
     assert cumsum([1,2,3]) == [1,3,6]
+
+def test_grouper():
+    groups = list(grouper([1,2]*100, 2))
+    assert all(len(x) == 2 for x in groups)
+    assert all(x == (1,2) for x in groups)
+
+    groups = list(grouper([1,2]*100 + [1], 2))
+    assert groups[-1] == (1, None)
 
 def test_runs():
     dregion = (10,20)
