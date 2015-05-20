@@ -36,7 +36,6 @@ class BeagleGenotypeRecord(object):
         self.label = l[1]
         self.data = l[2:]
 
-    @profile
     def is_phenotype_record(self):
         return self.identifier in 'ACT'
 
