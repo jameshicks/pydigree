@@ -124,5 +124,5 @@ def vcf_allele_parser(genotype):
     if len(genotype) == 3:
         return genotype[0], genotype[2]
     else:
-        return genotype.split('/' if '/' in genotype else '|')
+        return tuple(genotype.split('/' if '/' in genotype else '|'))
 

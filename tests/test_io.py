@@ -3,6 +3,7 @@ from itertools import chain
 import os
 
 from pydigree.io.base import genotypes_from_sequential_alleles
+from pydigree.io.vcf import vcf_allele_parser
 from pydigree.io import read_plink, read_vcf
 from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 
@@ -81,3 +82,12 @@ def test_vcf():
     # Test for FILTER == PASS
     pop = read_vcf(testvcf, minqual=0, require_pass=True)
     assert pop.chromosomes[1].nmark() == 6
+
+def test_vcf_alleleparser():
+    assert vcf_allele_parser('./.') == ('.', '.')
+    assert vcf_allele_parser('1/1') == ('1', '1')
+    assert vcf_allele_parser('2/1') == ('2', '1')
+    assert vcf_allele_parser('1|2') == ('1', '2')
+    assert vcf_allele_parser('10/1') == ('10', '1')
+    assert vcf_allele_parser('1|10') == ('1', '10')
+    assert vcf_allele_parser('10/10') == ('10','10')
