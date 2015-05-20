@@ -161,7 +161,7 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', spars
     data = np.array(data)
     
     if not np.issubdtype(type(missing_code), data.dtype):
-        raise ValueError('Invalid type for missing code: {}. Expected: {}'.format([type(missing_code), data.dtype]))
+        raise ValueError('Invalid type for missing code: {}. Expected: {}'.format(type(missing_code), data.dtype))
 
     if np.issubdtype(data.dtype, str):
         data[data == missing_code] = ''

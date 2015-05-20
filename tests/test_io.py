@@ -1,3 +1,4 @@
+from nose.tools import raises
 from itertools import chain
 import os
 
@@ -26,6 +27,13 @@ def test_seqalleles():
     assert (gts[0][1] == ['2','1']).all()
     assert (gts[1][0] == ['2','2']).all()
     assert (gts[1][1] == ['2','1']).all()
+
+@raises(ValueError)
+def test_seqalleles_raiseforbadmissingval():
+    chroms = [blank_chromosome(2) for x in xrange(2)]
+    seqalleles = '1 2 1 1 2 2 2 1'.split()
+    gts = genotypes_from_sequential_alleles(chroms, seqalleles, missing_code=0)
+
 
 def test_plink():
     plinkped = os.path.join('test_data', 'plink_test.ped')
