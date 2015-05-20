@@ -1,3 +1,4 @@
+from nose.tools import assert_raises
 from pydigree.ibs import ibs, chromwide_ibs
 from pydigree.genotypes import Alleles, SparseAlleles
 
@@ -26,3 +27,8 @@ def test_chromwide_ibs():
     spa, spb = [SparseAlleles(x) for x in zip(*g1)]
     spc, spd = [SparseAlleles(x) for x in zip(*g2)]
     assert (chromwide_ibs(spa, spb, spc, spd) == expected).all()
+
+    # Test assertions
+    assert_raises(ValueError, chromwide_ibs, a, b, c, d, missingval=600)
+    assert_raises(ValueError, chromwide_ibs, a, b, c, d, missingval=-1)
+    
