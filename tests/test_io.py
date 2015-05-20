@@ -7,6 +7,8 @@ from pydigree.io.vcf import vcf_allele_parser
 from pydigree.io import read_plink, read_vcf
 from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 
+TESTDATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+
 def blank_chromosome(size=2):
     ch = ChromosomeTemplate()
     for i in xrange(size):
@@ -37,8 +39,8 @@ def test_seqalleles_raiseforbadmissingval():
 
 
 def test_plink():
-    plinkped = os.path.join('test_data', 'plink_test.ped')
-    plinkmap = os.path.join('test_data', 'plink_test.map')
+    plinkped = os.path.join(TESTDATA_DIR, 'plink_test.ped')
+    plinkmap = os.path.join(TESTDATA_DIR, 'plink_test.map')
     
     peds = read_plink(pedfile=plinkped, mapfile=plinkmap)
     assert len(peds.chromosomes) == 2
@@ -61,7 +63,7 @@ def test_plink():
     assert (peds['1','1'].genotypes[1][0].missing == [False, True]).all()
 
 def test_vcf():
-    testvcf = os.path.join('test_data', 'test.vcf')
+    testvcf = os.path.join(TESTDATA_DIR, 'test.vcf')
     
     pop = read_vcf(testvcf, minqual=0)
     assert len(pop.individuals) == 3
@@ -91,3 +93,4 @@ def test_vcf_alleleparser():
     assert vcf_allele_parser('10/1') == ('10', '1')
     assert vcf_allele_parser('1|10') == ('1', '10')
     assert vcf_allele_parser('10/10') == ('10','10')
+
