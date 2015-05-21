@@ -54,6 +54,17 @@ def test_recursivefraternity():
     ped = peds['half_sibs']
     assert ped.fraternity('4', '5') == 0
 
+def test_inbreeding():
+    peds = getpeds()
+    ped = peds['first_cousin_child']
+    assert ped.inbreeding('9') == 1/16
+    # Everyone else is outbred
+    for x in ped.individuals:
+        if x.id == '9':
+            continue
+        assert ped.inbreeding(x.id) == 0
+
+
 @raises(NotImplementedError)
 def test_ld():
     ped = Pedigree()
