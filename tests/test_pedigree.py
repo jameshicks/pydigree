@@ -1,20 +1,11 @@
 from __future__ import division
 
+from pydigree.pedigree import Pedigree
 from nose.tools import raises
-
-import os
-import glob
-from pydigree.io import read_ped
-
-PEDDIR = os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', 'sample_pedigrees'))
-peds = {}
-for filename in glob.glob(PEDDIR + '/*ped'):
-    ped = list(read_ped(filename).pedigrees.values())[0]
-    pedname = os.path.basename(filename)[:-4]
-    peds[pedname] = ped
-
+from testsupport import getpeds
 
 def test_recursivekinship():
+    peds = getpeds()
     ped = peds['fullsib']
     
     # Self
@@ -40,7 +31,7 @@ def test_recursivekinship():
     assert ped.kinship('4', '5') == 1/8 
 
 def test_recursivefraternity():
-    from pydigree.paths import fraternity
+    peds = getpeds()
     ped = peds['fullsib']
 
     # Unrelated founders                                                                                                                                                                                                                                                                   
@@ -65,4 +56,5 @@ def test_recursivefraternity():
 
 @raises(NotImplementedError)
 def test_ld():
+    ped = Pedigree()
     ped.ld()

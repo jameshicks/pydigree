@@ -3,16 +3,12 @@ from __future__ import division
 import os
 import glob
 from pydigree.io import read_ped
+from testsupport import getpeds
 
-PEDDIR = os.path.abspath(os.path.join(os.path.abspath(__file__), '..', '..', 'sample_pedigrees'))
-peds = {}
-for filename in glob.glob(PEDDIR + '/*ped'):
-    ped = list(read_ped(filename).pedigrees.values())[0]
-    pedname = os.path.basename(filename)[:-4]
-    peds[pedname] = ped
 
 def test_commonancestors():
     from pydigree.paths import common_ancestors
+    peds = getpeds()
     ped = peds['fullsib']
     # Two founders have no common ancestors
     assert common_ancestors(ped['1'], ped['2']) == set()
@@ -29,6 +25,7 @@ def test_commonancestors():
 
 def test_pathkinship():
     from pydigree.paths import kinship
+    peds = getpeds()
     ped = peds['fullsib']
     
     # None should return 0
@@ -57,6 +54,7 @@ def test_pathkinship():
 
 def test_pathfraternity():
     from pydigree.paths import fraternity
+    peds = getpeds()
     ped = peds['fullsib']
 
     # None should return 0                                                                                                                                                                                                                                                                 
