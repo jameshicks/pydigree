@@ -301,7 +301,10 @@ class Population(MutableMapping):
         """
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
-        return sorted(freqtab.keys(), key=lambda x: freqtab[x])[0]
+        # Reverse sort the table by the count of alleles, and return the first
+        # item's first item (i.e. the allele label)
+        return sorted(freqtab.items(), key=lambda x: x[1], reverse=True)[0][0]
+
 
     def haplotype_frequency(self, *args):
         matches = {x for x in self if
