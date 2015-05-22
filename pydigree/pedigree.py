@@ -96,10 +96,10 @@ class Pedigree(Population):
         # I define these functions to get parents for IDs by looking them
         # up in the pedigree
         def fa(id):
-            return self[id].father.id if self[id].father is not None else None
+            return self[id].father.label if self[id].father is not None else None
 
         def mo(id):
-            return self[id].mother.id if self[id].mother is not None else None
+            return self[id].mother.label if self[id].mother is not None else None
 
         # Use tuples here to take advantage of the implicit tuple ordering
         # With depth as the first item, it assures that descendants aren't
@@ -147,7 +147,7 @@ class Pedigree(Population):
             return 0.0
         if ind.father.is_founder() or ind.mother.is_founder():
             return 0.0
-        return self.kinship(ind.father.id, ind.mother.id)
+        return self.kinship(ind.father.label, ind.mother.label)
 
     def additive_relationship_matrix(self, ids=None):
         """
@@ -165,12 +165,12 @@ class Pedigree(Population):
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try
-        sorted(x.id for x in ped) to see the ordering.
+        sorted(x.label for x in ped) to see the ordering.
 
         Returns: a numpy matrix
         """
         if not ids:
-            ids = sorted(x.id for x in self)
+            ids = sorted(x.label for x in self)
         mat = []
         for a in ids:
             row = []
@@ -196,12 +196,12 @@ class Pedigree(Population):
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try
-        sorted(x.id for x in ped) to see the ordering.
+        sorted(x.label for x in ped) to see the ordering.
 
         Returns: A numpy matrix
         """
         if not ids:
-            ids = sorted(x.id for x in self)
+            ids = sorted(x.label for x in self)
         mat = []
         for a in ids:
             row = []
@@ -244,7 +244,7 @@ class Pedigree(Population):
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try
-        sorted(x.id for x in ped) to see the ordering.
+        sorted(x.label for x in ped) to see the ordering.
 
         Returns: A numpy matrix
 
@@ -253,7 +253,7 @@ class Pedigree(Population):
         Pedigree Data". Genetic Epidemiology. (2013). 37,3:239-247
         """
         if not ids:
-            inds = sorted((x for x in self), key=lambda x: x.id)
+            inds = sorted((x for x in self), key=lambda x: x.label)
         else:
             inds = [self[id] for id in ids]
         mat = []

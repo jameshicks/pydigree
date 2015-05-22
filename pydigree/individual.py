@@ -20,16 +20,16 @@ def is_missing_genotype(g):
 
 class Individual(object):
 
-    def __init__(self, population, id, father=None, mother=None, sex=None):
+    def __init__(self, population, label, father=None, mother=None, sex=None):
         # Every individual is observed within a population with certain
         # genotypes available. This makes recombination book-keeping easier.
         self.population = population
         if id:
-            self.id = id
+            self.label = label
         elif id is None and self.population:
-            self.id = self.population.random_identifier().next()
+            self.label = self.population.random_identifier().next()
         else:
-            self.id = None
+            self.label = None
         self.father = father
         self.mother = mother
         self.sex = sex  # 0:M 1:F
@@ -48,13 +48,13 @@ class Individual(object):
     def __str__(self):
         try:
             if self.is_founder():
-                return 'Individual %s (FOUNDER)' % self.id
+                return 'Individual %s (FOUNDER)' % self.label
             else:
-                return 'Individual %s (F:%s,M:%s)' % (self.id,
-                                                      self.father.id,
-                                                      self.mother.id)
+                return 'Individual %s (F:%s,M:%s)' % (self.label,
+                                                      self.father.label,
+                                                      self.mother.label)
         except AttributeError:
-            return 'Individual %s (Unlinked)' % self.id
+            return 'Individual %s (Unlinked)' % self.label
 
     def __repr__(self):
         return self.__str__()
@@ -71,7 +71,7 @@ class Individual(object):
     @property
     def full_label(self):
         ''' Returns a 2-tuple of pedigree label and individual label '''
-        return (self.population.label, self.id)
+        return (self.population.label, self.label)
 
     # Functions about genotypes
     #
@@ -118,7 +118,7 @@ class Individual(object):
             return
         if self.is_founder() and self.population is None:
             raise ValueError('Founder ind %s has no population!'
-                             % (self.id))
+                             % (self.label))
         if self.is_founder():
             pop = self.population
             if linkeq:
@@ -275,7 +275,7 @@ class Individual(object):
         doi: 10.1007/s00439-011-1060-3. Epub 2011 Jul 13.
         """
         if self.is_founder():
-            return self.id
+            return self.label
         else:
             return self.mother.matriline()
 
@@ -288,7 +288,7 @@ class Individual(object):
         Analagous to individual.matriline.
         """
         if self.is_founder():
-            return self.id
+            return self.label
         else:
             return self.father.patriline()
 

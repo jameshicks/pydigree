@@ -47,12 +47,12 @@ class PedigreeCollection(MutableMapping):
         '''
         inds = []
         for pedigree in sorted(self, key=lambda x: x.label):
-            inds.extend(sorted((x for x in pedigree), key=lambda x: x.id))
+            inds.extend(sorted((x for x in pedigree), key=lambda x: x.label))
         return inds
 
     def _getindividual(self, label):
         for x in self.individuals:
-            if x.id == label:
+            if x.label == label:
                 return x
         raise KeyError('Individual not in collection')
 

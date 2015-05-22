@@ -79,7 +79,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     for ind in p:
         if not connect_inds:
             continue
-        fam, id = ind.id
+        fam, id = ind.label
         # Actually make the references instead of just pointing at strings
         ind.father = p[(fam, ind.father)] if ind.father != '0' else None
         ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
@@ -87,15 +87,15 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         ind.register_with_parents()
 
     # Place individuals into pedigrees
-    for pedigree_label in set(ind.id[0] for ind in p):
+    for pedigree_label in set(ind.label[0] for ind in p):
         ped = Pedigree(label=pedigree_label)
         if callable(population_handler):
             population_handler(ped)
 
-        thisped = [x for x in p if x.id[0] == pedigree_label]
+        thisped = [x for x in p if x.label[0] == pedigree_label]
         for ind in thisped:
-            ind.id = ind.id[1]
-            ped[ind.id] = ind
+            ind.label = ind.label[1]
+            ped[ind.label] = ind
             ind.population = ped
             ind.pedigree = ped
         pc[pedigree_label] = ped

@@ -62,7 +62,7 @@ class Simulation(object):
                             ibd = [ibs(g1, g2)
                                    for g1, g2 in izip(genos1, genos2)]
                         identical.extend(ibd)
-                    outline = [ped.label, ind1.id, ind2.id] + identical
+                    outline = [ped.label, ind1.label, ind2.label] + identical
                     outline = ' '.join([str(x) for x in outline])
                     of.write('{}\n'.format(outline))
 

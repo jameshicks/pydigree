@@ -152,9 +152,9 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
                 # Get the phenotype code
                 aff = afflab[ind.phenotypes['affected']]
                 # Prepare the 6-column identifier
-                outline = [pedigree.label, ind.id,
-                           ind.father.id if ind.father is not None else '0',
-                           ind.mother.id if ind.mother is not None else '0',
+                outline = [pedigree.label, ind.label,
+                           ind.father.label if ind.father is not None else '0',
+                           ind.mother.label if ind.mother is not None else '0',
                            1 if ind.sex == 0 else 2,
                            aff]
                 # Get the genotypes in the format we need them

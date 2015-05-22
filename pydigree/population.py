@@ -92,13 +92,13 @@ class Population(MutableMapping):
     #
     def register_individual(self, ind):
         ''' Adds an individual to the population '''
-        if ind.id in self.population:
-            raise ValueError('ID %s already in population!' % ind.id)
-        self.population[ind.id] = ind
+        if ind.label in self.population:
+            raise ValueError('ID %s already in population!' % ind.label)
+        self.population[ind.label] = ind
 
     def remove_individual(self, ind):
         ''' Removes an individual from the population '''
-        del self[ind.id]
+        del self[ind.label]
 
     def random_identifier(self):
         idx = 0
@@ -119,8 +119,8 @@ class Population(MutableMapping):
         self.chromosomes = other.chromosomes
         self.clear_genotypes()
 
-        selfids = {x.id for x in self}
-        otherids = {x.id for x in other.individuals}
+        selfids = {x.label for x in self}
+        otherids = {x.label for x in other.individuals}
         overlap = set.intersection(selfids, otherids)
 
         if not overlap:
@@ -186,7 +186,7 @@ class Population(MutableMapping):
         newpop = {}
         for i in xrange(gensize):
             newind = rand_mate(self, name=i)
-            newpop[newind.id] = newind
+            newpop[newind.label] = newind
         self.population = newpop
 
     def founder_individual(self, register=True, sex=None):

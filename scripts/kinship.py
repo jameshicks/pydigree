@@ -9,7 +9,7 @@ ped = pydigree.io.read_ped(sys.argv[1], pop)
 
 for pedigree in ped:
     lab = pedigree.label
-    ids = sorted([x.id for x in pedigree])
+    ids = sorted([x.label for x in pedigree])
     # itertools combinations with replacement isn't available in 2.6
     # So we'll do this as a two step process
     # 1) Pairwise kinship coefs

@@ -60,9 +60,9 @@ def test_inbreeding():
     assert ped.inbreeding('9') == 1/16
     # Everyone else is outbred
     for x in ped.individuals:
-        if x.id == '9':
+        if x.label == '9':
             continue
-        assert ped.inbreeding(x.id) == 0
+        assert ped.inbreeding(x.label) == 0
 
 
 @raises(NotImplementedError)
