@@ -341,6 +341,7 @@ class Population(MutableMapping):
 
         Returns: a double
         """
+        raise NotImplementedError('LD requires phase known data')
         method = method.lower()
         if method not in set(['r2', 'dprime', 'd']):
             raise ValueError("LD metric must be one of r2, Dprime or D")
@@ -363,9 +364,7 @@ class Population(MutableMapping):
         D = x - p1 * q1
         # All of these metrics are normalizations of D by dividing it by
         # some expression. If D==0 all of them will equal 0.
-        if D == 0:
-            return 0
-        elif method == 'd':
+        if method == 'd':
             return D
         elif method == 'dprime':
             if D > 0:
