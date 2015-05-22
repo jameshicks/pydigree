@@ -144,7 +144,7 @@ class SparseAlleles(object):
 
         return base
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return np.logical_not(self == other)
 
     def nmark(self):

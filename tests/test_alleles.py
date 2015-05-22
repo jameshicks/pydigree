@@ -35,6 +35,7 @@ def test_sparsealleles():
     eq = (a == b)
     assert (eq == np.array([True, False, False, True])).all()
     assert ((a == b.todense()) == np.array([True, False, False, True])).all()
+    assert np.all((a != b) == np.logical_not(eq)) 
 
 def test_alleles_meaninglesscomparisions():
     # Comparsions like >, <, >=, <= aren't meaningful for genotypes
