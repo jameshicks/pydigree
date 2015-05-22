@@ -1,6 +1,7 @@
-from nose.tools import raises
+from nose.tools import raises, assert_raises
 
 from pydigree.genotypes import Alleles, SparseAlleles
+from pydigree.exceptions import NotMeaningfulError
 import numpy as np
 
 def test_alleles():
@@ -34,6 +35,29 @@ def test_sparsealleles():
     eq = (a == b)
     assert (eq == np.array([True, False, False, True])).all()
     assert ((a == b.todense()) == np.array([True, False, False, True])).all()
+
+def test_alleles_meaninglesscomparisions():
+    # Comparsions like >, <, >=, <= aren't meaningful for genotypes
+    a = Alleles(['1', '2', '3', ''])
+    b = Alleles(['1', '3', '2', ''])
+    
+    # Can't test an expression so we make a throwaway function to test
+    assert_raises(NotMeaningfulError, lambda x,y: x < y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x > y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x >= y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x <= y, a, b)
+
+def test_sparsealleles_meaninglesscomparisions():
+    # Comparsions like >, <, >=, <= aren't meaningful for genotypes
+    a = SparseAlleles(['1', '2', '3', ''])
+    b = SparseAlleles(['1', '3', '2', ''])
+    
+    # Can't test an expression so we make a throwaway function to test
+    assert_raises(NotMeaningfulError, lambda x,y: x < y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x > y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x >= y, a, b)
+    assert_raises(NotMeaningfulError, lambda x,y: x <= y, a, b)
+
 
 @raises(ValueError)
 def test_sparse_wrongtypecomparsion():

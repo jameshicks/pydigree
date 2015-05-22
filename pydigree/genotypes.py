@@ -66,6 +66,22 @@ class SparseAlleles(object):
         self.non_refalleles = self._array2nonref(data, refcode)
         self.missingindices = self._array2missing(data, self.missingcode)
 
+    def __lt__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __gt__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __le__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __ge__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
     @staticmethod
     def _array2nonref(data, refcode):
         '''
