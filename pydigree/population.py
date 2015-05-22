@@ -305,12 +305,6 @@ class Population(MutableMapping):
         # item's first item (i.e. the allele label)
         return sorted(freqtab.items(), key=lambda x: x[1], reverse=True)[0][0]
 
-
-    def haplotype_frequency(self, *args):
-        matches = {x for x in self if
-                   all(x.has_allele(loc, allele) for loc, allele in args)}
-        return len(matches) / (2.0 * self.size())
-
     def ld(self, locusa, locusb, allelea=None, alleleb=None, method='r2'):
         """
         Returns a measure of linkage disquilibirum between alleles at two
