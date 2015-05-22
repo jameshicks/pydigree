@@ -66,6 +66,12 @@ def test_sparse_wrongtypecomparsion():
     a == 3
 
 @raises(ValueError)
+def test_sparse_wrongsizecomparision():
+    a = SparseAlleles(['1', '2', '3', ''])
+    b = SparseAlleles(['1', '3'])
+    a == b
+
+@raises(ValueError)
 def test_sparse_norefscalarcomparison():
     a = SparseAlleles(['1', '2', '3', ''])
     a == '3'
