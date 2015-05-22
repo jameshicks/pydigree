@@ -3,7 +3,7 @@
 # Packages we're going to use
 import random
 import math
-
+from itertools import chain
 # Abstract base class for population and pedigree
 from collections import MutableMapping
 
@@ -269,7 +269,7 @@ class Population(MutableMapping):
         if not constraint:
             constraint = lambda x: True
         gen = (x for x in self if constraint(x))
-        alleles = list(flatten(x.get_genotype(location)
+        alleles = list(chain.from_iterable(x.get_genotype(location)
                                for x in gen if x.has_genotypes()))
         return [x for x in alleles if x != 0]
 
