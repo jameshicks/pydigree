@@ -22,11 +22,11 @@ class Alleles(np.ndarray):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
 
-    def __lte__(self, other):
+    def __le__(self, other):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
 
-    def __gte__(self, other):
+    def __ge__(self, other):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
 
