@@ -9,6 +9,16 @@ def test_nshares():
     nmark = 6
     assert all(nshares(affecteds,shared,nmark) == np.array([0, 3, 3, 2, 1, 1], dtype=np.uint16))
 
+    shared = {}
+    affecteds = [1,2,3,4]
+    nmark = 6
+    assert all(nshares(affecteds, shared, 6) == np.zeros(6))
+
+    shared = { frozenset([1,2]): [(1,5), (1,5)]}
+    affecteds = range(1,4)
+    nmark = 6
+    assert all(nshares(affecteds,shared,nmark) == np.array([0, 2, 2, 2, 2, 2], dtype=np.uint16))
+
 def test_makeintervals():
 	assert make_intervals([0]*1000) == []
 	assert make_intervals([1]*1000) == [(0,999)]
