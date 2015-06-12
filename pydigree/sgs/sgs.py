@@ -193,6 +193,7 @@ def join_gaps(seq, max_gap=1):
 
 
 def make_intervals(ibdarray):
+    ibdarray = np.array(ibdarray, dtype=np.uint8)
     ibdarray = ibdarray.copy()
     # Get the intervals that are IBD=2 and remove them from the array
     ibd2_tracts = [x for x in runs_gte_uint8(ibdarray, 2)]
