@@ -64,6 +64,15 @@ peds.add_chromosome(c)
 
 nulldist = {}
 
+naff = sum(1 for ind in peds.individuals if ind.phenotypes['affected'])
+print '{} affecteds'.format(naff)
+if args.remove_mif:
+    for ind in peds.individuals:
+        if ind.is_marryin_founder(): 
+            ind.phenotypes['affected'] = False
+    naff = sum(1 for ind in peds.individuals if ind.phenotypes['affected'])
+    print '{} affecteds after removing marry-in founders'.format(naff)
+
 for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     if args.onlypeds and ped.label not in args.onlypeds:
         continue
@@ -75,11 +84,7 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
 
 
     affs = {x for x in ped if x.phenotypes['affected']}
-    if args.remove_mif:
-        for ind in affs.copy():
-            if ind.is_marryin_founder():
-                print 'WARNING: affected individual {}:{} is a married-in founder and was removed from analysis'.format(ind.population.label, ind)
-                affs.remove(ind)
+
 
     if len(affs) < 2:
         print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
