@@ -87,6 +87,16 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
             shared[pair].append(shares)
     return shared
 
+def sgs_autozygous(ind, chromosome_idx, seed_size=500, phaseknown=False, min_length=1,
+                   size_unit='mb', min_density=100, maxmiss=0.25):
+    chromosome = ind.chromosomes[chromosome_idx] 
+    hapa, hapb = ind.genotypes[chromosome_idx]
+    homozygous = (hapa == hapb).astype(np.uint8)
+    autozygous_segs = list(_process_segments(homozygous, min_seg=seed_size,
+                                       min_val=1, chromobj=chromosome,
+                                       min_length=min_length, size_unit=size_unit,
+                                       min_density=min_density, maxmiss=0.25))
+    return [Segment(ind, ind, chromosome, start, stop) for start, stop in autozygous_segs]
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                  min_length=1, size_unit='mb', min_density=100,
