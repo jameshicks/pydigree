@@ -49,6 +49,11 @@ class VCFRecord(object):
 
         return [get_gt(x) for x in self.data]
 
+    def getitems(self, item):
+        format = self.format.split(':')
+        idx = format.index(item)
+        return [x.split(':')[idx] for x in self.data]
+
 
 def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
              ind_minqual=20, ind_mindepth=9, geno_missrate=0):
