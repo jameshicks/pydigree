@@ -66,6 +66,7 @@ nulldist = {}
 
 naff = sum(1 for ind in peds.individuals if ind.phenotypes['affected'])
 print '{} affecteds'.format(naff)
+
 if args.remove_mif:
     for ind in peds.individuals:
         if ind.is_marryin_founder(): 
@@ -81,15 +82,11 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     # Clear the genotypes, if present
     ped.clear_genotypes()
 
-
-
     affs = {x for x in ped if x.phenotypes['affected']}
-
 
     if len(affs) < 2:
         print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
         continue
-    
 
     print "Pedigree %s (%s/%s), %s affecteds, %s bits, %s simulations" % (ped.label, i+1, len(peds), len(affs), ped.bit_size(),  args.niter)
 
