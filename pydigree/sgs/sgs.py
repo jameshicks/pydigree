@@ -1,4 +1,4 @@
-from itertools import izip, combinations
+from itertools import izip, combinations, product
 
 import numpy as np
 
@@ -179,6 +179,24 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0,
 
     return [seg for seg in intervals if meets_criteria(seg)]
 
+
+def ibd_state(shared, ind1, ind2, locus):
+    ''' Gets the IBD state between two individuals at a locus '''
+    pair = frozenset([ind1, ind2])
+    if pair not in shared:
+        return 0
+    ibd = sum(1 for start, stop in shared[pair] if start <= locus <= (stop+1))
+    return ibd
+
+
+def ibd_matrix(shared, individuals, locus):
+    nind = len(individuals)
+    mat = []
+    for ind1 in individuals:
+        row = [ibd_state(shared, ind1, ind2, locus) for ind2 in individuals]
+        mat.append(row)
+    mat = np.matrix(mat, dtype=np.uint8)
+    return mat
 
 # Support functions
 def join_gaps(seq, max_gap=1):
