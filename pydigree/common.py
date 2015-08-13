@@ -64,6 +64,12 @@ def invert_dict(d):
     """
     return dict((y, x) for x, y in d.items())
 
+def merge_dicts(*args):
+    ''' Merges two dictionaries into one bigger one '''
+    odict = {}
+    for d in args:
+        odict.update(d)
+    return odict
 
 # Common stats/math functions
 def product(iter):

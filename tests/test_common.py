@@ -1,4 +1,4 @@
-from pydigree.common import product, cumsum, flatten, invert_dict
+from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper
 from pydigree.common import runs, runs_gte
 from pydigree.cyfuncs import runs_gte_uint8
@@ -60,6 +60,11 @@ def test_flatten():
     assert list(flatten([(1,2),2,3,(4,4,5)])) == [1,2,2,3,4,4,5]
     assert list(flatten([(1,(2,(2,(3,4)))),4,5])) == [1,2,2,3,4,4,5]
     assert list(flatten([])) == []
+
+def test_mergedicts():
+    a, b, c = {'a':1}, {'b':2}, {'c': 3}
+    assert merge_dicts(a,b,c) == {'a': 1, 'b': 2, 'c': 3}
+    assert merge_dicts({},{}) == {}
 
 def test_invertdict():
     assert invert_dict({}) == {}
