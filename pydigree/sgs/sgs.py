@@ -10,11 +10,105 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree import Population, PedigreeCollection
 
 
+class SGSAnalysis(object):
+
+    def init(self, pairs=None):
+        if pairs:
+            self.pairs = pairs
+        else:
+            self.pairs = {}
+
+    def __getitem__(self, item):
+        if type(item) is not frozenset:
+            item = frozenset(item)
+        return frozenset(item)
+
+    def __setitem__(self, k, v):
+        self.pairs[k] = v
+
+    def merge(self, other):
+        ''' Merge two Analyses '''
+        self.pairs.update(other.pairs)
+
+    def ibd_state(self, ind1, ind2, locus, location_type):
+        ''' 
+        Gets the IBD state between two individuals at a locus
+
+        locus: a 2-tuple in the form (chromosome, position)
+        location_type: the type of location units specified. Valid entries are 
+        'index' (the index of the markers), 'physical' (the positions in bp),
+        and 'genetic' (location in cM)
+
+        Returns 0 in the case of ind1 and ind2 not having any identified
+        segments (or not being in the analysis at all)
+        '''
+        pair = frozenset([ind1, ind2])
+        if pair not in self.pairs:
+            return 0
+        else:
+            return self.pairs[pair].ibd_state(locus, location_type)
+
+    def ibd_matrix(self, individuals, locus, location_type='index'):
+        '''
+        locus: a 2-tuple in the form (chromosome, position)
+        location_type: the type of location units specified. Valid entries are 
+        'index' (the index of the markers), 'physical' (the positions in bp),
+        and 'genetic' (location in cM)
+        '''
+        nind = len(individuals)
+        mat = []
+        for ind1 in individuals:
+            row = [self.ibd_state(ind1, ind2, locus, location_type)
+                   for ind2 in individuals]
+            mat.append(row)
+        mat = np.matrix(mat, dtype=np.uint8)
+        return mat
+
+
+class SGS(object):
+
+    def __init__(self, segments=None):
+        self.segments = segments if segments is not None else []
+
+    def __getitem__(self, idx):
+        return self.segments[idx]
+
+    def append(self, value):
+        self.segments.append(value)
+
+    def extend(self, value):
+        self.segments.extend(value)
+
+    def ibd_state(self, locus, location_type='index'):
+        '''
+        locus: a 2-tuple in the form (chromosome, position)
+        location_type: the type of location units specified. Valid entries are 
+        'index' (the index of the markers), 'physical' (the positions in bp),
+        and 'genetic' (location in cM)
+        '''
+        chrom, pos = locus
+        if location_type == 'index':
+            ibd = sum(1 for start, stop in self.segments
+                      if start <= locus <= (stop+1))
+        elif location_type == 'physical':
+            segs = [(x.chromosome, x.physical_start, x.physical_stop)
+                    for x in self.segments]
+            ibd = sum(1 for segchrom, start, stop in self.segments
+                      if segchrom == chrom and (start <= pos <= stop))
+        elif location_type == 'genetic':
+            segs = [(x.chromosome, x.genetic_start, x.genetic_stop)
+                    for x in self.segments]
+            ibd = sum(1 for segchrom, start, stop in self.segments
+                      if segchrom == chrom and (start <= pos <= stop))
+        return ibd
+
+
 class Segment(object):
     __slots__ = ['ind1', 'ind2', 'chromosome', 'start', 'stop',
                  '_chridx', 'physical_location', 'genetic_location']
 
-    def __init__(self, ind1, ind2, chromobj, startidx, stopidx):
+    def __init__(self, ind1, ind2, chromobj, startidx, stopidx,
+                 physical_location=None, genetic_location=None):
         self.ind1 = ind1
         self.ind2 = ind2
         self.chromosome = chromobj
@@ -22,15 +116,21 @@ class Segment(object):
         self.start = startidx
         self.stop = stopidx
 
-    @property
-    def physical_location(self):
-        ''' Locations of the start and end of the segment in base pairs '''
-        return self.chromosome.physical_map[self.start], self.chromosome.physical_map[self.stop]
+        if physical_location is not None:
+            pstart, pstop = physical_location
+            self.physical_start = int(pstart)
+            self.physical_stop = int(pstop)
+        else:
+            self.physical_start = self.chromosome.physical_map[self.start]
+            self.physical_stop = self.chromosome.physical_map[self.stop]
 
-    @property
-    def genetic_location(self):
-        ''' Locations of the start and end of the segment in centimorgans '''
-        return self.chromosome.genetic_map[self.start], self.chromosome.genetic_map[self.stop]
+        if genetic_location is not None:
+            gstart, gstop = genetic_location
+            self.genetic_start = float(gstart)
+            self.genetic_stop = float(gstop)
+        else:
+            self.genetic_start = self.chromosome.genetic_map[self.start]
+            self.genetic_stop = self.chromosome.genetic_map[self.stop]
 
     @property
     def physical_size(self):
@@ -69,7 +169,7 @@ def sgs_pedigrees(pc, phaseknown=False):
     '''
     Performs within-pedigree SGS for each pedigree in a pedigree collection
     '''
-    shared = {}
+    shared = SGSAnalysis()
     for pedigree in pedigrees:
         shared[pedigree] = sgs_population(pedigree)
     return shared
@@ -78,17 +178,17 @@ def sgs_pedigrees(pc, phaseknown=False):
 def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
                    size_unit='mb', min_density=100, maxmiss=0.25):
     ''' Performs SGS between all individuals in a population or pedigree '''
-    shared = {}
+    shared = SGSAnalysis()
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
             continue
         pair = frozenset({ind1, ind2})
-        shared[pair] = []
+        shared[pair] = SGS()
         for chridx, chromosome in enumerate(ind1.chromosomes):
             shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size,
                                   min_length=min_length, size_unit=size_unit,
                                   min_density=min_density, maxmiss=0.25)
-            shared[pair].append(shares)
+            shared[pair].extend(shares)
     return shared
 
 
@@ -106,8 +206,8 @@ def sgs_autozygous(ind, chromosome_idx, seed_size=500,
                                              size_unit=size_unit,
                                              min_density=min_density,
                                              maxmiss=0.25))
-    return [Segment(ind, ind, chromosome, start, stop)
-            for start, stop in autozygous_segs]
+    return SGS([Segment(ind, ind, chromosome, start, stop)
+            for start, stop in autozygous_segs])
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
@@ -141,8 +241,8 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
         return ibd
 
     segs = make_intervals(ibd)
-    segs = [Segment(ind1, ind2, chromosome, start, stop)
-            for start, stop in segs]
+    segs = SGS([Segment(ind1, ind2, chromosome, start, stop)
+            for start, stop in segs])
     return segs
 
 
@@ -201,24 +301,6 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0,
 
     return [seg for seg in intervals if meets_criteria(seg)]
 
-
-def ibd_state(shared, ind1, ind2, locus):
-    ''' Gets the IBD state between two individuals at a locus '''
-    pair = frozenset([ind1, ind2])
-    if pair not in shared:
-        return 0
-    ibd = sum(1 for start, stop in shared[pair] if start <= locus <= (stop+1))
-    return ibd
-
-
-def ibd_matrix(shared, individuals, locus):
-    nind = len(individuals)
-    mat = []
-    for ind1 in individuals:
-        row = [ibd_state(shared, ind1, ind2, locus) for ind2 in individuals]
-        mat.append(row)
-    mat = np.matrix(mat, dtype=np.uint8)
-    return mat
 
 # Support functions
 
