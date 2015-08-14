@@ -6,13 +6,13 @@ from pydigree.common import runs
 from pydigree.ibs import ibs, get_ibs_states
 from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 
-
 from pydigree import Population, PedigreeCollection
+from pydigree import Individual, ChromosomeTemplate
 
 
 class SGSAnalysis(object):
 
-    def init(self, pairs=None):
+    def __init__(self, pairs=None):
         if pairs:
             self.pairs = pairs
         else:
@@ -34,7 +34,7 @@ class SGSAnalysis(object):
         ''' Merge two Analyses '''
         self.pairs.update(other.pairs)
 
-    def ibd_state(self, ind1, ind2, locus, location_type):
+    def ibd_state(self, ind1, ind2, locus, location_type='index'):
         ''' 
         Gets the IBD state between two individuals at a locus
 
@@ -104,17 +104,17 @@ class SGS(object):
         '''
         chrom, pos = locus
         if location_type == 'index':
-            ibd = sum(1 for start, stop in self.segments
-                      if start <= locus <= (stop+1))
+            ibd = sum(1 for x in self.segments if x.chromosome == chrom and
+                      x.start <= pos <= (x.stop+1))
         elif location_type == 'physical':
             segs = [(x.chromosome, x.physical_start, x.physical_stop)
                     for x in self.segments]
-            ibd = sum(1 for segchrom, start, stop in self.segments
+            ibd = sum(1 for segchrom, start, stop in segs
                       if segchrom == chrom and (start <= pos <= stop))
         elif location_type == 'genetic':
             segs = [(x.chromosome, x.genetic_start, x.genetic_stop)
                     for x in self.segments]
-            ibd = sum(1 for segchrom, start, stop in self.segments
+            ibd = sum(1 for segchrom, start, stop in segs
                       if segchrom == chrom and (start <= pos <= stop))
         return ibd
 
@@ -128,10 +128,10 @@ class Segment(object):
         self.ind1 = ind1
         self.ind2 = ind2
         self.chromosome = chromosome
-        
+
         if isinstance(ind1, Individual):
             self._chridx = ind1.chromosomes.index(chromobj)
-        
+
         self.start = startidx
         self.stop = stopidx
 
@@ -139,7 +139,7 @@ class Segment(object):
             pstart, pstop = physical_location
             self.physical_start = int(pstart)
             self.physical_stop = int(pstop)
-        else:
+        elif isinstance(self.chromosome, ChromosomeTemplate):
             self.physical_start = self.chromosome.physical_map[self.start]
             self.physical_stop = self.chromosome.physical_map[self.stop]
 
@@ -147,7 +147,7 @@ class Segment(object):
             gstart, gstop = genetic_location
             self.genetic_start = float(gstart)
             self.genetic_stop = float(gstop)
-        else:
+        elif isinstance(self.chromosome, ChromosomeTemplate):
             self.genetic_start = self.chromosome.genetic_map[self.start]
             self.genetic_stop = self.chromosome.genetic_map[self.stop]
 
@@ -226,7 +226,7 @@ def sgs_autozygous(ind, chromosome_idx, seed_size=500,
                                              min_density=min_density,
                                              maxmiss=0.25))
     return SGS([Segment(ind, ind, chromosome, start, stop)
-            for start, stop in autozygous_segs])
+                for start, stop in autozygous_segs])
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
@@ -261,7 +261,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
 
     segs = make_intervals(ibd)
     segs = SGS([Segment(ind1, ind2, chromosome, start, stop)
-            for start, stop in segs])
+                for start, stop in segs])
     return segs
 
 
