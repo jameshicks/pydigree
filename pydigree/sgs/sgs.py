@@ -111,12 +111,15 @@ class Segment(object):
     __slots__ = ['ind1', 'ind2', 'chromosome', 'start', 'stop',
                  '_chridx', 'physical_location', 'genetic_location']
 
-    def __init__(self, ind1, ind2, chromobj, startidx, stopidx,
+    def __init__(self, ind1, ind2, chromosome, startidx, stopidx,
                  physical_location=None, genetic_location=None):
         self.ind1 = ind1
         self.ind2 = ind2
-        self.chromosome = chromobj
-        self._chridx = ind1.chromosomes.index(chromobj)
+        self.chromosome = chromosome
+        
+        if isinstance(ind1, Individual):
+            self._chridx = ind1.chromosomes.index(chromobj)
+        
         self.start = startidx
         self.stop = stopidx
 
