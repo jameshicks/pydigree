@@ -1,4 +1,4 @@
-from itertools import izip, combinations, product
+from itertools import izip, combinations, product, chain
 
 import numpy as np
 
@@ -54,6 +54,9 @@ class SGSAnalysis(object):
 
     def ibd_matrix(self, individuals, locus, location_type='index'):
         '''
+        Creates an IBD matrix for a set of individuals at a locus
+
+        individuals: A list of individuals to form the matrix for
         locus: a 2-tuple in the form (chromosome, position)
         location_type: the type of location units specified. Valid entries are 
         'index' (the index of the markers), 'physical' (the positions in bp),
@@ -68,6 +71,15 @@ class SGSAnalysis(object):
         mat = np.matrix(mat, dtype=np.uint8)
         return mat
 
+    @property
+    def segments(self):
+        ''' Returns an iterable of all the segments in the Analysis '''
+        return chain.from_iterable([x.segments for x in self.pairs.values])
+
+    @property
+    def individuals(self):
+        """ Returns a set of all individuals present in the analysis """
+        inds = reduce(set.union, self.pairs.keys())
 
 class SGS(object):
 
