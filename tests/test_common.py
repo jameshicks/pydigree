@@ -1,10 +1,14 @@
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
-from pydigree.common import count, grouper
+from pydigree.common import count, grouper, log_base_change
 from pydigree.common import runs, runs_gte
 from pydigree.cyfuncs import runs_gte_uint8
 
+from math import log, log10, e
 import numpy as np
 
+def float_equality(a,b):
+    return abs(a-b) < 1e-15
+ 
 def test_count():
     assert count(1, [0,0,0,1,1,1,0,0,0]) == 3
     assert count(1, [0]*10) == 0
@@ -69,3 +73,7 @@ def test_mergedicts():
 def test_invertdict():
     assert invert_dict({}) == {}
     assert invert_dict({1: 'a', 2: 'b'}) == {'a': 1, 'b': 2}
+
+def test_logbasechange():
+    assert float_equality(log(6), log_base_change(log10(6), e, 10))
+    assert float_equality(log(4.2), log_base_change(log10(4.2), e, 10))

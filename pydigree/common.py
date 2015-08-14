@@ -2,6 +2,7 @@
 
 from itertools import izip_longest
 from operator import mul as multiply
+from math import log
 from pydigree.cyfuncs import runs, runs_gte
 
 
@@ -72,6 +73,20 @@ def merge_dicts(*args):
     return odict
 
 # Common stats/math functions
+def log_base_change(value, old, new):
+    ''' 
+    Changes the base of the logarithm used on `value` from `old` to `new`
+
+    Arguments: 
+    value: the value to be converted
+    old: old base (numeric)
+    new: new base (numeric)
+
+    returns: a float
+    '''
+    return value / log(old, new) 
+
+
 def product(iter):
     """
     Reduces an iterable by multiplication. Analogous to sum, but with
