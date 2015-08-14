@@ -26,6 +26,10 @@ class SGSAnalysis(object):
     def __setitem__(self, k, v):
         self.pairs[k] = v
 
+    def __contains__(self, item):
+        item = frozenset(item)
+        return item in self.pairs
+
     def merge(self, other):
         ''' Merge two Analyses '''
         self.pairs.update(other.pairs)
