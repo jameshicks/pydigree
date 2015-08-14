@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from itertools import izip
+import copy
 
 import numpy as np
 from scipy.sparse import csc_matrix
@@ -43,6 +44,21 @@ class MixedModel(object):
         self.variance_components = [None] * len(self.random_effects)
         self.obs = []
         self.V = None
+
+    def copy(self):
+        "Return a copy of the model"
+        # We want to avoid copying pedigree and individual data, so 
+        # we'll set the pedigrees attribute to None for a sec, and then
+        # change it back
+        peds = self.pedigrees
+        self.pedigrees = None
+
+        newmm = copy.deepcopy(self)
+
+        newmm.pedigrees = peds
+        self.pedigrees = peds
+
+        return newmm
 
     def fit_model(self):
         """
