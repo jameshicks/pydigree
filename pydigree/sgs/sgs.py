@@ -81,6 +81,31 @@ class SGSAnalysis(object):
         """ Returns a set of all individuals present in the analysis """
         inds = reduce(set.union, self.pairs.keys())
 
+    def update_segment_references(self, pedigrees):
+        '''
+        Replace individual labels in the Segment objects of SGSAnalyses read 
+        from text with references to the actual individual object 
+        '''
+        pedindlabs = frozenset([x.full_label for x in pedigrees.individuals])
+        sgsindlabs = self.individuals
+
+        if sgsindlabs - pedindlabs:
+            raise ValueError('Not all individuals present in SGS are present'
+                             'in the given pedigrees')
+
+        for segment in self.segments:
+            try:
+                segment.ind1 = pedigrees[segment.ind1]
+                segment.ind2 = pedigrees[segment.ind2]
+            except KeyError:
+                if segment.ind1 not in pedindlabs:
+                    raise ValueError('{} not in pedigree'.format(segment.ind1))
+                elif segment.ind2 not in pedindlabs:
+                    raise ValueError('{} not in pedigree'.format(segment.ind2))
+                else:
+                    raise Exception('Unknown error')
+
+
 class SGS(object):
 
     def __init__(self, segments=None):
