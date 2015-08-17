@@ -31,7 +31,7 @@ class SGSAnalysis(object):
         return item in self.pairs
 
     def merge(self, other):
-        ''' Merge two Analyses '''
+        ''' Merge two SGSAnalysis objects '''
         self.pairs.update(other.pairs)
 
     def ibd_state(self, ind1, ind2, locus, location_type='index'):
