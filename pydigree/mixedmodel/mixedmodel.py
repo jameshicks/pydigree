@@ -67,14 +67,14 @@ class MixedModel(object):
         Arguements: None
         Returns: Nothing
         """
-        self._makeR()
-        self._makey()
-        self._makeX()
-        self._makeZs()
+        self.R = self._makeR()
+        self.y = self._makey()
+        self.X = self._makeX()
+        self.Zlist = self._makeZs()
 
     def _fit_results(self):
-        self._makeV()
-        self._makebeta()
+        self.V = self._makeV()
+        self.beta = self._makebeta()
 
     def clear_model(self):
         """ Clears all parameters from the model """
@@ -130,7 +130,7 @@ class MixedModel(object):
     def _makey(self):
         """ Prepares the vector of outcome variables for model estimation """
         obs = self.observations()
-        self.y = np.matrix([x.phenotypes[self.outcome]
+        return np.matrix([x.phenotypes[self.outcome]
                             for x in obs]).transpose()
 
     def _makeX(self):
@@ -146,7 +146,6 @@ class MixedModel(object):
         for phen in self.fixed_effects:
             xmat.append([ob.phenotypes[phen] for ob in obs])
         X = np.matrix(zip(*xmat))
-        self.X = X
         return X
 
     def _makeZs(self):
@@ -166,10 +165,10 @@ class MixedModel(object):
                 Zlist.append(incidence_matrix)
             else:
                 raise NotImplementedError('Arbitrary ranefs not implemented')
-        self.Zlist = [csc_matrix(Z) for Z in Zlist]
+        return [csc_matrix(Z) for Z in Zlist]
 
     def _makeR(self):
-        self.R = sparseeye(self.nobs(), self.nobs())
+        return sparseeye(self.nobs(), self.nobs())
 
     def _makeV(self, vcs=None):
         if (not vcs) and (not self.variance_components):
@@ -183,11 +182,9 @@ class MixedModel(object):
                      self.Zlist,
                      self.covariance_matrices))
         V = V + (self.residual_variance() * self.R)
-        if vcs is not None:
-            return V
-        else:
-            self.V = V
-
+        
+        return V
+        
     def _makebeta(self):
         """
         Calculates BLUEs for the fixed effects portion of the model
@@ -197,23 +194,23 @@ class MixedModel(object):
         Equation 6.24
         """
         vinv = inv(self.V.todense())
-        self.beta = pinv(self.X.T * vinv * self.X) * self.X.T * vinv * self.y
+        return pinv(self.X.T * vinv * self.X) * self.X.T * vinv * self.y
 
     def set_outcome(self, outcome):
         """ Sets the outcome for the mixed model """
         self.outcome = outcome
-        self._makey()
+        self.y = self._makey()
 
     def add_fixed_effects(self, effect):
         """ Adds a fixed effect to the model """
         self.fixed_effects.append(effect)
-        self._makeX()
+        self.X = self._makeX()
 
     def add_random_effect(self, effect, covariance_matrix):
         """ Adds a random effect to the model """
         self.random_effects.append(effect)
         self.covariance_matrices.append(covariance_matrix)
-        self._makeZs()
+        self.Zlist = self._makeZs()
 
     def add_genetic_effect(self, type='additive'):
         self.add_random_effect(type,
