@@ -306,18 +306,17 @@ class MixedModel(object):
             print r
         self.set_variance_components(r[0].tolist())
 
-    def likelihood(self, estimator='full', vmat=None):
+    def loglikelihood(self, restricted=False, vmat=None):
         """
-        Returns the likelihood of the model with the current model parameters
+        Returns the loglikelihood of the model with the current model parameters
         """
-        estimator = estimator.lower()
         if vmat is None:
             V = self.V
         else:
             V = vmat
-        if estimator == 'full':
+        if not restricted:
             return full_loglikelihood(self.y, V, self.X)
-        elif estimator == 'restricted':
+        else:
             return restricted_loglikelihood(self.y, V, self.X)
 
     def blup(self):
@@ -345,12 +344,12 @@ class MixedModel(object):
                                                  vc,
                                                  100 * vc / np.var(self.y)])
         print
-        print 'Loglikelihood: %s' % self.likelihood()
+        print 'Loglikelihood: %s' % self.loglikelihood()
 
     def __reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
-        return -1.0 * self.likelihood(estimator='restricted', vmat=Q)
+        return -1.0 * self.loglikelihood(estimator='restricted', vmat=Q)
 
     def __starting_variance_components(self):
         """
