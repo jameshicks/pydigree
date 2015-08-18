@@ -171,6 +171,8 @@ class Pedigree(Population):
         """
         if not ids:
             ids = sorted(x.label for x in self)
+        else:
+            ids = [x for x in self if x in self.population.keys()]
         mat = []
         for a in ids:
             row = []
@@ -202,6 +204,8 @@ class Pedigree(Population):
         """
         if not ids:
             ids = sorted(x.label for x in self)
+        else:
+            ids = [x for x in self if x in self.population.keys()]
         mat = []
         for a in ids:
             row = []
