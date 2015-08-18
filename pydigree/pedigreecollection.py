@@ -88,32 +88,32 @@ class PedigreeCollection(MutableMapping):
 
     # Matrix functions
     ###
-    def additive_relationship_matrix(self):
+    def additive_relationship_matrix(self, ids=None):
         """
         Returns a block diagonal matrix of additive relationships
         for each pedigree.
 
         See notes on Pedigree.additive_relationship_matrix
         """
-        return block_diag([x.additive_relationship_matrix() for x in
+        return block_diag([x.additive_relationship_matrix(ids) for x in
                            sorted(self, key=lambda x: x.label)], format='bsr')
 
-    def dominance_relationship_matrix(self):
+    def dominance_relationship_matrix(self, ids=None):
         """
         Returns a block diagonal matrix of dominance relationships
         for each pedigree.
 
         See notes on Pedigree.dominance_relationship_matrix
         """
-        return block_diag([x.dominance_relationship_matrix() for x in
+        return block_diag([x.dominance_relationship_matrix(ids) for x in
                            sorted(self, key=lambda x: x.label)], format='bsr')
 
-    def mitochondrial_relationship_matrix(self):
+    def mitochondrial_relationship_matrix(self, ids=None):
         """
         Returns a block diagonal matrix of mitochondrial relationships
         for each pedigree.
 
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
-        return block_diag([x.mitochondrial_relationship_matrix() for x in
+        return block_diag([x.mitochondrial_relationship_matrix(ids) for x in
                            sorted(self, key=lambda x: x.label)], format='bsr')
