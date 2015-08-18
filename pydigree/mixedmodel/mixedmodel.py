@@ -18,6 +18,50 @@ def is_genetic_effect(effect):
     return effect in set(['additive', 'dominance', 'mitochondrial'])
 
 
+def _make_incidence_matrix(individuals, effect_name):
+    if is_genetic_effect(effect_name):
+        incidence_matrix = np.matrix(np.eye(len(individuals)))
+    else:
+        raise NotImplementedError('Arbitrary random effects not implemented')
+    return incidence_matrix
+
+
+class RandomEffect(object):
+    __slots__ = ['variance_component', 'incidence_matrix', 'covariance_matrix']
+
+    def __init__(self, individuals, label, variance,
+                 incidence, covariance_matrix):
+        self.label = label
+        self.variance = variance_component
+        if not incidence:
+            m = _make_incidence_matrix(individuals,
+                                       self.label)
+            self.incidence_matrix = m
+        else:
+            self.incidence_matrix = incidence
+        if not covariance_matrix:
+            nobs = len(individuals)
+            self.covariance_matrix = sparseeye(nobs, nobs)
+        else:
+            self.covariance_matrix = covariance_matrix
+
+    # Convenience properties for linear algebra
+    @property
+    def sigma(self):
+        "Convenience property for returning the variance of the component"
+        return self.variance_component
+
+    @property
+    def Z(self):
+        "Convenience property for returning the incidence matrix"
+        return self.incidence
+
+    @property
+    def G(self):
+        "Convenience property for returning the covariance_matrix"
+        return self.covariance_matrix
+
+
 class MixedModel(object):
 
     """
@@ -37,17 +81,24 @@ class MixedModel(object):
         self.outcome = outcome
         if not random_effects:
             self.random_effects = []
-            self.covariance_matrices = []
         else:
+            if not all(isinstance(RandomEffect, x) for x in random_effects):
+                raise ValueError(
+                    'Random effects must be of class RandomEffect')
             self.random_effects = random_effects
+        
+        # Extra variance component for residual variance. Works like
+        # any other random effect.
+        residual = RandomEffect(self.observations(), 'Residual')
+        self.random_effects.append(residual)
+
         self.fixed_effects = fixed_effects if fixed_effects else []
-        self.variance_components = [None] * len(self.random_effects)
         self.obs = []
         self.V = None
 
     def copy(self):
         "Return a copy of the model"
-        # We want to avoid copying pedigree and individual data, so 
+        # We want to avoid copying pedigree and individual data, so
         # we'll set the pedigrees attribute to None for a sec, and then
         # change it back
         peds = self.pedigrees
@@ -67,7 +118,6 @@ class MixedModel(object):
         Arguements: None
         Returns: Nothing
         """
-        self.R = self._makeR()
         self.y = self._makey()
         self.X = self._makeX()
         self.Zlist = self._makeZs()
@@ -80,14 +130,11 @@ class MixedModel(object):
         """ Clears all parameters from the model """
         self.random_effects = []
         self.fixed_effects = []
-        self.covariance_matrices = []
         self.Zlist = []
-        self.variance_components = []
         self.X = None
         self.y = None
         self.beta = None
         self.V = None
-        self.R = None
         self.obs = None
 
     def observations(self):
@@ -123,15 +170,27 @@ class MixedModel(object):
         """
         return len(self.observations())
 
+    @property
+    def variance_components(self):
+        return [x.sigma for x in self.random_effects]
+
+    @property
+    def covariance_matrices(self):
+        return [x.covariance_matrix for x in self.random_effects]
+
+    @property
+    def R(self):
+        "Covariance matrix of residual_variance"
+        return self.random_effects[-1].covariance_matrix
+
     def residual_variance(self):
         """ Returns the variance in y not accounted for by random effects """
-        return np.var(self.y) - sum(self.variance_components)
+        return self.random_effects[-1].sigma
 
     def _makey(self):
         """ Prepares the vector of outcome variables for model estimation """
         obs = self.observations()
-        return np.matrix([x.phenotypes[self.outcome]
-                            for x in obs]).transpose()
+        return np.matrix([x.phenotypes[self.outcome] for x in obs]).transpose()
 
     def _makeX(self):
         """
@@ -155,20 +214,11 @@ class MixedModel(object):
         Arguements: None
         Returns: A list of numpy matrixes
         """
-        Zlist = []
-        for effect_name in self.random_effects:
-            allinds = self.pedigrees.individuals
-            obs = frozenset(self.observations())
-            obsidx = [i for i, x in enumerate(allinds) if x in obs]
-            if is_genetic_effect(effect_name):
-                incidence_matrix = np.matrix(np.eye(len(allinds)))[obsidx, :]
-                Zlist.append(incidence_matrix)
-            else:
-                raise NotImplementedError('Arbitrary ranefs not implemented')
+        Zlist = [ranef.Z for ranef in self.random_effects]
+
         return [csc_matrix(Z) for Z in Zlist]
 
-    def _makeR(self):
-        return sparseeye(self.nobs(), self.nobs())
+
 
     def _makeV(self, vcs=None):
         if (not vcs) and (not self.variance_components):
@@ -177,14 +227,14 @@ class MixedModel(object):
             variance_components = self.variance_components
         else:
             variance_components = vcs
+        
         V = sum(sigma * Z * A * Z.T for sigma, Z, A in
                 izip(variance_components,
                      self.Zlist,
                      self.covariance_matrices))
-        V = V + (self.residual_variance() * self.R)
         
         return V
-        
+
     def _makebeta(self):
         """
         Calculates BLUEs for the fixed effects portion of the model
@@ -206,15 +256,23 @@ class MixedModel(object):
         self.fixed_effects.append(effect)
         self.X = self._makeX()
 
-    def add_random_effect(self, effect, covariance_matrix):
+    def add_random_effect(self, effect):
         """ Adds a random effect to the model """
-        self.random_effects.append(effect)
-        self.covariance_matrices.append(covariance_matrix)
+        if not isinstance(RandomEffect, effect):
+            raise ValueError('Random effect must be of type RandomEffect')
+        self.random_effects.insert(-1, effect)
         self.Zlist = self._makeZs()
 
     def add_genetic_effect(self, type='additive'):
-        self.add_random_effect(type,
-                               self.pedigrees.additive_relationship_matrix())
+        if type.lower() != 'additive':
+            raise NotImplementedError(
+                'Nonadditive genetic effects not implemented')
+        inds = [x.label for x in self.observations()]
+        peds = self.pedigrees
+        covmat = self.add_random_effect(type,
+                               peds.additive_relationship_matrix(inds))
+        effect = RandomEffect(self.observations, type, covariance_matrix=covmat)
+        self.add_random_effect(effect)
 
     def set_variance_components(self, variance_components):
         """
@@ -224,7 +282,8 @@ class MixedModel(object):
         """
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
-        self.variance_components = variance_components
+        for sigma, ranef in izip(variance_components, self.random_effects):
+            ranef.variance_component = sigma
 
     def maximize(self, method='L-BFGS-B', verbose=False):
         """
@@ -245,7 +304,7 @@ class MixedModel(object):
                           starts, bounds=b, approx_grad=1, callback=cb)
         if verbose:
             print r
-        self.variance_components = r[0].tolist()
+        self.set_variance_components(r[0].tolist())
 
     def likelihood(self, estimator='full', vmat=None):
         """
