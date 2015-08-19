@@ -75,3 +75,16 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
                               + y.T * P * y
                               + (n - rank) * l2pi)
     return matrix.item(llik_restricted)
+
+def reml_gradient(y, X, V, ranefs, Vinv=None):
+    if not Vinv:
+        Vinv = csc_matrix(inv(V.todense()))
+    P = makeP(X, Vinv)
+    nabla = [dV_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
+    return np.array(nabla)
+
+def dV_dsigma(y, Z, G, P):
+    "The REML derivative of V with regard to sigma" 
+    PZGZt = P * Z * G * Z.T
+    return matrix.item(-.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y))
+    

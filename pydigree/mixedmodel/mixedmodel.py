@@ -7,10 +7,11 @@ import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv, pinv
-from scipy.optimize import fmin_l_bfgs_b, fmin_bfgs
+from scipy.optimize import minimize
 
 from pydigree.mixedmodel.blup import blup
 from pydigree.mixedmodel.likelihood import restricted_loglikelihood
+from pydigree.mixedmodel.likelihood import reml_gradient
 from pydigree.mixedmodel.likelihood import full_loglikelihood
 
 
@@ -29,7 +30,8 @@ def _make_incidence_matrix(individuals, effect_name):
 
 
 class RandomEffect(object):
-    __slots__ = ['label','variance_component', 'incidence_matrix', 'covariance_matrix']
+    __slots__ = ['label', 'variance_component',
+                 'incidence_matrix', 'covariance_matrix']
 
     def __init__(self, individuals, label, variance=None,
                  incidence=None, covariance_matrix=None):
@@ -46,6 +48,9 @@ class RandomEffect(object):
             self.covariance_matrix = sparseeye(nobs, nobs)
         else:
             self.covariance_matrix = covariance_matrix
+
+    def __repr__(self):
+        return 'Random Effect: {}'.format(self.label)
 
     # Convenience properties for linear algebra
     @property
@@ -80,7 +85,7 @@ class MixedModel(object):
                  random_effects=None, covariance_matrices=None):
         self.maximized = False
         self.pedigrees = pedigrees
-        
+
         self.outcome = outcome
         self.fixed_effects = fixed_effects if fixed_effects else []
         self.obs = []
@@ -92,13 +97,11 @@ class MixedModel(object):
                 raise ValueError(
                     'Random effects must be of class RandomEffect')
             self.random_effects = random_effects
-        
+
         # Extra variance component for residual variance. Works like
         # any other random effect.
         residual = RandomEffect(self.observations(), 'Residual')
         self.random_effects.append(residual)
-
-
 
         self.V = None
 
@@ -224,8 +227,6 @@ class MixedModel(object):
 
         return [csc_matrix(Z) for Z in Zlist]
 
-
-
     def _makeV(self, vcs=None):
         if (not vcs) and (not self.variance_components):
             raise ValueError('Variance components not set')
@@ -233,12 +234,12 @@ class MixedModel(object):
             variance_components = self.variance_components
         else:
             variance_components = vcs
-        
+
         V = sum(sigma * Z * A * Z.T for sigma, Z, A in
                 izip(variance_components,
                      self.Zlist,
                      self.covariance_matrices))
-        
+
         return V
 
     def _makebeta(self):
@@ -276,7 +277,8 @@ class MixedModel(object):
         inds = [x.full_label for x in self.observations()]
         peds = self.pedigrees
         covmat = peds.additive_relationship_matrix(inds)
-        effect = RandomEffect(self.observations(), type, covariance_matrix=covmat)
+        effect = RandomEffect(
+            self.observations(), type, covariance_matrix=covmat)
         self.add_random_effect(effect)
 
     def set_variance_components(self, variance_components):
@@ -304,11 +306,11 @@ class MixedModel(object):
                 print 'Iteration VC estimates: %s' % \
                     ', '.join(str(y) for y in x.tolist())
 
-        r = fmin_bfgs(self.__reml_optimization_target,
-                          starts, callback=cb)
+        r = minimize(self.__reml_optimization_target, x0=starts,
+                     jac=self.__reml_gradient, callback=cb)
         if verbose:
             print r
-        self.set_variance_components(r[0].tolist())
+        self.set_variance_components(r.x)
 
     def loglikelihood(self, restricted=False, vmat=None):
         """
@@ -343,10 +345,11 @@ class MixedModel(object):
         print
         print 'Variance components:'
         print '\t'.join(['Component', 'Variance', '% Variance'])
+        totalvar = sum(self.variance_components)
         for effect, vc in zip(self.random_effects, self.variance_components):
             print '\t'.join(str(val) for val in [effect.label,
                                                  vc,
-                                                 100 * vc / np.var(self.y)])
+                                                 100 * vc / totalvar])
         print
         print 'Loglikelihood: %s' % self.loglikelihood()
 
@@ -354,6 +357,10 @@ class MixedModel(object):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
         return -1.0 * self.loglikelihood(restricted=True, vmat=Q)
+
+    def __reml_gradient(self, vcs):
+        Q = self._makeV(vcs=vcs.tolist())
+        return -1.0 * reml_gradient(self.y, self.X, Q, self.random_effects)
 
     def __starting_variance_components(self):
         """
