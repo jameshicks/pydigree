@@ -96,10 +96,12 @@ class Pedigree(Population):
         # I define these functions to get parents for IDs by looking them
         # up in the pedigree
         def fa(id):
-            return self[id].father.label if self[id].father is not None else None
+            return (self[id].father.label
+                    if self[id].father is not None else None)
 
         def mo(id):
-            return self[id].mother.label if self[id].mother is not None else None
+            return (self[id].mother.label
+                    if self[id].mother is not None else None)
 
         # Use tuples here to take advantage of the implicit tuple ordering
         # With depth as the first item, it assures that descendants aren't
