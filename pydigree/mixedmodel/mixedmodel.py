@@ -7,7 +7,7 @@ import numpy as np
 from scipy.sparse import csc_matrix
 from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv, pinv
-from scipy.optimize import fmin_l_bfgs_b
+from scipy.optimize import fmin_l_bfgs_b, fmin_bfgs
 
 from pydigree.mixedmodel.blup import blup
 from pydigree.mixedmodel.likelihood import restricted_loglikelihood
@@ -19,7 +19,9 @@ def is_genetic_effect(effect):
 
 
 def _make_incidence_matrix(individuals, effect_name):
-    if is_genetic_effect(effect_name):
+    if effect_name.lower() == 'residual':
+        incidence_matrix = np.matrix(np.eye(len(individuals)))
+    elif is_genetic_effect(effect_name):
         incidence_matrix = np.matrix(np.eye(len(individuals)))
     else:
         raise NotImplementedError('Arbitrary random effects not implemented')
@@ -27,19 +29,19 @@ def _make_incidence_matrix(individuals, effect_name):
 
 
 class RandomEffect(object):
-    __slots__ = ['variance_component', 'incidence_matrix', 'covariance_matrix']
+    __slots__ = ['label','variance_component', 'incidence_matrix', 'covariance_matrix']
 
-    def __init__(self, individuals, label, variance,
-                 incidence, covariance_matrix):
+    def __init__(self, individuals, label, variance=None,
+                 incidence=None, covariance_matrix=None):
         self.label = label
-        self.variance = variance_component
-        if not incidence:
+        self.variance_component = variance
+        if incidence is None:
             m = _make_incidence_matrix(individuals,
                                        self.label)
             self.incidence_matrix = m
         else:
             self.incidence_matrix = incidence
-        if not covariance_matrix:
+        if covariance_matrix is None:
             nobs = len(individuals)
             self.covariance_matrix = sparseeye(nobs, nobs)
         else:
@@ -54,7 +56,7 @@ class RandomEffect(object):
     @property
     def Z(self):
         "Convenience property for returning the incidence matrix"
-        return self.incidence
+        return self.incidence_matrix
 
     @property
     def G(self):
@@ -78,11 +80,15 @@ class MixedModel(object):
                  random_effects=None, covariance_matrices=None):
         self.maximized = False
         self.pedigrees = pedigrees
+        
         self.outcome = outcome
+        self.fixed_effects = fixed_effects if fixed_effects else []
+        self.obs = []
+
         if not random_effects:
             self.random_effects = []
         else:
-            if not all(isinstance(RandomEffect, x) for x in random_effects):
+            if not all(isinstance(x, RandomEffect) for x in random_effects):
                 raise ValueError(
                     'Random effects must be of class RandomEffect')
             self.random_effects = random_effects
@@ -92,8 +98,8 @@ class MixedModel(object):
         residual = RandomEffect(self.observations(), 'Residual')
         self.random_effects.append(residual)
 
-        self.fixed_effects = fixed_effects if fixed_effects else []
-        self.obs = []
+
+
         self.V = None
 
     def copy(self):
@@ -258,7 +264,7 @@ class MixedModel(object):
 
     def add_random_effect(self, effect):
         """ Adds a random effect to the model """
-        if not isinstance(RandomEffect, effect):
+        if not isinstance(effect, RandomEffect):
             raise ValueError('Random effect must be of type RandomEffect')
         self.random_effects.insert(-1, effect)
         self.Zlist = self._makeZs()
@@ -267,11 +273,10 @@ class MixedModel(object):
         if type.lower() != 'additive':
             raise NotImplementedError(
                 'Nonadditive genetic effects not implemented')
-        inds = [x.label for x in self.observations()]
+        inds = [x.full_label for x in self.observations()]
         peds = self.pedigrees
-        covmat = self.add_random_effect(type,
-                               peds.additive_relationship_matrix(inds))
-        effect = RandomEffect(self.observations, type, covariance_matrix=covmat)
+        covmat = peds.additive_relationship_matrix(inds)
+        effect = RandomEffect(self.observations(), type, covariance_matrix=covmat)
         self.add_random_effect(effect)
 
     def set_variance_components(self, variance_components):
@@ -299,9 +304,8 @@ class MixedModel(object):
                 print 'Iteration VC estimates: %s' % \
                     ', '.join(str(y) for y in x.tolist())
 
-        b = [(0, np.var(self.y))] * len(self.random_effects)
-        r = fmin_l_bfgs_b(self.__reml_optimization_target,
-                          starts, bounds=b, approx_grad=1, callback=cb)
+        r = fmin_bfgs(self.__reml_optimization_target,
+                          starts, callback=cb)
         if verbose:
             print r
         self.set_variance_components(r[0].tolist())
@@ -339,8 +343,8 @@ class MixedModel(object):
         print
         print 'Variance components:'
         print '\t'.join(['Component', 'Variance', '% Variance'])
-        for name, vc in zip(self.random_effects, self.variance_components):
-            print '\t'.join(str(val) for val in [name,
+        for effect, vc in zip(self.random_effects, self.variance_components):
+            print '\t'.join(str(val) for val in [effect.label,
                                                  vc,
                                                  100 * vc / np.var(self.y)])
         print
@@ -349,7 +353,7 @@ class MixedModel(object):
     def __reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
-        return -1.0 * self.loglikelihood(estimator='restricted', vmat=Q)
+        return -1.0 * self.loglikelihood(restricted=True, vmat=Q)
 
     def __starting_variance_components(self):
         """

@@ -72,6 +72,6 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
     rank = np.linalg.matrix_rank(X)
     llik_restricted = -0.5 * (logdet(V.todense())
                               + logdet(X.transpose() * Vinv * X)
-                              + P.transpose() * Vinv * P
+                              + y.T * P * y
                               + (n - rank) * l2pi)
     return matrix.item(llik_restricted)
