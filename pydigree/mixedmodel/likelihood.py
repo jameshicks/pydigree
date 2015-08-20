@@ -118,3 +118,37 @@ def reml_hessian(y, X, V, ranefs, Vinv=None):
 
 def reml_observed_information_matrix(y, X, V, ranefs, Vinv=None):
     return -reml_hessian(y, X, V, ranefs, Vinv)
+
+
+def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
+    return .5 * np.trace(P * dV_dsigma_a * dV_dsigma_b)
+
+
+def reml_fisher_matrix(y, X, V, ranefs, Vinv=None):
+    if Vinv is None:
+        Vinv = csc_matrix(inv(V.todense()))
+    P = makeP(X, Vinv)
+    mat = []
+    for ranef_a in ranefs:
+        dV_dsigma_a = ranef_a.V_i
+        row = [reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
+               for ranef_b in ranefs]
+        mat.append(row)
+    return np.array(mat)
+
+
+def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
+    return y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+
+
+def reml_average_information_matrix(y, X, V, ranefs, Vinv=None):
+    if Vinv is None:
+        Vinv = csc_matrix(inv(V.todense()))
+    P = makeP(X, Vinv)
+    mat = []
+    for ranef_a in ranefs:
+        dV_dsigma_a = ranef_a.V_i
+        row = [reml_average_information_element(y, P, dV_dsigma_a, ranef_b.V_i)
+               for ranef_b in ranefs]
+        mat.append(row)
+    return np.array(mat)
