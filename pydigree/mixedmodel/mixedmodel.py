@@ -68,6 +68,10 @@ class RandomEffect(object):
         "Convenience property for returning the covariance_matrix"
         return self.covariance_matrix
 
+    @property
+    def V_i(self):
+        return self.Z * self.G * self.Z.T
+
 
 class MixedModel(object):
 
