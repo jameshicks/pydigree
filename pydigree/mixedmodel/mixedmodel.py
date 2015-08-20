@@ -23,9 +23,9 @@ def is_genetic_effect(effect):
 
 def _make_incidence_matrix(individuals, effect_name):
     if effect_name.lower() == 'residual':
-        incidence_matrix = np.matrix(np.eye(len(individuals)))
+        incidence_matrix = sparseeye(len(individuals))
     elif is_genetic_effect(effect_name):
-        incidence_matrix = np.matrix(np.eye(len(individuals)))
+        incidence_matrix = sparseeye(len(individuals))
     else:
         raise NotImplementedError('Arbitrary random effects not implemented')
     return incidence_matrix
