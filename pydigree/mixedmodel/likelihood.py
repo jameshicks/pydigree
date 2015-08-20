@@ -81,11 +81,12 @@ def reml_gradient(y, X, V, ranefs, Vinv=None):
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
     P = makeP(X, Vinv)
-    nabla = [dV_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
+    nabla = [dREML_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
     return np.array(nabla)
 
-def dV_dsigma(y, Z, G, P):
-    "The REML derivative of V with regard to sigma" 
+
+def dREML_dsigma(y, Z, G, P):
+    "The REML derivative of V with regard to sigma"
     PZGZt = P * Z * G * Z.T
     return matrix.item(-.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y))
     
