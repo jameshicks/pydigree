@@ -11,7 +11,7 @@ from scipy.optimize import minimize
 
 from pydigree.mixedmodel.blup import blup
 from pydigree.mixedmodel.likelihood import restricted_loglikelihood
-from pydigree.mixedmodel.likelihood import reml_gradient
+from pydigree.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.mixedmodel.likelihood import full_loglikelihood
 
 
@@ -361,6 +361,10 @@ class MixedModel(object):
     def __reml_gradient(self, vcs):
         Q = self._makeV(vcs=vcs.tolist())
         return -1.0 * reml_gradient(self.y, self.X, Q, self.random_effects)
+
+    def __reml_hessian(self, vcs):
+        Q = self._makeV(vcs.tolist())
+        return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
     def __starting_variance_components(self):
         """
