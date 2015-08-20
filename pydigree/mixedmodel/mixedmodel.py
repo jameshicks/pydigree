@@ -14,6 +14,8 @@ from pydigree.mixedmodel.likelihood import restricted_loglikelihood
 from pydigree.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.mixedmodel.likelihood import full_loglikelihood
 
+from pydigree.mixedmodel.maximization import iterative_scoring_method
+
 
 def is_genetic_effect(effect):
     return effect in set(['additive', 'dominance', 'mitochondrial'])
@@ -296,10 +298,23 @@ class MixedModel(object):
         for sigma, ranef in izip(variance_components, self.random_effects):
             ranef.variance_component = sigma
 
-    def maximize(self, method='L-BFGS-B', verbose=False):
+    def maximize(self, method="Average Information", verbose=False):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation.
+        """
+
+        if self.maximized == method:
+            return
+
+        starts = self.__starting_variance_components()
+        iterative_scoring_method(self, starts, method)
+        self.maximized = method
+
+    def _maximize_scipy(self, method='L-BFGS-B', verbose=False):
+        """
+        Finds the optimal values for variance components of the model by
+        restricted maximum likelihood estimation using scipy minimization.
         """
         if self.maximized == method:
             return
@@ -311,10 +326,13 @@ class MixedModel(object):
                     ', '.join(str(y) for y in x.tolist())
 
         r = minimize(self.__reml_optimization_target, x0=starts,
-                     jac=self.__reml_gradient, callback=cb)
+                     method='Newton-CG',
+                     jac=self.__reml_gradient,
+                     hess=self.__reml_hessian, callback=cb)
         if verbose:
             print r
         self.set_variance_components(r.x)
+        self.maximized = method
 
     def loglikelihood(self, restricted=False, vmat=None):
         """
