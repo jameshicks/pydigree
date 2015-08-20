@@ -31,7 +31,7 @@ def makeR(y, X, V=None, Vinv=None):
 
 def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
-    return Vinv - Vinv * X * pinv(X.T * Vinv * X) * X.T * Vinv
+    return Vinv - Vinv * X * inv(X.T * Vinv * X) * X.T * Vinv
 
 
 def full_loglikelihood(y, V, X, Vinv=None):
