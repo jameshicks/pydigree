@@ -89,4 +89,32 @@ def dREML_dsigma(y, Z, G, P):
     "The REML derivative of V with regard to sigma"
     PZGZt = P * Z * G * Z.T
     return matrix.item(-.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y))
-    
+
+
+def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
+    a = .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
+    b = y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+    return matrix.item(a - b)
+
+
+def reml_hessian(y, X, V, ranefs, Vinv=None):
+    if Vinv is None:
+        Vinv = csc_matrix(inv(V.todense()))
+    P = makeP(X, Vinv)
+    mat = []
+    for ranef_a in ranefs:
+        dV_dsigma_a = ranef_a.V_i
+        row = []
+        for ranef_b in ranefs:
+            dV_dsigma_b = ranef_b.V_i
+            dV_dsigma_a_dsigma_b = reml_hessian_element(y,
+                                                        P,
+                                                        dV_dsigma_a,
+                                                        dV_dsigma_b)
+            row.append(dV_dsigma_a_dsigma_b)
+        mat.append(row)
+    return np.array(mat)
+
+
+def reml_observed_information_matrix(y, X, V, ranefs, Vinv=None):
+    return -reml_hessian(y, X, V, ranefs, Vinv)
