@@ -4,6 +4,7 @@ from scipy.sparse import csc_matrix
 
 from likelihood import reml_gradient, reml_observed_information_matrix
 from likelihood import reml_fisher_matrix, reml_average_information_matrix
+from likelihood import makeP
 
 
 def iterative_scoring_method(mm, starts, method='Fisher', tol=1e-6):
@@ -23,9 +24,14 @@ def iterative_scoring_method(mm, starts, method='Fisher', tol=1e-6):
 	i = 0
 	while True:
 		V = mm._makeV(vcs.tolist())
+
+		# Complicated things we only want to calculate once
 		Vinv = csc_matrix(inv(V.todense()))
-		grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, Vinv=Vinv)
-		mat = information_mat(mm.y, mm.X, V, mm.random_effects, Vinv=Vinv)
+		P = makeP(mm.X, Vinv)
+
+		# Makes the information matrix and gradient, then performs an iteration
+		grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
+		mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
 
 		delta = scoring_iteration(mat, grad)
 		

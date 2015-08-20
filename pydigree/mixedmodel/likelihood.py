@@ -33,8 +33,7 @@ def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
     return Vinv - Vinv * X * inv(X.T * Vinv * X) * X.T * Vinv
 
-
-def full_loglikelihood(y, V, X, Vinv=None):
+def full_loglikelihood(y, V, X, P=None, Vinv=None):
     """
     Returns the full loglikelihood of a mixed model
 
@@ -48,7 +47,7 @@ def full_loglikelihood(y, V, X, Vinv=None):
     return matrix.item(llik)
 
 
-def restricted_loglikelihood(y, V, X, Vinv=None):
+def restricted_loglikelihood(y, V, X, P=None, Vinv=None):
     """
     Returns the restricted loglikelihood for mixed model variance component
     estimation.
@@ -67,7 +66,8 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
     """
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(X, Vinv=Vinv)
+    if P is None:
+        P = makeP(X, Vinv=Vinv)
     n = X.shape[0]
     rank = np.linalg.matrix_rank(X)
     llik_restricted = -0.5 * (logdet(V.todense())
@@ -77,10 +77,11 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
     return matrix.item(llik_restricted)
 
 
-def reml_gradient(y, X, V, ranefs, Vinv=None):
+def reml_gradient(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(X, Vinv)
+    if P is None:
+        P = makeP(X, Vinv)
     nabla = [dREML_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
     return np.array(nabla)
 
@@ -97,10 +98,11 @@ def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
     return matrix.item(a - b)
 
 
-def reml_hessian(y, X, V, ranefs, Vinv=None):
+def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(X, Vinv)
+    if P is None:
+        P = makeP(X, Vinv)
     mat = []
     for ranef_a in ranefs:
         dV_dsigma_a = ranef_a.V_i
@@ -116,18 +118,19 @@ def reml_hessian(y, X, V, ranefs, Vinv=None):
     return np.array(mat)
 
 
-def reml_observed_information_matrix(y, X, V, ranefs, Vinv=None):
-    return -reml_hessian(y, X, V, ranefs, Vinv)
+def reml_observed_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
+    return -reml_hessian(y, X, V, ranefs, P, Vinv)
 
 
 def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
     return .5 * np.trace(P * dV_dsigma_a * dV_dsigma_b)
 
 
-def reml_fisher_matrix(y, X, V, ranefs, Vinv=None):
+def reml_fisher_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(X, Vinv)
+    if P is None:
+        P = makeP(X, Vinv)
     mat = []
     for ranef_a in ranefs:
         dV_dsigma_a = ranef_a.V_i
@@ -141,10 +144,11 @@ def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
     return y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
 
 
-def reml_average_information_matrix(y, X, V, ranefs, Vinv=None):
+def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
-    P = makeP(X, Vinv)
+    if P is None:
+        P = makeP(X, Vinv)
     mat = []
     for ranef_a in ranefs:
         dV_dsigma_a = ranef_a.V_i
