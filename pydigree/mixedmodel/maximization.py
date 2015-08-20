@@ -6,8 +6,7 @@ from likelihood import reml_gradient, reml_observed_information_matrix
 from likelihood import reml_fisher_matrix, reml_average_information_matrix
 from likelihood import makeP
 
-
-def iterative_scoring_method(mm, starts, method='Fisher', tol=1e-6):
+def iterative_scoring_method(mm, starts, method='Fisher', tol=1e-4):
 	if method == 'Newton-Raphson':
 		information_mat = reml_observed_information_matrix
 	elif method == 'Fisher':
