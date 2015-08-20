@@ -5,7 +5,7 @@ Functions for computing likelihoods of linear mixed models
 from math import log, pi
 
 import numpy as np
-from scipy.sparse import csc_matrix, issparse
+from scipy.sparse import bsr_matrix, issparse
 from scipy.linalg import pinv, inv
 from scipy import matrix
 np.seterr(invalid='ignore')
@@ -25,13 +25,18 @@ def makeR(y, X, V=None, Vinv=None):
     if V is None and Vinv is None:
         raise ValueError('Variance matrix not specified')
     elif Vinv is None and V is not None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
 
 
 def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
     return Vinv - Vinv * X * inv(X.T * Vinv * X) * X.T * Vinv
+
+def makeVinv(V):
+    if issparse(V):
+        V = V.todense()
+    return bsr_matrix(inv(V))
 
 def full_loglikelihood(y, V, X, P=None, Vinv=None):
     """
@@ -40,7 +45,7 @@ def full_loglikelihood(y, V, X, P=None, Vinv=None):
     Ref: SAS documentation for PROC MIXED
     """
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     R = makeR(y, X, Vinv=Vinv)
     n = X.shape[0]
     llik = -0.5 * (logdet(V.todense()) + R.transpose() * Vinv * R + n * l2pi)
@@ -65,7 +70,7 @@ def restricted_loglikelihood(y, V, X, P=None, Vinv=None):
     SAS documentation for PROC MIXED
     """
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv=Vinv)
     n = X.shape[0]
@@ -79,7 +84,7 @@ def restricted_loglikelihood(y, V, X, P=None, Vinv=None):
 
 def reml_gradient(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
     nabla = [dREML_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
@@ -89,7 +94,8 @@ def reml_gradient(y, X, V, ranefs, P=None, Vinv=None):
 def dREML_dsigma(y, Z, G, P):
     "The REML derivative of V with regard to sigma"
     PZGZt = P * Z * G * Z.T
-    return matrix.item(-.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y))
+    dl_dsig = -.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y)
+    return matrix.item(dl_dsig)
 
 
 def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
@@ -100,7 +106,7 @@ def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
 
 def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
     mat = []
@@ -128,7 +134,7 @@ def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
 
 def reml_fisher_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
     mat = []
@@ -146,7 +152,7 @@ def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
 
 def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
-        Vinv = csc_matrix(inv(V.todense()))
+        Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
     mat = []
