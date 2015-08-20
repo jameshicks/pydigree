@@ -40,7 +40,7 @@ def full_loglikelihood(y, V, X, Vinv=None):
 
     Ref: SAS documentation for PROC MIXED
     """
-    if not Vinv:
+    if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
     R = makeR(y, X, Vinv=Vinv)
     n = X.shape[0]
@@ -65,7 +65,7 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
 
     SAS documentation for PROC MIXED
     """
-    if not Vinv:
+    if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
     P = makeP(X, Vinv=Vinv)
     n = X.shape[0]
@@ -76,8 +76,9 @@ def restricted_loglikelihood(y, V, X, Vinv=None):
                               + (n - rank) * l2pi)
     return matrix.item(llik_restricted)
 
+
 def reml_gradient(y, X, V, ranefs, Vinv=None):
-    if not Vinv:
+    if Vinv is None:
         Vinv = csc_matrix(inv(V.todense()))
     P = makeP(X, Vinv)
     nabla = [dV_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
