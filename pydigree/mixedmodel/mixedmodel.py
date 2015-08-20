@@ -309,7 +309,7 @@ class MixedModel(object):
             return
         if starts is None:
             starts = self.__starting_variance_components()
-        iterative_scoring_method(self, starts, method)
+        iterative_scoring_method(self, starts, method, verbose=verbose)
         self.maximized = method
 
     def _maximize_scipy(self, method='L-BFGS-B', verbose=False):
