@@ -298,7 +298,8 @@ class MixedModel(object):
         for sigma, ranef in izip(variance_components, self.random_effects):
             ranef.variance_component = sigma
 
-    def maximize(self, method="Average Information", verbose=False):
+    def maximize(self, method="Average Information",
+                 starts=None, verbose=False):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation.
@@ -306,8 +307,8 @@ class MixedModel(object):
 
         if self.maximized == method:
             return
-
-        starts = self.__starting_variance_components()
+        if starts is None:
+            starts = self.__starting_variance_components()
         iterative_scoring_method(self, starts, method)
         self.maximized = method
 
