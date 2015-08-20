@@ -4,6 +4,7 @@ import sys
 import argparse
 
 import pydigree
+import numpy as np
 from pydigree.mixedmodel import MixedModel
 
 parser = argparse.ArgumentParser()
@@ -15,7 +16,13 @@ parser.add_argument('--outcome', required=True, help='Outcome phenotype')
 parser.add_argument('--fixedeffects', '--fixefs', nargs="*", dest='fixefs',
                     help='Fixed effects for model')
 parser.add_argument('--maxmethod', help='Method for maximization',
-                     default='Fisher')
+                    default='Fisher')
+parser.add_argument('--starts', help='Starting values for variance components',
+                    nargs='*', default=None)
+parser.add_argument('--interact', action='store_true',
+                    help='Enter IPython shell after maximization')
+parser.add_argument('--garbley', action='store_true',
+                    help='Replace y values with random normal deviates')
 args = parser.parse_args()
 
 
@@ -29,7 +36,19 @@ m.add_genetic_effect()
 print 'Done'
 m.fit_model()
 
+if args.garbley:
+	m.y = np.matrix(np.random.normal(10, 5, len(m.y))).T
 
-m.maximize(method=args.maxmethod, verbose=True)
+starts = args.starts
+if starts is not None:
+    starts = [float(x) for x in starts]
+m.maximize(method=args.maxmethod, verbose=True, starts=starts)
 
 m.summary()
+
+if args.interact:
+    try:
+        from IPython import embed
+        embed()
+    except ImportError:
+        print "IPython not found!"
