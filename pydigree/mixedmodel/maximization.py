@@ -28,7 +28,6 @@ def iterative_scoring_method(mm, starts, method='Fisher',
         print 'Maximizing model with {} method'.format(method)
 
     vcs = np.array(starts)
-    vcs_old = np.array([-100] * len(vcs))
 
     i = 0
     while True:
@@ -41,17 +40,18 @@ def iterative_scoring_method(mm, starts, method='Fisher',
         # Makes the information matrix and gradient, then performs an iteration
         grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
-
         delta = scoring_iteration(mat, grad)
 
-        if np.sqrt((delta ** 2).sum()) < tol:
-            break
-
-        vcs_old = vcs
+        
         vcs = vcs - delta
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
+        
         if verbose:
             print i, llik, vcs
+        
+        if (np.abs(delta) < tol).all():
+            break
+
         i += 1
 
     mm.set_variance_components(vcs.tolist())
