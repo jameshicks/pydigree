@@ -132,6 +132,9 @@ class MixedModel(object):
 
         return newmm
 
+    def _centery(self):
+        self.y = self.y - self.y.mean()
+        
     def fit_model(self):
         """
         Builds X, Z, Y, and R for the model
