@@ -101,8 +101,9 @@ def dREML_dsigma(y, Z, G, P):
 
 
 def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
-    a = .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
-    b = y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+    common_term = P * dV_dsigma_a * P * dV_dsigma_b
+    a = .5 * np.trace(common_term)
+    b = y.T * common_term * P * y
     return matrix.item(a - b)
 
 
