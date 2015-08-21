@@ -11,7 +11,8 @@ from scipy.linalg import inv as scipy_inv
 from scipy.linalg import pinv 
 from scipy.optimize import minimize
 
-from pydigree.mixedmodel.blup import blup
+from pydigree.mixedmodel.blup import blup, makeLHS
+from pydigree.mixedmodel.likelihood import makeP
 from pydigree.mixedmodel.likelihood import restricted_loglikelihood
 from pydigree.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.mixedmodel.likelihood import full_loglikelihood
@@ -207,9 +208,26 @@ class MixedModel(object):
         "Covariance matrix of residual_variance"
         return self.random_effects[-1].covariance_matrix
 
+    @property 
+    def P(self):
+        "Projection matrix"
+        return makeP(self.X, inv(self.V))
+
     def residual_variance(self):
         """ Returns the variance in y not accounted for by random effects """
         return self.random_effects[-1].sigma
+
+    def coefficient_matrix(self):
+        ginvlist = [(1 / rf.sigma) * inv(rf.G) for rf in self.random_effects]
+        return makeLHS(self.X, self.Zlist, ginvlist, inv(self.R))
+    
+    def _fixef_vcv(self):
+        "Variance-covariance matrix of fixed effect estimates"
+        # Add 1 to include intercept
+        nfixef = len(self.fixed_effects) + 1
+        C = self.coefficient_matrix()
+        vcv_beta = inv(C)[0:nfixef, 0:nfixef]
+        return vcv_beta
 
     def _makey(self):
         """ Prepares the vector of outcome variables for model estimation """
