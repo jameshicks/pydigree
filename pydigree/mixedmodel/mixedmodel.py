@@ -4,9 +4,10 @@ from itertools import izip
 import copy
 
 import numpy as np
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix, issparse
 from scipy.sparse import eye as sparseeye
-from scipy.linalg import inv, pinv
+from scipy.linalg import inv as scipy_inv
+from scipy.linalg import pinv 
 from scipy.optimize import minimize
 
 from pydigree.mixedmodel.blup import blup
@@ -20,6 +21,10 @@ from pydigree.mixedmodel.maximization import iterative_scoring_method
 def is_genetic_effect(effect):
     return effect in set(['additive', 'dominance', 'mitochondrial'])
 
+def inv(M):
+    if issparse(M):
+        M = M.todense()
+    return scipy_inv(M)
 
 def _make_incidence_matrix(individuals, effect_name):
     if effect_name.lower() == 'residual':
