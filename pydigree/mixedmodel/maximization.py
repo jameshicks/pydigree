@@ -15,11 +15,11 @@ def iterative_scoring_method(mm, starts, method='Fisher',
     """
     Updates variance components for a mixed model in an iterative scheme.
     """
-    if method == 'Newton-Raphson':
+    if method.lower() in {'newton-raphson', 'newton', 'nr'):
         information_mat = reml_observed_information_matrix
-    elif method == 'Fisher':
+    elif method.lower() in {'fisher scoring', 'fisher', 'fs'}:
         information_mat = reml_fisher_information_matrix
-    elif method == 'Average Information':
+    elif method.lower() in {'average information', 'aireml', 'ai'}:
         information_mat = reml_average_information_matrix
     else:
         raise ValueError('Unknown maximization method')
