@@ -33,10 +33,12 @@ def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
     return Vinv - Vinv * X * inv(X.T * Vinv * X) * X.T * Vinv
 
+
 def makeVinv(V):
     if issparse(V):
         V = V.todense()
     return bsr_matrix(inv(V))
+
 
 def full_loglikelihood(y, V, X, P=None, Vinv=None):
     """
@@ -129,7 +131,7 @@ def reml_observed_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
 
 
 def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
-    return .5 * np.trace(P * dV_dsigma_a * dV_dsigma_b)
+    return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
 
 
 def reml_fisher_matrix(y, X, V, ranefs, P=None, Vinv=None):
