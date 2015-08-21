@@ -111,18 +111,24 @@ def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
         Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
-    mat = []
-    for ranef_a in ranefs:
+
+    n_ranefs = len(ranefs)
+    mat = np.zeros((n_ranefs, n_ranefs))
+
+    for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
-        row = []
-        for ranef_b in ranefs:
+        for j, ranef_b in enumerate(ranefs):
+
+            if j < i:
+                # Already set when we did the other side of the matrix
+                continue
+
             dV_dsigma_b = ranef_b.V_i
-            dV_dsigma_a_dsigma_b = reml_hessian_element(y,
-                                                        P,
-                                                        dV_dsigma_a,
-                                                        dV_dsigma_b)
-            row.append(dV_dsigma_a_dsigma_b)
-        mat.append(row)
+            element = reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b)
+
+            mat[i, j] = dV_dsig_a_dsig_b
+            mat[j, i] = dV_dsig_a_dsig_b
+
     return np.array(mat)
 
 
@@ -139,13 +145,23 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
         Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
-    mat = []
-    for ranef_a in ranefs:
+
+    mat = np.zeros((len(ranefs), len(ranefs)))
+
+    for i, ranef_a in ranefs:
         dV_dsigma_a = ranef_a.V_i
-        row = [reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
-               for ranef_b in ranefs]
-        mat.append(row)
-    return np.array(mat)
+
+        for j, ranef_b in enumerate(ranefs):
+            if j < i:
+                # Already set when we did the other side of the matrix
+                continue
+
+            element = reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
+
+            mat[i, j] = element
+            mat[j, i] = element
+
+    return mat
 
 
 def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
@@ -157,10 +173,18 @@ def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
         Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
-    mat = []
-    for ranef_a in ranefs:
+    mat = np.zeros((len(ranefs), len(ranefs)))
+    for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
-        row = [reml_average_information_element(y, P, dV_dsigma_a, ranef_b.V_i)
-               for ranef_b in ranefs]
-        mat.append(row)
-    return np.array(mat)
+
+        for j, ranef_b in enumerate(ranefs):
+            if j < i:
+                # Already set when we did the other side of the matrix
+                continue
+
+        element = reml_average_information_element(y, P,
+                                                   dV_dsigma_a, ranef_b.V_i)
+        mat[i,j] = element
+        mat[j,i] = element
+    
+    return mat
