@@ -134,7 +134,7 @@ def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
     return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
 
 
-def reml_fisher_matrix(y, X, V, ranefs, P=None, Vinv=None):
+def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = makeVinv(V)
     if P is None:

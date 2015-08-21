@@ -2,8 +2,10 @@ import numpy as np
 from numpy.linalg import inv
 from scipy.sparse import csc_matrix
 
-from likelihood import reml_gradient, reml_observed_information_matrix
-from likelihood import reml_fisher_matrix, reml_average_information_matrix
+from likelihood import reml_gradient
+from likelihood import reml_observed_information_matrix
+from likelihood import reml_fisher_information_matrix
+from likelihood import reml_average_information_matrix
 from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
@@ -16,7 +18,7 @@ def iterative_scoring_method(mm, starts, method='Fisher',
     if method == 'Newton-Raphson':
         information_mat = reml_observed_information_matrix
     elif method == 'Fisher':
-        information_mat = reml_fisher_matrix
+        information_mat = reml_fisher_information_matrix
     elif method == 'Average Information':
         information_mat = reml_average_information_matrix
     else:
