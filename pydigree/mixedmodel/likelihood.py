@@ -126,8 +126,8 @@ def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
             dV_dsigma_b = ranef_b.V_i
             element = reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b)
 
-            mat[i, j] = dV_dsig_a_dsig_b
-            mat[j, i] = dV_dsig_a_dsig_b
+            mat[i, j] = element
+            mat[j, i] = element
 
     return np.array(mat)
 
@@ -148,7 +148,7 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
 
     mat = np.zeros((len(ranefs), len(ranefs)))
 
-    for i, ranef_a in ranefs:
+    for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
 
         for j, ranef_b in enumerate(ranefs):
@@ -181,10 +181,11 @@ def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
             if j < i:
                 # Already set when we did the other side of the matrix
                 continue
+            dV_dsigma_b = ranef_b.V_i
+            element = reml_average_information_element(y, P,
+                                                       dV_dsigma_a,
+                                                       dV_dsigma_b)
+            mat[i, j] = element
+            mat[j, i] = element
 
-        element = reml_average_information_element(y, P,
-                                                   dV_dsigma_a, ranef_b.V_i)
-        mat[i,j] = element
-        mat[j,i] = element
-    
     return mat
