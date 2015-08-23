@@ -11,7 +11,8 @@ from pydigree.genotypes import Alleles, SparseAlleles
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
-             population_handler=None, data_handler=None, connect_inds=True, onlyinds=None):
+             population_handler=None, data_handler=None, connect_inds=True,
+             onlyinds=None):
     """
     Reads a plink format pedigree file, ie:
         familyid indid father mother sex whatever whatever whatever
@@ -139,15 +140,15 @@ def write_phenotypes(pedigrees, filename, predicate=None,
                      missingcode='X', delim=','):
     "Writes phenotypes to a CSV (or other delimited) file"
     inds = pedigrees.individuals()
-    
+
     if callable(predicate):
         inds = [x for x in inds if predicate(x)]
-    
+
     available_phenotypes = reduce(set.union,
                                   [set(x.phenotypes.keys()) for x in inds])
     available_phenotypes = sorted(available_phenotypes)
     header = ['famid', 'id'] + available_phenotypes
-    
+
     with open(filename, 'w') as ofile:
         for ind in inds:
             row = [ind.population.label, ind.label]
@@ -156,7 +157,9 @@ def write_phenotypes(pedigrees, filename, predicate=None,
             row = ','.join([str(x) for v in row])
             ofile.write(row + '\n')
 
-def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', sparse=False):
+
+def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0',
+                                      sparse=False):
     '''
     Takes a series of alleles and turns them into genotypes.
 
@@ -166,10 +169,11 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', spars
     chrom2 = [2,2,2]
 
     These are returned in the a list in the form [(chroma, chromb), (chroma, chromb)...]
-    
+
     Arguments
     ------
-    chromosomes: A list of ChromosomeTemplate objects corresponding to the genotypes
+    chromosomes: A list of ChromosomeTemplate objects corresponding to the 
+    genotypes
     data: The alleles to be turned into genotypes
     sparse: Return SparseAlleless instead of non-sparse
 
@@ -180,9 +184,11 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', spars
     genotypes = []
 
     data = np.array(data)
-    
+
     if not np.issubdtype(type(missing_code), data.dtype):
-        raise ValueError('Invalid type for missing code: {}. Expected: {}'.format(type(missing_code), data.dtype))
+        raise ValueError(
+            'Invalid type for missing code: {}. Expected: {}'.format(
+                type(missing_code), data.dtype))
 
     if np.issubdtype(data.dtype, str):
         data[data == missing_code] = ''
