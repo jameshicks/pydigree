@@ -93,8 +93,18 @@ class Architecture(object):
         effects: a dictionary describing the effect for each genotype. eg:
         Dominance: {(1,1): 1, (0,1): 1, (0,0): 0 }
         Additive: {(1,1): 2, (0,1): 1, (0,0): 0 }
+
+        or
+
+        a numeric variable that will be made into an additive effect
         """
         chrom, marker = location
+        if not isinstance(effects, dict):
+            try:
+                effect = float(effects)
+                effects = {(1,1): 0, (1,2): effect, (2,2): 2 * effect}
+            except ValueError:
+                raise ValueError('Unparsable effect: {}'.format(effects))
         effects = self.__transformdict(effects)
         try:
             self.effects[location].update(effects)
