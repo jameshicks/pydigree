@@ -139,7 +139,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
 def write_phenotypes(pedigrees, filename, predicate=None,
                      missingcode='X', delim=','):
     "Writes phenotypes to a CSV (or other delimited) file"
-    inds = pedigrees.individuals()
+    inds = pedigrees.individuals
 
     if callable(predicate):
         inds = [x for x in inds if predicate(x)]
