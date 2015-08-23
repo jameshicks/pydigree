@@ -20,6 +20,7 @@ class Simulation(object):
         self.accuracy_threshold = 0.9
         self.constraints = {'genotype': {}, 'ibd': {}}
         self.trait = None
+        self.founder_genotype_hooks = []
 
     def set_trait(self, architecture):
         self.trait = architecture
@@ -36,6 +37,7 @@ class Simulation(object):
             else:
                 ind.get_constrained_genotypes(geno_constraints[ind],
                                               linkeq=linkeq)
+        self.run_founder_genotype_hooks()
         
     def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
         write_map(self.template, '{0}.map'.format(self.prefix))
@@ -139,3 +141,12 @@ class Simulation(object):
             self.constraints['ibd'][ind] = []
         c = (ancestor, location, anchap)
         self.constraints['ibd'][ind].append(c)
+
+    def add_founder_genotype_hook(self, func):
+        founder_genotypes_hooks.append(func)
+
+    def run_founder_genotype_hooks(self):
+        for hook in self.founder_genotypes_hooks:
+            for founder in self.template.founders():
+                hook(founder)
+
