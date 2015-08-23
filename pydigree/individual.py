@@ -37,7 +37,7 @@ class Individual(object):
         self.sex = sex  # 0:M 1:F
         self.pedigree = None
         self.genotypes = None
-        self.observed_genos = True
+        self.observed_genos = False
         self.translated_alleles = False
         self.phenotypes = {}
         self.attrib = {}
@@ -396,3 +396,5 @@ class Individual(object):
     def clear_phenotypes(self):
         """ Removes phenotypes """
         self.phenotypes = {}
+
+
