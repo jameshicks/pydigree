@@ -135,6 +135,27 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 pedigrees[fam][ind].phenotypes[k] = v
 
 
+def write_phenotypes(pedigrees, filename, predicate=None,
+                     missingcode='X', delim=','):
+    "Writes phenotypes to a CSV (or other delimited) file"
+    inds = pedigrees.individuals()
+    
+    if callable(predicate):
+        inds = [x for x in inds if predicate(x)]
+    
+    available_phenotypes = reduce(set.union,
+                                  [set(x.phenotypes.keys()) for x in inds])
+    available_phenotypes = sorted(available_phenotypes)
+    header = ['famid', 'id'] + available_phenotypes
+    
+    with open(filename, 'w') as ofile:
+        for ind in inds:
+            row = [ind.population.label, ind.label]
+            row += [ind.phenotypes.get(phenotype, missingcode)
+                    for phenotype in available_phenotypes]
+            row = ','.join([str(x) for v in row])
+            ofile.write(row + '\n')
+
 def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0', sparse=False):
     '''
     Takes a series of alleles and turns them into genotypes.
