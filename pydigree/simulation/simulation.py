@@ -27,6 +27,16 @@ class Simulation(object):
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")
 
+    def get_founder_genotypes(self):
+        geno_constraints = self.constraints['genotype']
+        for ind in ped.founders():
+            ind.clear_genotypes()
+            if ind not in geno_constraints:
+                ind.get_genotypes(linkeq=linkeq)
+            else:
+                ind.get_constrained_genotypes(geno_constraints[ind],
+                                              linkeq=linkeq)
+        
     def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
         write_map(self.template, '{0}.map'.format(self.prefix))
         for x in xrange(self.replications):

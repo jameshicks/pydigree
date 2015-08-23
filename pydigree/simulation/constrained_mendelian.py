@@ -63,19 +63,15 @@ class ConstrainedMendelianSimulation(Simulation):
             if writeibd:
                 self._writeibd(replicatenumber)
 
-            # Now replace the label genotypes in founders with real ones.
-            geno_constraints = self.constraints['genotype']
-            for ind in ped.founders():
-                ind.clear_genotypes()
-                if ind not in geno_constraints:
-                    ind.get_genotypes(linkeq=linkeq)
-                else:
-                    ind.get_constrained_genotypes(geno_constraints[ind],
-                                                  linkeq=linkeq)
-            # Now replace the label genotypes in the nonfounders with the
-            # genotypes of the founders
-            for nf in ped.nonfounders():
-                nf.delabel_genotypes()
-            if verbose:
-                for ind in ped:
-                    print ind, ind.get_genotype(location)
+        # Now replace the label genotypes in founders with real ones.
+        self.get_founder_genotypes()
+
+        # Now replace the label genotypes in the nonfounders with the
+        # genotypes of the founders
+        for nf in template.nonfounders():
+            nf.delabel_genotypes()
+        if verbose:
+            for ind in template.individuals():
+                print ind, ind.get_genotype(location)
+
+
