@@ -172,7 +172,7 @@ PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
     Py_ssize_t ancestral_hap = PyInt_AsSsize_t(PyObject_GetAttrString(listitem, "haplotype"));
     
     if (!(ancestor == last_ancestor && ancestral_hap == last_ah)) {
-      /* Get the genotypes of the ancestor, which are a list of pairs of lists */
+      /* Get the genotypes of the ancestor, which are a list of pairs of Sequences */
       anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
       anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
       anc_chromosome = PySequence_GetItem(anc_chromosomes, ancestral_hap);
