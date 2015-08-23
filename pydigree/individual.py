@@ -4,11 +4,13 @@ import itertools
 import random
 from itertools import izip
 
+import numpy as np
+
 from pydigree.recombination import recombine
 from pydigree.paths import *
 from pydigree.common import *
-from pydigree.genotypes import Alleles
-from pydigree._pydigree import chromatid_delabeler
+from pydigree.genotypes import Alleles, AncestralAllele
+from pydigree.genotypes import chromatid_delabeler
 from pydigree.exceptions import IterationError
 
 missing_genotype = (0, 0)
@@ -92,7 +94,7 @@ class Individual(object):
             self.genotypes = [(chrom.empty_chromosome(dtype=dtype), chrom.empty_chromosome(dtype=dtype))
                               for chrom in self.chromosomes]
         else:
-            self.genotypes = [(None, None) for chrom in self.chromosomes]
+            self.genotypes = [[None, None] for chrom in self.chromosomes]
 
     def has_genotypes(self):
         """ Returns True if an individual has genotypes """
@@ -188,11 +190,17 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        haplab_A = (self, 0)
-        haplab_B = (self, 1)
+        haplab_A = AncestralAllele(self, 0)
+        haplab_B = AncestralAllele(self, 1)
 
-        g = [(Alleles((haplab_A) * len(x.genetic_map)), Alleles((haplab_B) * len(x.genetic_map)))
-             for x in self.chromosomes]
+        def labelled_chromatids(chromosome):
+            n = chromosome.nmark()
+            a = Alleles([haplab_A] * n, dtype=tuple)
+            b = Alleles([haplab_B] * n, dtype=tuple)
+            return (a,b)
+        #import ipdb; ipdb.set_trace()
+
+        g = [labelled_chromatids(c) for c in self.chromosomes]
         self.genotypes = g
 
     def delabel_genotypes(self):

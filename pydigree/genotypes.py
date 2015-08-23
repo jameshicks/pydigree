@@ -5,12 +5,34 @@ import numpy as np
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 from pydigree.io.genomesimla import read_gs_chromosome_template
+from pydigree._pydigree import chromatid_delabeler as c_chromatid_delabeler
+
+
+def chromatid_delabeler(chromatid, chromidx):
+    nc = c_chromatid_delabeler(chromatid, chromidx)
+    nc = Alleles(nc)
+    return nc
+
+
+class AncestralAllele(object):
+    __slots__ = ['ancestor', 'haplotype']
+    def __init__(self, anc, hap):
+        self.ancestor = anc
+        self.haplotype = hap
+
+    def __repr__(self):
+        return 'AncestralAllele: {}: {}'.format(self.ancestor, self.haplotype)
+
+    def __eq__(self, other):
+        return (self.ancestor == other.ancestor and
+                self.haplotype == other.haplotype)
+
 
 class Alleles(np.ndarray):
 
     ''' A class for holding genotypes '''
-    def __new__(cls, data, template=None):
-        obj = np.asarray(data).view(cls)
+    def __new__(cls, data, template=None, **kwargs):
+        obj = np.asarray(data, **kwargs).view(cls)
         obj.template = template
         return obj
 
