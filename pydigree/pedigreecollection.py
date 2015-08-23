@@ -39,6 +39,14 @@ class PedigreeCollection(MutableMapping):
     def keys(self):
         return self.pedigrees.keys()
 
+    def add_pedigree(self, ped):
+        if not isinstance(ped, Pedigree):
+            raise ValueError('{} not of type Pedigree')
+        elif ped.label in self.keys():
+            raise ValueError('A pedigree labeled {} already in collection'.format(ped.label))
+        else:
+            self[ped.label] = ped
+
     @property
     def individuals(self):
         '''
@@ -50,6 +58,14 @@ class PedigreeCollection(MutableMapping):
             inds.extend(sorted((x for x in pedigree), key=lambda x: x.label))
         return inds
 
+    def founders(self):
+        ''' Returns a list of founder individuals across all pedigrees '''
+        return [x for x in self.individuals if x.is_founder()]
+
+    def nonfounders(self):
+        ''' Returns a list of founder individuals across all pedigrees '''
+        return [x for x in self.individuals if not x.is_founder()]
+    
     def _getindividual(self, label):
         for x in self.individuals:
             if x.label == label:
