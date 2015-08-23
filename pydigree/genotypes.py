@@ -4,7 +4,7 @@ import numpy as np
 
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
-
+from pydigree.io.genomesimla import read_gs_chromosome_template
 
 class Alleles(np.ndarray):
 
@@ -216,6 +216,10 @@ class ChromosomeTemplate(object):
     def _iinfo(self):
         return izip(self.labels, self.genetic_map, self.physical_map,
                     self.frequencies)
+
+    @staticmethod
+    def from_genomesimla(filename):
+        return read_gs_chromosome_template(filename)
 
     def nmark(self):
         ''' Returns the number of markers on the chromosome '''

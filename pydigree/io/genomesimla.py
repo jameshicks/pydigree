@@ -1,4 +1,4 @@
-from pydigree.genotypes import ChromosomeTemplate
+import pydigree
 
 
 def read_gs_chromosome_template(templatef):
@@ -14,7 +14,7 @@ def read_gs_chromosome_template(templatef):
     with open(templatef) as f:
         label = f.readline().strip()  # The label and
         f.readline()  # the number of markers, both of which we dont need.
-        c = ChromosomeTemplate(label=label)
+        c = pydigree.ChromosomeTemplate(label=label)
         # genomeSIMLA chromosome files have marginal recombination probs
         # instead of map positions. We'll have to keep track of what the
         # last position was and add to it to get it into the shape we want
