@@ -9,8 +9,8 @@ from pydigree import Individual
 
 class ConstrainedMendelianSimulation(Simulation):
 
-    def __init__(self, template=None, replications=1000):
-        Simulation.__init__(self, template, replications)
+    def __init__(self, template=None, replications=1000, only=None):
+        Simulation.__init__(self, template, replications, only=only)
         for ind in self.template.individuals:
             if ind.is_founder():
                 continue
@@ -64,14 +64,22 @@ class ConstrainedMendelianSimulation(Simulation):
                 self._writeibd(replicatenumber)
 
         # Now replace the label genotypes in founders with real ones.
-        self.get_founder_genotypes()
+        self.get_founder_genotypes(linkeq=linkeq)
 
         # Now replace the label genotypes in the nonfounders with the
         # genotypes of the founders
-        for nf in template.nonfounders():
-            nf.delabel_genotypes()
+        siminds = [x for x in self.template.individuals if only(x)]
+        for nf in siminds:
+                nf.delabel_genotypes()
+        
+        # Predict phenotypes
+        if self.trait:
+            for ind in siminds:
+                ind.phenotypes[trait.name] = trait.predict_phenotype(ind)
+
         if verbose:
-            for ind in template.individuals():
+            for ind in siminds:
                 print ind, ind.get_genotype(location)
+
 
 
