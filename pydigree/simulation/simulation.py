@@ -7,6 +7,7 @@ from pydigree.common import *
 from pydigree.ibs import ibs
 from pydigree.io.smartopen import smartopen
 from pydigree.io.plink import write_plink, write_map
+from pydigree.io.base import write_phenotypes
 from pydigree.individual import Individual
 from pydigree.exceptions import SimulationError
 
@@ -14,8 +15,9 @@ from pydigree.exceptions import SimulationError
 # A base class for simulations to inherit from
 class Simulation(object):
 
-    def __init__(self, template=None, replications=1000):
+    def __init__(self, template=None, label=None, replications=1000):
         self.template = template
+        self.label = label if label is not None else 'unlabeled'
         self.replications = replications
         self.accuracy_threshold = 0.9
         self.constraints = {'genotype': {}, 'ibd': {}}
@@ -28,9 +30,9 @@ class Simulation(object):
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")
 
-    def get_founder_genotypes(self):
+    def get_founder_genotypes(self, linkeq=True):
         geno_constraints = self.constraints['genotype']
-        for ind in ped.founders():
+        for ind in self.template.founders():
             ind.clear_genotypes()
             if ind not in geno_constraints:
                 ind.get_genotypes(linkeq=linkeq)
@@ -38,9 +40,9 @@ class Simulation(object):
                 ind.get_constrained_genotypes(geno_constraints[ind],
                                               linkeq=linkeq)
         self.run_founder_genotype_hooks()
-        
+
     def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
-        write_map(self.template, '{0}.map'.format(self.prefix))
+        write_map(self.template, '{0}.map'.format(self.label))
         for x in xrange(self.replications):
             print 'Replicate %d' % (x + 1)
             self.replicate(
@@ -49,9 +51,11 @@ class Simulation(object):
                 x, predicate=output_predicate, compression=compression)
 
     def write_data(self, replicatenumber, predicate=None, compression=None):
-        filename = '{0}-{1}'.format(self.prefix, (replicatenumber + 1))
+        filename = '{0}-{1}'.format(self.label, (replicatenumber + 1))
         write_plink(self.template, filename, predicate=predicate,
                     mapfile=False, compression=compression)
+        write_phenotypes(self.template, filename + '.csv',
+                         predicate=predicate)
 
     def _writeibd(self, replicatenumber):
         # Warning: Don't call this function! If the individuals in the pedigree dont have
@@ -60,7 +64,7 @@ class Simulation(object):
         #
         # If you have data you want to identify IBD segments in, check
         # pydigree.sgs
-        with smartopen('{0}-{1}.ibd.gz'.format(self.prefix, replicatenumber + 1), 'w') as of:
+        with smartopen('{0}-{1}.ibd.gz'.format(self.label, replicatenumber + 1), 'w') as of:
             for ped in self.template:
                 for ind1, ind2 in combinations_with_replacement(ped.individuals, 2):
                     identical = []
@@ -143,10 +147,9 @@ class Simulation(object):
         self.constraints['ibd'][ind].append(c)
 
     def add_founder_genotype_hook(self, func):
-        founder_genotypes_hooks.append(func)
+        self.founder_genotype_hooks.append(func)
 
     def run_founder_genotype_hooks(self):
-        for hook in self.founder_genotypes_hooks:
+        for hook in self.founder_genotype_hooks:
             for founder in self.template.founders():
                 hook(founder)
-
