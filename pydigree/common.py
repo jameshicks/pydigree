@@ -119,3 +119,24 @@ def cumsum(iter):
         value += x
         g[idx] = value
     return g
+
+def spans(iter):
+    if not iter: return []
+
+    identified = []
+
+    start = 0
+    lastitem = iter[0]
+    for i,item in enumerate(iter):
+        if i == 0: continue
+        if item != lastitem:
+            stop = i 
+            tup = lastitem, start, stop
+            identified.append(tup)
+
+            start = i 
+            lastitem = item
+    tup = item, start, i + 1
+    identified.append(tup)
+    return identified
+
