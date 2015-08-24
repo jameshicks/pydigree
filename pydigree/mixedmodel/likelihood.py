@@ -166,7 +166,7 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
 
 
 def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
-    return y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+    return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
 
 
 def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
