@@ -5,13 +5,22 @@ import numpy as np
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 from pydigree.io.genomesimla import read_gs_chromosome_template
-from pydigree._pydigree import chromatid_delabeler as c_chromatid_delabeler
+from pydigree.common import spans
 
 
 def chromatid_delabeler(chromatid, chromidx):
-    nc = c_chromatid_delabeler(chromatid, chromidx)
-    nc = Alleles(nc)
-    return nc
+    size = chromatid.nmark()
+    dt = chromatid.dtype
+    new_chromatid = np.empty_like(chromatid) 
+
+    ancestral_haplotypes = spans(chromatid)
+    for value, start, stop in ancestral_haplotypes:
+        interval = slice(start, stop)
+        ancestor, anchap = value.ancestor,value.haplotype
+        new_chromatid[interval] = ancestor.genotypes[chromidx][anchap][interval]
+        inter = ancestor.genotypes[chromidx][anchap][interval]
+        new_chromatid[interval] = (inter)
+    return Alleles(new_chromatid)
 
 
 class AncestralAllele(object):
