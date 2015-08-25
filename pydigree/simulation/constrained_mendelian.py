@@ -68,7 +68,11 @@ class ConstrainedMendelianSimulation(Simulation):
 
         # Now replace the label genotypes in the nonfounders with the
         # genotypes of the founders
-        siminds = [x for x in self.template.individuals if only(x)]
+        if callable(self.only):
+            siminds = [x for x in self.template.nonfounders() if self.only(x)]
+        else:
+            siminds = self.template.nonfounders()
+
         for nf in siminds:
                 nf.delabel_genotypes()
         

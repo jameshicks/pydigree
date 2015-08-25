@@ -15,7 +15,7 @@ from pydigree.exceptions import SimulationError
 # A base class for simulations to inherit from
 class Simulation(object):
 
-    def __init__(self, template=None, label=None, replications=1000):
+    def __init__(self, template=None, label=None, replications=1000, only=None):
         self.template = template
         self.label = label if label is not None else 'unlabeled'
         self.replications = replications
@@ -23,6 +23,7 @@ class Simulation(object):
         self.constraints = {'genotype': {}, 'ibd': {}}
         self.trait = None
         self.founder_genotype_hooks = []
+        self.only = only
 
     def set_trait(self, architecture):
         self.trait = architecture
