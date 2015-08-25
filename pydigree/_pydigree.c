@@ -14,8 +14,6 @@ PyObject* random_pairs(PyObject* pop, long int numpairs);
 PyObject* choice_probs_interface(PyObject* self, PyObject* args);
 PyObject* choice_probs(PyObject* choices, PyObject* probs);
 
-PyObject* chromatid_delabeler_interface(PyObject* self, PyObject* args);
-PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx);
 
 static inline PyObject* sgs_shares(PyObject* affecteds, PyObject* shared, Py_ssize_t nmark); 
 PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
@@ -27,14 +25,12 @@ static char module_docstring[] =
 static char sample_repl_docstring[] = "Randomly choses n individuals (with replacement) from the population";
 static char pairs_docstring[] = "Returns a list of n pairs from sampled with replacement from population"; 
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
-static char chromatid_delabeler_docstring[] = "Replaces genotypes from label_genotypes with alleles from the ancestor"; 
 static char sgs_shares_docstring[] = "Returns the proportion of individual pairs IBD";
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
   {"sample_with_replacement", sample_with_replacement_interface, METH_VARARGS, sample_repl_docstring},
   {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
-  {"chromatid_delabeler", chromatid_delabeler_interface, METH_VARARGS, chromatid_delabeler_docstring},
   {"sgs_shares", sgs_shares_interface, METH_VARARGS, sgs_shares_docstring},
   {NULL, NULL, 0, NULL}
 };
@@ -145,47 +141,6 @@ PyObject* choice_probs(PyObject* choices, PyObject* probs) {
     }
   }
   return NULL;
-}
-
-PyObject* chromatid_delabeler_interface(PyObject* self, PyObject* args) {
-  PyObject *chromatid;
-  Py_ssize_t chromidx;
-  if (!PyArg_ParseTuple(args, "On", &chromatid, &chromidx)) return NULL;
-  PyObject* newchromatid = chromatid_delabeler(chromatid, chromidx);
-  return newchromatid;
-}
-
-PyObject* chromatid_delabeler(PyObject* chromatid, Py_ssize_t chromidx) {
-  Py_ssize_t chromlength = PySequence_Size(chromatid);
-  PyObject* newchromatid = PyList_New(chromlength);
-
-  Py_ssize_t i;
-  PyObject* last_ancestor = NULL;
-  Py_ssize_t last_ah = 0;
-  PyObject *anc_genotypes = NULL;
-  PyObject *anc_chromosomes = NULL;
-  PyObject *anc_chromosome = NULL;
-
-  for (i=0; i < chromlength; i++) {
-    PyObject* listitem = PySequence_GetItem(chromatid, i);
-    PyObject* ancestor = PyObject_GetAttrString(listitem, "ancestor");
-    Py_ssize_t ancestral_hap = PyInt_AsSsize_t(PyObject_GetAttrString(listitem, "haplotype"));
-    
-    if (!(ancestor == last_ancestor && ancestral_hap == last_ah)) {
-      /* Get the genotypes of the ancestor, which are a list of pairs of Sequences */
-      anc_genotypes = PyObject_GetAttrString(ancestor, "genotypes");
-      anc_chromosomes = PySequence_GetItem(anc_genotypes, chromidx);
-      anc_chromosome = PySequence_GetItem(anc_chromosomes, ancestral_hap);
-    }
-
-    PyObject* allele = PySequence_GetItem(anc_chromosome, i);
-    PyList_SET_ITEM(newchromatid, i, allele);
-    Py_INCREF(allele);
-
-    last_ancestor = ancestor;
-    last_ah = ancestral_hap;
-  }
-  return newchromatid;
 }
 
 
