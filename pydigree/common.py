@@ -3,7 +3,7 @@
 from itertools import izip_longest
 from operator import mul as multiply
 from math import log
-from pydigree.cyfuncs import runs, runs_gte
+from pydigree.cyfuncs import runs, runs_gte, spans
 
 
 def count(val, iter):
@@ -120,8 +120,9 @@ def cumsum(iter):
         g[idx] = value
     return g
 
-def spans(iter):
-    if not iter: return []
+
+def spans_py(iter):
+    if len(iter) == 0: return []
 
     identified = []
 

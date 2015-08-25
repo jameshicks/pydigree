@@ -113,6 +113,35 @@ def fastfirstitem(tuple2d):
 
     return out
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef spans(iter):
+    cdef  int start, stop
+    cdef  int itersize, i
+    
+    itersize = len(iter)
+    identified = []
+
+    if itersize == 0: 
+        return identified
+
+    start = 0
+    lastitem = iter[0]
+    for i in range(itersize):
+        item = iter[i]
+        if i == 0: 
+            continue
+        if item != lastitem:
+            stop = i 
+            tup = lastitem, start, stop
+            identified.append(tup)
+
+            start = i 
+            lastitem = item
+    tup = lastitem, start, i + 1
+    identified.append(tup)
+    return identified
+
 
 def set_intervals_to_value(intervals, size, value):
     '''
