@@ -33,8 +33,8 @@ class AncestralAllele(object):
         return 'AncestralAllele: {}: {}'.format(self.ancestor, self.haplotype)
 
     def __eq__(self, other):
-        return (self.ancestor == other.ancestor and
-                self.haplotype == other.haplotype)
+        return (self.ancestor is other.ancestor and
+                self.haplotype is other.haplotype)
 
 
 class Alleles(np.ndarray):
