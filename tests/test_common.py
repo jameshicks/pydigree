@@ -80,6 +80,13 @@ def test_logbasechange():
 
 def test_spans():
     assert spans([]) == [] 
+
+    values = [1]
+    expected_output = [(1,0,1)]
+    actual_output = spans(values)
+    assert len(actual_output) == 1
+    assert expected_output[0] == actual_output[0]
+
     values = [1,1,1,2,2,3,1,1,1]
     expected_output = [(1,0,3), (2,3,5), (3,5,6), (1,6,9)]
     actual_output = spans(values)
