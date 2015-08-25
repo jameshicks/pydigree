@@ -129,8 +129,10 @@ cpdef spans(iter):
     lastitem = iter[0]
     for i in range(itersize):
         item = iter[i]
+
         if i == 0: 
             continue
+        
         if item != lastitem:
             stop = i 
             tup = lastitem, start, stop
@@ -138,6 +140,7 @@ cpdef spans(iter):
 
             start = i 
             lastitem = item
+
     tup = lastitem, start, i + 1
     identified.append(tup)
     return identified
