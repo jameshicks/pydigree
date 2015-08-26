@@ -1,7 +1,6 @@
-from itertools import izip
 import numpy as np
 cimport numpy as np
-cimport cython 
+cimport cython
 
 cpdef ibs(g1,g2, missingval=None):
     '''
@@ -115,12 +114,12 @@ def fastfirstitem(tuple2d):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef spans(iter):
+def spans(iter):
     cdef  int start, stop
     cdef  int itersize, i
     
     itersize = len(iter)
-    identified = []
+    cdef list identified = []
 
     if itersize == 0: 
         return identified
@@ -140,8 +139,8 @@ cpdef spans(iter):
 
             start = i 
             lastitem = item
-
-    tup = lastitem, start, i + 1
+    stop = i+1
+    tup = lastitem, start, stop
     identified.append(tup)
     return identified
 
@@ -152,10 +151,9 @@ def set_intervals_to_value(intervals, size, value):
     Intervals should be in the format (start_idx, stop_idx_inclusive)
     '''
 
-    DTYPE = np.int
     cdef int start = 0
     cdef int stop = 0
-    cdef np.ndarray array = np.zeros(size, dtype=DTYPE)
+    array = np.zeros(size, dtype=np.int)
     for start, stop in intervals:
         array[start:(stop+1)] = value
     return array
