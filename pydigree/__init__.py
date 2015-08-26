@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Common functions (cumsum, table, etc)
-from pydigree.common import *
+import pydigree.common 
 from pydigree.ibs import ibs
 
 
