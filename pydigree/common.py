@@ -121,23 +121,4 @@ def cumsum(iter):
     return g
 
 
-def spans_py(iter):
-    if len(iter) == 0: return []
-
-    identified = []
-
-    start = 0
-    lastitem = iter[0]
-    for i,item in enumerate(iter):
-        if i == 0: continue
-        if item != lastitem:
-            stop = i 
-            tup = lastitem, start, stop
-            identified.append(tup)
-
-            start = i 
-            lastitem = item
-    tup = item, start, i + 1
-    identified.append(tup)
-    return identified
 
