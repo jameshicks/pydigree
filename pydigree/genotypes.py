@@ -24,14 +24,20 @@ def chromatid_delabeler(chromatid, chromidx):
     return Alleles(new_chromatid)
 
 
+
 class LabelledAlleles(object):
 
-    def __init__(self, spans, chromobj=None, nmark=None):
+    def __init__(self, spans=None, chromobj=None, nmark=None):
         if not (chromobj or nmark):
             raise ValueError('One of chromobj or nmark must be specified')
-        self.spans = spans
+        self.spans = spans if spans is not None else []
         self.chromobj = chromobj
         self.nmark = nmark if self.chromobj is None else self.chromobj.nmark()
+
+    def __eq__(self, other):
+        if not isinstance(other, LabelledAlleles):
+            return False
+        return all(x == y for x,y in izip(self.spans, other.spans))
 
     def empty_like(self):
         return LabelledAlleles([], chromobj=self.chromobj, nmark=self.nmark)
@@ -46,14 +52,15 @@ class LabelledAlleles(object):
         self.spans.append(new_span)
 
     def copy_span(self, template, copy_start, copy_stop):
-        if isinstance(template, LabeledAlleles):
+        if not isinstance(template, LabelledAlleles):
             raise ValueError(
                 'LabelledAlleles can only copy from other LabelledAlleles')
 
         if copy_stop is None:
             copy_stop = self.nmark
 
-        for ind, hap, template_start, template_stop in template.spans:
+        for span in template.spans:
+            ind, hap, template_start, template_stop = span.to_tuple()
             # There are three possible things that can happen here:
             # 1) The template span is before the copy region, so we ignore it
             # 2) The template span is after the copy region, so we're done
@@ -63,29 +70,30 @@ class LabelledAlleles(object):
             # the template span, so #2 should never be encountered. I've left
             # The test in, to cover the bases. #1 is trivial to check for.
             # Scenario #3 is where actual copying occurs.
-            if hap_stop < start:
+            if template_stop < copy_start:
                 # Happens before the copy region we're looking for
                 continue
 
-            if hap_start > copy_stop:
+            if template_start > copy_stop:
                 # Happens after the end of the copy region so we're done
                 return
 
-            if (hap_start <= copy_start <= hap_stop
-                    or hap_start <= copy_stop <= hap_stop):
+            if (template_start <= copy_start <= template_stop
+                    or template_start <= copy_stop <= template_stop):
                 # This this span of template overlaps the copy region, so
                 # we have something to do
 
                 # We take the maxes of the starts and the mins of the stops
-                this_copystart = max(copy_start, tempate_start)
+                this_copystart = max(copy_start, template_start)
                 this_copystop = min(copy_stop, template_stop)
 
                 copy_span = InheritanceSpan(ind, hap,
                                             this_copystart, this_copystop)
+                
                 self.add_span(copy_span)
 
                 # The early bailout if we're done copying
-                if copy_start <= template_stop:
+                if copy_stop <= template_stop:
                     return
 
 
@@ -97,6 +105,18 @@ class InheritanceSpan(object):
         self.haplotype = haplotype
         self.start = start
         self.stop = stop
+
+    def __repr__(self):
+        return 'InheritanceSpan{}'.format(self.to_tuple())
+
+    def __eq__(self, other):
+        return (self.ancestor == other.ancestor and
+                self.haplotype == other.haplotype and
+                self.start == other.start and
+                self.stop == other.stop)
+
+    def to_tuple(self):
+        return self.ancestor, self.haplotype, self.start, self.stop
 
 
 class AncestralAllele(object):
