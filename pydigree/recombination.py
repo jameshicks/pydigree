@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from bisect import bisect_left
-from pydigree.genotypes import Alleles
+from pydigree.genotypes import Alleles, LabelledAlleles
 
 import numpy as np
 
