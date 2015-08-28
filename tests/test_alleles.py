@@ -18,6 +18,20 @@ def test_alleles():
     eq = (a == b)
     assert (eq == np.array([True, False, False, True])).all()
     
+    # Test copy span
+    z = Alleles(np.zeros(10))
+    o = Alleles(np.ones(10))
+    
+    z.copy_span(o, 5, 8)
+    expected_value = np.array([ 0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.])
+    assert all(z == expected_value)
+
+    # Test empty_like
+    a = Alleles(np.zeros(10))
+    b = a.empty_like()
+    expected_value = Alleles(np.zeros(10), dtype=a.dtype)
+    assert all(b == expected_value)
+
 def test_sparsealleles():
     a = SparseAlleles(['1', '2', '3', ''])
     b = SparseAlleles(['1', '3', '2', ''])

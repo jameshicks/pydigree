@@ -20,15 +20,24 @@ def recombine(chr1, chr2, map):
     newchrom = _recombine_haldane(chr1, chr2, map)
     return newchrom
 
-
 def _recombine_haldane(chr1, chr2, map):
     # The map is sorted list, and the last item will always be largest.
     maxmap = map[-1]
     nmark = len(map)
 
+    if type(chr1) is not Alleles: 
+        raise ValueError(
+            'Invalid chromosome type for recombination: {}'.format(type(chr1))) 
+
+    if type(chr1) is not type(chr2):
+        raise ValueError("Can't mix chromosome types in recombination")
+
     if chr1.dtype != chr2.dtype:
         raise ValueError('Chromosomes have different data types')
-    newchrom = Alleles(np.empty(nmark, dtype=chr1.dtype))
+    
+    # Return a new genotype container with the same specs as chr1
+    newchrom = chr1.empty_like() 
+
     # Randomly pick a chromosome to start from
     # np.random.randint works on a half open interval, so the upper bound
     # specified is 2. We'll get zeros and ones out of it.
@@ -49,13 +58,13 @@ def _recombine_haldane(chr1, chr2, map):
 
         if crossover_position > maxmap:
             # We've reached the end of our journey here.
-            newchrom[last_crossover_index:] = c[last_crossover_index:]
+            newchrom.copy_span(c, last_crossover_index, None)
             break
 
         # Find the next crossover point in the chromosome by binary search
         nextidx = bisect_left(
             map, crossover_position, last_crossover_index, nmark)
-        newchrom[last_crossover_index:nextidx] = c[last_crossover_index:nextidx]
+        newchrom.copy_span(c, last_crossover_index, nextidx)
 
         # Get ready to do it all over again
         last_crossover_index = nextidx

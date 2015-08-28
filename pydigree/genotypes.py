@@ -45,6 +45,11 @@ class Alleles(np.ndarray):
         obj.template = template
         return obj
 
+    def __array__finalize__(self, obj):
+        if obj is None:
+            return
+        self.template = getattr(obj, 'template', None)
+
     def __lt__(self, other):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
@@ -77,6 +82,15 @@ class Alleles(np.ndarray):
         '''
         return self.shape[0]
 
+    def copy_span(self, template, copy_start, copy_stop):
+        interval = slice(copy_start, copy_stop)
+        self[interval] = template[interval]
+
+    def empty_like(self):
+        ''' Returns an empty Alleles object like this one '''
+        return Alleles(np.zeros(self.nmark(), dtype=self.dtype),
+                       template=self.template)
+
 
 class SparseAlleles(object):
 
@@ -92,7 +106,7 @@ class SparseAlleles(object):
         data = np.array(data)
         self.dtype = data.dtype
         self.size = data.shape[0]
-        
+
         refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
         self.non_refalleles = self._array2nonref(data, refcode)
         self.missingindices = self._array2missing(data, self.missingcode)
@@ -117,7 +131,7 @@ class SparseAlleles(object):
     def _array2nonref(data, refcode):
         '''
         Returns a dict of the form index: value where the data is different than a reference
-        '''  
+        '''
         return {i: x for i, x in enumerate(data)
                 if x != refcode and x != ''}
 
