@@ -10,7 +10,16 @@ def recombine(chr1, chr2, map):
     '''
     Takes two chromatids and returns a simulated one by an exponential process
     '''
-    
+    if not isinstance(chr1, Alleles): 
+        raise ValueError(
+            'Invalid chromosome type for recombination: {}'.format(type(chr1))) 
+
+    if type(chr1) is not type(chr2):
+        raise ValueError("Can't mix chromosome types in recombination")
+
+    if chr1.dtype != chr2.dtype:
+        raise ValueError('Chromosomes have different data types')
+
     # An optimization for gene dropping procedures on IBD states.
     # If there is only one marker, choose one at random, and return that.
     # There's no need for searching through the map to find crossover points
@@ -20,20 +29,11 @@ def recombine(chr1, chr2, map):
     newchrom = _recombine_haldane(chr1, chr2, map)
     return newchrom
 
-def _recombine_haldane(chr1, chr2, map):
+def _recombine_haldane(chr1, chr2, map):    
+
     # The map is sorted list, and the last item will always be largest.
     maxmap = map[-1]
     nmark = len(map)
-
-    if type(chr1) is not Alleles: 
-        raise ValueError(
-            'Invalid chromosome type for recombination: {}'.format(type(chr1))) 
-
-    if type(chr1) is not type(chr2):
-        raise ValueError("Can't mix chromosome types in recombination")
-
-    if chr1.dtype != chr2.dtype:
-        raise ValueError('Chromosomes have different data types')
     
     # Return a new genotype container with the same specs as chr1
     newchrom = chr1.empty_like() 
