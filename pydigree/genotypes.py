@@ -11,13 +11,14 @@ from pydigree.common import spans
 def chromatid_delabeler(chromatid, chromidx):
     size = chromatid.nmark()
     dt = chromatid.dtype
-    new_chromatid = np.empty_like(chromatid) 
+    new_chromatid = np.empty_like(chromatid)
 
     ancestral_haplotypes = spans(chromatid)
     for value, start, stop in ancestral_haplotypes:
         interval = slice(start, stop)
-        ancestor, anchap = value.ancestor,value.haplotype
-        new_chromatid[interval] = ancestor.genotypes[chromidx][anchap][interval]
+        ancestor, anchap = value.ancestor, value.haplotype
+        new_chromatid[interval] = ancestor.genotypes[
+            chromidx][anchap][interval]
         inter = ancestor.genotypes[chromidx][anchap][interval]
         new_chromatid[interval] = (inter)
     return Alleles(new_chromatid)
@@ -100,6 +101,7 @@ class InheritanceSpan(object):
 
 class AncestralAllele(object):
     __slots__ = ['ancestor', 'haplotype']
+
     def __init__(self, anc, hap):
         self.ancestor = anc
         self.haplotype = hap
@@ -147,7 +149,7 @@ class Alleles(np.ndarray):
 
     @property
     def missing(self):
-        ''' Returns a numpy array indicating which markers have missing data '''
+        " Returns a numpy array indicating which markers have missing data "
         return self == self.missingcode
 
     def nmark(self):
@@ -221,7 +223,7 @@ class SparseAlleles(object):
 
     @property
     def missing(self):
-        ''' Returns a numpy array indicating which markers have missing data '''
+        " Returns a numpy array indicating which markers have missing data "
         base = np.zeros(self.size, dtype=np.bool_)
         base[self.missingindices] = 1
         return base
@@ -233,8 +235,9 @@ class SparseAlleles(object):
             return (self.todense() == other)
         elif np.issubdtype(type(other), self.dtype):
             if self.template is None:
-                raise ValueError('Trying to compare values to sparse without reference')
-            
+                raise ValueError(
+                    'Trying to compare values to sparse without reference')
+
             eq = np.array(self.template.reference, dtype=self.dtype) == other
             neq_altsites = [k for k, v in self.non_refalleles if k != other]
             eq_altsites = [k for k, v in self.non_refalleles if k == other]
@@ -242,7 +245,9 @@ class SparseAlleles(object):
             eq[eq_altsites] = True
             return eq
         else:
-            raise ValueError('Uncomparable types: {} and {}'.format(self.dtype, type(other)))
+            raise ValueError(
+                'Uncomparable types: {} and {}'.format(self.dtype,
+                                                       type(other)))
 
     def __speq__(self, other):
         if self.size != other.size:
@@ -323,12 +328,12 @@ class ChromosomeTemplate(object):
         self.reference = []
         # Alternates
         self.alternates = []
-        
 
     def __str__(self):
         return 'Chromosome %s: %s markers, %s cM' % \
             (self.label if self.label is not None else 'object',
-             len(self.frequencies), max(self.genetic_map) if self.genetic_map else 0)
+             len(self.frequencies),
+             max(self.genetic_map) if self.genetic_map else 0)
 
     def __iter__(self):
         return izip(self.labels, self.genetic_map, self.physical_map)
