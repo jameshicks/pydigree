@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from bisect import bisect_left
-from pydigree.genotypes import Alleles, LabelledAlleles
+from pydigree.genotypes import AlleleContainer
 
 import numpy as np
 
@@ -10,7 +10,7 @@ def recombine(chr1, chr2, map):
     '''
     Takes two chromatids and returns a simulated one by an exponential process
     '''
-    if not isinstance(chr1, Alleles): 
+    if not isinstance(chr1, AlleleContainer): 
         raise ValueError(
             'Invalid chromosome type for recombination: {}'.format(type(chr1))) 
 

@@ -23,8 +23,23 @@ def chromatid_delabeler(chromatid, chromidx):
         new_chromatid[interval] = (inter)
     return Alleles(new_chromatid)
 
+class AlleleContainer(object):
+    " A base class for the interface *Alleles object must implement"
 
-class LabelledAlleles(object):
+    def empty_like(self):
+        raise NotImplementedError
+
+    def copy_span(self, template, start, stop):
+        raise NotImplementedError
+
+    def dtype(self):
+        raise NotImplementedError
+
+    def __eq__(self, other):
+        raise NotImplementedError
+
+
+class LabelledAlleles(AlleleContainer):
 
     def __init__(self, spans=None, chromobj=None, nmark=None):
         if not (chromobj or nmark):
@@ -143,7 +158,7 @@ class AncestralAllele(object):
                 self.haplotype is other.haplotype)
 
 
-class Alleles(np.ndarray):
+class Alleles(np.ndarray, AlleleContainer):
 
     ''' A class for holding genotypes '''
     def __new__(cls, data, template=None, **kwargs):
@@ -198,7 +213,7 @@ class Alleles(np.ndarray):
                        template=self.template)
 
 
-class SparseAlleles(object):
+class SparseAlleles(AlleleContainer):
 
     '''
     An object representing a set of haploid genotypes efficiently by 
