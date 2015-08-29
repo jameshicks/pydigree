@@ -119,9 +119,9 @@ def test_inhertancespan():
     # reason it has an __eq__ method is for unittesting some LabelledAlleles
     # methods.
     IS = InheritanceSpan
-    a = IS(1, 0, 0, 50)
-    b = IS(1, 0, 0, 50)
-    c = IS(2, 1, 30, 40)
+    a = IS(1, 0, 0, 0, 50)
+    b = IS(1, 0, 0, 0, 50)
+    c = IS(2, 1, 1, 30, 40)
     assert a == b
     assert a != c and b != c
 #############
@@ -132,14 +132,14 @@ def test_labelledalleles():
 
     nmark = 200
     IS = InheritanceSpan
-    spans = [IS(1, 0, 0, 100), IS(2,0, 100, 200)]
+    spans = [IS(1, 0, 0, 0, 100), IS(2, 0, 0, 100, 200)]
     test_data = LabelledAlleles(spans=spans, nmark=nmark)
     assert test_data.dtype is LabelledAlleles
 
     actual_data = test_data.empty_like()
     assert type(actual_data) is LabelledAlleles
     actual_data.copy_span(test_data, 50, 150)
-    expected_spans = [IS(1,0,50,100), IS(2,0,100,150)]
+    expected_spans = [IS(1,0,0,50,100), IS(2,0,0,100,150)]
     print expected_spans
     expected_value = LabelledAlleles(spans=expected_spans, nmark=nmark)
     assert actual_data == expected_value

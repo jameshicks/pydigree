@@ -24,7 +24,6 @@ def chromatid_delabeler(chromatid, chromidx):
     return Alleles(new_chromatid)
 
 
-
 class LabelledAlleles(object):
 
     def __init__(self, spans=None, chromobj=None, nmark=None):
@@ -37,7 +36,7 @@ class LabelledAlleles(object):
     def __eq__(self, other):
         if not isinstance(other, LabelledAlleles):
             return False
-        return all(x == y for x,y in izip(self.spans, other.spans))
+        return all(x == y for x, y in izip(self.spans, other.spans))
 
     def empty_like(self):
         return LabelledAlleles([], chromobj=self.chromobj, nmark=self.nmark)
@@ -60,7 +59,7 @@ class LabelledAlleles(object):
             copy_stop = self.nmark
 
         for span in template.spans:
-            ind, hap, template_start, template_stop = span.to_tuple()
+            template_start, template_stop = span.interval
             # There are three possible things that can happen here:
             # 1) The template span is before the copy region, so we ignore it
             # 2) The template span is after the copy region, so we're done
@@ -87,9 +86,12 @@ class LabelledAlleles(object):
                 this_copystart = max(copy_start, template_start)
                 this_copystop = min(copy_stop, template_stop)
 
-                copy_span = InheritanceSpan(ind, hap,
-                                            this_copystart, this_copystop)
-                
+                copy_span = InheritanceSpan(span.ancestor,
+                                            span.chromosomeidx,
+                                            span.haplotype,
+                                            this_copystart,
+                                            this_copystop)
+
                 self.add_span(copy_span)
 
                 # The early bailout if we're done copying
@@ -98,10 +100,11 @@ class LabelledAlleles(object):
 
 
 class InheritanceSpan(object):
-    __slots__ = ['ancestor', 'haplotype', 'start', 'stop']
+    __slots__ = ['ancestor', 'chromosomeidx', 'haplotype', 'start', 'stop']
 
-    def __init__(self, ancestor, haplotype, start, stop):
+    def __init__(self, ancestor, chromosomeidx, haplotype, start, stop):
         self.ancestor = ancestor
+        self.chromosomeidx = chromosomeidx
         self.haplotype = haplotype
         self.start = start
         self.stop = stop
@@ -111,12 +114,18 @@ class InheritanceSpan(object):
 
     def __eq__(self, other):
         return (self.ancestor == other.ancestor and
+                self.chromosomeidx == other.chromosomeidx and
                 self.haplotype == other.haplotype and
                 self.start == other.start and
                 self.stop == other.stop)
 
+    @property
+    def interval(self):
+        return self.start, self.stop
+
     def to_tuple(self):
-        return self.ancestor, self.haplotype, self.start, self.stop
+        return (self.ancestor, self.chromosomeidx, self.haplotype,
+                self.start, self.stop)
 
 
 class AncestralAllele(object):
