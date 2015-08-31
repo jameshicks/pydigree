@@ -3,7 +3,7 @@
 from itertools import izip_longest
 from operator import mul as multiply
 from math import log
-from pydigree.cyfuncs import runs, runs_gte, spans
+from pydigree.cyfuncs import runs, runs_gte, spans, interleave
 
 
 def count(val, iter):

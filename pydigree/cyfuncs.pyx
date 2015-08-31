@@ -143,6 +143,19 @@ def spans(iter):
     return identified
 
 
+def interleave(list a, list b):
+    if len(a) != len(b):
+        raise ValueError('Lists must be same length')
+    cdef Py_ssize_t n = len(a)
+    cdef list output = [None] * (2*n)
+    cdef Py_ssize_t index
+    for index in range(n):
+        output[2*index] = a[index]
+        output[(2*index) + 1] = b[index]
+
+    return output 
+
+
 def set_intervals_to_value(intervals, size, value):
     '''
     Creates a numpy integer array and sets intervals to a value
