@@ -8,22 +8,6 @@ from pydigree.io.genomesimla import read_gs_chromosome_template
 from pydigree.common import spans, all_same_type
 
 
-def chromatid_delabeler(chromatid, chromidx):
-    size = chromatid.nmark()
-    dt = chromatid.dtype
-    new_chromatid = np.empty_like(chromatid)
-
-    ancestral_haplotypes = spans(chromatid)
-    for value, start, stop in ancestral_haplotypes:
-        interval = slice(start, stop)
-        ancestor, anchap = value.ancestor, value.haplotype
-        new_chromatid[interval] = ancestor.genotypes[
-            chromidx][anchap][interval]
-        inter = ancestor.genotypes[chromidx][anchap][interval]
-        new_chromatid[interval] = (inter)
-    return Alleles(new_chromatid)
-
-
 class AlleleContainer(object):
 
     " A base class for the interface *Alleles object must implement"
