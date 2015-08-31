@@ -9,8 +9,9 @@ from pydigree import Individual
 
 class ConstrainedMendelianSimulation(Simulation):
 
-    def __init__(self, template=None, replications=1000, only=None):
-        Simulation.__init__(self, template=template,
+    def __init__(self, template=None, label=None,
+                 replications=1000, only=None):
+        Simulation.__init__(self, template=template, label=label,
                             replications=replications, only=only)
         for ind in self.template.individuals:
             if ind.is_founder():
@@ -19,7 +20,8 @@ class ConstrainedMendelianSimulation(Simulation):
                 raise ValueError("ConstrainedMendelian only available"
                                  "for outbred pedigrees")
 
-    def replicate(self, writeibd=False, verbose=False, linkeq=True, replicatenumber=0):
+    def replicate(self, writeibd=False, verbose=False, linkeq=True,
+                  replicatenumber=0):
         self.template.clear_genotypes()
         for ped in self.template:
             for x in ped.founders():
@@ -75,8 +77,8 @@ class ConstrainedMendelianSimulation(Simulation):
             siminds = self.template.nonfounders()
 
         for nf in siminds:
-                nf.delabel_genotypes()
-        
+            nf.delabel_genotypes()
+
         # Predict phenotypes
         if self.trait:
             for ind in siminds:
@@ -85,6 +87,3 @@ class ConstrainedMendelianSimulation(Simulation):
         if verbose:
             for ind in siminds:
                 print ind, ind.get_genotype(location)
-
-
-
