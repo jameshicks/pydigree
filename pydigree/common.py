@@ -98,6 +98,15 @@ def product(iter):
         return 1
     return reduce(multiply, iter)
 
+def all_same_type(iter):
+    "Returns true if all items in an iterable are the same type"
+    t = type(iter[0])
+
+    for v in iter:
+        if type(v) is not t:
+            return False
+
+    return True
 
 def cumsum(iter):
     """
