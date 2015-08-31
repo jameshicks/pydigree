@@ -386,10 +386,18 @@ class ChromosomeTemplate(object):
         self.alternates = []
 
     def __str__(self):
-        return 'Chromosome %s: %s markers, %s cM' % \
+        return 'ChromosomeTemplate object %s: %s markers, %s cM' % \
             (self.label if self.label is not None else 'object',
              len(self.frequencies),
              max(self.genetic_map) if self.genetic_map else 0)
+
+    @property
+    def outputlabel(self):
+        ''' The label outputted when written to disk ''' 
+        if self.label:
+            return self.label
+        else:
+            return 0
 
     def __iter__(self):
         return izip(self.labels, self.genetic_map, self.physical_map)
