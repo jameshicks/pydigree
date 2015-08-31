@@ -45,9 +45,10 @@ class Simulation(object):
     def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
         write_map(self.template, '{0}.map'.format(self.label))
         for x in xrange(self.replications):
-            print 'Replicate %d' % (x + 1)
+            print 'Replicate {}/{}'.format(x+1, self.replications)
             self.replicate(
                 verbose=verbose, writeibd=writeibd, replicatenumber=x)
+
             self.write_data(
                 x, predicate=output_predicate, compression=compression)
 
