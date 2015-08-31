@@ -20,13 +20,14 @@ def create_pop_handler_func(mapfile):
 
 def plink_data_handler(ind, data):
     ''' A function to handle the data payload from a plink line '''
-    ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes, data, missing_code='0')
+    ind.genotypes = genotypes_from_sequential_alleles(
+        ind.chromosomes, data, missing_code='0')
 
 
 def read_map(mapfile):
     """
     Reads a PLINK map file into a list of ChromosomeTemplate objects
-    
+
     Arguments:
     mapfile: The file to be read
 
@@ -83,7 +84,7 @@ def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
 
 
 def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
-                compression=None):
+                compression=None, output_chromosomes=None):
     '''
     Write individual genotypes to a file in plink PED data format.
     Optionally outputs the genotype locations to the mapfile.
@@ -105,12 +106,14 @@ def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
         pedfile += '.gz'
     elif compression in {'bzip2', 'bz2'}:
         pedfile += '.bz2'
-    write_ped(pedigrees, pedfile, predicate=predicate)
+    write_ped(pedigrees, pedfile, predicate=predicate, 
+                output_chromosomes=output_chromosomes)
     if mapfile:
-        write_map(pedigrees, filename_prefix + '.map')
+        write_map(pedigrees, filename_prefix + '.map', output_chromosomes=output_chromosomes)
 
 
-def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
+def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
+              output_chromosomes=None):
     """
     write_ped writes data in a plink-format PED file, and optionally a
     plink-format map file.
@@ -134,6 +137,13 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
 
     Returns: Nothing
     """
+
+    # Check if we're only supposed to be outputting certain chromosomes
+    if output_chromosomes is not None:
+        checkchroms = True
+    else:
+        checkchroms = False
+
     if not predicate:
         predicate = lambda x: True
     elif predicate == 'affected':
@@ -163,7 +173,10 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
 
                 # Get the genotypes in the format we need them
                 g = []
-                for chroma, chromb in ind.genotypes:
+                for template, chromatids in izip(ind.chromosomes, ind.genotypes):
+                    if checkchroms and template.outputlabel not in output_chromosomes:
+                        continue
+                    chroma, chromb = chromatids
                     ga = chroma.astype(str).tolist()
                     gb = chromb.astype(str).tolist()
                     gn = interleave(ga, gb)
@@ -176,10 +189,10 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
                 f.write('\n')
 
 
-def write_map(pedigrees, mapfile):
+def write_map(pedigrees, mapfile, output_chromosomes=None):
     '''
     Writes the genotype location data to a PLINK MAP file
-    
+
     Arguments
     ------
     pedigrees: the population containing the data to be written
@@ -187,8 +200,16 @@ def write_map(pedigrees, mapfile):
 
     Returns: Nothing
     '''
+    # Check if we're only supposed to be outputting certain chromosomes
+    if output_chromosomes is not None:
+        checkchroms = True
+    else:
+        checkchroms = False
+
     with open(mapfile, 'w') as f:
         for ci, chromosome in enumerate(pedigrees.chromosomes):
+            if checkchroms and chromosome.outputlabel not in output_chromosomes:
+                continue
             for mi, marker in enumerate(chromosome._iinfo()):
                 label, cm, mb, frequency = marker
                 if not mb:
@@ -197,4 +218,3 @@ def write_map(pedigrees, mapfile):
                     label = 'SNP%s-%s' % (chromosome.outputlabel, mi)
                 f.write('\t'.join(str(x) for x
                                   in [chromosome.outputlabel, label, cm, mb]) + '\n')
-

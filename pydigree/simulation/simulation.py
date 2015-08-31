@@ -42,20 +42,22 @@ class Simulation(object):
                                               linkeq=linkeq)
         self.run_founder_genotype_hooks()
 
-    def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None):
-        write_map(self.template, '{0}.map'.format(self.label))
+    def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None, output_chromosomes=None):
+        #write_map(self.template, '{0}.map'.format(self.label))
         for x in xrange(self.replications):
             print 'Replicate {}/{}'.format(x+1, self.replications)
             self.replicate(
                 verbose=verbose, writeibd=writeibd, replicatenumber=x)
 
             self.write_data(
-                x, predicate=output_predicate, compression=compression)
+                x, predicate=output_predicate, compression=compression, output_chromosomes=output_chromosomes)
 
-    def write_data(self, replicatenumber, predicate=None, compression=None):
+    def write_data(self, replicatenumber, predicate=None, compression=None,
+                   output_chromosomes=None):
         filename = '{0}-{1}'.format(self.label, (replicatenumber + 1))
         write_plink(self.template, filename, predicate=predicate,
-                    mapfile=False, compression=compression)
+                    mapfile=True, compression=compression,
+                    output_chromosomes=output_chromosomes)
         write_phenotypes(self.template, filename + '.csv',
                          predicate=predicate)
 
