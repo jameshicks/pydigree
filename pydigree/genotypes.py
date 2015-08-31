@@ -221,7 +221,7 @@ class Alleles(np.ndarray, AlleleContainer):
     def empty_like(self, blank=True):
         ''' Returns an empty Alleles object like this one '''
         z = np.zeros(self.nmark(), dtype=self.dtype)
-        
+
         return Alleles(z, template=self.template)
 
 

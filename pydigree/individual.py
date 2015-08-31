@@ -85,11 +85,12 @@ class Individual(object):
 
     def _init_genotypes(self, blankchroms=True, dtype=None):
         """ 
-        Initializes genotypes so that all genotypes are missing if blankchroms is true,
-        otherwise, just sets what would be the chromosome to None
+        Initializes genotypes so that all genotypes are missing if blankchroms 
+        is true, otherwise, just sets what would be the chromosome to None
         """
         if blankchroms:
-            self.genotypes = [(chrom.empty_chromosome(dtype=dtype), chrom.empty_chromosome(dtype=dtype))
+            self.genotypes = [(chrom.empty_chromosome(dtype=dtype),
+                               chrom.empty_chromosome(dtype=dtype))
                               for chrom in self.chromosomes]
         else:
             self.genotypes = [[None, None] for chrom in self.chromosomes]
@@ -188,14 +189,13 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        
-        def labelled_chromatids(i,c):
+
+        def labelled_chromatids(i, c):
             a = LabelledAlleles.founder_chromosome(self, i, 0, chromobj=c)
             b = LabelledAlleles.founder_chromosome(self, i, 1, chromobj=c)
-            return (a,b)
-        #import ipdb; ipdb.set_trace()
+            return (a, b)
 
-        g = [labelled_chromatids(i, c) for i,c in enumerate(self.chromosomes)]
+        g = [labelled_chromatids(i, c) for i, c in enumerate(self.chromosomes)]
         self.genotypes = g
 
     def delabel_genotypes(self):
@@ -236,7 +236,7 @@ class Individual(object):
     def ancestors(self):
         """
         Recursively searches for ancestors.
-        
+
         Returns: A set object with Individual objects for all the ancestors
         of this Individual object
         """
@@ -249,7 +249,7 @@ class Individual(object):
     def descendants(self):
         """
         Recursively searches for descendants.
-        
+
         Returns: a set of individual objects for all the descendants
         of this individual
         """
@@ -391,5 +391,3 @@ class Individual(object):
     def clear_phenotypes(self):
         """ Removes phenotypes """
         self.phenotypes = {}
-
-
