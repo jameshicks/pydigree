@@ -1,6 +1,7 @@
 from itertools import izip, chain, imap
 
 from pydigree.common import grouper, cumsum
+from pydigree.common import interleave
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.exceptions import FileFormatError
@@ -157,19 +158,21 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None):
                            ind.mother.label if ind.mother is not None else '0',
                            1 if ind.sex == 0 else 2,
                            aff]
+                # Make strings
+                outline = map(str, outline)
+
                 # Get the genotypes in the format we need them
                 g = []
                 for chroma, chromb in ind.genotypes:
-                    if ind.translated_alleles:
-                        chroma = [reverse_translate_allele(a) for a in chroma]
-                        chromb = [reverse_translate_allele(a) for a in chromb]
-                    g.extend(chain.from_iterable(izip(chroma, chromb)))
+                    ga = chroma.astype(str).tolist()
+                    gb = chromb.astype(str).tolist()
+                    gn = interleave(ga, gb)
+                    g.extend(gn)
                 outline.extend(g)
 
-                # Make strings
-                outline = imap(str, outline)
                 # Write it out
-                f.write(delim.join(outline))
+                outline = delim.join(outline)
+                f.write(outline)
                 f.write('\n')
 
 
@@ -194,3 +197,4 @@ def write_map(pedigrees, mapfile):
                     label = 'SNP%s-%s' % (chromosome, mi)
                 f.write('\t'.join(str(x) for x
                                   in [chromosome.label, label, cm, mb]) + '\n')
+
