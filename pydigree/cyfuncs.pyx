@@ -155,6 +155,13 @@ def interleave(list a, list b):
 
     return output 
 
+def all_same_type(iter, t):
+    "Returns true if all items in an iterable are the same type"
+    for v in iter:
+        if type(v) is not t:
+            return False
+    return True
+
 
 def set_intervals_to_value(intervals, size, value):
     '''

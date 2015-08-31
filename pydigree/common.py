@@ -4,6 +4,7 @@ from itertools import izip_longest
 from operator import mul as multiply
 from math import log
 from pydigree.cyfuncs import runs, runs_gte, spans, interleave
+from pydigree.cyfuncs import all_same_type
 
 
 def count(val, iter):
@@ -98,15 +99,6 @@ def product(iter):
         return 1
     return reduce(multiply, iter)
 
-def all_same_type(iter):
-    "Returns true if all items in an iterable are the same type"
-    t = type(iter[0])
-
-    for v in iter:
-        if type(v) is not t:
-            return False
-
-    return True
 
 def cumsum(iter):
     """

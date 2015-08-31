@@ -107,7 +107,7 @@ class LabelledAlleles(AlleleContainer):
 
     def delabel(self):
         # Check to make sure all the founders are delabeled
-        if not all_same_type(self.spans):
+        if not all_same_type(self.spans, InheritanceSpan):
             for span in self.spans:
                 if isinstance(span.ancestral_chromosome, LabelledAlleles):
                     raise ValueError('Ancestral chromosome {} {} {}'
