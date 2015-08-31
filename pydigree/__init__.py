@@ -16,12 +16,14 @@ import pydigree.io
 # Population growth models
 from pydigree.population import exponential_growth, logistic_growth
 
+
 # Classes
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.population import Population
 from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.pedigree import Pedigree
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate
+
 
 
 # Functions for identifying shared genomic segments (SGS)
