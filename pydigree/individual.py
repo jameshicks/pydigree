@@ -9,7 +9,7 @@ import numpy as np
 from pydigree.recombination import recombine
 from pydigree.paths import *
 from pydigree.common import *
-from pydigree.genotypes import Alleles, AncestralAllele
+from pydigree.genotypes import Alleles, LabelledAlleles
 from pydigree.genotypes import chromatid_delabeler
 from pydigree.exceptions import IterationError
 
@@ -189,17 +189,14 @@ class Individual(object):
         probably not much else.
         """
         self.__fail_on_observed_genos()
-        haplab_A = AncestralAllele(self, 0)
-        haplab_B = AncestralAllele(self, 1)
-
-        def labelled_chromatids(chromosome):
-            n = chromosome.nmark()
-            a = Alleles([haplab_A] * n, dtype=tuple)
-            b = Alleles([haplab_B] * n, dtype=tuple)
+        
+        def labelled_chromatids(i,c):
+            a = LabelledAlleles.founder_chromosome(self, i, 0, chromobj=c)
+            b = LabelledAlleles.founder_chromosome(self, i, 1, chromobj=c)
             return (a,b)
         #import ipdb; ipdb.set_trace()
 
-        g = [labelled_chromatids(c) for c in self.chromosomes]
+        g = [labelled_chromatids(i, c) for i,c in enumerate(self.chromosomes)]
         self.genotypes = g
 
     def delabel_genotypes(self):
@@ -209,7 +206,7 @@ class Individual(object):
         '''
         for chromoidx, chromosome in enumerate(self.genotypes):
             for chromaidx, chromatid in enumerate(chromosome):
-                newchromatid = chromatid_delabeler(chromatid, chromoidx)
+                newchromatid = chromatid.delabel()
                 self.genotypes[chromoidx][chromaidx] = newchromatid
 
     def clear_genotypes(self):

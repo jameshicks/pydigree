@@ -1,6 +1,8 @@
 from nose.tools import raises, assert_raises
 
-from pydigree.genotypes import Alleles, SparseAlleles
+from pydigree.population import Population
+from pydigree.individual import Individual
+from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 from pydigree.genotypes import LabelledAlleles, InheritanceSpan
 from pydigree.exceptions import NotMeaningfulError
 import numpy as np
@@ -139,9 +141,51 @@ def test_labelledalleles():
     actual_data = test_data.empty_like()
     assert type(actual_data) is LabelledAlleles
     actual_data.copy_span(test_data, 50, 150)
-    expected_spans = [IS(1,0,0,50,100), IS(2,0,0,100,150)]
+    expected_spans = [IS(1, 0, 0, 50, 100), IS(2, 0, 0, 100, 150)]
     print expected_spans
     expected_value = LabelledAlleles(spans=expected_spans, nmark=nmark)
     assert actual_data == expected_value
 
+    ngenos = 50
+    p = Population()
+    c = ChromosomeTemplate()
+    for i in xrange(ngenos):
+        c.add_genotype()
+    p.add_chromosome(c)
+
+    a = Individual(p, 1)
+    actual = LabelledAlleles.founder_chromosome(a, 0, 0, chromobj=c)
+    expected = LabelledAlleles(spans=[IS(a, 0, 0, 0, ngenos)], chromobj=c)
+    assert actual == expected
+
+def test_labelledallele_delabeler():
+    ngenos = 10  # Number of genotypes per chromosome
+    if ngenos % 2 == 1:
+        raise ValueError('Even number of genotypes needed')
+
+    p = Population()
+    c = ChromosomeTemplate()
+    for i in xrange(ngenos):
+        c.add_genotype()
+    p.add_chromosome(c)
+
+    a = Individual(p, 1)
+    a._init_genotypes(blankchroms=False)
+    a.genotypes[0][0] = Alleles([1]*ngenos)
+    a.genotypes[0][1] = Alleles([2]*ngenos)
+
+    b = Individual(p, 2)
+    b._init_genotypes(blankchroms=False)
+    b.genotypes[0][0] = Alleles([3] * ngenos)
+    b.genotypes[0][1] = Alleles([4] * ngenos)
+
+    chromatid_spans = [InheritanceSpan(a, 0, 0, 0, ngenos/2),
+                       InheritanceSpan(b, 0, 1, ngenos/2, ngenos)]
+    chromatid = LabelledAlleles(spans=chromatid_spans, chromobj=c)
+
+    expected_value = [1]*(ngenos/2) + [4] * (ngenos/2)
+    expected_value = Alleles(expected_value)
+
+    actual_value = chromatid.delabel()
+    assert all(actual_value == expected_value)
 

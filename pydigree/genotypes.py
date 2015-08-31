@@ -5,7 +5,7 @@ import numpy as np
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 from pydigree.io.genomesimla import read_gs_chromosome_template
-from pydigree.common import spans
+from pydigree.common import spans, all_same_type
 
 
 def chromatid_delabeler(chromatid, chromidx):
@@ -23,7 +23,9 @@ def chromatid_delabeler(chromatid, chromidx):
         new_chromatid[interval] = (inter)
     return Alleles(new_chromatid)
 
+
 class AlleleContainer(object):
+
     " A base class for the interface *Alleles object must implement"
 
     def empty_like(self):
@@ -59,6 +61,12 @@ class LabelledAlleles(AlleleContainer):
     @property
     def dtype(self):
         return type(self)
+
+    @staticmethod
+    def founder_chromosome(ind, chromidx, hap, chromobj=None, nmark=None):
+        n = nmark if not chromobj else chromobj.nmark()
+        spans = [InheritanceSpan(ind, chromidx, hap, 0, n)]
+        return LabelledAlleles(spans=spans, chromobj=chromobj, nmark=nmark)
 
     def add_span(self, new_span):
         if any(new_span.stop < x.stop for x in self.spans):
@@ -113,6 +121,22 @@ class LabelledAlleles(AlleleContainer):
                 if copy_stop <= template_stop:
                     return
 
+    def delabel(self):
+        # Check to make sure all the founders are delabeled
+        if not all_same_type(self.spans):
+            for span in self.spans:
+                if isinstance(span.ancestral_chromosome, LabelledAlleles):
+                    raise ValueError('Ancestral chromosome {} {} {}'
+                                     'has not been delabeled'.format(
+                                         self.individual,
+                                         self.chromosomeidx,
+                                         self.haplotype))
+
+        nc = self.spans[0].ancestral_chromosome.empty_like()
+        for span in self.spans:
+            nc.copy_span(span.ancestral_chromosome, span.start, span.stop)
+        return nc
+
 
 class InheritanceSpan(object):
     __slots__ = ['ancestor', 'chromosomeidx', 'haplotype', 'start', 'stop']
@@ -141,6 +165,10 @@ class InheritanceSpan(object):
     def to_tuple(self):
         return (self.ancestor, self.chromosomeidx, self.haplotype,
                 self.start, self.stop)
+
+    @property
+    def ancestral_chromosome(self):
+        return self.ancestor.genotypes[self.chromosomeidx][self.haplotype]
 
 
 class AncestralAllele(object):
@@ -204,13 +232,13 @@ class Alleles(np.ndarray, AlleleContainer):
         return self.shape[0]
 
     def copy_span(self, template, copy_start, copy_stop):
-        interval = slice(copy_start, copy_stop)
-        self[interval] = template[interval]
+        self[copy_start:copy_stop] = template[copy_start:copy_stop]
 
-    def empty_like(self):
+    def empty_like(self, blank=True):
         ''' Returns an empty Alleles object like this one '''
-        return Alleles(np.zeros(self.nmark(), dtype=self.dtype),
-                       template=self.template)
+        z = np.zeros(self.nmark(), dtype=self.dtype)
+        
+        return Alleles(z, template=self.template)
 
 
 class SparseAlleles(AlleleContainer):
