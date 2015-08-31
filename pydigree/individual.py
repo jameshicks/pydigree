@@ -10,7 +10,6 @@ from pydigree.recombination import recombine
 from pydigree.paths import *
 from pydigree.common import *
 from pydigree.genotypes import Alleles, LabelledAlleles
-from pydigree.genotypes import chromatid_delabeler
 from pydigree.exceptions import IterationError
 
 missing_genotype = (0, 0)
