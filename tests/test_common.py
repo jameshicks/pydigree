@@ -1,6 +1,8 @@
+from nose.tools import assert_raises
+
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper, log_base_change
-from pydigree.common import runs, runs_gte, spans
+from pydigree.common import runs, runs_gte, spans, interleave
 from pydigree.cyfuncs import runs_gte_uint8
 
 from math import log, log10, e
@@ -77,6 +79,12 @@ def test_invertdict():
 def test_logbasechange():
     assert float_equality(log(6), log_base_change(log10(6), e, 10))
     assert float_equality(log(4.2), log_base_change(log10(4.2), e, 10))
+
+def test_interleave():
+    assert interleave([1,1,1], [2,2,2]) == [1,2,1,2,1,2]
+    assert interleave([1],[2]) == [1,2]
+    assert interleave([],[]) == []
+    assert_raises(ValueError, interleave, [1], [])
 
 def test_spans():
     assert spans([]) == [] 
