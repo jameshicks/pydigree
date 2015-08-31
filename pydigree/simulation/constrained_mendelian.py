@@ -10,7 +10,8 @@ from pydigree import Individual
 class ConstrainedMendelianSimulation(Simulation):
 
     def __init__(self, template=None, replications=1000, only=None):
-        Simulation.__init__(self, template, replications, only=only)
+        Simulation.__init__(self, template=template,
+                            replications=replications, only=only)
         for ind in self.template.individuals:
             if ind.is_founder():
                 continue
