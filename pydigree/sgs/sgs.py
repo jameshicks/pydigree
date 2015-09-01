@@ -21,7 +21,7 @@ class SGSAnalysis(object):
     def __getitem__(self, item):
         if type(item) is not frozenset:
             item = frozenset(item)
-        return frozenset(item)
+        return self.pairs[item]
 
     def __setitem__(self, k, v):
         self.pairs[k] = v
@@ -74,7 +74,7 @@ class SGSAnalysis(object):
     @property
     def segments(self):
         ''' Returns an iterable of all the segments in the Analysis '''
-        return chain.from_iterable([x.segments for x in self.pairs.values])
+        return chain.from_iterable([x.segments for x in self.pairs.values()])
 
     @property
     def individuals(self):
@@ -113,6 +113,10 @@ class SGS(object):
 
     def __getitem__(self, idx):
         return self.segments[idx]
+
+    def __iter__(self):
+        for x in self.segments:
+            yield x
 
     def append(self, value):
         self.segments.append(value)
@@ -155,26 +159,34 @@ class Segment(object):
         self.chromosome = chromosome
 
         if isinstance(ind1, Individual):
-            self._chridx = ind1.chromosomes.index(chromobj)
+            self._chridx = ind1.chromosomes.index(chromosome)
 
         self.start = startidx
         self.stop = stopidx
 
         if physical_location is not None:
             pstart, pstop = physical_location
-            self.physical_start = int(pstart)
-            self.physical_stop = int(pstop)
+            physical_start = int(pstart)
+            physical_stop = int(pstop)
         elif isinstance(self.chromosome, ChromosomeTemplate):
-            self.physical_start = self.chromosome.physical_map[self.start]
-            self.physical_stop = self.chromosome.physical_map[self.stop]
+            physical_start = self.chromosome.physical_map[self.start]
+            physical_stop = self.chromosome.physical_map[self.stop]
+        self.physical_location = physical_start, physical_stop
 
         if genetic_location is not None:
             gstart, gstop = genetic_location
-            self.genetic_start = float(gstart)
-            self.genetic_stop = float(gstop)
+            genetic_start = float(gstart)
+            genetic_stop = float(gstop)
         elif isinstance(self.chromosome, ChromosomeTemplate):
-            self.genetic_start = self.chromosome.genetic_map[self.start]
-            self.genetic_stop = self.chromosome.genetic_map[self.stop]
+            genetic_start = self.chromosome.genetic_map[self.start]
+            genetic_stop = self.chromosome.genetic_map[self.stop]
+        self.genetic_location = genetic_start, genetic_stop
+
+    @property
+    def marker_labels(self):
+        startlab = self.chromosome.labels[self.start]
+        stoplab = self.chromosome.labels[self.stop]
+        return startlab, stoplab
 
     @property
     def physical_size(self):
