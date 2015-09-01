@@ -226,13 +226,31 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
             continue
-        pair = frozenset({ind1, ind2})
-        shared[pair] = SGS()
-        for chridx, chromosome in enumerate(ind1.chromosomes):
-            shares = sgs_unphased(ind1, ind2, chridx, seed_size=seed_size,
-                                  min_length=min_length, size_unit=size_unit,
-                                  min_density=min_density, maxmiss=0.25)
-            shared[pair].extend(shares)
+
+        if ind1 == ind2:
+            key = frozenset([ind1])
+            shared[key] = SGS()
+            for chridx, chromosome in enumerate(ind1.chromosomes):
+                shares = sgs_autozygous(ind1, chridx,
+                                        seed_size=seed_size,
+                                        min_length=min_length,
+                                        size_unit=size_unit,
+                                        min_density=min_density,
+                                        maxmiss=0.25)
+                shared[key].extend()
+
+        else:
+            pair = frozenset({ind1, ind2})
+            shared[pair] = SGS()
+            for chridx, chromosome in enumerate(ind1.chromosomes):
+                shares = sgs_unphased(ind1, ind2, chridx,
+                                      seed_size=seed_size,
+                                      min_length=min_length,
+                                      size_unit=size_unit,
+                                      min_density=min_density,
+                                      maxmiss=0.25)
+                shared[pair].extend(shares)
+
     return shared
 
 
