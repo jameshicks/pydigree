@@ -73,20 +73,21 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             p[id] = Individual(population, id, fa, mo, sex)
             p[id].phenotypes['affected'] = getph(aff)
             p[id].pedigree = p
+            p[id].sex = sex_codes[p[id].sex]
+
             if callable(data_handler) and len(split) > 6:
                 data = split[6:]
                 data_handler(p[id],  data)
 
     # Fix the individual-level data
-    for ind in p:
-        if not connect_inds:
-            continue
-        fam, id = ind.label
-        # Actually make the references instead of just pointing at strings
-        ind.father = p[(fam, ind.father)] if ind.father != '0' else None
-        ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
-        ind.sex = sex_codes[ind.sex]
-        ind.register_with_parents()
+    if connect_inds:
+        for ind in p:
+            fam, id = ind.label
+            # Actually make the references instead of just pointing at strings
+            ind.father = p[(fam, ind.father)] if ind.father != '0' else None
+            ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
+
+            ind.register_with_parents()
 
     # Place individuals into pedigrees
     for pedigree_label in set(ind.label[0] for ind in p):
