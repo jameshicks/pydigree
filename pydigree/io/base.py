@@ -3,6 +3,7 @@ from itertools import izip, chain, imap
 import numpy as np
 
 from pydigree.common import *
+from pydigree.io.smartopen import smartopen as open
 from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
