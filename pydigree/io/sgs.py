@@ -1,21 +1,60 @@
 from pydigree.sgs import SGSAnalysis, SGS, Segment
 from pydigree.io import smartopen as open
 
+
 def write_sgs(data, filename):
+    # GERMLINE files are text files with the format:
+
+    #     0) Family ID 1
+    #     1) Individual ID 1
+    #     2) Family ID 2
+    #     3) Individual ID 2
+    #     4) Chromosome
+    #     5) Segment start (bp/cM)
+    #     6) Segment end (bp/cM)
+    #     7) Segment start (SNP)
+    #     8) Segment end (SNP)
+    #     9) Total SNPs in segment
+    #     10) Genetic length of segment
+    #     11) Units for genetic length (cM or MB)
+    #     12) Mismatching SNPs in segment
+    #     13) 1 if Individual 1 is homozygous in match; 0 otherwise
+    #     14) 1 if Individual 2 is homozygous in match; 0 otherwise
+
     with open(filename, 'w') as o:
-        for pair, intervals in data.items():
-            for i, chromintervals in enumerate(intervals):
-                if not chromintervals:
-                    continue
-                ind1, ind2 = pair
-                l = [ind1.pedigree.label, ind1.label,
-                     ind2.pedigree.label, ind2.label, i] + chromintervals
-                o.write('\t'.join(l) + '\n')
+        for segment in data.segments:
+            oline = []
+
+            ind1 = segment.ind1.full_label
+            ind2 = segment.ind2.full_label
+            oline.extend(ind1)
+            oline.extend(ind2)
+
+            chrom = [segment.chromosome.label]
+            physical = segment.physical_location
+            labs = segment.marker_labels
+            nmark = [segment.nmark]
+            psize = [segment.physical_size / 1e6] # Megabases, not basepairs
+            oline.extend(chrom)
+            oline.extend(physical)
+            oline.extend(labs)
+            oline.extend(nmark)
+            oline.extend(psize)
+            unit = ['MB']
+            # Extra info GERMLINE gives you like mismatch rate
+            misc = 'X', 'X', 'X'
+            oline.extend(unit)
+            oline.extend(misc)
+
+            oline = '\t'.join([str(x) for x in oline])
+
+            o.write(oline)
+            o.write('\n')
 
 
 class GermlineRecord(object):
 
-	" A class for working with records in GERMLINE formatted files"
+    " A class for working with records in GERMLINE formatted files"
     def __init__(self, payload):
         l = payload.strip().split()
         self.ind1 = l[0:2]
@@ -50,7 +89,7 @@ def read_germline(filename):
 
     GERMLINE files are text files with the format:
 
-    	0) Family ID 1
+        0) Family ID 1
         1) Individual ID 1
         2) Family ID 2
         3) Individual ID 2
