@@ -236,7 +236,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
                                         min_length=min_length,
                                         size_unit=size_unit,
                                         min_density=min_density,
-                                        maxmiss=0.25)
+                                        maxmiss=maxmiss)
                 shared[key].extend()
 
         else:
@@ -248,7 +248,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
                                       min_length=min_length,
                                       size_unit=size_unit,
                                       min_density=min_density,
-                                      maxmiss=0.25)
+                                      maxmiss=maxmiss)
                 shared[pair].extend(shares)
 
     return shared
@@ -267,7 +267,7 @@ def sgs_autozygous(ind, chromosome_idx, seed_size=500,
                                              min_length=min_length,
                                              size_unit=size_unit,
                                              min_density=min_density,
-                                             maxmiss=0.25))
+                                             maxmiss=maxmiss))
     return SGS([Segment(ind, ind, chromosome, start, stop)
                 for start, stop in autozygous_segs])
 
@@ -287,7 +287,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                                        min_length=min_length,
                                        size_unit=size_unit,
                                        min_density=min_density,
-                                       maxmiss=0.25))
+                                       maxmiss=maxmiss))
     ibd1 = set_intervals_to_value(ibd1_segs, nmark, 1)
 
     # Then the segments that are IBD=2
@@ -296,7 +296,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                                        min_length=min_length,
                                        size_unit=size_unit,
                                        min_density=min_density,
-                                       maxmiss=0.25))
+                                       maxmiss=maxmiss))
     ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
     ibd = np.maximum(ibd1, ibd2, dtype=np.uint8)
     if array:
@@ -327,7 +327,7 @@ def _process_segments(identical, min_seg=100, min_val=1, chromobj=None,
                               min_length=min_length,
                               size_unit=size_unit,
                               min_density=min_density,
-                              maxmiss=0.25)
+                              maxmiss=maxmiss)
 
     return ibd
 
