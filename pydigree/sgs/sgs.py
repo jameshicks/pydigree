@@ -219,12 +219,17 @@ def sgs_pedigrees(pc, phaseknown=False):
     return shared
 
 
-def sgs_population(pop, seed_size=500, phaseknown=False, min_length=1,
-                   size_unit='mb', min_density=100, maxmiss=0.25):
+def sgs_population(pop, seed_size=500, phaseknown=False,
+                   min_length=1, size_unit='mb',
+                   min_density=100, maxmiss=0.25,
+                   onlywithin=False):
     ''' Performs SGS between all individuals in a population or pedigree '''
     shared = SGSAnalysis()
     for ind1, ind2 in combinations(pop.individuals, 2):
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
+            continue
+
+        if onlywithin and ind1.full_label[0] == ind2.full_label[0]:
             continue
 
         if ind1 == ind2:
