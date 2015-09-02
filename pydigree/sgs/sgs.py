@@ -87,16 +87,20 @@ class SGSAnalysis(object):
         from text with references to the actual individual object 
         '''
         pedindlabs = frozenset([x.full_label for x in pedigrees.individuals])
-        sgsindlabs = self.individuals
+        sgsindlabs = frozenset(self.individuals)
 
         if sgsindlabs - pedindlabs:
             raise ValueError('Not all individuals present in SGS are present'
                              'in the given pedigrees')
 
+        chroms = {chrom.label: chrom for chrom in pedigrees.chromosomes}
+        chromindices = {chrom: i for i, chrom in enumerate(pedigrees.chromosomes)}
         for segment in self.segments:
             try:
                 segment.ind1 = pedigrees[segment.ind1]
                 segment.ind2 = pedigrees[segment.ind2]
+                if type(segment.chromosome) is str:
+                    segment.chromosome = chroms[segment.chromosome]
             except KeyError:
                 if segment.ind1 not in pedindlabs:
                     raise ValueError('{} not in pedigree'.format(segment.ind1))
