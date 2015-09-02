@@ -82,7 +82,7 @@ class ConstrainedMendelianSimulation(Simulation):
         # Predict phenotypes
         if self.trait:
             for ind in siminds:
-                ind.phenotypes[trait.name] = trait.predict_phenotype(ind)
+                ind.phenotypes[self.trait.name] = self.trait.predict_phenotype(ind)
 
         if verbose:
             for ind in siminds:
