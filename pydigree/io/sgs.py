@@ -68,7 +68,7 @@ class GermlineRecord(object):
         # locations (cm)
         numberfy = float if self.unit.lower() == 'cm' else int
 
-        self.start, self.stop = [int(x) for x in l[5:7]]
+        self.start, self.stop = [numberfy(x) for x in l[5:7]]
 
     @property
     def pair(self):
