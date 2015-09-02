@@ -1,4 +1,5 @@
 from itertools import izip
+from bisect import bisect_right
 
 import numpy as np
 
@@ -437,6 +438,32 @@ class ChromosomeTemplate(object):
 
     def empty_chromosome(self, dtype=np.uint8):
         return Alleles(np.zeros(self.nmark(), dtype=dtype))
+
+    def closest_marker(self, position, map_type='physical'):
+        "Returns the index of the closest marker to a position"
+        if map_type == 'physical':
+            mp = self.physical_map
+        elif map_type == 'genetic':
+            mp = self.genetic_map
+        else:
+            raise ValueError("Map type must be 'physical' or 'genetic'")
+
+        # Find the index in mp with value lte to position
+        left_idx = bisect_right(mp, position) - 1
+        
+        if left_idx == self.nmark() - 1:
+            # If we're already at the last marker, we know to just return left_idx
+            return left_idx
+        
+        right_idx = left_idx + 1
+
+        right_pos = mp[right_idx]
+        left_pos = mp[left_idx]
+
+        if abs(right_pos - position) < abs(left_pos - position):
+            return right_idx
+        else:
+            return left_idx
 
     def linkageequilibrium_chromosome(self):
         """ Returns a randomly generated chromosome """
