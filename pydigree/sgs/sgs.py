@@ -164,23 +164,37 @@ class Segment(object):
         self.start = startidx
         self.stop = stopidx
 
-        if physical_location is not None:
+        # Get positions from chomosome if possible
+        if isinstance(self.chromosome, ChromosomeTemplate):
+            physical_start = self.chromosome.physical_map[self.start]
+            physical_stop = self.chromosome.physical_map[self.stop]
+            self.physical_location = physical_start, physical_stop
+
+        # If not that, try directly
+        elif physical_location is not None:
             pstart, pstop = physical_location
             physical_start = int(pstart)
             physical_stop = int(pstop)
-        elif isinstance(self.chromosome, ChromosomeTemplate):
-            physical_start = self.chromosome.physical_map[self.start]
-            physical_stop = self.chromosome.physical_map[self.stop]
-        self.physical_location = physical_start, physical_stop
+            self.physical_location = physical_start, physical_stop
 
-        if genetic_location is not None:
+        # Give up and go with None
+        else:
+            self.physical_location = None
+
+        # Do the same thing with genetic positions
+        if isinstance(self.chromosome, ChromosomeTemplate):
+            genetic_start = self.chromosome.genetic_map[self.start]
+            genetic_stop = self.chromosome.genetic_map[self.stop]
+            self.genetic_location = genetic_start, genetic_stop
+
+        elif genetic_location is not None:
             gstart, gstop = genetic_location
             genetic_start = float(gstart)
             genetic_stop = float(gstop)
-        elif isinstance(self.chromosome, ChromosomeTemplate):
-            genetic_start = self.chromosome.genetic_map[self.start]
-            genetic_stop = self.chromosome.genetic_map[self.stop]
-        self.genetic_location = genetic_start, genetic_stop
+            self.genetic_location = genetic_start, genetic_stop
+
+        else:
+            self.genetic_location = None
 
     @property
     def marker_labels(self):
