@@ -255,7 +255,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False,
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
             continue
 
-        if onlywithin and ind1.full_label[0] == ind2.full_label[0]:
+        if onlywithin and ind1.full_label[0] != ind2.full_label[0]:
             continue
 
         if ind1 == ind2:
