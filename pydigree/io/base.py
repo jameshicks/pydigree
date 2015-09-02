@@ -156,13 +156,13 @@ def write_phenotypes(pedigrees, filename, predicate=None,
                                   [set(x.phenotypes.keys()) for x in inds])
     available_phenotypes = sorted(available_phenotypes)
     header = ['famid', 'id'] + available_phenotypes
-
+    ofile.write(delim.join([str(x) for x in header]) + '\n')
     with open(filename, 'w') as ofile:
         for ind in inds:
             row = [ind.population.label, ind.label]
             row += [ind.phenotypes.get(phenotype, missingcode)
                     for phenotype in available_phenotypes]
-            row = ','.join([str(x) for v in row])
+            row = delim.join([str(x) for x in row])
             ofile.write(row + '\n')
 
 
