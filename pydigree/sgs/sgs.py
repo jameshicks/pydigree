@@ -99,8 +99,15 @@ class SGSAnalysis(object):
             try:
                 segment.ind1 = pedigrees[segment.ind1]
                 segment.ind2 = pedigrees[segment.ind2]
+                
                 if type(segment.chromosome) is str:
                     segment.chromosome = chroms[segment.chromosome]
+                    segment._chridx = chromindices[segment.chromosome]
+
+                pstart, pstop = segment.physical_location
+                segment.startidx = segment.chromosome.physical_map.index(pstart)
+                segment.stopidx = segment.chromosome.physical_map.index(pstop)
+
             except KeyError:
                 if segment.ind1 not in pedindlabs:
                     raise ValueError('{} not in pedigree'.format(segment.ind1))
@@ -108,7 +115,8 @@ class SGSAnalysis(object):
                     raise ValueError('{} not in pedigree'.format(segment.ind2))
                 else:
                     raise Exception('Unknown error')
-
+            except ValueError:
+                raise ValueError('Positions not in chromosome data')
 
 class SGS(object):
 
