@@ -43,17 +43,21 @@ class RandomEffect(object):
                  'incidence_matrix', 'covariance_matrix']
 
     def __init__(self, individuals, label, variance=None,
-                 incidence=None, covariance_matrix=None):
+                 incidence_matrix=None, covariance_matrix=None):
+        nobs = len(individuals)
+
         self.label = label
         self.variance_component = variance
-        if incidence is None:
+        if incidence_matrix is None:
             m = _make_incidence_matrix(individuals,
                                        self.label)
             self.incidence_matrix = m
+        elif incidence_matrix == 'eye':
+            self.incidence_matrix = sparseeye(nobs, nobs)
         else:
-            self.incidence_matrix = incidence
+            self.incidence_matrix = incidence_matrix
         if covariance_matrix is None:
-            nobs = len(individuals)
+            
             self.covariance_matrix = sparseeye(nobs, nobs)
         else:
             self.covariance_matrix = covariance_matrix
