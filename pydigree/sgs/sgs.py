@@ -106,8 +106,8 @@ class SGSAnalysis(object):
                     segment._chridx = chromindices[segment.chromosome]
 
                 pstart, pstop = segment.physical_location
-                segment.startidx = segment.chromosome.physical_map.index(pstart)
-                segment.stopidx = segment.chromosome.physical_map.index(pstop)
+                segment.start = segment.chromosome.physical_map.index(pstart)
+                segment.stop = segment.chromosome.physical_map.index(pstop)
 
             except KeyError:
                 if segment.ind1 not in pedindlabs:
