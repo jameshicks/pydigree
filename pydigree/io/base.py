@@ -98,7 +98,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
         # The individuals left people are people who have tuple-typed ids.
         # if you dont do this you can end up with an annoying bug that garbles
-        # individual IDs when the second character of their label is also a 
+        # individual IDs when the second character of their label is also a
         # pedigree identifier. This bug will take you three hours to find.
         available = [x for x in p if type(x.label) is tuple]
         thisped = [x for x in available if x.label[0] == pedigree_label]
@@ -143,6 +143,20 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 fam, ind = d['famid'], d['id']
                 pedigrees[fam][ind].phenotypes[k] = v
 
+
+def write_pedigree(pedigrees, filename, missingcode='X', delim=' '):
+    ''' Writes pedigree to a LINKAGE formatted pedigree file '''
+    sorting_key = lambda x: (x.population.label, x.depth, x.label)
+    with open(filename, 'w') as f:
+        for ind in sorted(pedigrees.individuals, key=sorting_key):
+            oline = [ind.population.label,
+                     ind.label,
+                     '0' if ind.is_founder() else ind.father.label,
+                     '0' if ind.is_founder() else ind.mother.label,
+                     '1' if ind.sex == 1 else '0',
+                     '-9']
+            oline = delim.join(oline)
+            f.write(oline + '\n')
 
 def write_phenotypes(pedigrees, filename, predicate=None,
                      missingcode='X', delim=','):
