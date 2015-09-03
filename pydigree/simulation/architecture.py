@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import numpy as np
 
 class Architecture(object):
 
@@ -46,6 +45,7 @@ class Architecture(object):
         self.name = name
         self.effects = {}
         self.epistatic_effects = {}
+        self.noise = None
         if type not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
@@ -116,11 +116,19 @@ class Architecture(object):
         effects = self.__transformdict(effects)
         self.epistatic_effects[locations] = effects
 
+    def add_noise(self, mean=0, sd=1):
+        self.noise = (mean, sd)
+
     def predict_phenotype(self, individual):
         liability = [self._geteffect(individual, x) for x in self.effects]
         liability += [self._getepistaticeffect(individual, x)
                       for x in self.epistatic_effects]
         liabilitysum = sum(liability)
+
+        if self.noise:
+            mu, sigma = self.noise
+            liabilitysum += np.random.normal(mu, sigma)
+
         if self.traittype == 'dichotomous':
             if self.liability_threshold is None:
                 raise ValueError('No liability threshold set')
