@@ -179,7 +179,10 @@ class MixedModel(object):
                        for effect in effects)
 
         def has_outcome(ind):
-            return ind.phenotypes[self.outcome] is not None
+            try:
+                return ind.phenotypes[self.outcome] is not None
+            except KeyError:
+                return False
 
         obs = [x for x in self.pedigrees.individuals
                if has_all_fixefs(x, self.fixed_effects) and has_outcome(x)]
