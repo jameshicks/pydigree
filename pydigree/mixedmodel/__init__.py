@@ -1,1 +1,1 @@
-from mixedmodel import MixedModel
+from mixedmodel import MixedModel, RandomEffect
