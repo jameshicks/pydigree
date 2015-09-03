@@ -57,8 +57,8 @@ class GermlineRecord(object):
     " A class for working with records in GERMLINE formatted files"
     def __init__(self, payload):
         l = payload.strip().split()
-        self.ind1 = l[0:2]
-        self.ind2 = l[2:4]
+        self.ind1 = tuple(l[0:2])
+        self.ind2 = tuple(l[2:4])
         self.chromosome = l[4]
 
         self.unit = l[11]
