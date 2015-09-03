@@ -373,6 +373,8 @@ class MixedModel(object):
         """
         Returns the loglikelihood of the model with the current model parameters
         """
+        if self.V is None:
+            self.V = self._makeV()
         if vmat is None:
             V = self.V
         else:
