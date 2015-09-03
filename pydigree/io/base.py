@@ -138,9 +138,9 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 except ValueError:
                     if not v:
                         v = None
-                if k in set(['famid', 'ind']):
+                if k in set(['famid', 'id']):
                     continue
-                fam, ind = d['famid'], d['ind']
+                fam, ind = d['famid'], d['id']
                 pedigrees[fam][ind].phenotypes[k] = v
 
 
