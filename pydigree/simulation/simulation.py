@@ -6,6 +6,7 @@ from itertools import combinations_with_replacement, izip
 from pydigree.common import *
 from pydigree.ibs import ibs
 from pydigree.io.smartopen import smartopen
+from pydigree.io.base import write_pedigree
 from pydigree.io.plink import write_plink, write_map
 from pydigree.io.base import write_phenotypes
 from pydigree.individual import Individual
@@ -55,6 +56,7 @@ class Simulation(object):
     def write_data(self, replicatenumber, predicate=None, compression=None,
                    output_chromosomes=None):
         filename = '{0}-{1}'.format(self.label, (replicatenumber + 1))
+        write_pedigree(self.template, filename + '.pedigrees')
         write_plink(self.template, filename, predicate=predicate,
                     mapfile=True, compression=compression,
                     output_chromosomes=output_chromosomes)
