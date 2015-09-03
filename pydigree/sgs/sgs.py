@@ -79,7 +79,8 @@ class SGSAnalysis(object):
     @property
     def individuals(self):
         """ Returns a set of all individuals present in the analysis """
-        inds = reduce(set.union, self.pairs.keys())
+        inds = reduce(frozenset.union, self.pairs.keys())
+        return inds
 
     def update_segment_references(self, pedigrees):
         '''
