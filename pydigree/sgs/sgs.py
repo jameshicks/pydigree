@@ -121,6 +121,11 @@ class SGSAnalysis(object):
             except ValueError:
                 raise ValueError('Positions not in chromosome data')
 
+        def pairlookup(pair):
+            newpair = frozenset({pedigrees[ind] for ind in pair})
+            return newpair
+        self.pairs = {pairlookup(k): v for k,v in self.pairs.items()}
+
 class SGS(object):
 
     def __init__(self, segments=None):
