@@ -152,16 +152,17 @@ class SGS(object):
         and 'genetic' (location in cM)
         '''
         chrom, pos = locus
+        
         if location_type == 'index':
-            ibd = sum(1 for x in self.segments if x.chromosome == chrom and
+            ibd = sum(1 for x in self.segments if x._chridx == chrom and
                       x.start <= pos <= (x.stop+1))
         elif location_type == 'physical':
-            segs = [(x.chromosome, x.physical_start, x.physical_stop)
+            segs = [(x._chridx, x.physical_start, x.physical_stop)
                     for x in self.segments]
             ibd = sum(1 for segchrom, start, stop in segs
                       if segchrom == chrom and (start <= pos <= stop))
         elif location_type == 'genetic':
-            segs = [(x.chromosome, x.genetic_start, x.genetic_stop)
+            segs = [(x._chridx, x.genetic_start, x.genetic_stop)
                     for x in self.segments]
             ibd = sum(1 for segchrom, start, stop in segs
                       if segchrom == chrom and (start <= pos <= stop))
