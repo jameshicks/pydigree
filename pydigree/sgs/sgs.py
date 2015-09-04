@@ -1,6 +1,7 @@
 from itertools import izip, combinations, product, chain
 
 import numpy as np
+from scipy.sparse import lil_matrix
 
 from pydigree.common import runs
 from pydigree.ibs import ibs, get_ibs_states
@@ -70,7 +71,10 @@ class SGSAnalysis(object):
             row = [self.ibd_state(ind1, ind2, locus, location_type, onlywithin=onlywithin)
                    for ind2 in individuals]
             mat.append(row)
-        mat = np.matrix(mat, dtype=np.uint8)
+        mat = np.matrix(mat) / 2
+        mat = lil_matrix(mat)
+        mat.setdiag(1)
+
         return mat
 
     @property
