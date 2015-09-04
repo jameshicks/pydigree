@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.linalg import inv
+from numpy.linalg import inv, LinAlgError
 from scipy.sparse import csc_matrix
 
 from likelihood import reml_gradient
@@ -10,7 +10,7 @@ from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
 
-def iterative_scoring_method(mm, starts, method='Fisher',
+def iterative_scoring_method(mm, starts, method='Fisher', maxiter=50,
                              tol=1e-4, verbose=False):
     """
     Updates variance components for a mixed model in an iterative scheme.
@@ -53,6 +53,8 @@ def iterative_scoring_method(mm, starts, method='Fisher',
             break
 
         i += 1
+        if i > maxiter:
+            raise LinAlgError('Ran out of scoring iterations')
 
     mm.set_variance_components(vcs.tolist())
 
