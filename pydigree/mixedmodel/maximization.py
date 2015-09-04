@@ -9,6 +9,8 @@ from likelihood import reml_average_information_matrix
 from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
+def is_invertible(m):
+    return np.isfinite(np.linalg.cond(m.todense()))
 
 def iterative_scoring_method(mm, starts, method='Fisher', maxiter=50,
                              tol=1e-4, verbose=False):
@@ -42,7 +44,9 @@ def iterative_scoring_method(mm, starts, method='Fisher', maxiter=50,
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         delta = scoring_iteration(mat, grad)
 
-        
+        if not np.isfinite(delta).all():
+            raise LinAlgError('NaNs in scoring update')
+
         vcs = vcs - delta
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
         
@@ -60,6 +64,9 @@ def iterative_scoring_method(mm, starts, method='Fisher', maxiter=50,
 
 
 def scoring_iteration(info_mat, gradient):
-    info_mat = np.matrix(info_mat)
-    gradient = np.matrix(gradient)
-    return -1.0 * np.array(info_mat.I * gradient.T).T[0]
+    try:
+        info_mat = np.matrix(info_mat)
+        gradient = np.matrix(gradient)
+        return -1.0 * np.array(info_mat.I * gradient.T).T[0]
+    except LinAlgError:
+        raise LinAlgError('Information matrix not invertible!')
