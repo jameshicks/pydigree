@@ -34,7 +34,7 @@ class SGSAnalysis(object):
         ''' Merge two SGSAnalysis objects '''
         self.pairs.update(other.pairs)
 
-    def ibd_state(self, ind1, ind2, locus, location_type='index'):
+    def ibd_state(self, ind1, ind2, locus, location_type='index', onlywithin=False):
         ''' 
         Gets the IBD state between two individuals at a locus
 
@@ -47,12 +47,14 @@ class SGSAnalysis(object):
         segments (or not being in the analysis at all)
         '''
         pair = frozenset([ind1, ind2])
+        if onlywithin and (ind1.population.label != ind2.population.label):
+            return 0
         if pair not in self.pairs:
             return 0
         else:
             return self.pairs[pair].ibd_state(locus, location_type)
 
-    def ibd_matrix(self, individuals, locus, location_type='index'):
+    def ibd_matrix(self, individuals, locus, location_type='index', onlywithin=False):
         '''
         Creates an IBD matrix for a set of individuals at a locus
 
@@ -65,7 +67,7 @@ class SGSAnalysis(object):
         nind = len(individuals)
         mat = []
         for ind1 in individuals:
-            row = [self.ibd_state(ind1, ind2, locus, location_type)
+            row = [self.ibd_state(ind1, ind2, locus, location_type, onlywithin=onlywithin)
                    for ind2 in individuals]
             mat.append(row)
         mat = np.matrix(mat, dtype=np.uint8)
@@ -268,7 +270,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False,
         if not (ind1.has_genotypes() and ind2.has_genotypes()):
             continue
 
-        if onlywithin and ind1.full_label[0] != ind2.full_label[0]:
+        if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
             continue
 
         if ind1 == ind2:
