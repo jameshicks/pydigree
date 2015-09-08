@@ -380,7 +380,7 @@ class MixedModel(object):
         else:
             V = vmat
         if not restricted:
-            return full_loglikelihood(self.y, V, self.X)
+            return full_loglikelihood(self.y, V, self.X, self.beta)
         else:
             return restricted_loglikelihood(self.y, V, self.X)
 
