@@ -470,11 +470,11 @@ class ChromosomeTemplate(object):
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
         r = np.random.random(self.nmark())
-        r = np.array(r > self.frequencies, dtype=np.uint8) + 1
+        r = np.array(r < self.frequencies, dtype=np.uint8) + 1
         return Alleles(r)
 
     def linkageequilibrium_chromosomes(self, nchrom):
         """ Returns a numpy array of many randomly generated chromosomes """
         chroms = np.random.random((nchrom, self.nmark()))
-        chroms = np.uint8((chroms > self.frequencies) + 1)
+        chroms = np.uint8((chroms < self.frequencies) + 1)
         return [Alleles(r) for r in chroms]
