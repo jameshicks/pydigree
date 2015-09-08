@@ -71,7 +71,7 @@ class SGSAnalysis(object):
             row = [self.ibd_state(ind1, ind2, locus, location_type, onlywithin=onlywithin)
                    for ind2 in individuals]
             mat.append(row)
-        mat = np.matrix(mat) / 2
+        mat = np.matrix(mat) / 2.0
         mat = lil_matrix(mat)
         mat.setdiag(1)
 
