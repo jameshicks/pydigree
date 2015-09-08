@@ -77,6 +77,21 @@ class SGSAnalysis(object):
 
         return mat
 
+    def chromwide_ibd(self, chromidx, size=None, onlywithin=False, onlybetween=False):
+        if onlybetween and onlywithin:
+            raise ValueError('Cannot set onlywithin and onlywithin simultaneously')
+        if size is None:
+            size = max([x.stop for x in self.segments])
+      
+        arry = np.zeros(size, dtype=np.uint)
+        for seg in self.segments:
+            if onlywithin and seg.ind1.full_label[0] != seg.ind2.full_label[0]:
+                continue
+            if onlybetween and seg.ind1.full_label[0] == seg.ind2.full_label[0]:
+                continue
+            arry[seg.start:seg.stop] += 1
+        return arry
+
     @property
     def segments(self):
         ''' Returns an iterable of all the segments in the Analysis '''
