@@ -39,7 +39,7 @@ def chromwide_ibs(a, b, c, d, missingval=64):
 
     # Catch which genotypes are missing (i.e. no '0' alleles)
     # so we can mark them later in the output
-    missing = a.missing | b.missing | c.missing | d.missing
+    missing = a.missing | c.missing 
 
     # Any cross-genotype sharing is sufficient to be IBS=1
     ibs1 = a_eq_c | a_eq_d | b_eq_c | b_eq_d
