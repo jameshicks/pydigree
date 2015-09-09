@@ -18,6 +18,7 @@ from pydigree.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.mixedmodel.likelihood import full_loglikelihood
 
 from pydigree.mixedmodel.maximization import iterative_scoring_method
+from pydigree.mixedmodel.maximization import expectation_maximization_reml
 
 
 def is_genetic_effect(effect):
@@ -343,7 +344,13 @@ class MixedModel(object):
             return
         if starts is None:
             starts = self.__starting_variance_components()
-        iterative_scoring_method(self, starts, method, verbose=verbose)
+
+        if method == 'scipy':
+            self._maximize_scipy()
+        elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
+            expectation_maximization_reml(self, starts, verbose=verbose)
+        else:
+            iterative_scoring_method(self, starts, method, verbose=verbose)
         self.maximized = method
 
     def _maximize_scipy(self, method='L-BFGS-B', verbose=False):
