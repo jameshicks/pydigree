@@ -269,7 +269,7 @@ class MixedModel(object):
         return [csc_matrix(Z) for Z in Zlist]
 
     def _makeV(self, vcs=None):
-        if (not vcs) and (not self.variance_components):
+        if (not vcs) and (not all(x is not None for x in self.variance_components)):
             raise ValueError('Variance components not set')
         if not vcs:
             variance_components = self.variance_components
