@@ -361,7 +361,7 @@ class MixedModel(object):
         self.maximized = method
         self.fit_model()
 
-    def _maximize_scipy(self, method='L-BFGS-B', verbose=False):
+    def _maximize_scipy(self, method='L-BFGS-B', verbose=True):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation using scipy minimization.
@@ -375,10 +375,10 @@ class MixedModel(object):
                 print 'Iteration VC estimates: %s' % \
                     ', '.join(str(y) for y in x.tolist())
 
-        r = minimize(self.__reml_optimization_target, x0=starts,
-                     method='Newton-CG',
-                     jac=self.__reml_gradient,
-                     hess=self.__reml_hessian, callback=cb)
+        r = minimize(self._reml_optimization_target, x0=starts,
+                     method='CG',
+                     jac=self._reml_gradient,
+                     callback=cb)
         if verbose:
             print r
         self.set_variance_components(r.x)
@@ -427,16 +427,16 @@ class MixedModel(object):
         print
         print 'Loglikelihood: %s' % self.loglikelihood()
 
-    def __reml_optimization_target(self, vcs):
+    def _reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
         Q = self._makeV(vcs=vcs.tolist())
         return -1.0 * self.loglikelihood(restricted=True, vmat=Q)
 
-    def __reml_gradient(self, vcs):
+    def _reml_gradient(self, vcs):
         Q = self._makeV(vcs=vcs.tolist())
         return -1.0 * reml_gradient(self.y, self.X, Q, self.random_effects)
 
-    def __reml_hessian(self, vcs):
+    def _reml_hessian(self, vcs):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
