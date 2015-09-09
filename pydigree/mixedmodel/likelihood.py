@@ -40,7 +40,7 @@ def makeVinv(V):
     return bsr_matrix(inv(V))
 
 
-def full_loglikelihood(y, V, X, P=None, Vinv=None):
+def full_loglikelihood(y, V, X, beta, Vinv=None):
     """
     Returns the full loglikelihood of a mixed model
 
@@ -48,9 +48,9 @@ def full_loglikelihood(y, V, X, P=None, Vinv=None):
     """
     if Vinv is None:
         Vinv = makeVinv(V)
-    R = makeR(y, X, Vinv=Vinv)
     n = X.shape[0]
-    llik = -0.5 * (logdet(V.todense()) + R.transpose() * Vinv * R + n * l2pi)
+    fixefresids = y - X * beta
+    llik = -0.5 * ( n * l2pi + logdet(V) + fixefresids.T * Vinv * fixefresids)
     return matrix.item(llik)
 
 
