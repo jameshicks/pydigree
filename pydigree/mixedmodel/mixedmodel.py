@@ -151,6 +151,13 @@ class MixedModel(object):
         self.y = self._makey()
         self.X = self._makeX()
         self.Zlist = self._makeZs()
+        
+
+        if not all(x is not None for x in self.variance_components):
+            self.set_variance_components(self.__starting_variance_components())
+        
+        self.V = self._makeV()
+        self.beta = self._makebeta()
 
     def _fit_results(self):
         self.V = self._makeV()
@@ -352,6 +359,7 @@ class MixedModel(object):
         else:
             iterative_scoring_method(self, starts, method, verbose=verbose)
         self.maximized = method
+        self.fit_model()
 
     def _maximize_scipy(self, method='L-BFGS-B', verbose=False):
         """
