@@ -28,6 +28,8 @@ class Simulation(object):
 
     def set_trait(self, architecture):
         self.trait = architecture
+        if not self.trait.chromosomes:
+            self.trait.chromosomes = self.template.chromosomes
 
     def replicate(self):
         raise NotImplementedError("This is a base class don't call me")

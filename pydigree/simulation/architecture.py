@@ -41,8 +41,9 @@ class Architecture(object):
     dictionary is assumed to have 0 effect on the trait.
     """
 
-    def __init__(self, name, type):
+    def __init__(self, name, type, chromosomes=None):
         self.name = name
+        self.chromosomes = chromosomes
         self.effects = {}
         self.epistatic_effects = {}
         self.noise = None
