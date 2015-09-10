@@ -22,9 +22,16 @@ class GeneticEffect(object):
 
     def genotypic_value(self, individual):
         gt = individual.get_genotype(self.locus)
-        eff = self.a * gt.count(2)  # Additive effect
-        eff += (1+self.k) * self.a if gt[0] != gt[1] else 0  # Dominance effect
-        return eff
+        N = gt.count(2) # Number of minor alleles
+        if N == 0:
+            return 0
+        elif N == 1:
+            return self.a * (1 + self.k)
+        elif N == 2:
+            return 2 * self.a
+        else:
+            raise ValueError('Bad genotype: {}'.format(gt))
+
 
     @property
     def alpha(self):
