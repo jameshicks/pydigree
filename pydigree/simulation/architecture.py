@@ -32,6 +32,17 @@ class GeneticEffect(object):
         else:
             raise ValueError('Bad genotype: {}'.format(gt))
 
+    @property 
+    def expected_genotypic_value(self):
+        chridx, locidx = self.locus
+        maf = self.chromosomes[chridx].frequencies[locidx]
+        
+        mu_g = 0
+        mu_g += (1-maf)**2 * 0 # Genotypic value for major homozygote
+        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k) # Heterozygote value
+        mu_g += (maf ** 2) * 2 * self.a # Genotypic value for minor homozygote 
+
+        return mu_g
 
     @property
     def alpha(self):
@@ -125,6 +136,10 @@ class Architecture(object):
 
     def add_noise(self, mean=0, sd=1):
         self.noise = (mean, sd)
+
+    @property
+    def expected_genotypic_value(self):
+        return sum(x.expected_genotypic_value for x in self.effects)
 
     @property
     def additive_genetic_variance(self):
