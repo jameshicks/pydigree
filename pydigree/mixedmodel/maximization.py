@@ -15,7 +15,7 @@ def is_invertible(m):
     return np.isfinite(np.linalg.cond(m.todense()))
 
 
-def iterative_scoring_method(mm, starts, method='Fisher', maxiter=50,
+def iterative_scoring_method(mm, starts, method='Fisher', maxiter=250,
                              tol=1e-4, verbose=False):
     """
     Updates variance components for a mixed model in an iterative scheme.
