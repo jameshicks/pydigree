@@ -1,10 +1,11 @@
 import numpy as np
 
 
-class GeneticEffect(object):
+class QuantitativeGeneticEffect(object):
 
     '''
-    GeneticEffect is a class for objects that relate loci to phenotypes.
+    QuantitativeGeneticEffect is a class for objects that relate loci to 
+    phenotypes.
 
     Effects are parameterized with a and k (see also Lynch & Walsh p. 62), 
     illustrated by the following ascii art diagram:
@@ -75,11 +76,11 @@ class Architecture(object):
     by t.predict_phenotype(individual)
     """
 
-    def __init__(self, name, type, chromosomes=None):
+    def __init__(self, name, type, h2=None, chromosomes=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = []
-        self.noise = None
+        self.h2 = h2
         if type not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
@@ -90,7 +91,6 @@ class Architecture(object):
         return "Trait {} ({}): {} main effects".format(self.name,
                                                        self.traittype,
                                                        len(self.effects))
-
 
     def set_liability_threshold(self, threshold):
         if self.traittype != 'dichotomous':
@@ -104,16 +104,20 @@ class Architecture(object):
 
         Arguments
         ------
-        location: a chromosome, index tuple
-        a: The additive effect of each minor allele
-        k: The dominance effect of at the locus, where k is the 
-           deviation from additivity (default 0)
-        effect: a GeneticEffect object if you don't want to supply a and k
+        locus:  a chromosome, index tuple
+        a:      The additive effect of each minor allele
+        k:      The dominance effect of at the locus, where k is the 
+                deviation from additivity (default 0)
+        effect: a QuantitativeGeneticEffect object if you don't 
+                want to supply a and k
         """
-        chrom, marker = location
+        chrom, marker = locus
 
         if effect is None:
-            eff = GeneticEffect(locus, a, k, chromosomes=self.chromosomes)
+            eff = QuantitativeGeneticEffect(locus,
+                                            a,
+                                            k,
+                                            chromosomes=self.chromosomes)
         self.effects.append(eff)
 
     def add_noise(self, mean=0, sd=1):
@@ -123,13 +127,23 @@ class Architecture(object):
     def additive_genetic_variance(self):
         return sum(x.locus_additive_variance for x in self.effects)
 
+    @property
+    def environmental_variance(self):
+        if self.h2 is None:
+            raise ValueError('Trait heritability not set!')
+
+        # h2 = V_a / (V_a + V_e)
+        # A little algebra gives us V_e =  V_a/h2 - V_a
+        add =  self.additive_genetic_variance
+        return (add / self.h2) - add
+
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = sum(phenotype)
 
-        if self.noise:
-            mu, sigma = self.noise
-            phenotype += np.random.normal(mu, sigma)
+        if self.h2:
+            enviro =  self.environmental_variance
+            phenotype += np.random.normal(0, np.sqrt(enviro))
 
         if self.traittype == 'dichotomous':
             if self.liability_threshold is None:
