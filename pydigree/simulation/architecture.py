@@ -75,15 +75,15 @@ class Architecture(object):
     by t.predict_phenotype(individual)
     """
 
-    def __init__(self, name, type, chromosomes=None):
+    def __init__(self, name, traittype, chromosomes=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = []
         self.noise = None
-        if type not in ['quantitative', 'dichotomous']:
+        if traittype not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
-            self.traittype = type
+            self.traittype = traittype
         self.liability_threshold = None
 
     def __str__(self):
