@@ -110,7 +110,7 @@ class Architecture(object):
            deviation from additivity (default 0)
         effect: a GeneticEffect object if you don't want to supply a and k
         """
-        chrom, marker = location
+        chrom, marker = locus
 
         if effect is None:
             eff = GeneticEffect(locus, a, k, chromosomes=self.chromosomes)
