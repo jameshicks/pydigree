@@ -14,7 +14,7 @@ class GeneticEffect(object):
     genotype:  A1/A1                       A1/A2          A2/A2 
     '''
 
-    def __init__(self, locus, a, k, chromosomes=None):
+    def __init__(self, locus, a, k=0, chromosomes=None):
         self.locus = locus
         self.chromosomes = chromosomes
         self.a = a
