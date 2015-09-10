@@ -119,6 +119,10 @@ class Architecture(object):
     def add_noise(self, mean=0, sd=1):
         self.noise = (mean, sd)
 
+    @property
+    def additive_genetic_variance(self):
+        return sum(x.locus_additive_variance for x in self.effects)
+
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = sum(phenotype)
