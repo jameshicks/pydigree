@@ -24,28 +24,13 @@ class Architecture(object):
     on the trait, giving an effect of 1 could be a dictionary that looks like
     this: {('a','a'): 1}
 
-    Epistatic Effects
-    ------
-    Pydigree can also simulate epistatic effects. That is, combinations of
-    genotypes that add effects non additively. For these the locations are
-    given as a list of (chr, pos) tuples (as seen in the main effects section).
-    The dictionary of effects is given as the key,value pair of a list of
-    genotypes and the effect of that genotype on the trait.
 
-    The list of genotypes reflects the order of the positions. That is, if you
-    supply positions 1,2,3, the genotypes should look like:
-    [(genotype at position 1), (genotype at position 2),
-    (genotype at position 3)]
-
-    Like with the main effects, any genotype combination not in the effect
-    dictionary is assumed to have 0 effect on the trait.
     """
 
     def __init__(self, name, type, chromosomes=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = {}
-        self.epistatic_effects = {}
         self.noise = None
         if type not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
@@ -54,9 +39,9 @@ class Architecture(object):
         self.liability_threshold = None
 
     def __str__(self):
-        return "Trait %s (%s): %s main effects, %s epistatic effects" \
-            % (self.name, self.traittype,
-               len(self.effects), len(self.epistatic_effects))
+        return "Trait {} ({}): {} main effects".format(self.name,
+                                                       self.traittype,
+                                                       len(self.effects))
 
     def __transformdict(self, d):
         d2 = {}
@@ -69,13 +54,6 @@ class Architecture(object):
         try:
             return self.effects[location][g]
         except KeyError:
-            return 0
-
-    def _getepistaticeffects(self, individual, locations):
-        locations = tuple(tuple(loc) for loc in locations)
-        g = tuple(frozenset(individual.get_genotype(chr, pos)
-                            for chr, pos in locations))
-        if g not in self.epistatic_effects[locations]:
             return 0
 
     def set_liability_threshold(self, threshold):
@@ -112,18 +90,11 @@ class Architecture(object):
         except KeyError:
             self.effects[(chrom, marker)] = effects
 
-    def add_epistatic_effect(self, locations, effects):
-        locations = tuple(tuple(x) for x in locations)
-        effects = self.__transformdict(effects)
-        self.epistatic_effects[locations] = effects
-
     def add_noise(self, mean=0, sd=1):
         self.noise = (mean, sd)
 
     def predict_phenotype(self, individual):
         liability = [self._geteffect(individual, x) for x in self.effects]
-        liability += [self._getepistaticeffect(individual, x)
-                      for x in self.epistatic_effects]
         liabilitysum = sum(liability)
 
         if self.noise:
