@@ -22,7 +22,7 @@ parser.add_argument('--ibd', action='store_true', help='Write IBD=0/1/2 status t
 parser.add_argument('--constraintfile', metavar='file',  help='Constriant file')
 parser.add_argument('--effectfile', dest='effectfile',
                     help='File containing marker effects for trait simulation')
-parser.add_argument('--effect', nargs=5, action='append', dest='effects')
+parser.add_argument('--effect', nargs=4, action='append', dest='effects')
 parser.add_argument('--liability-threshold', type=float, dest='lthresh')
 parser.add_argument('--freq', dest='freqs', nargs=3, action='append')
 parser.add_argument('--prefix', type=str, help='prefix for output file',
@@ -67,12 +67,10 @@ else:
 # More effects. Specified effects override file effects.
 if args.effects:
     for effect in args.effects:
-        chr, pos, p, q, e = effect
+        chr, pos, a, k = effect
         locus = int(chr), int(pos)
-        p, q = int(p), int(q)
-        e = float(e)
-        eff = {(p,q): e}
-        trait.add_effect(locus, eff)
+        a, k = int(a), int(k)
+        trait.add_effect(locus, a, k)
     if args.lthresh:
         trait.set_liability_threshold(args.lthresh)
 
