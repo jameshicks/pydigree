@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 
 from itertools import izip_longest
 from operator import mul as multiply
@@ -99,6 +100,10 @@ def product(iter):
         return 1
     return reduce(multiply, iter)
 
+def rescale_variable(x, mu_old, sd_old, mu_new, sd_new):
+    if sd_new <= 0.0 or sd_old <= 0.0:
+        raise ValueError('Invalid standard deviation: {}'.format(sd_new))
+    return mu_new + (x - mu_old) * (sd_new / sd_old)
 
 def cumsum(iter):
     """
