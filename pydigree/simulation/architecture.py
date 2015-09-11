@@ -138,9 +138,6 @@ class Architecture(object):
                                             chromosomes=self.chromosomes)
         self.effects.append(eff)
 
-    def add_noise(self, mean=0, sd=1):
-        self.noise = (mean, sd)
-
     @property
     def expected_genotypic_value(self):
         return sum(x.expected_genotypic_value for x in self.effects)
