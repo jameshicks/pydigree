@@ -2,14 +2,14 @@ from nose.tools import assert_raises
 
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper, log_base_change
-from pydigree.common import runs, runs_gte, spans, interleave
+from pydigree.common import runs, runs_gte, spans, interleave, rescale_variable
 from pydigree.cyfuncs import runs_gte_uint8
 
 from math import log, log10, e
 import numpy as np
 
-def float_equality(a,b):
-    return abs(a-b) < 1e-15
+def float_equality(a,b, tolerance=1e-15):
+    return abs(a-b) < tolerance
  
 def test_count():
     assert count(1, [0,0,0,1,1,1,0,0,0]) == 3
@@ -85,6 +85,18 @@ def test_interleave():
     assert interleave([1],[2]) == [1,2]
     assert interleave([],[]) == []
     assert_raises(ValueError, interleave, [1], [])
+
+def test_varrescale():
+    n, mu_0, sd_0 = 1000000, 0, 1
+    orig = np.random.normal(mu_0, sd_0, n)
+
+    # Rescale to mean = 4, sd = 10
+    new = rescale_variable(orig, mu_0, sd_0, 4, 10)
+    assert float_equality(new.mean(), 4, tolerance=0.1)
+    assert float_equality(new.std(), 10, tolerance=0.1) 
+
+    # Make sure standard deviations are valid
+    assert_raises(ValueError, rescale_variable, orig, mu_0, sd_0, 5, 0)
 
 def test_spans():
     assert spans([]) == [] 

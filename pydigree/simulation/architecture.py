@@ -1,4 +1,5 @@
 import numpy as np
+from pydigree.common import rescale_variable
 
 
 class QuantitativeGeneticEffect(object):
@@ -23,7 +24,7 @@ class QuantitativeGeneticEffect(object):
 
     def genotypic_value(self, individual):
         gt = individual.get_genotype(self.locus)
-        N = gt.count(2) # Number of minor alleles
+        N = gt.count(2)  # Number of minor alleles
         if N == 0:
             return 0
         elif N == 1:
@@ -33,15 +34,15 @@ class QuantitativeGeneticEffect(object):
         else:
             raise ValueError('Bad genotype: {}'.format(gt))
 
-    @property 
+    @property
     def expected_genotypic_value(self):
         chridx, locidx = self.locus
         maf = self.chromosomes[chridx].frequencies[locidx]
-        
+
         mu_g = 0
-        mu_g += (1-maf)**2 * 0 # Genotypic value for major homozygote
-        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k) # Heterozygote value
-        mu_g += (maf ** 2) * 2 * self.a # Genotypic value for minor homozygote 
+        mu_g += (1-maf)**2 * 0  # Genotypic value for major homozygote
+        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k)  # Heterozygote value
+        mu_g += (maf ** 2) * 2 * self.a  # Genotypic value for minor homozygote
 
         return mu_g
 
@@ -95,15 +96,27 @@ class Architecture(object):
     population in Hardy-Weinberg equilibrium (infinitely large, randomly mating, 
     no migration/selection, etc) equals h2. 
 
+    When trait_mean and trait_sd are specified, the output phenotype is shifted
+    and rescaled so that it is distribution N(trait_mean, trait_sd). In the 
+    presence of rescaling, the additive values of the genotype effects are 
+    not particularly meaningful, since they are not rescaled internally. The
+    effects then should be considered as relative weights of the effects of
+    different loci, and not directly predictive.   
+
     Predicted phenotypes for individual objects can be given 
     by t.predict_phenotype(individual)
     """
 
-    def __init__(self, name, traittype, h2=None, chromosomes=None):
+    def __init__(self, name, traittype, h2=None, chromosomes=None,
+                 trait_mean=None, trait_sd=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = []
         self.h2 = h2
+
+        self.trait_mean = float(trait_mean)
+        self.trait_sd = float(trait_sd)
+
         if traittype not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
@@ -121,53 +134,110 @@ class Architecture(object):
         else:
             self.liability_threshold = threshold
 
-    def add_effect(self, locus, a=0, k=0, effect=None):
+    def add_effect(self, locus, a=None, k=0, obj=None):
         """
         Add a main effect
 
         Arguments
         ------
         locus:  a chromosome, index tuple
-        a:      The additive effect of each minor allele
-        k:      The dominance effect of at the locus, where k is the 
-                deviation from additivity (default 0)
-        effect: a QuantitativeGeneticEffect object if you don't 
-                want to supply a and k
+        a:                 The additive effect of each minor allele
+        k:                 The dominance effect of at the locus, where k is the 
+                           deviation from additivity (default 0)
+        phenotypic_effect: The additive effect of an allele on the scale of the
+                           output trait
+        obj:               a QuantitativeGeneticEffect object if you don't 
+                           want to supply a and k
         """
         chrom, marker = locus
 
-        if effect is None:
-            eff = QuantitativeGeneticEffect(locus,
+        if obj is None:
+            if a is not None and phenotypic_effect is not None:
+                raise ValueError('Both a and phenotypic_effect specified')
+            
+            if phenotypic_effect:
+                a = self._rescale_to_genotype_effect(phenotypic_effect)
+
+            obj = QuantitativeGeneticEffect(locus,
                                             a,
                                             k,
                                             chromosomes=self.chromosomes)
-        self.effects.append(eff)
+        self.effects.append(obj)
 
     @property
-    def expected_genotypic_value(self):
+    def unscaled_expected_genotypic_value(self):
         return sum(x.expected_genotypic_value for x in self.effects)
 
     @property
-    def additive_genetic_variance(self):
+    def unscaled_additive_genetic_variance(self):
         return sum(x.locus_additive_variance for x in self.effects)
 
     @property
-    def environmental_variance(self):
+    def unscaled_environmental_variance(self):
         if self.h2 is None:
             raise ValueError('Trait heritability not set!')
 
         # h2 = V_a / (V_a + V_e)
         # A little algebra gives us V_e =  V_a/h2 - V_a
-        add =  self.additive_genetic_variance
+        add = self.unscaled_additive_genetic_variance
         return (add / self.h2) - add
+
+    @property
+    def unscaled_total_variance(self):
+        return (self.unscaled_additive_genetic_variance +
+                self.unscaled_environmental_variance)
+
+    @property
+    def rescaling(self):
+        " Returns True if phenotypes are rescaled to a new distribution "
+        return self.trait_mean is not None and self.trait_sd is not None
+
+    def rescale_phenotype(self, phenotype, old_mean, old_sd):
+        """
+        Takes a phenotype value distributed N(old_mean, old_sd) and rescales 
+        to N(self.trait_mean, self.trait_sd) 
+        """
+        new_mean = self.trait_mean
+        new_sd = self.trait_sd
+        newphen = new_mean + (phenotype - old_mean) * (new_sd / float(old_sd))
+        newphen = rescale_variable(phenotype,
+                                   old_mean, old_sd,
+                                   new_mean, new_sd)
+        return newphen
+
+    def _rescale_to_genotype_effect(self, phenotypic_effect):
+        """
+        Rescales an effect on a phenotypic value to the scale
+        genotypic values are on, if phenotypic rescaling is turned on.
+        """
+        if not self.rescaling:
+            return effect
+
+        unscaled_sd = np.sqrt(self.unscaled_total_variance)
+        genotype_effect = phenotypic_effect * unscaled_sd / self.trait_sd
+        return genotype_effect
 
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = sum(phenotype)
 
         if self.h2:
-            enviro =  self.environmental_variance
+            enviro = self.unscaled_environmental_variance
             phenotype += np.random.normal(0, np.sqrt(enviro))
+
+        if self.rescaling:
+            # P = G + E
+            #
+            # The phenotype is the sum of the genotypic and environmental
+            # values. So the expected phenotype value is the sum of the
+            # expected genotype value and the expected environmental value.
+            # Since in these simulations E[environmental_value] = 0, we don't
+            # have to worry about it.
+            old_mean = self.unscaled_expected_genotypic_value
+
+            phenotype = self.rescale_phenotype(phenotype,
+                                               old_mean,
+                                               np.sqrt(self.total_variance))
 
         if self.traittype == 'dichotomous':
             if self.liability_threshold is None:
