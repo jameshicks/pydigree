@@ -1,5 +1,5 @@
 import pydigree
-
+from pydigree.io.smartopen import smartopen as open
 
 def read_gs_chromosome_template(templatef):
     """
