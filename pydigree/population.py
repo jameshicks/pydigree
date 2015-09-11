@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 # Packages we're going to use
-import random
 import math
+import numpy as np
 from itertools import chain
+
 # Abstract base class for population and pedigree
 from collections import MutableMapping
 
@@ -172,15 +173,15 @@ class Population(MutableMapping):
         Creates an individual as the child of two specificied individual
         objects and randomly chooses a sex.
         """
-        child = Individual(self, id, ind1, ind2, random.choice([0, 1]))
+        child = Individual(self, id, ind1, ind2, np.random.choice([0, 1]))
         return child
 
     def random_mating_generation(self, gensize):
 
         def rand_mate(pop, name=None):
             name = str(name) if not self.name else self.name + str(name)
-            return self.mate(random.choice(self.males()),
-                             random.choice(self.females()),
+            return self.mate(np.random.choice(self.males()),
+                             np.random.choice(self.females()),
                              name)
 
         newpop = {}
@@ -193,7 +194,7 @@ class Population(MutableMapping):
         ''' Creates a new founder individual and adds to the population '''
         if sex is not None:
             sex = sex.lower()
-        sexd = {'m': 0, 'f': 1, None: random.choice([0, 1])}
+        sexd = {'m': 0, 'f': 1, None: np.random.choice([0, 1])}
         i = Individual(self, self.size(), None, None, sexd[sex])
         if register:
             self.register_individual(i)
@@ -209,7 +210,7 @@ class Population(MutableMapping):
             raise ValueError('Nothing in chromosome pool')
         g = []
         for i, x in enumerate(self.pool):
-            g.append([random.choice(x), random.choice(x)])
+            g.append([np.random.choice(x), np.random.choice(x)])
         return g
 
     def get_genotypes(self):

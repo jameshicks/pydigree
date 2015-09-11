@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import itertools
-import random
 from itertools import izip
 
 import numpy as np

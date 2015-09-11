@@ -2,9 +2,9 @@
 from __future__ import division
 
 import sys
-import random
 import pydigree
 import time
+import numpy as np
 
 
 n=5000
@@ -18,7 +18,7 @@ intermark_dist_cm = (float(chrom_length_cm)/nmark)/100
 pop = pydigree.Population(n)
 for rx in range(1):
     c = pydigree.ChromosomeTemplate()
-    for x in range(nmark): c.add_genotype(random.random(),intermark_dist_cm)
+    for x in range(nmark): c.add_genotype(np.random.random(),intermark_dist_cm)
     print c
     pop.add_chromosome(c)
 print 'Initializing pool'

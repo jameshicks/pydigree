@@ -1,4 +1,4 @@
-import random
+import numpy as np
 
 from pydigree.common import *
 from pydigree.simulation import *
@@ -40,7 +40,7 @@ class ConstrainedMendelianSimulation(Simulation):
                 constraints = [(x[1], (x[0], x[2])) for x in constraints]
                 location, allele = constraints[0]
                 ancestor = allele[0]
-                descent_path = random.choice(paths(ancestor, ind))
+                descent_path = np.random.choice(paths(ancestor, ind))
 
                 for pathindex, path_member in enumerate(descent_path):
                     if path_member.is_founder():

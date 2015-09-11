@@ -2,7 +2,6 @@
 
 import pydigree
 import sys
-import random
 import time
 from pydigree import table
 from pydigree.simulation import Architecture

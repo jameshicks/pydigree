@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import random
+import numpy as np
 
 from pydigree import ChromosomeTemplate
 from pydigree.recombination import recombine
@@ -10,7 +10,7 @@ poolsize = 10000
 ngen = 25
 
 c = ChromosomeTemplate()
-for x in range(nmark): c.add_genotype(random.random(),.1)
+for x in range(nmark): c.add_genotype(np.random.random(),.1)
 mapp = [.1]*nmark
 
 d = 0
@@ -20,6 +20,6 @@ pool = [c.linkageequilibrium_chromosome() for x in range(poolsize)]
 
 for x in xrange(ngen):
     print "Iteration %d" % d
-    recombs = [recombine(random.choice(pool),random.choice(pool),mapp) for x in xrange(poolsize)]
-    pool = random.sample(recombs+pool,poolsize)
+    recombs = [recombine(np.random.choice(pool),np.random.choice(pool),mapp) for x in xrange(poolsize)]
+    pool = np.random.choice(recombs+pool,poolsize)
     d += 1

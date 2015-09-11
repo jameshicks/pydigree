@@ -1,5 +1,3 @@
-import random
-
 import numpy as np
 
 from pydigree.recombination import recombine
@@ -47,7 +45,7 @@ class ChromosomePool(object):
         for i, c in enumerate(self.chromosomes):
             # Chromosomes have a 1/2 chance of being recombined with another
             def choose_chrom(pool, chrmap):
-                q, w = random.choice(pool), random.choice(pool)
+                q, w = np.random.choice(pool), np.random.choice(pool)
                 r = recombine(q, w, chrmap)
                 return r
 
@@ -60,7 +58,7 @@ class ChromosomePool(object):
     # Chromosome functions
     def chromosome(self, chromindex):
         # Get a random chromomsome
-        return random.choice(self.pool[chromindex])
+        return np.random.choice(self.pool[chromindex])
 
     def genotypes(self):
         ''' Gives a full set of genotypes drawn from the chromosome pool '''

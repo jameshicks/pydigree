@@ -1,5 +1,4 @@
 from __future__ import division
-import random
 
 from itertools import combinations_with_replacement, izip
 
