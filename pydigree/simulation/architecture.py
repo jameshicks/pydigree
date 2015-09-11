@@ -215,7 +215,9 @@ class Architecture(object):
 
         unscaled_sd = np.sqrt(self.unscaled_total_variance)
         genotype_effect = phenotypic_effect * unscaled_sd / self.trait_sd
+
         return genotype_effect
+
 
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
