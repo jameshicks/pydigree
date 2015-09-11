@@ -410,22 +410,26 @@ class MixedModel(object):
     def summary(self):
         """ Prints a summary of the current model """
         self._fit_results()
+        print
+        print 'Linear mixed model fit by {}'.format(self.maximized)
+        print
         print 'Fixed effects:'
-        fixefnames = ['Intercept'] + self.fixed_effects
+        fixefnames = ['(Intercept)'] + self.fixed_effects
         betas = self.beta.T.tolist()[0]
         print '\t'.join(['Name', 'Estimate'])
         for name, beta in zip(fixefnames, betas):
-            print '\t'.join(str(q) for q in [name, beta])
+            print '\t'.join(q for q in [name, '{:5.3f}'.format(beta)])
         print
         print 'Variance components:'
         print '\t'.join(['Component', 'Variance', '% Variance'])
         totalvar = sum(self.variance_components)
         for effect, vc in zip(self.random_effects, self.variance_components):
-            print '\t'.join(str(val) for val in [effect.label,
-                                                 vc,
-                                                 100 * vc / totalvar])
+            print '\t'.join(v for v in [effect.label,
+                                        '{:5.3f}'.format(vc),
+                                        '{:5.3f}'.format(100 * vc / totalvar)])
         print
-        print 'Loglikelihood: %s' % self.loglikelihood()
+        print 'Loglikelihood: {:10.2f}'.format(self.loglikelihood())
+        print 
 
     def _reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
