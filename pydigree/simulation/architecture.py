@@ -169,8 +169,12 @@ class Architecture(object):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = sum(phenotype)
 
-        if self.h2:
-            enviro =  self.environmental_variance
+        # Random variates can't be generated for variance <= 0, 
+        # so we have to check if there even is an environmental 
+        # component to the trait (i.e. h2 < 1) for the trait we're 
+        # simulating before we try to add it to the phenotype
+        if self.h2 < 1.0:
+            enviro = self.environmental_variance
             phenotype += np.random.normal(0, np.sqrt(enviro))
 
         if self.traittype == 'dichotomous':
