@@ -89,7 +89,12 @@ class Architecture(object):
     (chromosome, position) to indicate location. 
 
     Then you would add the effect to the trait architecture with:
-    t.add_effect_liability(location, a, k)
+    t.add_effect(location, a, k)
+
+    When h2 is specified, phenotypes have an appropriate amount of random
+    normal noise added to them so that the heritability of the trait in a 
+    population in Hardy-Weinberg equilibrium (infinitely large, randomly mating, 
+    no migration/selection, etc) equals h2. 
 
     When trait_mean and trait_sd are specified, the output phenotype is shifted
     and rescaled so that it is distribution N(trait_mean, trait_sd). In the 
