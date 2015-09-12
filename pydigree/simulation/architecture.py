@@ -99,7 +99,7 @@ class Architecture(object):
     by t.predict_phenotype(individual)
     """
 
-    def __init__(self, name, traittype, h2=None, chromosomes=None):
+    def __init__(self, name, traittype, h2=1.0, chromosomes=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = []
