@@ -95,15 +95,21 @@ class Architecture(object):
     population in Hardy-Weinberg equilibrium (infinitely large, randomly mating, 
     no migration/selection, etc) equals h2. 
 
+    The trait can be forced to have a mean at a desired location by computing 
+    trait_mean = intercept + expected_genotypic_value. The genotypic value can
+    be directly calculated from the specified effects, and the intercept is 
+    automatically calculated by the formula.
+
     Predicted phenotypes for individual objects can be given 
     by t.predict_phenotype(individual)
     """
 
-    def __init__(self, name, traittype, h2=1.0, chromosomes=None):
+    def __init__(self, name, traittype, h2=1.0, mean=0, chromosomes=None):
         self.name = name
         self.chromosomes = chromosomes
         self.effects = []
         self.h2 = h2
+        self.mean = mean
         if traittype not in ['quantitative', 'dichotomous']:
             raise ValueError('Not a valid trait type!')
         else:
@@ -148,6 +154,12 @@ class Architecture(object):
         return sum(x.expected_genotypic_value for x in self.effects)
 
     @property
+    def intercept(self):
+        # E[P_environment] == 0, so we can ignore it
+        return self.mean - self.expected_genotypic_value
+
+
+    @property
     def additive_genetic_variance(self):
         return sum(x.locus_additive_variance for x in self.effects)
 
@@ -167,7 +179,7 @@ class Architecture(object):
 
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
-        phenotype = sum(phenotype)
+        phenotype = self.intercept + sum(phenotype)
 
         # Random variates can't be generated for variance <= 0, 
         # so we have to check if there even is an environmental 
