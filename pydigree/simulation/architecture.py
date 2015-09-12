@@ -161,46 +161,7 @@ class Architecture(object):
         add =  self.additive_genetic_variance
         return (add / self.h2) - add
 
-<<<<<<< HEAD
-    @property
-    def unscaled_total_variance(self):
-        return (self.unscaled_additive_genetic_variance +
-                self.unscaled_environmental_variance)
 
-    @property
-    def rescaling(self):
-        " Returns True if phenotypes are rescaled to a new distribution "
-        return self.trait_mean is not None and self.trait_sd is not None
-
-    def rescale_phenotype(self, phenotype, old_mean, old_sd):
-        """
-        Takes a phenotype value distributed N(old_mean, old_sd) and rescales 
-        to N(self.trait_mean, self.trait_sd) 
-        """
-        new_mean = self.trait_mean
-        new_sd = self.trait_sd
-        newphen = new_mean + (phenotype - old_mean) * (new_sd / float(old_sd))
-        newphen = rescale_variable(phenotype,
-                                   old_mean, old_sd,
-                                   new_mean, new_sd)
-        return newphen
-
-    def _rescale_to_genotype_effect(self, phenotypic_effect):
-        """
-        Rescales an effect on a phenotypic value to the scale
-        genotypic values are on, if phenotypic rescaling is turned on.
-        """
-        if not self.rescaling:
-            return effect
-
-        unscaled_sd = np.sqrt(self.unscaled_total_variance)
-        genotype_effect = phenotypic_effect * unscaled_sd / self.trait_sd
-
-        return genotype_effect
-
-
-=======
->>>>>>> parent of b8d7f7e... rescale output phenotype
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = sum(phenotype)
