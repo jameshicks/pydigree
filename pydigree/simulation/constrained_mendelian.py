@@ -1,6 +1,7 @@
 import numpy as np
 
 from pydigree.common import *
+from pydigree.genotypes import AncestralAllele
 from pydigree.simulation import *
 from pydigree.simulation.simulation import Simulation, SimulationError
 from pydigree import paths
@@ -23,48 +24,50 @@ class ConstrainedMendelianSimulation(Simulation):
     def replicate(self, writeibd=False, verbose=False, linkeq=True,
                   replicatenumber=0):
         self.template.clear_genotypes()
-        for ped in self.template:
-            for x in ped.founders():
-                x.label_genotypes()
-            for ind in sorted(self.constraints['ibd'],
-                              key=lambda x: x.depth, reverse=True):
-                if ind.has_genotypes():
-                    # If the individual we're looking at has genotypes
-                    # already, we've seen them earlier while getting
-                    # genotypes for someone deeper in the pedigree
+  
+        for x in self.template.founders():
+            x.label_genotypes()
+        
+        for ind in sorted(self.constraints['ibd'],
+                          key=lambda x: x.depth, reverse=True):
+            if ind.has_genotypes():
+                # If the individual we're looking at has genotypes
+                # already, we've seen them earlier while getting
+                # genotypes for someone deeper in the pedigree
+                continue
+            constraints = self.constraints['ibd'][ind]
+
+            # TODO: Multiple constraints per individual
+            # Right now we're only using the first ([0]) constraint
+            constraints = [(x[1], AncestralAllele(x[0], x[2])) for x in constraints]
+            location, allele = constraints[0]
+            ancestor = allele.ancestor
+            descent_path = random_choice(paths(ancestor, ind))
+
+            for pathindex, path_member in enumerate(descent_path):
+                if path_member.is_founder():
                     continue
-                constraints = self.constraints['ibd'][ind]
+                fa, mo = path_member.parents()
 
-                # TODO: Multiple constraints per individual
-                # Right now we're only using the first ([0]) constraint
-                constraints = [(x[1], (x[0], x[2])) for x in constraints]
-                location, allele = constraints[0]
-                ancestor = allele[0]
-                descent_path = np.random.choice(paths(ancestor, ind))
+                if fa in descent_path:
+                    paternal_gamete = fa.constrained_gamete(constraints)
+                else:
+                    paternal_gamete = fa.gamete()
+                if mo in descent_path:
+                    maternal_gamete = mo.constrained_gamete(constraints)
+                else:
+                    maternal_gamete = mo.gamete()
 
-                for pathindex, path_member in enumerate(descent_path):
-                    if path_member.is_founder():
-                        continue
-                    fa, mo = path_member.parents()
+                genotypes = Individual.fertilize(paternal_gamete,
+                                                 maternal_gamete)
+                path_member._set_genotypes(genotypes)
+        
+        # Get genotypes for everybody else that we're not constraining.
+        for ind in self.template.individuals:
+            ind.get_genotypes()
 
-                    if fa in descent_path:
-                        paternal_gamete = fa.constrained_gamete(constraints)
-                    else:
-                        paternal_gamete = fa.gamete()
-                    if mo in descent_path:
-                        maternal_gamete = mo.constrained_gamete(constraints)
-                    else:
-                        maternal_gamete = mo.gamete()
-
-                    genotypes = Individual.fertilize(paternal_gamete,
-                                                     maternal_gamete)
-                    path_member._set_genotypes(genotypes)
-            # Get genotypes for everybody else that we're not constraining.
-            for ind in ped:
-                ind.get_genotypes()
-
-            if writeibd:
-                self._writeibd(replicatenumber)
+        if writeibd:
+            self._writeibd(replicatenumber)
 
         # Now replace the label genotypes in founders with real ones.
         self.get_founder_genotypes(linkeq=linkeq)
