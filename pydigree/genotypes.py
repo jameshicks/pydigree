@@ -77,45 +77,71 @@ class LabelledAlleles(AlleleContainer):
             copy_stop = self.nmark
 
         for span in template.spans:
-            template_start, template_stop = span.interval
-            # There are three possible things that can happen here:
-            # 1) The template span is before the copy region, so we ignore it
-            # 2) The template span is after the copy region, so we're done
-            # 3) The template span overlaps the copy region.
-            #
-            # We're going to bail out early if the end of the copy region is in
-            # the template span, so #2 should never be encountered. I've left
-            # The test in, to cover the bases. #1 is trivial to check for.
-            # Scenario #3 is where actual copying occurs.
-            if template_stop < copy_start:
-                # Happens before the copy region we're looking for
+            if copy_start > span.stop or copy_stop < span.start:
+                # These are the segments that aren't relevant
+                # Ours           [-------------]
+                # Template [---]      OR          [-----]
                 continue
+            elif copy_start == span.start and copy_stop == span.stop:
+                # Ours             [----------] 
+                # Template         [----------]
 
-            if template_start > copy_stop:
-                # Happens after the end of the copy region so we're done
+                new_span = InheritanceSpan(span.ancestor,
+                                           span.chromosomeidx,
+                                           span.haplotype,
+                                           copy_start,
+                                           copy_stop)
+
+                self.add_span(new_span)
+
+            elif span.contains(copy_start) and span.contains(copy_stop):
+                # Ours:         [----------------]
+                # Template:  [-----------------------]
+                # The span we want is a sub-span of this span
+
+                new_span = InheritanceSpan(span.ancestor,
+                                           span.chromosomeidx,
+                                           span.haplotype,
+                                           copy_start,
+                                           copy_stop)
+
+                self.add_span(new_span)
+            
+            elif span.contains(copy_start):
+                # Ours:        [------------------]
+                # Template: [--------]
+                new_span = InheritanceSpan(span.ancestor,
+                                           span.chromosomeidx,
+                                           span.haplotype,
+                                           copy_start,
+                                           span.stop)
+                self.add_span(new_span)
+           
+            elif span.contains(copy_stop):
+                # Ours       [-----------------]
+                # Template:                [-----------]
+                new_span = InheritanceSpan(span.ancestor,
+                                           span.chromosomeidx,
+                                           span.haplotype,
+                                           span.start,
+                                           copy_stop)
+                self.add_span(new_span)
                 return
-
-            if (template_start <= copy_start <= template_stop
-                    or template_start <= copy_stop <= template_stop):
-                # This this span of template overlaps the copy region, so
-                # we have something to do
-
-                # We take the maxes of the starts and the mins of the stops
-                this_copystart = max(copy_start, template_start)
-                this_copystop = min(copy_stop, template_stop)
-
-                copy_span = InheritanceSpan(span.ancestor,
-                                            span.chromosomeidx,
-                                            span.haplotype,
-                                            this_copystart,
-                                            this_copystop)
-
-                self.add_span(copy_span)
-
-                # The early bailout if we're done copying
-                if copy_stop <= template_stop:
-                    return
-
+          
+            elif span.start > copy_start and span.stop < copy_stop:
+                # This span is a sub-span of ours
+                # Ours       [------------------------]
+                # Template         [-------------]
+                # Make a new span object anyway for object ownership purposes
+                new_span = InheritanceSpan(span.ancestor,
+                                           span.chromosomeidx,
+                                           span.haplotype,
+                                           span.start,
+                                           span.stop)
+                self.add_span(new_span)
+            else: 
+                raise ValueError('Unforseen combination of spans')
+  
     def delabel(self):
         # Check to make sure all the founders are delabeled
         if not all_same_type(self.spans, InheritanceSpan):
