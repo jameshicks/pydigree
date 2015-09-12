@@ -161,6 +161,9 @@ class Architecture(object):
         add =  self.additive_genetic_variance
         return (add / self.h2) - add
 
+    @property
+    def total_variance(self):
+        return self.additive_genetic_variance + self.environmental_variance
 
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
