@@ -87,7 +87,7 @@ class PedigreeCollection(MutableMapping):
             x.add_chromosome(chrom)
 
     def clear_genotypes(self):
-        for x in self:
+        for x in self.individuals:
             x.clear_genotypes()
 
     def get_founder_genotypes(self):
