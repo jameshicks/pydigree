@@ -349,10 +349,10 @@ class Individual(object):
         if not self.genotypes:
             self.get_genotypes()
 
-        g = [recombine(chr[0],
-                       chr[1],
+        g = [recombine(chrom[0],
+                       chrom[1],
                        self.chromosomes[i].genetic_map)
-             for i, chr in enumerate(self.genotypes)]
+             for i, chrom in enumerate(self.genotypes)]
 
         return g
 
