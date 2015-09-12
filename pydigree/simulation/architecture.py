@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 
 
@@ -176,6 +177,22 @@ class Architecture(object):
     @property
     def total_variance(self):
         return self.additive_genetic_variance + self.environmental_variance
+
+    def rescale(self, mean, sd):
+        """
+        Rescale trait to have the distribution N(mean, sd). Modifies genotype
+        effects so that they sum to the appropriate variance.   
+        """
+
+        old_add_variance = self.additive_genetic_variance
+        new_add_variance = self.h2 * (sd**2)
+
+        # Scaling works easiest when done as standard deviations
+        scaling_factor = np.sqrt(new_add_variance) / np.sqrt(old_add_variance)
+        for effect in self.effects:
+            effect.a *= scaling_factor
+
+        self.mean = mean
 
     def predict_phenotype(self, individual):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
