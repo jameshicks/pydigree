@@ -32,7 +32,11 @@ parser.add_argument('--verbose', action='store_true', dest='verbosity',
 parser.add_argument('--output-filter', dest='predicate', default=None,
                     choices=('affected','phenotyped'), action='store')
 parser.add_argument('--compress', choices=('bzip2', 'gzip'), action='store')
+parser.add_argument('--seed', type=int, help='Random seed', default=None)
 args = parser.parse_args()
+
+if args.seed is not None:
+    pydigree.set_seed(args.seed)
 
 # Read the pedigrees
 template = read_ped(args.template)

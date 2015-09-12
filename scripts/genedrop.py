@@ -23,8 +23,12 @@ parser.add_argument('--writedist',
 parser.add_argument('--include-marryins', dest='remove_mif', action='store_false',
                     help='Include affected marry-in founders in IBD sharing scores')
 parser.add_argument('--scorefunction', '-s', dest='scorefunc', default='sbool')
-
+parser.add_argument('--seed', type=int, help='Random seed', default=None)
 args = parser.parse_args()
+
+
+if args.seed is not None:
+    pydigree.set_seed(args.seed)
 
 
 def spairs(ped, inds, loc):
