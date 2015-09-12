@@ -62,6 +62,10 @@ class LabelledAlleles(AlleleContainer):
     def add_span(self, new_span):
         if any(new_span.stop < x.stop for x in self.spans):
             raise ValueError('Overwriting not supported for LabelledAlleles')
+        if len(self.spans) == 0 and new_span.start > 0:
+            raise ValueError('Spans not contiguous')
+        if len(self.spans) > 0 and (not new_span.start == self.spans[-1].stop):
+            raise ValueError('Spans not contiguous')
         self.spans.append(new_span)
 
     def copy_span(self, template, copy_start, copy_stop):
