@@ -46,12 +46,13 @@ class Individual(object):
 
     def __str__(self):
         try:
+            pop, lab = self.full_label
             if self.is_founder():
-                return 'Individual %s (FOUNDER)' % self.label
+                return 'Individual {}:{} (FOUNDER)'.format(pop, lab)
             else:
-                return 'Individual %s (F:%s,M:%s)' % (self.label,
-                                                      self.father.label,
-                                                      self.mother.label)
+                return 'Individual {}:{} (F:{},M:{})'.format(pop, lab,
+                                                             self.father.label,
+                                                             self.mother.label)
         except AttributeError:
             return 'Individual %s (Unlinked)' % self.label
 
