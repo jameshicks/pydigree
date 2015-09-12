@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import numpy as np
 from itertools import izip_longest
 from operator import mul as multiply
 from math import log
@@ -21,6 +21,10 @@ def table(seq):
     keys = set(seq)
     return dict([(k, seq.count(k)) for k in keys])
 
+def random_choice(iterable):
+    itersize = len(iterable)
+    randidx = np.random.randint(0, itersize)
+    return iterable[randidx]
 
 def flatten(x):
     """
