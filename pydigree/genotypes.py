@@ -40,6 +40,12 @@ class LabelledAlleles(AlleleContainer):
             return False
         return all(x == y for x, y in izip(self.spans, other.spans))
 
+    def __getitem__(self, index):
+        for span in self.spans:
+            if span.contains(index):
+                return span.ancestral_allele
+        raise ValueError('Index out of bounds: {}'.format(index))
+
     def empty_like(self):
         return LabelledAlleles([], chromobj=self.chromobj, nmark=self.nmark)
 
@@ -144,6 +150,14 @@ class InheritanceSpan(object):
                 self.stop == other.stop)
 
     @property
+    def ancestral_allele(self):
+        return AncestralAllele(self.ancestor, self.haplotype)
+
+    def contains(self, index):
+        'Returns true if the index specified falls within this span'
+        return self.start <= index <= self.stop
+
+    @property
     def interval(self):
         return self.start, self.stop
 
@@ -167,8 +181,11 @@ class AncestralAllele(object):
         return 'AncestralAllele: {}: {}'.format(self.ancestor, self.haplotype)
 
     def __eq__(self, other):
-        return (self.ancestor is other.ancestor and
-                self.haplotype is other.haplotype)
+        return (self.ancestor == other.ancestor and
+                self.haplotype == other.haplotype)
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Alleles(np.ndarray, AlleleContainer):
@@ -394,7 +411,7 @@ class ChromosomeTemplate(object):
 
     @property
     def outputlabel(self):
-        ''' The label outputted when written to disk ''' 
+        ''' The label outputted when written to disk '''
         if self.label:
             return self.label
         else:
@@ -450,11 +467,12 @@ class ChromosomeTemplate(object):
 
         # Find the index in mp with value lte to position
         left_idx = bisect_right(mp, position) - 1
-        
+
         if left_idx == self.nmark() - 1:
-            # If we're already at the last marker, we know to just return left_idx
+            # If we're already at the last marker, we know to just return
+            # left_idx
             return left_idx
-        
+
         right_idx = left_idx + 1
 
         right_pos = mp[right_idx]
