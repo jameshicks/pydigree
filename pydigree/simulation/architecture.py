@@ -24,7 +24,7 @@ class QuantitativeGeneticEffect(object):
 
     def genotypic_value(self, individual):
         gt = individual.get_genotype(self.locus)
-        N = gt.count(2) # Number of minor alleles
+        N = gt.count(2)  # Number of minor alleles
         if N == 0:
             return 0
         elif N == 1:
@@ -34,15 +34,15 @@ class QuantitativeGeneticEffect(object):
         else:
             raise ValueError('Bad genotype: {}'.format(gt))
 
-    @property 
+    @property
     def expected_genotypic_value(self):
         chridx, locidx = self.locus
         maf = self.chromosomes[chridx].frequencies[locidx]
-        
+
         mu_g = 0
-        mu_g += (1-maf)**2 * 0 # Genotypic value for major homozygote
-        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k) # Heterozygote value
-        mu_g += (maf ** 2) * 2 * self.a # Genotypic value for minor homozygote 
+        mu_g += (1-maf)**2 * 0  # Genotypic value for major homozygote
+        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k)  # Heterozygote value
+        mu_g += (maf ** 2) * 2 * self.a  # Genotypic value for minor homozygote
 
         return mu_g
 
@@ -159,7 +159,6 @@ class Architecture(object):
         # E[P_environment] == 0, so we can ignore it
         return self.mean - self.expected_genotypic_value
 
-
     @property
     def additive_genetic_variance(self):
         return sum(x.locus_additive_variance for x in self.effects)
@@ -171,7 +170,7 @@ class Architecture(object):
 
         # h2 = V_a / (V_a + V_e)
         # A little algebra gives us V_e =  V_a/h2 - V_a
-        add =  self.additive_genetic_variance
+        add = self.additive_genetic_variance
         return (add / self.h2) - add
 
     @property
@@ -198,9 +197,9 @@ class Architecture(object):
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = self.intercept + sum(phenotype)
 
-        # Random variates can't be generated for variance <= 0, 
-        # so we have to check if there even is an environmental 
-        # component to the trait (i.e. h2 < 1) for the trait we're 
+        # Random variates can't be generated for variance <= 0,
+        # so we have to check if there even is an environmental
+        # component to the trait (i.e. h2 < 1) for the trait we're
         # simulating before we try to add it to the phenotype
         if self.h2 < 1.0:
             enviro = self.environmental_variance
