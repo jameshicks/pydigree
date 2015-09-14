@@ -24,6 +24,7 @@ def read_gs_chromosome_template(templatef):
             if line == '\n':
                 continue
             label, majf, minf, cm, bp = line.strip().split()
+            bp = int(bp)
             cm = float(cm)
             last_cm += cm
             c.add_genotype(float(minf), last_cm, label=label, bp=bp)
