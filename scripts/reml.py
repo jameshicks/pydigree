@@ -5,7 +5,7 @@ import argparse
 
 import pydigree
 import numpy as np
-from pydigree.mixedmodel import MixedModel
+from pydigree.stats import MixedModel
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ped', required=True,

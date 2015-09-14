@@ -11,14 +11,14 @@ from scipy.linalg import inv as scipy_inv
 from scipy.linalg import pinv 
 from scipy.optimize import minimize
 
-from pydigree.mixedmodel.blup import blup, makeLHS
-from pydigree.mixedmodel.likelihood import makeP
-from pydigree.mixedmodel.likelihood import restricted_loglikelihood
-from pydigree.mixedmodel.likelihood import reml_gradient, reml_hessian
-from pydigree.mixedmodel.likelihood import full_loglikelihood
+from pydigree.stats.mixedmodel.blup import blup, makeLHS
+from pydigree.stats.mixedmodel.likelihood import makeP
+from pydigree.stats.mixedmodel.likelihood import restricted_loglikelihood
+from pydigree.stats.mixedmodel.likelihood import reml_gradient, reml_hessian
+from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 
-from pydigree.mixedmodel.maximization import iterative_scoring_method
-from pydigree.mixedmodel.maximization import expectation_maximization_reml
+from pydigree.stats.mixedmodel.maximization import iterative_scoring_method
+from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
 
 
 def is_genetic_effect(effect):
