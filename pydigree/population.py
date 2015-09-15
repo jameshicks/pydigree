@@ -58,6 +58,9 @@ class Population(MutableMapping):
         self.n0 = intial_pop_size
         self.name = name
 
+    def __hash__(self):
+        return id(self)
+
     # Things I have to implement for the ABC
     #
     #
