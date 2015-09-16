@@ -1,4 +1,6 @@
-from itertools import izip, combinations, product, chain
+from itertools import izip, combinations, product, chain, imap
+from functools import partial
+import multiprocessing
 
 import numpy as np
 from scipy.sparse import lil_matrix
@@ -79,10 +81,11 @@ class SGSAnalysis(object):
 
     def chromwide_ibd(self, chromidx, size=None, onlywithin=False, onlybetween=False):
         if onlybetween and onlywithin:
-            raise ValueError('Cannot set onlywithin and onlywithin simultaneously')
+            raise ValueError(
+                'Cannot set onlywithin and onlywithin simultaneously')
         if size is None:
             size = max([x.stop for x in self.segments])
-      
+
         arry = np.zeros(size, dtype=np.uint)
         for seg in self.segments:
             if onlywithin and seg.ind1.full_label[0] != seg.ind2.full_label[0]:
@@ -121,7 +124,7 @@ class SGSAnalysis(object):
             try:
                 segment.ind1 = pedigrees[segment.ind1]
                 segment.ind2 = pedigrees[segment.ind2]
-                
+
                 if type(segment.chromosome) is str:
                     segment.chromosome = chroms[segment.chromosome]
                     segment._chridx = chromindices[segment.chromosome]
@@ -143,11 +146,14 @@ class SGSAnalysis(object):
         def pairlookup(pair):
             newpair = frozenset({pedigrees[ind] for ind in pair})
             return newpair
-        self.pairs = {pairlookup(k): v for k,v in self.pairs.items()}
+        self.pairs = {pairlookup(k): v for k, v in self.pairs.items()}
+
 
 class SGS(object):
 
-    def __init__(self, segments=None):
+    def __init__(self, ind1, ind2, segments=None):
+        self.ind1 = ind1
+        self.ind2 = ind2
         self.segments = segments if segments is not None else []
 
     def __getitem__(self, idx):
@@ -171,7 +177,7 @@ class SGS(object):
         and 'genetic' (location in cM)
         '''
         chrom, pos = locus
-        
+
         if location_type == 'index':
             ibd = sum(1 for x in self.segments if x._chridx == chrom and
                       x.start <= pos <= (x.stop+1))
@@ -285,43 +291,66 @@ def sgs_pedigrees(pc, phaseknown=False):
     return shared
 
 
+def _pair_sgs(pair, seed_size=500, phaseknown=False,
+              min_length=1, size_unit='mb',
+              min_density=100, maxmiss=0.25,
+              onlywithin=False):
+    ind1, ind2 = pair
+    if not (ind1.has_genotypes() and ind2.has_genotypes()):
+        return None
+
+    if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
+        return None
+
+    if ind1 == ind2:
+        results = SGS(ind1, ind2)
+        for chridx, chromosome in enumerate(ind1.chromosomes):
+            shares = sgs_autozygous(ind1, chridx,
+                                    seed_size=seed_size,
+                                    min_length=min_length,
+                                    size_unit=size_unit,
+                                    min_density=min_density,
+                                    maxmiss=maxmiss)
+            results.extend(shares)
+
+    else:
+        results = SGS(ind1, ind2)
+        for chridx, chromosome in enumerate(ind1.chromosomes):
+            shares = sgs_unphased(ind1, ind2, chridx,
+                                  seed_size=seed_size,
+                                  min_length=min_length,
+                                  size_unit=size_unit,
+                                  min_density=min_density,
+                                  maxmiss=maxmiss)
+            results.extend(shares)
+    return results
+
+
 def sgs_population(pop, seed_size=500, phaseknown=False,
                    min_length=1, size_unit='mb',
                    min_density=100, maxmiss=0.25,
-                   onlywithin=False):
+                   onlywithin=False, njobs=1):
     ''' Performs SGS between all individuals in a population or pedigree '''
+    pair_sgs = partial(_pair_sgs, seed_size=seed_size,
+                         min_length=min_length,
+                         size_unit=size_unit,
+                         min_density=min_density,
+                         maxmiss=maxmiss)
     shared = SGSAnalysis()
-    for ind1, ind2 in combinations(pop.individuals, 2):
-        if not (ind1.has_genotypes() and ind2.has_genotypes()):
-            continue
+    pairs = [x for x in combinations(pop.individuals, 2)]
 
-        if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
-            continue
+    njobs = int(njobs)
+    if njobs == 1:
+        res = imap(pair_sgs, pairs)
+    elif njobs > 1:
+        pool = multiprocessing.Pool(processes=njobs)
+        res = pool.imap(pair_sgs, pairs, chunksize=1000)
+    else:
+        raise ValueError('Bad value for njobs: {}'.format(njobs))
 
-        if ind1 == ind2:
-            key = frozenset([ind1])
-            shared[key] = SGS()
-            for chridx, chromosome in enumerate(ind1.chromosomes):
-                shares = sgs_autozygous(ind1, chridx,
-                                        seed_size=seed_size,
-                                        min_length=min_length,
-                                        size_unit=size_unit,
-                                        min_density=min_density,
-                                        maxmiss=maxmiss)
-                shared[key].extend()
-
-        else:
-            pair = frozenset({ind1, ind2})
-            shared[pair] = SGS()
-            for chridx, chromosome in enumerate(ind1.chromosomes):
-                shares = sgs_unphased(ind1, ind2, chridx,
-                                      seed_size=seed_size,
-                                      min_length=min_length,
-                                      size_unit=size_unit,
-                                      min_density=min_density,
-                                      maxmiss=maxmiss)
-                shared[pair].extend(shares)
-
+    for result in res:
+        pair = frozenset([result.ind1, result.ind2])
+        shared[pair] = result
     return shared
 
 
@@ -339,8 +368,8 @@ def sgs_autozygous(ind, chromosome_idx, seed_size=500,
                                              size_unit=size_unit,
                                              min_density=min_density,
                                              maxmiss=maxmiss))
-    return SGS([Segment(ind, ind, chromosome, start, stop)
-                for start, stop in autozygous_segs])
+    return [Segment(ind, ind, chromosome, start, stop)
+            for start, stop in autozygous_segs]
 
 
 def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
@@ -374,8 +403,8 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
         return ibd
 
     segs = make_intervals(ibd)
-    segs = SGS([Segment(ind1, ind2, chromosome, start, stop)
-                for start, stop in segs])
+    segs = [Segment(ind1, ind2, chromosome, start, stop)
+            for start, stop in segs]
     return segs
 
 
