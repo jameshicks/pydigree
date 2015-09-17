@@ -4,17 +4,20 @@ from itertools import combinations
 from pydigree.sgs import nshares, make_intervals
 from pydigree.sgs import SGSAnalysis, SGS, Segment
 
+
 def to_Segment(ind1, ind2, i):
     ''' i is a 2-tuple of stop and start '''
     return Segment(ind1, ind2, 0, i[0], i[1])
+
 
 def to_SGSAnalysis(shared):
     ''' Convert the dicts I've been using to SGSAnalysis '''
     obj = SGSAnalysis()
     for key, value in shared.items():
         k = list(key)
-        ind1, ind2 = k 
-        obj[key] = SGS(segments=[to_Segment(ind1, ind2, x) for x in value])
+        ind1, ind2 = k
+        obj[key] = SGS(ind1, ind2,
+                       segments=[to_Segment(ind1, ind2, x) for x in value])
     return obj
 
 
@@ -54,11 +57,12 @@ def test_ibd_state():
         frozenset(['b', 'c']): []
     }
     sgs = to_SGSAnalysis(shared)
-    loc = 0,5
+    loc = 0, 5
     assert sgs.ibd_state('a', 'b', loc) == 1
     assert sgs.ibd_state('a', 'c', loc) == 2
     assert sgs.ibd_state('b', 'c', loc) == 0
     assert sgs.ibd_state('d', 'e', loc) == 0
+
 
 def test_ibd_matrix():
     shared = {
@@ -67,17 +71,19 @@ def test_ibd_matrix():
         frozenset(['b', 'c']): []
     }
     sgs = to_SGSAnalysis(shared)
-    loc = 0,0
+    loc = 0, 0
     # Make sure values are OK
-    m1 = np.matrix([[0, 1 ,2], [1, 0 ,0], [2, 0, 0]])
-    assert (sgs.ibd_matrix(['a','b','c'], loc) == m1).all()
+    m1 = np.matrix([[1.0, 0.5, 1.0],
+                    [0.5, 1.0, 0.0],
+                    [1.0, 0.0, 1.0]])
+    assert (sgs.ibd_matrix(['a', 'b', 'c'], loc) == m1).all()
 
     # Make sure matrix can be reordered
-    m2 = np.matrix([[0, 0, 2], [0, 0, 1], [2, 1, 0]])
-    assert (sgs.ibd_matrix(['c','b','a'], loc) == m2).all()
+    m2 = np.matrix([[1.0, 0.0, 1.0],
+                    [0.0, 1.0, 0.5],
+                    [1.0, 0.5, 1.0]])
+    assert (sgs.ibd_matrix(['c', 'b', 'a'], loc) == m2).all()
 
     # Make sure 0's come in for unobserved Inds
-    m3 = np.matrix(np.zeros((3,3)))
+    m3 = np.matrix(np.eye(3))
     assert (sgs.ibd_matrix([1, 2, 3], loc) == m3).all()
-
-
