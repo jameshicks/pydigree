@@ -22,6 +22,23 @@ def phenotype_indices(types):
     return np.array(indices, dtype=np.bool)
 
 
+def genotype_indices(types):
+    indices = []
+    for property_type in types:
+        if property_type == 'M':
+            # Genotypes (M) take up two columns
+            indices.extend([True, True])
+        elif property_type == 'S2':
+            # Skipped genotypes take up two columns
+            indices.extend([False, False])
+        elif property_type in {'A', 'S', 'T', 'C'}:
+            indices.append(False)
+        else:
+            raise FileFormatError(
+                'Unknown MERLIN field type: {}'.format(property_type))
+    return np.array(indices, dtype=np.bool)
+
+
 def write_phenotypes(pedigrees, prefix, phenotypes=None,
                      phenotype_types=None, predicate=None, 
                      skip_all_missing=True, missing_code='X', trait=None):
