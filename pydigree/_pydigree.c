@@ -5,11 +5,6 @@
 /* Function Prototypes */ 
 
 
-PyObject* sample_with_replacement_interface(PyObject* self, PyObject* args);
-PyObject* sample_with_replacement(PyObject* population, long int n);
-
-PyObject* random_pairs_interface(PyObject* self, PyObject* args);
-PyObject* random_pairs(PyObject* pop, long int numpairs);
 
 PyObject* choice_probs_interface(PyObject* self, PyObject* args);
 PyObject* choice_probs(PyObject* choices, PyObject* probs);
@@ -22,14 +17,11 @@ PyObject* sgs_shares_interface(PyObject* self, PyObject* args);
 static char module_docstring[] =
   "This sub-module provides C implementations of time-intensive pydigree functions";
 
-static char sample_repl_docstring[] = "Randomly choses n individuals (with replacement) from the population";
-static char pairs_docstring[] = "Returns a list of n pairs from sampled with replacement from population"; 
+
 static char choice_prob_docstring[] = "Chooses a random item based on probabilities provided in probs"; 
 static char sgs_shares_docstring[] = "Returns the proportion of individual pairs IBD";
 /* Python C API boilerplate */
 static PyMethodDef module_methods[] = {
-  {"sample_with_replacement", sample_with_replacement_interface, METH_VARARGS, sample_repl_docstring},
-  {"random_pairs",random_pairs_interface,METH_VARARGS,pairs_docstring},
   {"choice_with_probs", choice_probs_interface, METH_VARARGS, choice_prob_docstring},
   {"sgs_shares", sgs_shares_interface, METH_VARARGS, sgs_shares_docstring},
   {NULL, NULL, 0, NULL}
@@ -71,52 +63,6 @@ static inline double rexp(double rate) {
 
 
 
-
-/* sampling with replacement */
-
-PyObject* sample_with_replacement_interface(PyObject* self, PyObject* args) {
-  PyObject* pop;
-  long int n;
-  if (!PyArg_ParseTuple(args, "Ol", &pop, &n)) return NULL;
-  PyObject* ns = sample_with_replacement(pop,n);
-  return ns; 
-}
-
-
-PyObject* sample_with_replacement(PyObject* population, long int n) {
-  PyObject* sample = PyList_New(n); 
-  Py_ssize_t population_size = PyList_Size(population);   
-  Py_ssize_t i; 
-  for (i=0;i < n; i++) {
-    int r = rand_int_range(0,(int)population_size-1); 
-    PyObject* draw = PyList_GetItem(population,(Py_ssize_t)r);
-    PyList_SET_ITEM(sample,i,draw);
-    Py_INCREF(draw);
-  }
-  return sample;
-}
-
-/* Randomly pairing items (with replacement) */
-
-PyObject* random_pairs_interface(PyObject* self, PyObject* args) {
-  PyObject* pop; 
-  long int numpairs; 
-  if (!PyArg_ParseTuple(args, "Ol", &pop, &numpairs)) return NULL;
-  PyObject* newobj = random_pairs(pop,numpairs);
-  return newobj;
-}
-
-PyObject* random_pairs(PyObject* pop, long int numpairs) {
-  PyObject* pairs = PyList_New(numpairs);
-  Py_ssize_t i;
-  for (i=0;i<numpairs;i++) {
-    PyObject* pair = sample_with_replacement(pop,2);
-    pair = PyList_AsTuple(pair);
-    PyList_SET_ITEM(pairs,i,pair);
-    Py_INCREF(pair);
-  }
-  return pairs;
-}
 
 
 /* Choice with probabilities */ 

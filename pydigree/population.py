@@ -14,7 +14,6 @@ from pydigree.common import *
 from pydigree.recombination import recombine
 
 # C extension functions
-from pydigree._pydigree import sample_with_replacement, random_pairs
 from pydigree._pydigree import choice_with_probs
 
 missing_genotype = (0, 0)
