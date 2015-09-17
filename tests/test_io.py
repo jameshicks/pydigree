@@ -1,9 +1,12 @@
-from nose.tools import raises
+from nose.tools import raises, assert_raises
 from itertools import chain
 import os
+import numpy as np
+from pydigree.exceptions import FileFormatError
 
 from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.io.vcf import vcf_allele_parser
+from pydigree.io.merlin import phenotype_indices
 from pydigree.io import read_plink, read_vcf
 from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 
@@ -93,4 +96,11 @@ def test_vcf_alleleparser():
     assert vcf_allele_parser('10/1') == ('10', '1')
     assert vcf_allele_parser('1|10') == ('1', '10')
     assert vcf_allele_parser('10/10') == ('10','10')
+
+
+def test_merlin_propertyindices():
+    assert all(phenotype_indices(['A', 'C', 'T']) == np.array([1,1,1]))
+    assert all(phenotype_indices(['A', 'S', 'A']) == np.array([1,0,1]))
+    assert all(phenotype_indices(['M', 'T', 'S2']) == np.array([0,0,1,0,0]))
+    assert_raises(FileFormatError, phenotype_indices, ['S', 'W', 'O'])
 

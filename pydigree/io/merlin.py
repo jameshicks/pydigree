@@ -1,5 +1,25 @@
 from itertools import izip
+
+import numpy as np
+
 from pydigree.io import smartopen
+from pydigree.exceptions import FileFormatError
+
+
+def phenotype_indices(types):
+    indices = []
+    for property_type in types:
+        if property_type in {'S2', 'M'}:
+            # Genotypes (M) or skipped genotypes (S2) take up two columns
+            indices.extend([False, False])
+        elif property_type == 'S':
+            indices.append(False)
+        elif property_type in {'A', 'T', 'C'}:
+            indices.append(True)
+        else:
+            raise FileFormatError(
+                'Unknown MERLIN field type: {}'.format(property_type))
+    return np.array(indices, dtype=np.bool)
 
 
 def write_phenotypes(pedigrees, prefix, phenotypes=None,
