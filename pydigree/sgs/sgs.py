@@ -179,7 +179,7 @@ class SGS(object):
         chrom, pos = locus
 
         if location_type == 'index':
-            ibd = sum(1 for x in self.segments if x._chridx == chrom and
+            ibd = sum(1 for x in self.segments if x.chromosome == chrom and
                       x.start <= pos <= (x.stop+1))
         elif location_type == 'physical':
             segs = [(x._chridx, x.physical_start, x.physical_stop)
