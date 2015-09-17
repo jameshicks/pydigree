@@ -113,35 +113,6 @@ def fastfirstitem(tuple2d):
 
     return out
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def spans(iter):
-    cdef  Py_ssize_t start, stop
-    cdef  Py_ssize_t itersize, i
-    cdef object item, lastitem
-
-    itersize = len(iter)
-    cdef list identified = []
-
-    if itersize == 0: 
-        return identified
-
-    start = 0
-    lastitem = iter[0]
-    for i in range(1, itersize):
-        item = iter[i]
-        if item != lastitem:
-            stop = i 
-            tup = lastitem, start, stop
-            identified.append(tup)
-
-            start = i 
-            lastitem = item
-    stop = i+1
-    tup = lastitem, start, stop
-    identified.append(tup)
-    return identified
-
 
 def interleave(list a, list b):
     if len(a) != len(b):

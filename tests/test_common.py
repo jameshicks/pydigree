@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper, log_base_change
-from pydigree.common import runs, runs_gte, spans, interleave
+from pydigree.common import runs, runs_gte, interleave
 from pydigree.cyfuncs import runs_gte_uint8
 
 from math import log, log10, e
@@ -86,20 +86,3 @@ def test_interleave():
     assert interleave([],[]) == []
     assert_raises(ValueError, interleave, [1], [])
 
-def test_spans():
-    assert spans([]) == [] 
-
-    values = [1]
-    expected_output = [(1,0,1)]
-    actual_output = spans(values)
-    assert len(actual_output) == 1
-    assert expected_output[0] == actual_output[0]
-
-    values = [1,1,1,2,2,3,1,1,1]
-    expected_output = [(1,0,3), (2,3,5), (3,5,6), (1,6,9)]
-    actual_output = spans(values)
-    assert all([expected == actual for expected, actual 
-            in zip(expected_output, actual_output)])
-    for span in actual_output:
-        val, start, stop = span
-        assert all([x == val for x in values[start:stop]])

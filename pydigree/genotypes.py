@@ -6,7 +6,7 @@ import numpy as np
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 from pydigree.io.genomesimla import read_gs_chromosome_template
-from pydigree.common import spans, all_same_type
+from pydigree.common import all_same_type
 
 
 class AlleleContainer(object):
