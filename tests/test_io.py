@@ -42,8 +42,8 @@ def test_seqalleles_raiseforbadmissingval():
 
 
 def test_plink():
-    plinkped = os.path.join(TESTDATA_DIR, 'plink_test.ped')
-    plinkmap = os.path.join(TESTDATA_DIR, 'plink_test.map')
+    plinkped = os.path.join(TESTDATA_DIR, 'plink', 'plink_test.ped')
+    plinkmap = os.path.join(TESTDATA_DIR, 'plink', 'plink_test.map')
     
     peds = read_plink(pedfile=plinkped, mapfile=plinkmap)
     assert len(peds.chromosomes) == 2

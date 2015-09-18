@@ -1,7 +1,8 @@
 import os
 from pydigree.io.vcf import read_vcf, vcf_allele_parser
 
-TESTDATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+testdir = os.path.dirname(os.path.abspath(__file__))
+TESTDATA_DIR = os.path.join(testdir, 'test_data', 'vcf')
 
 def test_vcf():
     testvcf = os.path.join(TESTDATA_DIR, 'test.vcf')
