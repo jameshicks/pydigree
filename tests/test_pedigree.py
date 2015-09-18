@@ -65,6 +65,18 @@ def test_inbreeding():
         assert ped.inbreeding(x.label) == 0
 
 
+def test_bitsize():
+    peds = getpeds()
+    
+    fullsib = peds['fullsib']
+    assert fullsib.bit_size() == 2
+
+    first_cousins = peds['first_cousins']
+    assert first_cousins.bit_size() == 4
+
+    huntingtons = peds['vz_huntington_autosomal_dominant']
+    assert huntingtons.bit_size() == 2*47-18 
+
 @raises(NotImplementedError)
 def test_ld():
     ped = Pedigree()
