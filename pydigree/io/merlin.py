@@ -3,6 +3,7 @@ from itertools import izip
 import numpy as np
 
 from pydigree.io import smartopen
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.exceptions import FileFormatError
 
 
@@ -38,6 +39,35 @@ def genotype_indices(types):
                 'Unknown MERLIN field type: {}'.format(property_type))
     return np.array(indices, dtype=np.bool)
 
+
+def read_map(filename):
+    with open(filename) as f:
+        line = f.readline()
+        header = line.strip().split()
+        sex_specific_map = len(header) == 5
+        
+        lastchrom = None
+        chromosomes = []
+        for markernum, line in enumerate(f):
+            l = line.strip().split()
+
+            if sex_specific_map:
+                chrom, marker, pos, male_pos, female_pos = l
+                pos = float(pos)
+                male_pos, female_pos = float(male_pos), float(female_pos)
+            else:
+                chrom, marker, pos = l
+                pos = float(pos)
+                male_pos, female_pos = None, None
+
+            if chrom != lastchrom:
+                c = ChromosomeTemplate(label=chrom)
+                chromosomes.append(c)
+                lastchrom = chrom
+
+            c.add_genotype(map_position=pos, label=marker)
+
+        return chromosomes 
 
 def write_phenotypes(pedigrees, prefix, phenotypes=None,
                      phenotype_types=None, predicate=None, 
