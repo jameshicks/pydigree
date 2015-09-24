@@ -113,7 +113,7 @@ def read_germline(filename):
             rec = GermlineRecord(line)
 
             if rec.pair not in analysis:
-                analysis[rec.pair] = SGS()
+                analysis[rec.pair] = SGS(rec.ind1, rec.ind2)
 
             phys_loc = (rec.location if rec.bp_locations else None)
             gen_loc = (rec.location if not rec.bp_locations else None)

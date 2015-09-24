@@ -143,6 +143,10 @@ class SGSAnalysis(object):
             except ValueError:
                 raise ValueError('Positions not in chromosome data')
 
+        for sgsobj in self.pairs.values():
+            sgsobj.ind1 = pedigrees[sgsobj.ind1]
+            sgsobj.ind2 = pedigrees[sgsobj.ind2]
+
         def pairlookup(pair):
             newpair = frozenset({pedigrees[ind] for ind in pair})
             return newpair
