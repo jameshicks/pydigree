@@ -185,6 +185,9 @@ class SGS(object):
 
         chrom, pos = locus
 
+        if isinstance(chrom, int) and isinstance(self.segments[0].chromosome, ChromosomeTemplate):
+            chrom = self.ind1.population.chromosomes[chrom]
+
         if location_type == 'index':
             ibd = sum(1 for x in self.segments if x.chromosome == chrom and
                       x.start <= pos <= (x.stop+1))
