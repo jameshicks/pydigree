@@ -180,6 +180,9 @@ class SGS(object):
         'index' (the index of the markers), 'physical' (the positions in bp),
         and 'genetic' (location in cM)
         '''
+        if not self.segments:
+            return 0
+
         chrom, pos = locus
 
         if location_type == 'index':
