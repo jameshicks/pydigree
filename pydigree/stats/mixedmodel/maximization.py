@@ -53,6 +53,9 @@ def iterative_scoring_method(mm, starts, method='Fisher', maxiter=250,
         vcs = vcs - delta
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
 
+        if vcs.sum() / np.var(mm.y) > 10:
+            raise LinAlgError('Optimizer left parameter space')
+
         if verbose:
             print i, llik, vcs
 
