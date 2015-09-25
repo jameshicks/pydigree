@@ -110,4 +110,5 @@ def expectation_maximization_reml(mm, starts, maxiter=100, tol=1e-4,
         if i > maxiter:
             raise LinAlgError('Ran out of scoring iterations')
 
+        i += 1
     return vcs.tolist()
