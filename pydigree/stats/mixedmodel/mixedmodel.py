@@ -353,12 +353,13 @@ class MixedModel(object):
             starts = self.__starting_variance_components()
 
         if method == 'scipy':
-            self._maximize_scipy()
+            vcs = self._maximize_scipy(verbose=verbose)
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
-            expectation_maximization_reml(self, starts, verbose=verbose)
+            vcs = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
-            iterative_scoring_method(self, starts, method, verbose=verbose)
+            vcs = iterative_scoring_method(self, starts, method, verbose=verbose)
         self.maximized = method
+        self.set_variance_components(vcs)
         self.fit_model()
 
     def _maximize_scipy(self, method='L-BFGS-B', verbose=True):

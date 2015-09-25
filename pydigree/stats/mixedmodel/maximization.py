@@ -63,7 +63,7 @@ def iterative_scoring_method(mm, starts, method='Fisher', maxiter=250,
         if i > maxiter:
             raise LinAlgError('Ran out of scoring iterations')
 
-    mm.set_variance_components(vcs.tolist())
+    return vcs.tolist()
 
 
 def scoring_iteration(info_mat, gradient):
@@ -110,4 +110,4 @@ def expectation_maximization_reml(mm, starts, maxiter=100, tol=1e-4,
         if i > maxiter:
             raise LinAlgError('Ran out of scoring iterations')
 
-    mm.set_variance_components(vcs.tolist())
+    return vcs.tolist()
