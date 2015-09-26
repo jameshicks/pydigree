@@ -78,8 +78,8 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization_reml(mm, starts, maxiter=100, tol=1e-4,
-                                  verbose=False):
+def expectation_maximization_reml(mm, starts=None, maxiter=10000, tol=1e-8,
+                                  verbose=False, vcs_after_maxiter=False):
     i = 0
 
     if verbose:
@@ -109,6 +109,9 @@ def expectation_maximization_reml(mm, starts, maxiter=100, tol=1e-4,
 
         if verbose:
             print i, llik, vcs
+
+        if i > maxiter and vcs_after_maxiter:
+            break
 
         if i > maxiter:
             raise LinAlgError('Ran out of scoring iterations')
