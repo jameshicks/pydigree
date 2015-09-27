@@ -318,15 +318,19 @@ class MixedModel(object):
         self.random_effects.insert(-1, effect)
         self.Zlist = self._makeZs()
 
-    def add_genetic_effect(self, type='additive'):
-        if type.lower() != 'additive':
-            raise NotImplementedError(
-                'Nonadditive genetic effects not implemented')
+    def add_genetic_effect(self, kind='additive'):
         inds = [x.full_label for x in self.observations()]
         peds = self.pedigrees
-        covmat = peds.additive_relationship_matrix(inds)
+
+        if kind.lower() == 'additive':
+            covmat = peds.additive_relationship_matrix(inds)
+        elif kind.lower() == 'dominance':
+            covmat = peds.dominance_relationship_matrix(inds)
+        else:
+            raise NotImplementedError(
+                'Nonadditive/dominance genetic effects not implemented')
         effect = RandomEffect(
-            self.observations(), type, covariance_matrix=covmat)
+            self.observations(), kind, covariance_matrix=covmat)
         self.add_random_effect(effect)
 
     def set_variance_components(self, variance_components):

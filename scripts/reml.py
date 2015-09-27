@@ -21,6 +21,8 @@ parser.add_argument('--starts', help='Starting values for variance components',
                     nargs='*', default=None)
 parser.add_argument('--interact', action='store_true',
                     help='Enter IPython shell after maximization')
+parser.add_argument('--d7', '--dominance', action='store_true', dest='d7',
+                    help='Include dominance term in model')
 parser.add_argument('--garbley', action='store_true',
                     help='Replace y values with random normal deviates')
 parser.add_argument('--center', action='store_true', help='Center outcome data')
@@ -34,6 +36,10 @@ pydigree.io.read_phenotypes(peds, args.phenf)
 m = MixedModel(peds, outcome=args.outcome, fixed_effects=args.fixefs)
 print 'Calculating Kinships'
 m.add_genetic_effect()
+
+if args.d7:
+    m.add_genetic_effect(kind='dominance')
+
 print 'Done'
 m.fit_model()
 
