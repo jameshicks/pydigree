@@ -217,7 +217,7 @@ class Pedigree(Population):
                 if a == b:
                     row.append(1)
                 else:
-                    row.append(.25 * self.fraternity(a, b))
+                    row.append(self.fraternity(a, b))
             mat.append(row)
         return np.matrix(mat)
 
