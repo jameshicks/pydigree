@@ -8,7 +8,7 @@ import numpy as np
 from scipy.sparse import csc_matrix, issparse
 from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv as scipy_inv
-from scipy.linalg import pinv 
+from scipy.linalg import pinv
 from scipy.optimize import minimize
 
 from pydigree.stats.mixedmodel.blup import blup, makeLHS
@@ -24,10 +24,12 @@ from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
 def is_genetic_effect(effect):
     return effect in set(['additive', 'dominance', 'mitochondrial'])
 
+
 def inv(M):
     if issparse(M):
         M = M.todense()
     return scipy_inv(M)
+
 
 def _make_incidence_matrix(individuals, effect_name):
     if effect_name.lower() == 'residual':
@@ -58,7 +60,7 @@ class RandomEffect(object):
         else:
             self.incidence_matrix = incidence_matrix
         if covariance_matrix is None:
-            
+
             self.covariance_matrix = sparseeye(nobs, nobs)
         else:
             self.covariance_matrix = covariance_matrix
@@ -140,7 +142,7 @@ class MixedModel(object):
 
     def _centery(self):
         self.y = self.y - self.y.mean()
-        
+
     def fit_model(self):
         """
         Builds X, Z, Y, and R for the model
@@ -151,11 +153,10 @@ class MixedModel(object):
         self.y = self._makey()
         self.X = self._makeX()
         self.Zlist = self._makeZs()
-        
 
         if not all(x is not None for x in self.variance_components):
             self.set_variance_components(self.__starting_variance_components())
-        
+
         self.V = self._makeV()
         self.beta = self._makebeta()
 
@@ -223,7 +224,7 @@ class MixedModel(object):
         "Covariance matrix of residual_variance"
         return self.random_effects[-1].covariance_matrix
 
-    @property 
+    @property
     def P(self):
         "Projection matrix"
         return makeP(self.X, inv(self.V))
@@ -235,7 +236,7 @@ class MixedModel(object):
     def coefficient_matrix(self):
         ginvlist = [(1 / rf.sigma) * inv(rf.G) for rf in self.random_effects]
         return makeLHS(self.X, self.Zlist, ginvlist, inv(self.R))
-    
+
     def _fixef_vcv(self):
         "Variance-covariance matrix of fixed effect estimates"
         # Add 1 to include intercept
@@ -361,7 +362,8 @@ class MixedModel(object):
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             vcs = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
-            vcs = iterative_scoring_method(self, starts, method, verbose=verbose)
+            vcs = iterative_scoring_method(
+                self, starts, method, verbose=verbose)
         self.maximized = method
         self.set_variance_components(vcs)
         self.fit_model()
