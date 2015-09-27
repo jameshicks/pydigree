@@ -8,7 +8,7 @@ import numpy as np
 from scipy.sparse import bsr_matrix, issparse
 from scipy.linalg import pinv, inv
 from scipy import matrix
-np.seterr(invalid='ignore')
+# np.seterr(invalid='ignore')
 
 
 l2pi = log(2 * pi)
@@ -130,7 +130,7 @@ def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
             mat[i, j] = element
             mat[j, i] = element
 
-    return np.array(mat, dtype=np.float128)
+    return np.array(mat)
 
 
 def reml_observed_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
@@ -147,7 +147,7 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if P is None:
         P = makeP(X, Vinv)
 
-    mat = np.zeros((len(ranefs), len(ranefs)), dtype=np.float128)
+    mat = np.zeros((len(ranefs), len(ranefs)))
 
     for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
@@ -174,7 +174,7 @@ def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
         Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
-    mat = np.zeros((len(ranefs), len(ranefs)), dtype=np.float128)
+    mat = np.zeros((len(ranefs), len(ranefs)))
     for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
 
