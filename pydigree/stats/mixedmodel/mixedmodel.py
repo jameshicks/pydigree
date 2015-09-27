@@ -436,7 +436,8 @@ class MixedModel(object):
                                         '{:5.3f}'.format(100 * vc / totalvar)])
         print
         print 'Loglikelihood: {:10.2f}'.format(self.loglikelihood())
-        print 
+        print 'Observations: {}'.format(self.nobs())
+        print
 
     def _reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
