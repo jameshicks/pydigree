@@ -27,7 +27,8 @@ class MLEResult(object):
 
 
 def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
-                            tol=1e-4, constrained=True, verbose=False):
+                            tol=1e-4, constrained=True, scoring=5,
+                            verbose=False):
     """
     Updates variance components for a linear mixed model by an 
     iterative scheme to find the restricted maximum likelihood estimates
@@ -83,6 +84,10 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
     exponentially decreasing in magnitude is performed until a valid set of 
     estimates is met. 
 
+    The scoring argument allows you to run a few iterations of Fisher scoring
+    or AI-REML to get close to the maximum, then switch over to Newton-Raphson
+    to end quicker. 
+
     Arguments:
     mm: a MixedModel object to be maximized
     starts: Starting values for the variance components
@@ -94,6 +99,9 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         the variance components to continue iterating. 
     constrained: Force optimizer to keep variance component estimates
         in the range 0 <= vc <= variance(y), by performing a line search
+    scoring: Number of iterations of Fisher Scoring or AI-REML before
+        switching to Newton-Raphson. If already using Newton-Raphson, 
+        this argument has no effect.
     verbose: Print likelihood, variance component, and relative variance 
         estimates at each iteration. Useful for debugging or watching the 
         direction the optimizer is taking.
@@ -127,6 +135,9 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         print '{} {} {} {}'.format(0, llik, vcs, vcs / vcs.sum())
 
     for i in xrange(maxiter):
+        if (i - 1) == scoring:
+            information_mat = reml_observed_information_matrix
+            
         # Make the information matrix and gradient
         grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
