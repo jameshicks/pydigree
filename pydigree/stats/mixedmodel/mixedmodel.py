@@ -17,7 +17,7 @@ from pydigree.stats.mixedmodel.likelihood import restricted_loglikelihood
 from pydigree.stats.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 
-from pydigree.stats.mixedmodel.maximization import iterative_scoring_method
+from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
 
 
@@ -362,8 +362,8 @@ class MixedModel(object):
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             vcs = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
-            vcs = iterative_scoring_method(
-                self, starts, method, verbose=verbose)
+            vcs = newtonlike_maximization(self, starts, method,
+                                          verbose=verbose)
         self.maximized = method
         self.set_variance_components(vcs)
         self.fit_model()
