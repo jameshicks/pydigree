@@ -322,5 +322,5 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
             raise LinAlgError('Ran out of scoring iterations')
 
         i += 1
-    mle = MLEResult(params, llik, 'Expectation-Maximization')
-    return vcs.tolist()
+    mle = MLEResult(vcs, llik, 'Expectation-Maximization')
+    return mle
