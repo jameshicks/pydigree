@@ -493,11 +493,24 @@ class MixedModel(object):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
-    def __starting_variance_components(self):
+    def __starting_variance_components(self, em=False, emiter=100):
         """
         Starting variance components in optimization.
+
+        if em is True, the starting values are the variance components after 
+        emiter iterations of expectation-maximization REML (started from all
+            equal values). 
         Chooses all variance components (including residual) to be equal.
         """
         v = np.var(self.y)
-        n = float(len(self.random_effects))
-        return [v / (n + 1) for r in self.random_effects]
+        n = len(self.random_effects)
+        vcs_start = [v/float(n)] * n
+        # vcs_start = [0] * (n-1) + [v]
+
+        if not em:
+            return vcs_start
+
+        vcs_start = expectation_maximization_reml(self, starts=vcs_start,
+                                                  maxiter=emiter,
+                                                  vcs_after_maxiter=True)
+        return vcs_start
