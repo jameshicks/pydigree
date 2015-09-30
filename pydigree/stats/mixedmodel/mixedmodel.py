@@ -19,6 +19,7 @@ from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
+from pydigree.stats.mixedmodel.maximization import MLEResult
 
 
 def is_genetic_effect(effect):
@@ -103,7 +104,7 @@ class MixedModel(object):
 
     def __init__(self, pedigrees, outcome=None, fixed_effects=None,
                  random_effects=None, covariance_matrices=None):
-        self.maximized = False
+        self.mle = None
         self.pedigrees = pedigrees
 
         self.outcome = outcome
@@ -352,29 +353,42 @@ class MixedModel(object):
         restricted maximum likelihood estimation.
         """
 
-        if self.maximized == method:
+        if (isinstance(self.mle, MLEResult) and
+                self.maximized.method == method):
             return
+
         if starts is None:
             starts = self.__starting_variance_components()
 
         if method == 'scipy':
-            vcs = self._maximize_scipy(verbose=verbose)
+            mle = self._maximize_scipy(verbose=verbose)
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
-            vcs = expectation_maximization_reml(self, starts, verbose=verbose)
+            mle = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
-            vcs = newtonlike_maximization(self, starts, method,
+            mle = newtonlike_maximization(self, starts, method,
                                           verbose=verbose)
-        self.maximized = method
-        self.set_variance_components(vcs)
+
+        self.mle = mle
+        self.set_variance_components(mle.parameters)
         self.fit_model()
+
+        # Get the full loglikelihood at the REML maximimum so we
+        # can use it later
+        self.mle.full_loglikelihood = full_loglikelihood(self.y, self.V,
+                                                         self.X, self.beta)
+
+    @property
+    def maximized(self):
+        return isinstance(self.mle, MLEResult)
 
     def _maximize_scipy(self, method='L-BFGS-B', verbose=True):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation using scipy minimization.
+
+        Only for debugging use at the moment.
         """
-        if self.maximized == method:
-            return
+
         starts = self.__starting_variance_components()
 
         def cb(x):
@@ -386,15 +400,26 @@ class MixedModel(object):
                      method='CG',
                      jac=self._reml_gradient,
                      callback=cb)
+
+        if not r.success:
+            raise np.linalg.LinAlgError('Model fit did not converge!')
+
         if verbose:
             print r
-        self.set_variance_components(r.x)
-        self.maximized = method
+
+        mle = MLEResult(r.x, r.fun, 'scipy', r.jac, r.hess)
+        return mle
 
     def loglikelihood(self, restricted=False, vmat=None):
         """
         Returns the loglikelihood of the model with the current model parameters
         """
+        if self.mle is not None:
+            if restricted:
+                return self.mle.restricted_loglikelihood
+            else:
+                return self.mle.full_loglikelihood
+
         if self.V is None:
             self.V = self._makeV()
         if vmat is None:
@@ -416,7 +441,11 @@ class MixedModel(object):
 
     def summary(self):
         """ Prints a summary of the current model """
+        if not self.maximized:
+            raise ValueError('Model not maximized!')
+
         self._fit_results()
+
         print
         print 'Linear mixed model fit by {}'.format(self.maximized)
         print

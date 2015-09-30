@@ -11,6 +11,21 @@ from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
 
+class MLEResult(object):
+
+    " An object representing the result of REML maximization of a mixed model "
+
+    def __init__(self, parameters, loglikelihood, method,
+                 jacobian=None, hessian=None):
+        self.restricted = True
+        self.restricted_loglikelihood = loglikelihood
+        self.full_loglikelihood = None
+        self.method = method
+        self.parameters = parameters
+        self.jacobian = jacobian
+        self.hessian = hessian
+
+
 def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
                             tol=1e-4, constrained=True, verbose=False):
     """
@@ -171,7 +186,6 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
             if constrained and improvement > 0:
                 break
 
-            
         else:
             # If we've shrunk the change in variance components down by
             # factor of 2**(-25) = 2.98-08 and we still haven't gotten a
@@ -198,7 +212,9 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
 
         relative_changes = abs(delta) / vcs.sum()
         if (abs(relative_changes) < tol).all():
-            return new_vcs.tolist()
+            mle = MLEResult(new_vcs.tolist(), new_llik, method,
+                            jacobian=grad, hessian=mat)
+            return mle
 
         vcs = new_vcs
         llik = new_llik
@@ -306,4 +322,5 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
             raise LinAlgError('Ran out of scoring iterations')
 
         i += 1
+    mle = MLEResult(params, llik, 'Expectation-Maximization')
     return vcs.tolist()
