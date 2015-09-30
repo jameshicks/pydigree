@@ -7,7 +7,8 @@ Submodules
 -----
 In addition to basic pedigree data manipulation, pydigree also includes submodules for more complicated tasks:
 * __simulation__: Provides classes for simulating genetic data
-* __mixedmodel__: Provides classes for using mixed models with family data
+* __stats__: Classes and functions for statistical genetics
+ * __mixedmodel__: Provides classes for using mixed models with family data
 * __io__: Provides functions for importing/exporting data from common data formats, including:
  * `plink`: Functions for working with plink format PED/MAP data
  * `vcf`: Functions for working with the VCF genotype format 
@@ -23,12 +24,24 @@ Classes
 * `ChromosomeTemplate`: Models a chromosome with information on allele frequency and marker position
 * `Alleles`: Stores a haploid set of alleles
  * `SparseAlleles`: Stores a haploid set of alleles as differences from a reference
+ * `LabelledAlleles`: An efficient container for storing references to a founder chromosome
 * `MixedModel`: A class for fitting mixed-effect models with related individuals
+ * `MLEResult`: A class containing the maximum likelihood estimates of parameters and 
+ values pertaining to the likelihood function at the MLE
 * `Architecture`: A class describing the genetic architecture for a trait to be used in simulation
 * `Simulation`: A base class from which other simulation objects inherit
  * `NaiveGeneDroppingSimulation`: Simulates genetic data for pedigrees by random gene dropping
  * `ConstrainedMendelianSimulation`: Simulates genetic data for pedigrees from a prespecified inheritance structure
+* `SGSAnalysis`: A class containing the result of a shared genomic segment (SGS) analysis
+ * `SGS`: A class containing the segments shared between a pair of individuals
+ * `Segment`: A class describing the location of a shared segment between a pair of individuals
 
+Exceptions
+-----
+* `IterationError`: Raised when at iterative algorithm exceeds the maximum allowed number of iterations
+* `NotMeaningfulError`: Raised when a comparison does not make sense (e.g. is one genotype greater than the other)
+* `SimulationError`: Raised when an error occurs in a simulation
+* `FileFormatError`: Raised when an input file can't be parsed successfully 
 
 Scripts
 -----
