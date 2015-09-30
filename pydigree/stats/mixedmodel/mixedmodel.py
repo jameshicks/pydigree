@@ -356,7 +356,7 @@ class MixedModel(object):
         if (isinstance(self.mle, MLEResult) and
                 self.maximized.method == method):
             return
-
+        self.fit_model()
         if starts is None:
             starts = self.__starting_variance_components()
 
