@@ -2,10 +2,15 @@
 
 import pydigree
 import itertools
-import sys
 
-pop = pydigree.Population(5000)
-ped = pydigree.io.read_ped(sys.argv[1], pop)
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--file', required=True,
+                    help='Pedigree file for kinship/inbreeding calculation')
+args = parser.parse_args()
+
+ped = pydigree.io.read_ped(args.file)
 
 for pedigree in ped:
     lab = pedigree.label
