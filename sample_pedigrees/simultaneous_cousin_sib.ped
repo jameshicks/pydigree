@@ -1,0 +1,7 @@
+1 GrandFather 0 0 1 0
+1 GrandMother 0 0 2 0
+1 BrotherA GrandFather GrandMother 1 0
+1 BrotherB GrandFather GrandMother 1 0
+1 Wife 0 0 2 0
+1 CousinSiblingA BrotherA Wife 1 0
+1 CousinSiblingB BrotherB Wife 1 0
