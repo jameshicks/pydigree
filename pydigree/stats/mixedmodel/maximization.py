@@ -230,12 +230,48 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization_reml(mm, starts=None, maxiter=10000, tol=1e-8,
+def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
                                   verbose=False, vcs_after_maxiter=False):
+    '''
+    Maximizes a linear mixed model by Expectation-Maximization
+
+    Formulas for EM-REML are given in Lynch & Walsh, Ch 27, Example 5 (pg. 799)
+
+    EM-REML tends to converge VERY slowly, because the changes at every step
+    are so small. For example, a model that took 3 iterations/0m3.927s to 
+    converge with AI-REML took 52 iterations/0m32.803s with EM-REML. 
+    Individual EM iterations are relatively fast but since you have to 
+    invert the variance-covariance matrix of observations each iteration, it
+    adds up quickly.
+
+    However, EM-REML has the nice property that it monotonically converges to
+    a maximum, and avoids the parameter esimtate out-of-range problems 
+    occasionally found with Newton-type methods and have to be remedied as 
+    a special case. 
+
+    Since it does take so much real time to solve the REML equations with 
+    EM-REML, it's better used 
+
+    Arguments:
+    mm: a MixedModel object to be maximized
+    starts: Starting values for the variance components
+    maxiter: The maximum number of iterations of scoring before raising 
+        an error
+    tol: The minimum amount of change in the proportion of variance by any of 
+        the variance components to continue iterating. 
+    verbose: Print likelihood, variance component, and relative variance 
+        estimates at each iteration. Useful for debugging or watching the 
+        direction the optimizer is taking.
+    vcs_after_maxiter: Returns estimates of variance components after reaching
+        the maximum number of iterations. Useful for getting starting values 
+        for variance components.
+
+    Returns: A numpy array of the variance components at the MLE
+    '''
     i = 0
 
     if verbose:
-        print 'Maximizing model by expectation-maximization'
+        print 'Maximizing model by Expectation-Maximization'
 
     n = mm.nobs()
     y = mm.y
