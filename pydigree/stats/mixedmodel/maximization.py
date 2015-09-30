@@ -12,7 +12,7 @@ from likelihood import makeP, makeVinv
 
 
 def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
-                            tol=1e-6, constrained=True, verbose=False):
+                            tol=1e-4, constrained=True, verbose=False):
     """
     Updates variance components for a linear mixed model by an 
     iterative scheme to find the restricted maximum likelihood estimates
@@ -48,9 +48,11 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
     of time per iteration, though it may require a few more iterations than
     Fisher scoring or Newton-Raphson. 
 
-    When the change in theta after iteration falls below `tol` for 
-    each variance component, iteration stops and the estimated variance 
-    components are returned.
+    When the change in the proportion of variance explained by each variance
+    component after iteration falls below `tol` for every variance component, 
+    iteration stops and the estimated variance components are returned. Setting
+    the tolerance based on the proportion has the effect of standardizing 
+    tolerances over any amount of variance. 
 
     Occasionally, Newton-type algorithms will push the estimated values of
     the variance components to invalid levels (i.e. below zero, above the
@@ -73,13 +75,13 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         * Options: 'Newton-Raphson', 'Fisher Scoring', 'Average Information'
     maxiter: The maximum number of iterations of scoring before raising 
         an error
-    tol: The minimum amount of change in any of the variance components
-        to continue iterating. 
+    tol: The minimum amount of change in the proportion of variance by any of 
+        the variance components to continue iterating. 
     constrained: Force optimizer to keep variance component estimates
         in the range 0 <= vc <= variance(y), by performing a line search
-    verbose: Print likelihood and variance component estimates at 
-        each iteration. Useful for debugging or watching the direction
-        the optimizer is taking.
+    verbose: Print likelihood, variance component, and relative variance 
+        estimates at each iteration. Useful for debugging or watching the 
+        direction the optimizer is taking.
 
     Returns: A numpy array of the variance components at the MLE
     """
@@ -118,10 +120,6 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         if not np.isfinite(delta).all():
             raise LinAlgError('NaNs in scoring update')
 
-        if (np.abs(delta) < tol).all():
-            # No change = convergence
-            return vcs.tolist()
-
         # Newton-Raphson type optimization methods like these sometimes
         # rattle around a bit, and overshoot the boundary the valid parameter
         # space (i.e. all variance components meet 0 <= sigma_i <= sigma_total)
@@ -155,6 +153,11 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
                 # Don't bother evaluating variance components
                 # if theyre not valid
                 continue
+            # If we're not changing the the parameters in any meaningful
+            # way, we can leave too, beacuse we've probably found a maximum
+            relative_changes = abs(delta) / vcs.sum()
+            if (abs(relative_changes) < tol).all():
+                break
 
             V = mm._makeV(new_vcs.tolist())
             Vinv = makeVinv(V)
@@ -168,10 +171,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
             if constrained and improvement > 0:
                 break
 
-            # If we're not changing the the parameters in any meaningful
-            # way, we can leave too, beacuse we've probably found a maximum
-            if (alpha * delta < tol).all():
-                break
+            
         else:
             # If we've shrunk the change in variance components down by
             # factor of 2**(-25) = 2.98-08 and we still haven't gotten a
@@ -196,8 +196,8 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         if verbose:
             print i+1, new_llik, new_vcs, new_vcs / new_vcs.sum()
 
-        if all(np.abs(vcs - new_vcs) < tol):
-            # We've reached convergence!
+        relative_changes = abs(delta) / vcs.sum()
+        if (abs(relative_changes) < tol).all():
             return new_vcs.tolist()
 
         vcs = new_vcs
@@ -252,13 +252,14 @@ def expectation_maximization_reml(mm, starts=None, maxiter=10000, tol=1e-8,
             for cov in mm.covariance_matrices])
 
         delta = (vcs ** 2 / n) * coefficients
-        vcs += delta
+        new_vcs = vcs + delta
 
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
 
-        if (np.abs(delta) < tol).all():
+        if (np.abs(delta / vcs.sum()) < tol).all():
             break
 
+        vcs = new_vcs
         if verbose:
             print i, llik, vcs
 
