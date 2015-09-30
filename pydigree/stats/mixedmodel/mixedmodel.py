@@ -431,6 +431,17 @@ class MixedModel(object):
         else:
             return restricted_loglikelihood(self.y, V, self.X)
 
+    @property
+    def bic(self):
+        if not self.maximized:
+            raise ValueError('Model not maximized!')
+        # Add 1 because the intercept has to be estimated
+        nparam = len(self.fixed_effects) + len(self.random_effects) + 1
+        n = self.nobs()
+        loglike = self.loglikelihood()
+
+        return -2 * loglike + nparam * np.log(n)
+
     def blup(self):
         if not all(self.variance_components):
             raise ValueError('Varcomps not specified! Maximize or set them')
@@ -464,8 +475,9 @@ class MixedModel(object):
                                         '{:5.3f}'.format(vc),
                                         '{:5.3f}'.format(100 * vc / totalvar)])
         print
-        print 'Loglikelihood: {:10.2f}'.format(self.loglikelihood())
         print 'Observations: {}'.format(self.nobs())
+        print 'Loglikelihood: {:10.2f}'.format(self.loglikelihood())
+        print 'BIC: {:10.3f}'.format(self.bic)
         print
 
     def _reml_optimization_target(self, vcs):
