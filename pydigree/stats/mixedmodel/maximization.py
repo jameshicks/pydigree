@@ -170,7 +170,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
                 continue
             # If we're not changing the the parameters in any meaningful
             # way, we can leave too, beacuse we've probably found a maximum
-            relative_changes = abs(delta) / vcs.sum()
+            relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
             if (abs(relative_changes) < tol).all():
                 break
 
@@ -206,11 +206,11 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
 
         if new_vcs.sum() / np.var(mm.y) > 10:
             raise LinAlgError('Optimizer left parameter space')
-
+        relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
+        
         if verbose:
-            print i+1, new_llik, new_vcs, new_vcs / new_vcs.sum()
+            print i+1, new_llik, new_vcs, new_vcs / new_vcs.sum(), relative_changes
 
-        relative_changes = abs(delta) / vcs.sum()
         if (abs(relative_changes) < tol).all():
             mle = MLEResult(new_vcs.tolist(), new_llik, method,
                             jacobian=grad, hessian=mat)
