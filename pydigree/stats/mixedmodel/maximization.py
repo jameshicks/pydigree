@@ -143,6 +143,8 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         delta = scoring_iteration(mat, grad)
 
+        if np.linalg.cond(mat) > 10000:
+            raise LinAlgError('Condition number of information matrix too high')
         if not np.isfinite(delta).all():
             raise LinAlgError('NaNs in scoring update')
 
@@ -173,7 +175,6 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         for n in xrange(25):
             alpha = 2 ** (-n)
             new_vcs = vcs - alpha * delta
-
             if constrained and (any(new_vcs < 0) or
                                 any(new_vcs > mm.y.var())):
                 # Don't bother evaluating variance components
