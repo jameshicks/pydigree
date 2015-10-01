@@ -306,14 +306,15 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
               min_density=100, maxmiss=0.25,
               onlywithin=False):
     ind1, ind2 = pair
+    results = SGS(ind1, ind2)
     if not (ind1.has_genotypes() and ind2.has_genotypes()):
-        return None
-
+        return results
+    
     if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
-        return None
+        return results
 
     if ind1 == ind2:
-        results = SGS(ind1, ind2)
+        
         for chridx, chromosome in enumerate(ind1.chromosomes):
             shares = sgs_autozygous(ind1, chridx,
                                     seed_size=seed_size,
@@ -345,6 +346,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False,
                          min_length=min_length,
                          size_unit=size_unit,
                          min_density=min_density,
+                         onlywithin=onlywithin,
                          maxmiss=maxmiss)
     shared = SGSAnalysis()
     pairs = [x for x in combinations(pop.individuals, 2)]
