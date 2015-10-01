@@ -356,7 +356,7 @@ def sgs_population(pop, seed_size=500, phaseknown=False,
         res = imap(pair_sgs, pairs)
     elif njobs > 1:
         pool = multiprocessing.Pool(processes=njobs)
-        res = pool.imap(pair_sgs, pairs, chunksize=1000)
+        res = pool.imap(pair_sgs, pairs, chunksize=10000)
     else:
         raise ValueError('Bad value for njobs: {}'.format(njobs))
 
