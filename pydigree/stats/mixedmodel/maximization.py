@@ -76,13 +76,15 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
     loglikelihood surface becomes ill-conditioned and the optimizer may not
     return back to valid parameter estimates. This is especially true for 
     Fisher scoring and AIREML when the true value of a variance component is 
-    close to the border of valid estimates. The parameter `constrained`
-    enforces validity of variance component estimates in two ways: likelihoods
-    must be monotonically increasing, and variance component estimates must be
-    in the valid range. If the change in estimates violates either of these, a
-    line search between that change and changes in the same direction but
-    exponentially decreasing in magnitude is performed until a valid set of 
-    estimates is met. 
+    close to the border of valid estimates. The information matrices used by
+    Fisher Scoring and AIREML, being approximations to the Hessian, can put the 
+    iteration estimates of the variance components outside the valid space. The 
+    parameter `constrained` enforces validity of variance component estimates 
+    in two ways: likelihoods must be monotonically increasing, and variance 
+    component estimates must be in the valid range. If the change in estimates 
+    violates either of these, a line search between that change and changes in 
+    the same direction but exponentially decreasing in magnitude is performed 
+    until a valid set of estimates is met. 
 
     The scoring argument allows you to run a few iterations of Fisher scoring
     or AI-REML to get close to the maximum, then switch over to Newton-Raphson
@@ -264,12 +266,18 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
 
     Formulas for EM-REML are given in Lynch & Walsh, Ch 27, Example 5 (pg. 799)
 
+    Unlike the Newton-type algorithms, EM-REML only makes use of the first 
+    derivative of the loglikelihood function. The presence of second 
+    derivatives means that Newton-type maximization will converge very quickly,
+    since it works on a better approximation of the likelihood surface. 
+
     EM-REML tends to converge VERY slowly, because the changes at every step
     are so small. For example, a model that took 3 iterations/0m3.927s to 
     converge with AI-REML took 52 iterations/0m32.803s with EM-REML. 
-    Individual EM iterations are relatively fast but since you have to 
-    invert the variance-covariance matrix of observations each iteration, it
-    adds up quickly.
+    Individual EM iterations are relatively fast because you don't have to
+    compute the Hessian (or an approximation of it). But since you have to 
+    invert the variance-covariance matrix of observations each iteration
+    regardless, time adds up quickly.
 
     However, EM-REML has the nice property that it monotonically converges to
     a maximum, and avoids the parameter esimtate out-of-range problems 
@@ -291,7 +299,8 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
         direction the optimizer is taking.
     vcs_after_maxiter: Returns estimates of variance components after reaching
         the maximum number of iterations. Useful for getting starting values 
-        for variance components.
+        for variance components if generic starting values aren't working for
+        some reason.
 
     Returns: A numpy array of the variance components at the MLE
     '''
