@@ -103,15 +103,6 @@ class Population(MutableMapping):
         ''' Removes an individual from the population '''
         del self[ind.label]
 
-    def random_identifier(self):
-        idx = 0
-        while True:
-            id = str(idx)
-            if self.name:
-                id = name + id
-            if id not in self.population.keys():
-                yield id
-            idx += 1
 
     def merge(self, other):
         '''

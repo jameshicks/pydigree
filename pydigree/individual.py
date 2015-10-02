@@ -26,8 +26,6 @@ class Individual(object):
         self.population = population
         if id:
             self.label = label
-        elif id is None and self.population:
-            self.label = self.population.random_identifier().next()
         else:
             self.label = None
         self.father = father
