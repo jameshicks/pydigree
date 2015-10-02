@@ -1,5 +1,6 @@
 import numpy as np
 
+import pydigree
 from itertools import combinations
 from pydigree.sgs import nshares, make_intervals
 from pydigree.sgs import SGSAnalysis, SGS, Segment
@@ -64,6 +65,7 @@ def test_ibd_state():
     assert sgs.ibd_state('d', 'e', loc) == 0
 
 
+
 def test_ibd_matrix():
     shared = {
         frozenset(['a', 'b']): [(0, 10)],
@@ -87,3 +89,12 @@ def test_ibd_matrix():
     # Make sure 0's come in for unobserved Inds
     m3 = np.matrix(np.eye(3))
     assert (sgs.ibd_matrix([1, 2, 3], loc) == m3).all()
+
+def test_intervals_to_array():
+    from pydigree.sgs.sgs import intervals_to_array
+    intervals = [[2,4], [6,10] ] 
+    observed = intervals_to_array(intervals, 15)
+    expected = np.array([0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
+    assert all(observed==expected)
+
+    assert all(intervals_to_array([], 10) == np.zeros(10)) 
