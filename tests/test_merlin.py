@@ -5,7 +5,8 @@ from nose.tools import raises, assert_raises
 import numpy as np
 
 from pydigree.exceptions import FileFormatError
-from pydigree.io.merlin import phenotype_indices, genotype_indices, read_map
+from pydigree.io.merlin import phenotype_indices, genotype_indices
+from pydigree.io.merlin import read_map, read_dat
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 TESTDATA_DIR = os.path.join(testdir, 'test_data', 'merlin')
@@ -31,3 +32,15 @@ def test_read_map():
     for chrom, expected_map, expected_lab in izip(chroms, expected_maps, expected_labs):
         assert all(np.array(chrom.labels) == np.array(expected_lab))
         assert all(np.array(chrom.genetic_map) == np.array(expected_map))
+
+def test_read_dat():
+    datfile = os.path.join(TESTDATA_DIR, 'testmerlin.dat')
+    data = read_dat(datfile)
+
+    expected_kinds = 'ASCCMMMMMM'
+    expected_labs = ['affected', 'ignored', 'bmi', 'height']
+    expected_labs += ['rsA', 'rsB', 'rsC', 'rsD', 'rsE', 'rsF']
+    observed_kinds = [kind for kind, label in data]
+    observed_labs = [label for kind, label in data]
+    assert all(o == e for o,e in zip(observed_kinds, expected_kinds))
+    assert all(o == e for o,e in zip(observed_labs, expected_labs))

@@ -1,10 +1,76 @@
-from itertools import izip
+from itertools import izip, chain
 
 import numpy as np
 
 from pydigree.io import smartopen
+from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.exceptions import FileFormatError
+
+
+def create_pop_handler_func(chromosomes):
+
+    def pop_handler(pop):
+        for chrom in chromosomes:
+            pop.add_chromosome(chrom)
+
+    return pop_handler
+
+
+def create_data_handler_func(chromosomes,
+                             phenotypes, phenotype_indices,
+                             genotypes, genotype_indices):
+
+    def data_handler(ind, data):
+
+        # Handle the phenotypes first
+        phendata = data[phenotype_indices]
+        for phenotype, value in izip(phenotypes, phendata):
+            kind, label = phenotype
+            if kind == 'A':
+                value = True if value == '1' else False
+            else:
+                value = float(value) if '.' in value else int(value)
+            ind.phenotypes[label] = value
+
+        gts = data[genotype_indices]
+        ind.genotypes = genotypes_from_sequential_alleles(chromsomes,
+                                                          gts,
+                                                          missing_code='X')
+
+
+def read_dat(filename):
+    with open(filename) as f:
+        return [tuple(line.strip().split()) for line in f]
+
+
+def read_merlin(prefix=None, pedfile=None, datfile=None, mapfile=None):
+    field_types = read_dat(datfile)
+    data_marker_labels = [lab for kind, lab in field_types if kind == 'M']
+
+    # We only want the map positions for the genotypes in the dat file
+    chromosomes = read_map(mapfile, only=data_marker_labels)
+
+    pop_handler = create_pop_handler_func(chromosomes)
+
+    maplabs = list(chain(x.labels for x in chromosomes))
+
+    # Require that all markers in the data file be in the map
+    if set(data_marker_labels) ^ set(maplabs):
+        raise FileFormatError('Datfile and map file contain different markers')
+
+    # Make sure that the order of markers in the dat file is the same as that
+    # in the map file.
+    for datlab, maplab in izip(data_marker_labels, maplabs):
+        if datlab != maplab:
+            raise FileFormatError('Datfile and mapfile in different order')
+
+    phenidx = phenotype_indices([kind for kind, label in field_types])
+    genidx = genotype_indices([kind for kind, label in field_types])
+    pop_handler = create_pop_handler_func(chromosomes)
+    data_handler = create_data_handler_func(chromosomes,
+                                            phenotypes, phenidx,
+                                            genotypes, gtidx)
 
 
 def phenotype_indices(types):
@@ -40,12 +106,12 @@ def genotype_indices(types):
     return np.array(indices, dtype=np.bool)
 
 
-def read_map(filename):
+def read_map(filename, only=None):
     with open(filename) as f:
         line = f.readline()
         header = line.strip().split()
         sex_specific_map = len(header) == 5
-        
+
         lastchrom = None
         chromosomes = []
         for markernum, line in enumerate(f):
@@ -53,12 +119,13 @@ def read_map(filename):
 
             if sex_specific_map:
                 chrom, marker, pos, male_pos, female_pos = l
-                pos = float(pos)
-                male_pos, female_pos = float(male_pos), float(female_pos)
             else:
                 chrom, marker, pos = l
-                pos = float(pos)
-                male_pos, female_pos = None, None
+
+            if only and marker not in only:
+                continue
+
+            pos = float(pos)
 
             if chrom != lastchrom:
                 c = ChromosomeTemplate(label=chrom)
@@ -67,10 +134,11 @@ def read_map(filename):
 
             c.add_genotype(map_position=pos, label=marker)
 
-        return chromosomes 
+        return chromosomes
+
 
 def write_phenotypes(pedigrees, prefix, phenotypes=None,
-                     phenotype_types=None, predicate=None, 
+                     phenotype_types=None, predicate=None,
                      skip_all_missing=True, missing_code='X', trait=None):
     output_inds = pedigrees.individuals
     if callable(predicate):
@@ -81,17 +149,17 @@ def write_phenotypes(pedigrees, prefix, phenotypes=None,
                                       [set(x.phenotypes.keys())
                                        for x in pedigrees.individuals])
         available_phenotypes = sorted(available_phenotypes)
-    else: 
+    else:
         available_phenotypes = phenotypes
 
     if not phenotype_types:
         # Default to covariate
         phenotype_types = [('T' if ph == trait else 'C')
                            for ph in available_phenotypes]
-    
+
     if len(phenotype_types) != len(available_phenotypes):
         raise ValueError('Not enough types for specified phenotypes')
-    
+
     def get_ph(ind, phen):
         if phen not in ind.phenotypes:
             return str(missing_code)
@@ -100,7 +168,7 @@ def write_phenotypes(pedigrees, prefix, phenotypes=None,
 
         if p is None:
             return str(missing_code)
-        
+
         return str(ind.phenotypes[phen])
 
     with open(prefix + '.phenotypes.dat', 'w') as datf:
@@ -115,7 +183,7 @@ def write_phenotypes(pedigrees, prefix, phenotypes=None,
                                         ind.mother.label if ind.mother is not None else '0',
                                         1 if ind.sex == 0 else 2)]
             phenotypes = [get_ph(ind, ph) for ph in available_phenotypes]
-            
+
             if all(ph == missing_code for ph in phenotypes):
                 continue
 
