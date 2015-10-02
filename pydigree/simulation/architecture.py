@@ -211,6 +211,40 @@ class Architecture(object):
             return 1 if phenotype >= self.liability_threshold else 0
         return phenotype
 
+    def add_dummy_polygene_chromosomes(self, population, nloc,
+                                       mean=0, sd=1, polylabel='Polygenic'):
+        """
+        Creates many independently segregating chromosomes that 
+        additively influence the trait.
+
+        Arguments:
+        population: The population to add the chromosomes to
+        nloc:       The number of dummy chromosomes to create
+        mean:       Mean locus additive effect
+        sd:         Standard deviation of locus additive effect
+        polylabel:  Label to add give chromosome
+
+        Returns: Nothing
+        """
+        if population.chromosomes:
+            raise ValueError('Population has chromosomes already!')
+
+        if sd == 0:
+            effects = [mean] * nloc
+        else:
+            effects = np.random.normal(mean, sd, nloc)
+
+        for i, effect in enumerate(effects):
+            # Create the chromosome
+            lab = '{}-{}'.format(polylab, i)
+            c = ChromosomeTemplate(label=lab)
+            c.add_genotype(0.5, 0)
+            population.add_chromosome(c)
+
+            # Add the effect
+            locus = i, 0
+            self.add_effect(locus, a=effect, k=0)
+
     @staticmethod
     def from_file(filename):
         with open(filename) as f:
