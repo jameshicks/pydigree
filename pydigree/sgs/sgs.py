@@ -38,11 +38,11 @@ class SGSAnalysis(object):
         self.pairs.update(other.pairs)
 
     def ibd_state(self, ind1, ind2, locus, location_type='index', onlywithin=False):
-        ''' 
+        '''
         Gets the IBD state between two individuals at a locus
 
         locus: a 2-tuple in the form (chromosome, position)
-        location_type: the type of location units specified. Valid entries are 
+        location_type: the type of location units specified. Valid entries are
         'index' (the index of the markers), 'physical' (the positions in bp),
         and 'genetic' (location in cM)
 
@@ -63,7 +63,7 @@ class SGSAnalysis(object):
 
         individuals: A list of individuals to form the matrix for
         locus: a 2-tuple in the form (chromosome, position)
-        location_type: the type of location units specified. Valid entries are 
+        location_type: the type of location units specified. Valid entries are
         'index' (the index of the markers), 'physical' (the positions in bp),
         and 'genetic' (location in cM)
         '''
@@ -108,8 +108,8 @@ class SGSAnalysis(object):
 
     def update_segment_references(self, pedigrees):
         '''
-        Replace individual labels in the Segment objects of SGSAnalyses read 
-        from text with references to the actual individual object 
+        Replace individual labels in the Segment objects of SGSAnalyses read
+        from text with references to the actual individual object
         '''
         pedindlabs = frozenset([x.full_label for x in pedigrees.individuals])
         sgsindlabs = frozenset(self.individuals)
@@ -191,7 +191,7 @@ class SGS(object):
     def ibd_state(self, locus, location_type='index'):
         '''
         locus: a 2-tuple in the form (chromosome, position)
-        location_type: the type of location units specified. Valid entries are 
+        location_type: the type of location units specified. Valid entries are
         'index' (the index of the markers), 'physical' (the positions in bp),
         and 'genetic' (location in cM)
         '''
@@ -339,12 +339,12 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
     results = SGS(ind1, ind2)
     if not (ind1.has_genotypes() and ind2.has_genotypes()):
         return results
-    
+
     if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
         return results
 
     if ind1 == ind2:
-        
+
         for chridx, chromosome in enumerate(ind1.chromosomes):
             shares = sgs_autozygous(ind1, chridx,
                                     seed_size=seed_size,
