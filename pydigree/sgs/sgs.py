@@ -8,7 +8,7 @@ from scipy.sparse import lil_matrix
 from pydigree.common import runs
 from pydigree.ibs import ibs, get_ibs_states
 from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
-
+from pydigree.io import smartopen as open
 from pydigree import Population, PedigreeCollection
 from pydigree import Individual, ChromosomeTemplate
 
@@ -152,6 +152,21 @@ class SGSAnalysis(object):
             return newpair
         self.pairs = {pairlookup(k): v for k, v in self.pairs.items()}
 
+    @staticmethod
+    def direct_to_disk(filename, pop, seed_size=500, phaseknown=False,
+                       min_length=1, size_unit='mb',
+                       min_density=100, maxmiss=0.25,
+                       onlywithin=False, njobs=1):
+        with open(filename, 'w') as outf:
+            results = _perform_sgs(pop, seed_size=seed_size,
+                                   phaseknown=phaseknown,
+                                   min_length=min_length, size_unit=size_unit,
+                                   min_density=min_density, maxmiss=maxmiss,
+                                   onlywithin=onlywithin, njobs=njobs)
+            for result in results:
+                for segment in result.segments:
+                    outf.write(segment.to_germline() + '\n')
+
 
 class SGS(object):
 
@@ -290,15 +305,30 @@ class Segment(object):
         ''' The number of missing genotypes in the segment '''
         return self.missing.sum() / float(self.nmark)
 
+    def to_germline(self):
+        # GERMLINE files are text files with the format:
 
-def sgs_pedigrees(pc, phaseknown=False):
-    '''
-    Performs within-pedigree SGS for each pedigree in a pedigree collection
-    '''
-    shared = SGSAnalysis()
-    for pedigree in pedigrees:
-        shared[pedigree] = sgs_population(pedigree)
-    return shared
+        #     0) Family ID 1
+        #     1) Individual ID 1
+        #     2) Family ID 2
+        #     3) Individual ID 2
+        #     4) Chromosome
+        #     5) Segment start (bp/cM)
+        #     6) Segment end (bp/cM)
+        #     7) Segment start (SNP)
+        #     8) Segment end (SNP)
+        #     9) Total SNPs in segment
+        #     10) Genetic length of segment
+        #     11) Units for genetic length (cM or MB)
+        #     12) Mismatching SNPs in segment
+        #     13) 1 if Individual 1 is homozygous in match; 0 otherwise
+        #     14) 1 if Individual 2 is homozygous in match; 0 otherwise
+        fields = self.ind1.full_label + self.ind2.full_label
+        fields += (self.chromosome.label,) + self.physical_location
+        fields += (self.start, self.stop, self.nmark, self.physical_size, 'MB')
+        fields += ('X', 'X', 'X')
+        outline = '\t'.join(map(str, fields))
+        return outline
 
 
 def _pair_sgs(pair, seed_size=500, phaseknown=False,
@@ -337,18 +367,19 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
     return results
 
 
-def sgs_population(pop, seed_size=500, phaseknown=False,
-                   min_length=1, size_unit='mb',
-                   min_density=100, maxmiss=0.25,
-                   onlywithin=False, njobs=1):
-    ''' Performs SGS between all individuals in a population or pedigree '''
+def _perform_sgs(pop, seed_size=500, phaseknown=False,
+                 min_length=1, size_unit='mb',
+                 min_density=100, maxmiss=0.25,
+                 onlywithin=False, njobs=1):
+    ''' Lazily performs SGS returning a iterable '''
+
     pair_sgs = partial(_pair_sgs, seed_size=seed_size,
-                         min_length=min_length,
-                         size_unit=size_unit,
-                         min_density=min_density,
-                         onlywithin=onlywithin,
-                         maxmiss=maxmiss)
-    shared = SGSAnalysis()
+                       min_length=min_length,
+                       size_unit=size_unit,
+                       min_density=min_density,
+                       onlywithin=onlywithin,
+                       maxmiss=maxmiss)
+
     pairs = [x for x in combinations(pop.individuals, 2)]
 
     njobs = int(njobs)
@@ -360,6 +391,22 @@ def sgs_population(pop, seed_size=500, phaseknown=False,
     else:
         raise ValueError('Bad value for njobs: {}'.format(njobs))
 
+    return res
+
+
+def sgs_population(pop, seed_size=500, phaseknown=False,
+                   min_length=1, size_unit='mb',
+                   min_density=100, maxmiss=0.25,
+                   onlywithin=False, njobs=1):
+    ''' Performs SGS between all individuals in a population or pedigree '''
+
+    shared = SGSAnalysis()
+    res = _perform_sgs(seed_size=seed_size,
+                       min_length=min_length,
+                       size_unit=size_unit,
+                       min_density=min_density,
+                       onlywithin=onlywithin,
+                       maxmiss=maxmiss)
     for result in res:
         pair = frozenset([result.ind1, result.ind2])
         shared[pair] = result
