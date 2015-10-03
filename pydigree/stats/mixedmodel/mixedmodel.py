@@ -471,7 +471,7 @@ class MixedModel(object):
         self._fit_results()
 
         print
-        print 'Linear mixed model fit by {}'.format(self.maximized)
+        print 'Linear mixed model fit by {}'.format(self.mle.method)
         print
         print 'Fixed effects:'
         fixefnames = ['(Intercept)'] + self.fixed_effects
