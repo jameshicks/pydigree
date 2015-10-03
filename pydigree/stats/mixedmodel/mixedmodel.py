@@ -190,8 +190,12 @@ class MixedModel(object):
         def has_all_fixefs(ind, effects):
             if not effects:
                 return True
-            return all(ind.phenotypes[effect] is not None
-                       for effect in effects)
+            for effect in effects:
+                if effect not in ind.phenotypes:
+                    return False
+                elif ind.phenotypes[effect] is None:
+                    return False
+            return True
 
         def has_outcome(ind):
             try:
