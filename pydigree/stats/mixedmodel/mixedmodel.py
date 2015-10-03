@@ -19,6 +19,7 @@ from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
+from pydigree.stats.mixedmodel.maximization import minque
 from pydigree.stats.mixedmodel.maximization import MLEResult
 
 
@@ -357,14 +358,22 @@ class MixedModel(object):
                 self.maximized.method == method):
             return
         self.fit_model()
-        if starts is None:
-            starts = self.__starting_variance_components()
 
-        if method == 'scipy':
+        if method.lower().startswith('minque'):
+            mle = minque(self, value=0, verbose=verbose, starts=starts)
+
+        elif method == 'scipy':
+            if starts is None:
+                starts = self.__starting_variance_components()
             mle = self._maximize_scipy(verbose=verbose)
+
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
+            if starts is None:
+                starts = self.__starting_variance_components()
             mle = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
+            if starts is None:
+                starts = self.__starting_variance_components()
             mle = newtonlike_maximization(self, starts, method,
                                           verbose=verbose)
 
@@ -493,7 +502,8 @@ class MixedModel(object):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
-    def __starting_variance_components(self, em=False, emiter=100):
+    def __starting_variance_components(self, minque0=True, em=False,
+                                       equal=False, emiter=100):
         """
         Starting variance components in optimization.
 
@@ -502,15 +512,20 @@ class MixedModel(object):
             equal values). 
         Chooses all variance components (including residual) to be equal.
         """
-        v = np.var(self.y)
-        n = len(self.random_effects)
-        vcs_start = [v/float(n)] * n
-        # vcs_start = [0] * (n-1) + [v]
-
-        if not em:
+        if minque0:
+            vcs_start = minque(self, value=0, return_after=1)
+            # Enforce that starting values are positive
+            vcs_start[vcs_start < 0] *= -1
             return vcs_start
-
-        vcs_start = expectation_maximization_reml(self, starts=vcs_start,
-                                                  maxiter=emiter,
-                                                  vcs_after_maxiter=True)
-        return vcs_start
+        if equal:
+            v = np.var(self.y)
+            n = len(self.random_effects)
+            vcs_start = [v/float(n)] * n
+            return vcs_start
+        if em:
+            vcs_start = expectation_maximization_reml(self, starts=vcs_start,
+                                                  maxiter=emiter+100,
+                                                  return_after=emiter)
+            return vcs_start
+        else:
+            raise ValueError('No way of getting starts given!')

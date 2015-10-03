@@ -2,6 +2,7 @@ import numpy as np
 from numpy.linalg import inv, LinAlgError
 from scipy.sparse import csc_matrix
 from scipy import matrix
+import scipy.linalg
 
 from likelihood import reml_gradient
 from likelihood import reml_observed_information_matrix
@@ -261,7 +262,7 @@ def scoring_iteration(info_mat, gradient):
 
 
 def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
-                                  verbose=False, vcs_after_maxiter=False):
+                                  verbose=False, return_after=1e300):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
 
@@ -345,3 +346,81 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
         i += 1
     mle = MLEResult(vcs, llik, 'Expectation-Maximization')
     return mle
+
+
+def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
+           verbose=False, return_after=None):
+    """ 
+    MINQUE (MInimum Norm Quadratic Unbiansed Estimation). Only used for 
+    historical purposes or getting starting variance components for another
+    maximization scheme.
+    
+    MINQUE gets variance component estimates by solving the equation Cz=t
+
+    For d random effects 
+    z is a vector of variance compnents
+    C is a dxd matrix with element  C_ij trace(P * V_i * P * V_j)
+    t is a column vector with row element i = y' * P * V_i * P * y
+
+    M = I_n - (1/n) * ONES_n * ONES_n'
+    (Ones_n is a row vector of all ones)
+
+
+    Useful reference: 
+    J.W. Keele & W.R. Harvey (1988) "Estimation of components of variance and
+    covariance by symmetric difference squaredand minimum norm quadratic 
+    unbiased estimation: a comparison" Journal of Animal Science
+    Vol 67. No.2 p348-356
+    doi:10.2134/jas1989.672348x
+    """
+    d = len(mm.random_effects)  # the number of random effects
+    if verbose:
+        print 'Maximizing model by MINQUE'
+
+    if starts is not None:
+        vcs = np.array(starts)
+    elif value == 0:
+        # MINQUE(0)
+        vcs = np.zeros(d)
+        vcs[-1] = 1
+    elif value == 1:
+        # MINQUE(1)
+        vcs = np.ones(d)
+
+    n = mm.nobs()
+    ones_n = np.matrix(np.ones(n)).T
+    y = mm.y
+
+    if verbose:
+        print vcs
+    for i in xrange(maxiter):
+        if i + 1 > return_after:
+            return vcs
+
+        V = mm._makeV(vcs.tolist())
+        Vinv = makeVinv(V)
+        P = Vinv - Vinv * ones_n * (ones_n.T * Vinv * ones_n).I
+
+        t = [matrix.item(y.T * P * ranef.V_i * P * y)
+             for ranef in mm.random_effects]
+        t = np.matrix(t).T
+
+        # Make C
+        C = []
+        for ranef_i in mm.random_effects:
+            row = [np.trace(P * ranef_i.V_i * P * ranef_j.V_i)
+                   for ranef_j in mm.random_effects]
+            C.append(row)
+
+        new_vcs = scipy.linalg.solve(C, t).T[0]
+        
+        delta = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
+        llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
+
+        if all(delta < tol):
+            mle = MLEResult(new_vcs, llik, 'MINQUE')
+            return mle
+        
+        if verbose:
+            print i, llik, vcs
+        vcs = new_vcs
