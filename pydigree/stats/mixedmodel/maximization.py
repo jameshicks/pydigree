@@ -143,14 +143,15 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
     for i in xrange(maxiter):
         if (i - 1) == scoring:
             information_mat = reml_observed_information_matrix
-            
+
         # Make the information matrix and gradient
         grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         delta = scoring_iteration(mat, grad)
 
-        if np.linalg.cond(mat) > 10000:
-            raise LinAlgError('Condition number of information matrix too high')
+        if np.linalg.cond(mat) > 1e100:
+            raise LinAlgError(
+                'Condition number of information matrix too high')
         if not np.isfinite(delta).all():
             raise LinAlgError('NaNs in scoring update')
 
@@ -225,7 +226,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         if new_vcs.sum() / np.var(mm.y) > 10:
             raise LinAlgError('Optimizer left parameter space')
         relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
-        
+
         if verbose:
             print i+1, new_llik, new_vcs, new_vcs / new_vcs.sum(), relative_changes
 
