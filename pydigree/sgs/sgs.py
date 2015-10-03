@@ -1,5 +1,6 @@
 from itertools import izip, combinations, product, chain, imap
 from functools import partial
+from bisect import bisect_left
 import multiprocessing
 
 import numpy as np
@@ -118,6 +119,13 @@ class SGSAnalysis(object):
             raise ValueError('Not all individuals present in SGS are present'
                              'in the given pedigrees')
 
+        def index(seq, x):
+            'Locate the leftmost value exactly equal to x'
+            i = bisect_left(seq, x)
+            if i != len(seq) and seq[i] == x:
+                return i
+            raise ValueError
+
         chroms = {chrom.label: chrom for chrom in pedigrees.chromosomes}
         chromindices = {chrom: i for i, chrom in enumerate(pedigrees.chromosomes)}
         for segment in self.segments:
@@ -130,8 +138,8 @@ class SGSAnalysis(object):
                     segment._chridx = chromindices[segment.chromosome]
 
                 pstart, pstop = segment.physical_location
-                segment.start = segment.chromosome.physical_map.index(pstart)
-                segment.stop = segment.chromosome.physical_map.index(pstop)
+                segment.start = index(segment.chromosome.physical_map, pstart)
+                segment.stop = index(segment.chromosome.physical_map, pstop)
 
             except KeyError:
                 if segment.ind1 not in pedindlabs:
