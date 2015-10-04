@@ -228,7 +228,8 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
 
         if verbose:
-            print i+1, new_llik, new_vcs, new_vcs / new_vcs.sum(), relative_changes
+            print i+1, new_llik, new_vcs, \
+                   new_vcs / new_vcs.sum(), relative_changes
 
         if (abs(relative_changes) < tol).all():
             mle = MLEResult(new_vcs.tolist(), new_llik, method,
@@ -353,12 +354,12 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
 
 
 def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
-           verbose=False, return_after=None):
+           verbose=False, return_after=1e300):
     """ 
     MINQUE (MInimum Norm Quadratic Unbiansed Estimation). Only used for 
     historical purposes or getting starting variance components for another
     maximization scheme.
-    
+
     MINQUE gets variance component estimates by solving the equation Cz=t
 
     For d random effects 
@@ -385,12 +386,13 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
         vcs = np.array(starts)
     elif value == 0:
         # MINQUE(0)
-        vcs = np.zeros(d)
-        vcs[-1] = 1
+        weights = np.zeros(d)
+        weights[-1] = 1
     elif value == 1:
         # MINQUE(1)
-        vcs = np.ones(d)
+        weights = np.ones(d)
 
+    vcs = np.var(mm.y) * weights
     n = mm.nobs()
     ones_n = np.matrix(np.ones(n)).T
     y = mm.y
@@ -398,13 +400,14 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
     if verbose:
         print vcs
     for i in xrange(maxiter):
+
         if i + 1 > return_after:
             return vcs
 
-        V = mm._makeV(vcs.tolist())
+        V = sum(weight * ranef.V_i for weight, ranef
+                in zip(weights, mm.random_effects))
         Vinv = makeVinv(V)
-        P = Vinv - Vinv * ones_n * (ones_n.T * Vinv * ones_n).I
-
+        P = makeP(mm.X, Vinv)
         t = [matrix.item(y.T * P * ranef.V_i * P * y)
              for ranef in mm.random_effects]
         t = np.matrix(t).T
@@ -415,16 +418,18 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
             row = [np.trace(P * ranef_i.V_i * P * ranef_j.V_i)
                    for ranef_j in mm.random_effects]
             C.append(row)
-
+        C = np.matrix(C)
         new_vcs = scipy.linalg.solve(C, t).T[0]
-        
+
         delta = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
 
         if all(delta < tol):
             mle = MLEResult(new_vcs, llik, 'MINQUE')
             return mle
-        
+
         if verbose:
             print i, llik, vcs
         vcs = new_vcs
+        weights = vcs  
+
