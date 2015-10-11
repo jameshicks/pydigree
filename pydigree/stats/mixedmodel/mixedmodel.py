@@ -156,11 +156,20 @@ class MixedModel(object):
         self.X = self._makeX()
         self.Zlist = self._makeZs()
 
-        if not all(x is not None for x in self.variance_components):
-            self.set_variance_components(self.__starting_variance_components())
+        need_vcs = not all(x is not None for x in self.variance_components)
+        if need_vcs:
+            # Not a great way to start but you need to start with something
+            need_vcs = True
+            vcs = [0] * len(self.random_effects)
+            vcs[-1] = np.var(self.y)
+            self.set_variance_components(vcs)
 
         self.V = self._makeV()
         self.beta = self._makebeta()
+        
+        if need_vcs:
+            vcs[-1] = np.var(self.y - self.X * self.beta)
+
 
     def _fit_results(self):
         self.V = self._makeV()
