@@ -432,22 +432,24 @@ class MixedModel(object):
         mle = MLEResult(r.x, r.fun, 'scipy', r.jac, r.hess)
         return mle
 
-    def loglikelihood(self, restricted=False, vmat=None):
+    def loglikelihood(self, restricted=False, vcs=None, vmat=None):
         """
         Returns the loglikelihood of the model with the current model parameters
         """
-        if self.mle is not None:
+        if self.mle is not None and vcs is None and vmat is None:
             if restricted:
                 return self.mle.restricted_loglikelihood
             else:
                 return self.mle.full_loglikelihood
 
-        if self.V is None:
-            self.V = self._makeV()
-        if vmat is None:
-            V = self.V
-        else:
+        if vcs is not None:
+            V = self._makeV(vcs=vcs)
+        elif vmat is not None:
             V = vmat
+        elif self.V is None:
+            self.V = self._makeV()
+        else:
+            V = self.V
         if not restricted:
             return full_loglikelihood(self.y, V, self.X, self.beta)
         else:
