@@ -506,30 +506,38 @@ class MixedModel(object):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
-    def __starting_variance_components(self, minque0=True, em=False,
-                                       equal=False, emiter=100):
+    def __starting_variance_components(self, kind='minque0'):
         """
         Starting variance components in optimization.
-
-        if em is True, the starting values are the variance components after 
-        emiter iterations of expectation-maximization REML (started from all
+        Valid values:
+        'minque0': Starting values are those from MINQUE with all weights
+            set equal to 0 except for the residual variance, which is set
+            to 1. This is the default method used by SAS's PROC MIXED.
+        'minque1': Starting values are those from MINQUE with all weights
+            set equal to 1
+        'EM': the starting values are the variance components after 
+            100 iterations of expectation-maximization REML (started from all
             equal values). 
-        Chooses all variance components (including residual) to be equal.
+        'equal': Chooses all variance components (including residual) 
+            to be equal.
         """
-        if minque0:
-            vcs_start = minque(self, value=0, return_after=1)
-            # Enforce that starting values are positive
-            vcs_start[vcs_start < 0] *= -1
-            return vcs_start
-        if equal:
-            v = np.var(self.y)
+
+        if kind.lower() == 'minque0':
+            return minque(self, value=0, return_after=1, return_vcs=True)
+
+        if kind.lower() == 'minque1':
+            return minque(self, value=1, return_after=1, return_vcs=True)
+
+        if kind.lower() == 'equal':
+            v = np.var(self.y - self.X * self.beta)
             n = len(self.random_effects)
             vcs_start = [v/float(n)] * n
             return vcs_start
-        if em:
+
+        if kind.lower() == 'em':
             vcs_start = expectation_maximization_reml(self, starts=vcs_start,
-                                                  maxiter=emiter+100,
-                                                  return_after=emiter)
+                                                      maxiter=100,
+                                                      return_after=100)
             return vcs_start
         else:
-            raise ValueError('No way of getting starts given!')
+            raise ValueError('Unknown method: {}'.format(kind))
