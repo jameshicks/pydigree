@@ -15,6 +15,10 @@ from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
 
+def is_positive_definite(mat):
+    return all(np.linalg.eigvals(mat) > 0)
+
+
 class MLEResult(object):
 
     " An object representing the result of REML maximization of a mixed model "
@@ -148,8 +152,12 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
         delta = scoring_iteration(mat, grad)
+        
 
-        if np.linalg.cond(mat) > 1e100:
+        if not is_positive_definite(mat):
+            raise LinAlgError('Information matrix not positive definite')
+
+        if np.linalg.cond(mat) > 1e4:
             raise LinAlgError(
                 'Condition number of information matrix too high')
         if not np.isfinite(delta).all():
