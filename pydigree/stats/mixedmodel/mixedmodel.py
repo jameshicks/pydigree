@@ -403,7 +403,7 @@ class MixedModel(object):
     def maximized(self):
         return isinstance(self.mle, MLEResult)
 
-    def _maximize_scipy(self, method='L-BFGS-B', verbose=True):
+    def _maximize_scipy(self, method='CG', verbose=True):
         """
         Finds the optimal values for variance components of the model by
         restricted maximum likelihood estimation using scipy minimization.
