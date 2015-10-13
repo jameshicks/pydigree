@@ -35,7 +35,7 @@ class MLEResult(object):
 
 
 def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
-                            tol=1e-4, constrained=True, scoring=10,
+                            tol=1e-4, constrained=False, scoring=10,
                             verbose=False):
     """
     Updates variance components for a linear mixed model by an
