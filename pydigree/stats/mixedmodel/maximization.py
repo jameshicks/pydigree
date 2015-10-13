@@ -362,7 +362,7 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
 
 
 def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
-           verbose=False, return_after=1e300):
+           verbose=False, return_after=1e300, return_vcs=False):
     """ 
     MINQUE (MInimum Norm Quadratic Unbiansed Estimation). Only used for 
     historical purposes or getting starting variance components for another
@@ -391,18 +391,20 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
         print 'Maximizing model by MINQUE'
 
     if starts is not None:
-        vcs = np.array(starts)
+        weights = np.array(starts)
+
     elif value == 0:
         # MINQUE(0)
         weights = np.zeros(d)
         weights[-1] = 1
+
     elif value == 1:
         # MINQUE(1)
         weights = np.ones(d)
 
-    vcs = np.var(mm.y) * weights
+    vcs = np.var(mm.y - mm.X * mm.beta) * weights
     n = mm.nobs()
-    ones_n = np.matrix(np.ones(n)).T
+
     y = mm.y
 
     if verbose:
@@ -412,10 +414,10 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
         if i + 1 > return_after:
             return vcs
 
-        V = sum(weight * ranef.V_i for weight, ranef
-                in zip(weights, mm.random_effects))
+        V = mm._makeV(vcs=vcs.tolist())
         Vinv = makeVinv(V)
         P = makeP(mm.X, Vinv)
+
         t = [matrix.item(y.T * P * ranef.V_i * P * y)
              for ranef in mm.random_effects]
         t = np.matrix(t).T
@@ -433,11 +435,12 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
 
         if all(delta < tol):
+            if return_vcs:
+                return new_vcs
             mle = MLEResult(new_vcs, llik, 'MINQUE')
             return mle
 
         if verbose:
             print i, llik, vcs
         vcs = new_vcs
-        weights = vcs  
-
+        weights = vcs
