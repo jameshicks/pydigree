@@ -527,7 +527,7 @@ class MixedModel(object):
 
     def varianceplot2d(self, idx1, idx2, nevals=10, restricted=True):
 
-        total_variance = np.var(self.y - self.X * self.beta)
+        total_variance = self._variance_after_fixefs()
 
         potential_sigmas = np.linspace(0.1, total_variance, nevals)
         likelihood_grid = np.zeros((nevals, nevals))
@@ -541,6 +541,8 @@ class MixedModel(object):
         X, Y = np.meshgrid(potential_sigmas, potential_sigmas)
         return X, Y, likelihood_grid
 
+    def _variance_after_fixefs(self):
+        return np.var(self.y - self.X * self.beta)
 
     def _reml_optimization_target(self, vcs):
         """ Optimization target for maximization. """
@@ -578,7 +580,7 @@ class MixedModel(object):
             return minque(self, value=1, return_after=1, return_vcs=True)
 
         if kind.lower() == 'equal':
-            v = np.var(self.y - self.X * self.beta)
+            v = self._variance_after_fixefs()
             n = len(self.random_effects)
             vcs_start = [v/float(n)] * n
             return vcs_start
