@@ -111,8 +111,10 @@ class PedigreeCollection(MutableMapping):
 
         See notes on Pedigree.additive_relationship_matrix
         """
-        return block_diag([x.additive_relationship_matrix(ids) for x in
-                           sorted(self, key=lambda x: x.label)], format='bsr')
+        mats = [x.additive_relationship_matrix(ids) for x in
+                sorted(self, key=lambda x: x.label)]
+        mats = [x for x in mats if x.size > 0]
+        return block_diag(mats, format='bsr')
 
     def dominance_relationship_matrix(self, ids=None):
         """
@@ -121,8 +123,10 @@ class PedigreeCollection(MutableMapping):
 
         See notes on Pedigree.dominance_relationship_matrix
         """
-        return block_diag([x.dominance_relationship_matrix(ids) for x in
-                           sorted(self, key=lambda x: x.label)], format='bsr')
+        mats = [x.dominance_relationship_matrix(ids) for x in
+                sorted(self, key=lambda x: x.label)]
+        mats = [x for x in mats if x.size > 0]
+        return block_diag(mats, format='bsr')
 
     def mitochondrial_relationship_matrix(self, ids=None):
         """
@@ -131,5 +135,6 @@ class PedigreeCollection(MutableMapping):
 
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
-        return block_diag([x.mitochondrial_relationship_matrix(ids) for x in
-                           sorted(self, key=lambda x: x.label)], format='bsr')
+        mats = [x.mitochondrial_relationship_matrix(ids) for x in
+                sorted(self, key=lambda x: x.label)]
+        return block_diag(mats, format='bsr')
