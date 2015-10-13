@@ -43,7 +43,8 @@ class PedigreeCollection(MutableMapping):
         if not isinstance(ped, Pedigree):
             raise ValueError('{} not of type Pedigree')
         elif ped.label in self.keys():
-            raise ValueError('A pedigree labeled {} already in collection'.format(ped.label))
+            raise ValueError(
+                'Pedigree label {} already in collection'.format(ped.label))
         else:
             self[ped.label] = ped
 
@@ -65,7 +66,7 @@ class PedigreeCollection(MutableMapping):
     def nonfounders(self):
         ''' Returns a list of founder individuals across all pedigrees '''
         return [x for x in self.individuals if not x.is_founder()]
-    
+
     def _getindividual(self, label):
         for x in self.individuals:
             if x.label == label:
