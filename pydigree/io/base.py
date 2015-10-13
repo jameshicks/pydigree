@@ -62,8 +62,11 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         # Parse the lines in the file
         for line in f:
             split = line.strip().split(delimiter)
-            fam, id, fa, mo, sex, aff = split[0:6]
-
+            if len(split) > 5:
+                fam, id, fa, mo, sex, aff = split[0:6]
+            elif len(split) == 5:
+                fam, id, fa, mo, sex = split[0:5]
+                aff = None
             # Give a special id for now, to prevent overwriting duplicated
             # ids between families
             id = (fam, id)
