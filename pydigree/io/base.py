@@ -36,7 +36,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
     Returns: An object of class PedigreeCollection
     """
-    sex_codes = {'1': 0, '2': 1, 'M': 0, 'F': 1, '0': None}
+    sex_codes = {'1': 0, '2': 1, 'M': 0, 'F': 1, '0': None, '-9': None}
     if not affected_labels:
         affected_labels = {'1': 0, '2': 1,
                            'A': 1, 'U': 0,
