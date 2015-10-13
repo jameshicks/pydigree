@@ -557,7 +557,7 @@ class MixedModel(object):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
-    def __starting_variance_components(self, kind='minque0'):
+    def __starting_variance_components(self, kind='equal'):
         """
         Starting variance components in optimization.
         Valid values:
