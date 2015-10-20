@@ -94,15 +94,20 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             ind.register_with_parents()
 
     # Place individuals into pedigrees
-    available = {x for x in p if type(x.label) is tuple}
-    for pedigree_label in set(ind.label[0] for ind in p):
+    pedigrees = {}
+    for ind in p.individuals:
+        if ind.label[0] not in pedigrees:
+            pedigrees[ind.label[0]] = []
+
+        pedigrees[ind.label[0]].append(ind)
+
+    for pedigree_label, ped_inds in pedigrees.items():
         ped = Pedigree(label=pedigree_label)
+
         if callable(population_handler):
             population_handler(ped)
         
-        thisped = {x for x in available if x.label[0] == pedigree_label}
-        available = available - thisped
-        for ind in thisped:
+        for ind in ped_inds:
             ind.label = ind.label[1]
             ped[ind.label] = ind
             ind.population = ped
