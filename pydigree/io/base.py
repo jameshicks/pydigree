@@ -94,17 +94,14 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             ind.register_with_parents()
 
     # Place individuals into pedigrees
+    available = {x for x in p if type(x.label) is tuple}
     for pedigree_label in set(ind.label[0] for ind in p):
         ped = Pedigree(label=pedigree_label)
         if callable(population_handler):
             population_handler(ped)
-
-        # The individuals left people are people who have tuple-typed ids.
-        # if you dont do this you can end up with an annoying bug that garbles
-        # individual IDs when the second character of their label is also a
-        # pedigree identifier. This bug will take you three hours to find.
-        available = [x for x in p if type(x.label) is tuple]
-        thisped = [x for x in available if x.label[0] == pedigree_label]
+        
+        thisped = {x for x in available if x.label[0] == pedigree_label}
+        available = available - thisped
         for ind in thisped:
             ind.label = ind.label[1]
             ped[ind.label] = ind
