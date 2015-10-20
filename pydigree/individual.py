@@ -379,6 +379,10 @@ class Individual(object):
         return [[x, y] for x, y in itertools.izip(father, mother)]
 
     # Phenotype functions
+    def has_phenotype(self, phenotype):
+        return (phenotype in self.phenotypes and
+                self.phenotypes[phenotype] is not None)
+
     def predict_phenotype(self, trait):
         """ Predicts phenotypes from a given trait architecture and sets it """
         self.phenotypes[trait.name] = self.predicted_phenotype(trait)
