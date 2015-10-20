@@ -3,6 +3,7 @@
 # Packages we're going to use
 import math
 import numpy as np
+import pandas as pd
 from itertools import chain
 
 # Abstract base class for population and pedigree
@@ -381,3 +382,12 @@ class Population(MutableMapping):
         """
         for x in self:
             x.predict_phenotype(trait)
+
+    def phenotype_dataframe(self, onlyphenotyped=True):
+        records = [x._phenotypes_to_series() for x in self.individuals]
+        df = pd.DataFrame.from_records(records)
+
+        if onlyphenotyped:
+            df.dropna(how='all', inplace=True)
+
+        return df

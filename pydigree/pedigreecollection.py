@@ -4,6 +4,7 @@ from common import *
 from operator import add
 from collections import MutableMapping
 
+import pandas as pd
 from scipy.sparse import block_diag
 
 from pydigree.pedigree import Pedigree
@@ -102,6 +103,10 @@ class PedigreeCollection(MutableMapping):
     def merge(self, pop):
         for ped in self:
             ped.merge(pop)
+
+    def phenotype_dataframe(self, onlyphenotyped=True):
+        return pd.concat([x.phenotype_dataframe(onlyphenotyped=onlyphenotyped)
+                          for x in self])
 
     # Matrix functions
     ###

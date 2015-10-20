@@ -43,5 +43,5 @@ cyext = [Extension('pydigree.cyfuncs', cysources,
 setup(
     packages=['pydigree'],
     ext_modules=[c_ext] + cythonize(cyext),
-    requires=['numpy', 'scipy']
+    requires=['numpy', 'scipy', 'pandas']
 )

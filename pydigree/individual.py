@@ -4,6 +4,7 @@ import itertools
 from itertools import izip
 
 import numpy as np
+import pandas as pd
 
 from pydigree.recombination import recombine
 from pydigree.paths import *
@@ -393,3 +394,6 @@ class Individual(object):
     def clear_phenotypes(self):
         """ Removes phenotypes """
         self.phenotypes = {}
+
+    def _phenotypes_to_series(self):
+        return pd.Series(self.phenotypes)
