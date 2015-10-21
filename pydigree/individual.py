@@ -395,5 +395,27 @@ class Individual(object):
         """ Removes phenotypes """
         self.phenotypes = {}
 
+    def genotype_as_phenotype(self, locus, minor_allele, label):
+        """
+        Creates a phenotype record representing the additive effect of a minor 
+        allele at the specified locus. That is, the phenotype created is the 
+        number of copies of the minor allele at the locus.
+
+        Arguments:
+        locus: the site to count minor alleles
+        minor_allele: the allele to count
+        label: The name of the phenotype to be added
+
+        Returns: Nothing.
+        """
+        gt = self.get_genotype(locus)
+        if is_missing_genotype(gt):
+            val = None
+        else: 
+            val = gt.count(minor_allele)
+
+        self.phenotypes[label] = val
+
+
     def _phenotypes_to_series(self):
         return pd.Series(self.phenotypes)

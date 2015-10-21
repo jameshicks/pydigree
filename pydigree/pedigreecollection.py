@@ -108,6 +108,16 @@ class PedigreeCollection(MutableMapping):
         return pd.concat([x.phenotype_dataframe(onlyphenotyped=onlyphenotyped)
                           for x in self])
 
+    def genotype_as_phenotype(self, locus, minor_allele, label):
+        """ 
+        Dispatches a genotype_as_phenotype to each pedigree.
+        
+        See docstring for Individual.genotype_as_phenotype for more
+        details
+        """
+        for ped in self:
+            ped.genotype_as_phenotype(locus, minor_allele, label)
+            
     # Matrix functions
     ###
     def additive_relationship_matrix(self, ids=None):

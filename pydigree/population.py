@@ -391,3 +391,13 @@ class Population(MutableMapping):
             df.dropna(how='all', inplace=True)
 
         return df
+
+    def genotype_as_phenotype(self, locus, minor_allele, label):
+        """ 
+        Dispatches a genotype_as_phenotype to each individual in the pedigree.
+        
+        See docstring for Individual.genotype_as_phenotype for more
+        details
+        """
+        for ind in self.individuals:
+            ind.genotype_as_phenotype(locus, minor_allele, label)
