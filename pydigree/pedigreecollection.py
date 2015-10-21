@@ -104,6 +104,10 @@ class PedigreeCollection(MutableMapping):
         for ped in self:
             ped.merge(pop)
 
+    def delete_phenotype(self, phenotype):
+        for ped in self:
+            ped.delete_phenotype(phenotype)
+
     def phenotype_dataframe(self, onlyphenotyped=True):
         return pd.concat([x.phenotype_dataframe(onlyphenotyped=onlyphenotyped)
                           for x in self])
@@ -117,7 +121,7 @@ class PedigreeCollection(MutableMapping):
         """
         for ped in self:
             ped.genotype_as_phenotype(locus, minor_allele, label)
-            
+
     # Matrix functions
     ###
     def additive_relationship_matrix(self, ids=None):

@@ -383,6 +383,10 @@ class Population(MutableMapping):
         for x in self:
             x.predict_phenotype(trait)
 
+    def delete_phenotype(self, trait):
+        for ind in self.individuals:
+            ind.delete_phenotype(trait)
+
     def phenotype_dataframe(self, onlyphenotyped=True):
         records = [x._phenotypes_to_series() for x in self.individuals]
         df = pd.DataFrame.from_records(records)

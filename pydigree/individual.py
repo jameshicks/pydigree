@@ -391,6 +391,12 @@ class Individual(object):
     def predicted_phenotype(self, trait):
         return trait.predict_phenotype(self)
 
+    def delete_phenotype(self, trait):
+        "Removes a phenotype from the phenotype dictionary"
+        if trait not in self.phenotypes:
+            return
+        del self.phenotypes[trait]
+    
     def clear_phenotypes(self):
         """ Removes phenotypes """
         self.phenotypes = {}
