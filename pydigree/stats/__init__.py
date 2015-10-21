@@ -1,1 +1,2 @@
 from mixedmodel import MixedModel
+import stattests
