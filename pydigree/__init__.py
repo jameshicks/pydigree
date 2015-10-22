@@ -24,7 +24,8 @@ from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.pedigree import Pedigree
 from pydigree.individual import Individual
 
-
+# Functions and classes for doing statistics
+import pydigree.stats
 
 # Functions for identifying shared genomic segments (SGS)
 import pydigree.sgs
