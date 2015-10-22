@@ -105,7 +105,7 @@ class Population(MutableMapping):
         del self[ind.label]
 
 
-    def merge(self, other):
+    def update(self, other):
         '''
         Merges two datasets (i.e. performs Individual.update for each individual in the pedigree)
 

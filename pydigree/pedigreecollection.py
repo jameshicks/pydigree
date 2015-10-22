@@ -123,9 +123,9 @@ class PedigreeCollection(MutableMapping):
 
         return freqs
 
-    def merge(self, pop):
+    def update(self, pop):
         for ped in self:
-            ped.merge(pop)
+            ped.update(pop)
 
     def delete_phenotype(self, phenotype):
         for ped in self:
@@ -138,7 +138,7 @@ class PedigreeCollection(MutableMapping):
     def genotype_as_phenotype(self, locus, minor_allele, label):
         """ 
         Dispatches a genotype_as_phenotype to each pedigree.
-        
+
         See docstring for Individual.genotype_as_phenotype for more
         details
         """
