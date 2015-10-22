@@ -456,6 +456,14 @@ class MixedModel(object):
             return restricted_loglikelihood(self.y, V, self.X)
 
     @property
+    def df(self):
+        ''' 
+        The number of observations minus the number of fixed effects, minus
+        the number of non-residual random effects
+        '''
+        return self.nobs() - self.X.shape[1] - len(self.random_effects) + 1
+
+    @property
     def bic(self):
         if not self.maximized:
             raise ValueError('Model not maximized!')
