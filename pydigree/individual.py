@@ -414,6 +414,10 @@ class Individual(object):
 
         Returns: Nothing.
         """
+        if not self.has_genotypes():
+            self.phenotypes[label] = None
+            return
+            
         gt = self.get_genotype(locus)
         if is_missing_genotype(gt):
             val = None
