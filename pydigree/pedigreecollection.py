@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import itertools
+
 from common import *
 from operator import add
 from collections import MutableMapping
@@ -99,6 +101,27 @@ class PedigreeCollection(MutableMapping):
     def get_genotypes(self):
         for x in self:
             x.get_genotypes()
+
+    def alleles(self, locus, nonfounders=False, constraint=None):
+        allelesets = (ped.alleles(locus,
+                                  constraint=constraint)
+                      for ped in self.pedigrees.values())
+        return reduce(set.union, allelesets)
+
+    def allele_list(self, locus, constraint=None):
+        allelelist = (ped.allele_list(locus,
+                                      constraint=constraint)
+                      for ped in self.pedigrees.values())
+        return list(itertools.chain.from_iterable(allelelist))
+
+    def allele_frequencies(self, locus, nonfounders=False, constraint=None):
+        allelelist = self.allele_list(locus, constraint=constraint)
+        ninds = len(allelelist)
+        freqs = table(allelelist)
+        for allele in freqs:
+            freqs[allele] /= float(ninds)
+
+        return freqs
 
     def merge(self, pop):
         for ped in self:
