@@ -116,7 +116,7 @@ class PedigreeCollection(MutableMapping):
 
     def allele_frequencies(self, locus, nonfounders=False, constraint=None):
         allelelist = self.allele_list(locus, constraint=constraint)
-        ninds = len(allelelist)
+        ninds = len(allelelist) / 2.0
         freqs = table(allelelist)
         for allele in freqs:
             freqs[allele] /= float(ninds)
