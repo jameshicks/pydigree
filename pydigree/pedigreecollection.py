@@ -125,7 +125,7 @@ class PedigreeCollection(MutableMapping):
 
     def update(self, pop):
         for ped in self:
-            ped.update(pop)
+            ped.update(pop[ped.label])
 
     def delete_phenotype(self, phenotype):
         for ped in self:
