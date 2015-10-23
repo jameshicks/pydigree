@@ -66,11 +66,13 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
 
         freqs = peds.allele_frequencies(locus, nonfounders=True)
         alleles = [x[0]
-                   for x in sorted(freqs.items(), key=lambda x: x[1], reverse=True)]
-        
+                   for x in sorted(freqs.items(),
+                                   key=lambda x: x[1],
+                                   reverse=True)]
+
         if len(alleles) == 1:
-        	print 'Monomorphic genotype: {}'.format(markerlabel)
-        	continue
+            print 'Monomorphic genotype: {}'.format(markerlabel)
+            continue
 
         maj_allele = alleles[0]
 
