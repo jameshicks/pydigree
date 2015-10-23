@@ -621,6 +621,11 @@ class MixedModel(object):
         if kind.lower() == 'minque1':
             return minque(self, value=1, return_after=1, return_vcs=True)
 
+        if kind.lower() == 'minquemean':
+            zero = minque(self, value=0, return_after=1, return_vcs=True)
+            one = minque(self, value=1, return_after=1, return_vcs=True)
+            return (zero + one) / 2.0
+
         if kind.lower() == 'equal':
             v = self._variance_after_fixefs()
             n = len(self.random_effects)
