@@ -53,7 +53,19 @@ def measured_genotype_association(extrapredictor):
                        fixed_effects=args.fixefs + [extrapredictor])
     model.add_genetic_effect()
     model.fit_model()
-    model.maximize(method=args.maxmethod, verbose=args.verbose)
+    
+    # Under the null (i.e. most loci in the genome) estimates of beta
+    # for alleles should be close to zero most of the time. If they're 
+    # near zero, they're not explaining any of the variance in the 
+    # response variable, so variance component estimates shouldn't be
+    # far from the null model. If we start with the null model's estimates
+    # we can probably save an iteration or two of scoring (or probably like 
+    # a hundred iterations of expectation-maximization), and get to our 
+    # null result sooner. If we're not there, we'll move out to real estimate
+    # anyway so it's essentially a free optimization.
+    model.maximize(method=args.maxmethod,
+                   starts=null_model.variance_components,
+                   verbose=args.verbose)
     return model
 
 print tableformat('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
