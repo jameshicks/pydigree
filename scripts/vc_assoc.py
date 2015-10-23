@@ -19,6 +19,7 @@ parser.add_argument('--maxmethod', default='Fisher Scoring')
 parser.add_argument('--only', required=False, default=None, nargs='*',
                     help='Labels of genotypes to be tested')
 parser.add_argument('--verbose', default=False, action='store_true')
+parser.add_argument('--interact', action='store_true')
 args = parser.parse_args()
 
 if args.only is not None:
@@ -72,6 +73,9 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
 
         if len(alleles) == 1:
             print 'Monomorphic genotype: {}'.format(markerlabel)
+            if args.interact:
+                import IPython
+                IPython.embed()
             continue
 
         maj_allele = alleles[0]
@@ -97,4 +101,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
                               '{:<10.3g}'.format(beta),
                               '{:<10.3f}'.format(lrt.lod),
                               '{:<10.4g}'.format(lrt.pvalue))
+            if args.interact:
+                import IPython
+                IPython.embed()
             peds.delete_phenotype(predictorname)
