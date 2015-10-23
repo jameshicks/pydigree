@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import division
 
-from itertools import izip
+from itertools import izip, product
 import copy
 
 import numpy as np
@@ -33,13 +33,39 @@ def inv(M):
     return scipy_inv(M)
 
 
-def _make_incidence_matrix(individuals, effect_name):
+def make_incidence_matrix(individuals, effect_name):
     if effect_name.lower() == 'residual':
         incidence_matrix = sparseeye(len(individuals))
+    
     elif is_genetic_effect(effect_name):
         incidence_matrix = sparseeye(len(individuals))
+    
     else:
-        raise NotImplementedError('Arbitrary random effects not implemented')
+        levels = sorted({ind.phenotypes[effect_name] for ind in individuals})
+        
+        # Missing values are not a valid level
+        levels = [x for x in levels if x is not None]
+
+        nlevels = len(levels)
+
+        # Calculate which individual has which level
+        gen = (ind.phenotypes[effect_name] == level for ind, level in
+               product(individuals, levels))
+        Z = np.fromiter(gen, dtype=np.uint8)
+
+        # Shout out to scipy for both not documenting reshape on any of their 
+        # sparse matrix objects and also not making them take the same number
+        # of arguments
+        Z = Z.reshape(-1, nlevels) 
+
+        # Check for missing values and complain about them!
+        # Kind of hard to read but heres how it goes:
+        # Check if any of the rows are all zero.
+        if (Z == 0).all(axis=1).any():
+            raise LinAlgError('Missing values in random effect')
+
+        incidence_matrix = csc_matrix(Z)
+
     return incidence_matrix
 
 
@@ -54,17 +80,26 @@ class RandomEffect(object):
         self.label = label
         self.variance_component = variance
         if incidence_matrix is None:
-            m = _make_incidence_matrix(individuals,
-                                       self.label)
+            m = make_incidence_matrix(individuals,
+                                      self.label)
             self.incidence_matrix = m
         elif incidence_matrix == 'eye':
             self.incidence_matrix = sparseeye(nobs, nobs)
         else:
             self.incidence_matrix = incidence_matrix
-        if covariance_matrix is None:
 
-            self.covariance_matrix = sparseeye(nobs, nobs)
+        if covariance_matrix is None:
+            # Number of levels of random effects is the number of
+            # columns in the incidence matrix
+            nlevel = self.incidence_matrix.shape[1]
+            self.covariance_matrix = sparseeye(nlevel, nlevel)
         else:
+            # Covariance matrices are square
+            if covariance_matrix.shape[0] != covariance_matrix.shape[1]:
+                raise LinAlgError('Covariance matrix not square')
+            if covariance_matrix.shape[0] != self.incidence_matrix.shape[1]:
+                raise LinAlgError('Incidence and covariance matrix '
+                                  'not conformable')
             self.covariance_matrix = covariance_matrix
 
     def __repr__(self):
@@ -166,10 +201,9 @@ class MixedModel(object):
 
         self.V = self._makeV()
         self.beta = self._makebeta()
-        
+
         if need_vcs:
             vcs[-1] = np.var(self.y - self.X * self.beta)
-
 
     def _fit_results(self):
         self.V = self._makeV()
@@ -457,7 +491,7 @@ class MixedModel(object):
 
     @property
     def df(self):
-        ''' 
+        '''
         The number of observations minus the number of fixed effects, minus
         the number of non-residual random effects
         '''
@@ -574,10 +608,10 @@ class MixedModel(object):
             to 1. This is the default method used by SAS's PROC MIXED.
         'minque1': Starting values are those from MINQUE with all weights
             set equal to 1
-        'EM': the starting values are the variance components after 
+        'EM': the starting values are the variance components after
             100 iterations of expectation-maximization REML (started from all
-            equal values). 
-        'equal': Chooses all variance components (including residual) 
+            equal values).
+        'equal': Chooses all variance components (including residual)
             to be equal.
         """
 
