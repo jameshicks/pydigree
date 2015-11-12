@@ -405,6 +405,12 @@ class SparseAlleles(AlleleContainer):
 
         return Alleles(arr, template=self.template)
 
+    def empty_like(self):
+        if not np.issubdtype(self.dtype, np.int):
+            raise ValueError 
+        raw = np.zeros(self.nmark(), dtype=self.dtype) + self.refcode
+        return SparseAlleles(raw, refcode=self.refcode, template=self.template)
+
 
 class ChromosomeTemplate(object):
 
