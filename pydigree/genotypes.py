@@ -281,16 +281,21 @@ class SparseAlleles(AlleleContainer):
     genotypes from sequence data (e.g. VCF files)
     '''
 
-    def __init__(self, data, template=None):
+    def __init__(self, data, refcode=None, template=None):
         self.template = template
 
         data = np.array(data)
         self.dtype = data.dtype
         self.size = data.shape[0]
-
-        refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
-        self.non_refalleles = self._array2nonref(data, refcode)
-        self.missingindices = self._array2missing(data, self.missingcode)
+        if refcode is not None:
+            self.refcode = refcode
+        else:
+            self.refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
+        self.non_refalleles = self._array2nonref(data,
+                                                 self.refcode,
+                                                 self.missingcode)
+        self.missingindices = self._array2missing(data,
+                                                  self.missingcode)
 
     def __lt__(self, other):
         raise NotMeaningfulError(
@@ -309,17 +314,20 @@ class SparseAlleles(AlleleContainer):
             'Value comparisions not meaningful for genotypes')
 
     @staticmethod
-    def _array2nonref(data, refcode):
+    def _array2nonref(data, refcode, missingcode):
         '''
-        Returns a dict of the form index: value where the data is different than a reference
+        Returns a dict of the form index: value where the data is 
+        different than a reference value
         '''
-        return {i: x for i, x in enumerate(data)
-                if x != refcode and x != ''}
+        idxes = np.where(np.logical_and(data != refcode,
+                                        data != missingcode))[0]
+        nonref_values = data[idxes]
+        return dict(izip(idxes, nonref_values))
 
     @staticmethod
     def _array2missing(data, missingcode):
         ''' Returns a list of indices where there are missingvalues '''
-        return [i for i, x in enumerate(data) if x == missingcode]
+        return list(np.where(data == missingcode))
 
     @property
     def missingcode(self):
