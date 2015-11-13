@@ -83,7 +83,7 @@ class LabelledAlleles(AlleleContainer):
                 # Template [---]      OR          [-----]
                 continue
             elif copy_start == span.start and copy_stop == span.stop:
-                # Ours             [----------] 
+                # Ours             [----------]
                 # Template         [----------]
 
                 new_span = InheritanceSpan(span.ancestor,
@@ -106,7 +106,7 @@ class LabelledAlleles(AlleleContainer):
                                            copy_stop)
 
                 self.add_span(new_span)
-            
+
             elif span.contains(copy_start):
                 # Ours:        [------------------]
                 # Template: [--------]
@@ -116,7 +116,7 @@ class LabelledAlleles(AlleleContainer):
                                            copy_start,
                                            span.stop)
                 self.add_span(new_span)
-           
+
             elif span.contains(copy_stop):
                 # Ours       [-----------------]
                 # Template:                [-----------]
@@ -127,7 +127,7 @@ class LabelledAlleles(AlleleContainer):
                                            copy_stop)
                 self.add_span(new_span)
                 return
-          
+
             elif span.start > copy_start and span.stop < copy_stop:
                 # This span is a sub-span of ours
                 # Ours       [------------------------]
@@ -139,9 +139,9 @@ class LabelledAlleles(AlleleContainer):
                                            span.start,
                                            span.stop)
                 self.add_span(new_span)
-            else: 
+            else:
                 raise ValueError('Unforseen combination of spans')
-  
+
     def delabel(self):
         # Check to make sure all the founders are delabeled
         if not all_same_type(self.spans, InheritanceSpan):
