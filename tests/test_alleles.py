@@ -111,13 +111,14 @@ def test_sparse_norefscalarcomparison():
 def test_array2missing():
     missingcode = 0
     vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
-    assert SparseAlleles._array2missing(vals, missingcode) == [0, 2, 3, 5]
+    assert all(SparseAlleles._array2missing(vals, missingcode) == np.array([0, 2, 3, 5]))
 
 
 def test_array2nonref():
     refcode = 0
+    missingcode = 0 
     vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
-    o = SparseAlleles._array2nonref(vals, refcode)
+    o = SparseAlleles._array2nonref(vals, refcode, missingcode)
     assert o == {1: 1, 4: 1, 6: 2}
 
 #############
