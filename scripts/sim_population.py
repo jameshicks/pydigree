@@ -31,4 +31,4 @@ for i,g in enumerate(gen_sizes):
     t = time.time()
     pop.iterate_pool(g)
     t2 = time.time()
-    print '\t'.join(str(x) for x in [i,int(g),t2-t,(t2-t)/int(g)])
+    print '\t'.join(str(x) for x in [i, int(g), t2-t, (t2-t)/int(g)])
