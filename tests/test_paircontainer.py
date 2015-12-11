@@ -17,3 +17,4 @@ def test_sparsecontainer_get():
 		return t[idx]
 
 	assert_raises(KeyError, should_raise_keyerror, 4)
+	
