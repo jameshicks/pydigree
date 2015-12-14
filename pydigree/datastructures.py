@@ -12,6 +12,10 @@ class SortedPairContainer(object):
         else:
             raise TypeError("Invalid type for key")
 
+    def __contains__(self, key):
+        f = bisect.bisect_left(self.indices, key)
+        return self.indices[f] == key
+
     @property
     def indices(self):
         return [x[0] for x in self.container]

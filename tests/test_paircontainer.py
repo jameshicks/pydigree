@@ -18,3 +18,9 @@ def test_sparsecontainer_get():
 
 	assert_raises(KeyError, should_raise_keyerror, 4)
 	
+def test_sparsecontainer_contains():
+	from pydigree.datastructures import SortedPairContainer
+	testdata = [(1,'a'), (5, 'b'), (6,'c'), (9,'d')]
+	t = SortedPairContainer(testdata)
+	assert 5 in t
+	assert 2 not in t
