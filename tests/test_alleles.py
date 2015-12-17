@@ -65,18 +65,6 @@ def test_sparsealleles():
     assert np.all((a != b) == np.logical_not(eq))
 
 
-def test_alleles_meaninglesscomparisions():
-    # Comparsions like >, <, >=, <= aren't meaningful for genotypes
-    a = Alleles(['1', '2', '3', ''])
-    b = Alleles(['1', '3', '2', ''])
-
-    # Can't test an expression so we make a throwaway function to test
-    assert_raises(NotMeaningfulError, lambda x, y: x < y, a, b)
-    assert_raises(NotMeaningfulError, lambda x, y: x > y, a, b)
-    assert_raises(NotMeaningfulError, lambda x, y: x >= y, a, b)
-    assert_raises(NotMeaningfulError, lambda x, y: x <= y, a, b)
-
-
 def test_sparsealleles_meaninglesscomparisions():
     # Comparsions like >, <, >=, <= aren't meaningful for genotypes
     a = SparseAlleles(['1', '2', '3', ''])
