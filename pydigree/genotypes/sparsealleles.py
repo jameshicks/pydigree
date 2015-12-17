@@ -154,6 +154,14 @@ class SparseAlleles(AlleleContainer):
 
     def empty_like(self):
         if not np.issubdtype(self.dtype, np.int):
-            raise ValueError 
+            raise ValueError
         raw = np.zeros(self.nmark(), dtype=self.dtype) + self.refcode
         return SparseAlleles(raw, refcode=self.refcode, template=self.template)
+
+    def copy_span(self, template, copy_start, copy_stop):
+        if not isinstance(template, SparseAlleles):
+            raise TypeError('invalid container')
+        before = [x for x in self.non_refalleles.items if x[0] < copy_start]
+        after = [x for x in self.non_refalleles.items if x[0] > copy_start]
+        middle = template.non_refalleles[copy_start:copy_stop]
+        self.non_refalleles.container = before + middle + after

@@ -108,6 +108,13 @@ def test_sparsealleles_emptylike():
     e = a.empty_like()
     assert e.non_refalleles.container == []
 
+def test_sparsealleles_copyspan():
+    a = SparseAlleles(np.array([0,0,0,0,0,0,0], dtype=np.int)+1, refcode=1)
+    b = SparseAlleles(np.array([1,1,1,1,1,1,1], dtype=np.int)+1, refcode=1)
+
+    a.copy_span(b, 2, 6)
+    assert all(a.todense() == np.array([0,0,1,1,1,1,0]) + 1)
+
 def test_array2missing():
     missingcode = 0
     vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
