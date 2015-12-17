@@ -107,6 +107,13 @@ def test_sparse_norefscalarcomparison():
     a = SparseAlleles(['1', '2', '3', ''])
     a == '3'
 
+def test_sparseeq():
+    a = SparseAlleles([1,2,3,4])
+    b = SparseAlleles([1,3,3,4])
+
+    obs = (a == b)
+    expected = np.array([True, False, True, True]) 
+    assert np.all(obs == expected)
 
 def test_array2missing():
     missingcode = 0
