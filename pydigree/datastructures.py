@@ -63,8 +63,7 @@ class SortedPairContainer(object):
 
         indices = self.indices
         start = self._find_index_low(key.start)
-        stop = self._find_index_high(key.stop)  
-        print start, stop
+        stop = self._find_index_high(key.stop) - 1 
         return self.container[start:stop]
 
     def _find_index_low(self, key):
