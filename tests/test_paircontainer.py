@@ -34,3 +34,9 @@ def test_sparsecontainer_delitem():
 	assert 5 in t
 	del t[5]
 	assert 5 not in t
+
+def test_sparsecontainer_properties():
+	t = maketestdata()
+	assert t.indices == [1,5,6,9]
+	assert t.values == ['a', 'b', 'c', 'd'] 
+	assert t.items == [(1,'a'), (5, 'b'), (6,'c'), (9,'d')]

@@ -29,6 +29,14 @@ class SortedPairContainer(object):
     def indices(self):
         return [x[0] for x in self.container]
 
+    @property 
+    def values(self):
+        return [x[1] for x in self.container]
+
+    @property
+    def items(self):
+        return self.container
+
     def getindex(self, full_idx, after=False):
         ''' 
         Returns the closest index in the container to the index in the full set
@@ -62,6 +70,7 @@ class SortedPairContainer(object):
     def _find_index_low(self, key):
         "Find the leftmost index less than or equal to key"
         return bisect.bisect_left(self.indices, key)
+
     def _find_index_high(self, key):
         "Find the rightmost index gte to key"
         return bisect.bisect_right(self.indices, key)
