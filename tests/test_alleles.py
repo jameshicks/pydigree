@@ -103,6 +103,11 @@ def test_sparseeq():
     expected = np.array([True, False, True, True]) 
     assert np.all(obs == expected)
 
+def test_sparsealleles_emptylike():
+    a = SparseAlleles([1,2,3,4])
+    e = a.empty_like()
+    assert e.non_refalleles.container == []
+
 def test_array2missing():
     missingcode = 0
     vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
