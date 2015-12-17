@@ -6,6 +6,7 @@ from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 
+
 class SparseAlleles(AlleleContainer):
 
     '''
@@ -130,8 +131,12 @@ class SparseAlleles(AlleleContainer):
         Returns a non-sparse GenotypeChromosome equivalent
         to a SparseAlleles object.
         '''
+        if np.issubdtype(self.dtype, np.integer):
+            arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
+            arr = arr + self.refcode
+        else:
+            arr = np.array([self.refcode] * self.size, dtype=self.dtype)
 
-        arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
         for loc, allele in self.non_refalleles.items:
             arr[loc] = allele
 
