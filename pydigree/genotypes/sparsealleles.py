@@ -47,6 +47,14 @@ class SparseAlleles(AlleleContainer):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
 
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            try:
+                return self.non_refalleles[key]
+            except KeyError:
+                return self.refcode
+        elif isinstance(key, slice):
+            return
 
     @staticmethod
     def _array2nonref(data, refcode, missingcode):
