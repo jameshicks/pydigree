@@ -115,11 +115,13 @@ def test_array2missing():
 
 
 def test_array2nonref():
+    from pydigree.datastructures import SortedPairContainer
     refcode = 0
     missingcode = 0 
     vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
     o = SparseAlleles._array2nonref(vals, refcode, missingcode)
-    assert o == {1: 1, 4: 1, 6: 2}
+    assert type(o) is SortedPairContainer
+    assert o.container == [(1, 1), (4, 1), (6, 2)]
 
 #############
 # InheritanceSpan

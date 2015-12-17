@@ -1,6 +1,8 @@
-from pydigree.genotypes import AlleleContainer, Alleles
 import numpy as np
 from itertools import izip
+
+from pydigree.datastructures import SortedPairContainer
+from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.cyfuncs import fastfirstitem
 
@@ -44,6 +46,7 @@ class SparseAlleles(AlleleContainer):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
 
+
     @staticmethod
     def _array2nonref(data, refcode, missingcode):
         '''
@@ -53,7 +56,7 @@ class SparseAlleles(AlleleContainer):
         idxes = np.where(np.logical_and(data != refcode,
                                         data != missingcode))[0]
         nonref_values = data[idxes]
-        return dict(izip(idxes, nonref_values))
+        return SortedPairContainer(izip(idxes, nonref_values))
 
     @staticmethod
     def _array2missing(data, missingcode):
@@ -101,8 +104,8 @@ class SparseAlleles(AlleleContainer):
         # to start, and go through and set any differences to False
         base = np.ones(self.size, dtype=np.bool_)
 
-        nonref_a = self.non_refalleles.viewitems()
-        nonref_b = other.non_refalleles.viewitems()
+        nonref_a = set(self.non_refalleles.items)
+        nonref_b = set(other.non_refalleles.items)
 
         # Get the alleles that are in nonref_a or nonref_b but not both
         neq_alleles = (nonref_a ^ nonref_b)
@@ -123,13 +126,13 @@ class SparseAlleles(AlleleContainer):
         return self.size
 
     def todense(self):
-        '''
+        ''' 
         Returns a non-sparse GenotypeChromosome equivalent
         to a SparseAlleles object.
         '''
 
         arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
-        for loc, allele in self.non_refalleles.iteritems():
+        for loc, allele in self.non_refalleles.items:
             arr[loc] = allele
 
         arr[self.missing] = self.missingcode
