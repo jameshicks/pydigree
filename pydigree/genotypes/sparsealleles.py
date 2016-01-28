@@ -145,8 +145,7 @@ class SparseAlleles(AlleleContainer):
         else:
             arr = np.array([self.refcode] * self.size, dtype=self.dtype)
 
-        for loc, allele in self.non_refalleles.items:
-            arr[loc] = allele
+        arr[self.non_refalleles.indices] = self.non_refalleles.values
 
         arr[self.missing] = self.missingcode
 
