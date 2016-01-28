@@ -29,7 +29,7 @@ class SortedPairContainer(object):
     def indices(self):
         return [x[0] for x in self.container]
 
-    @property 
+    @property
     def values(self):
         return [x[1] for x in self.container]
 
@@ -53,7 +53,7 @@ class SortedPairContainer(object):
         raise KeyError
 
     def _getloc(self, key):
-        idx = self.getindex(key)  
+        idx = self.getindex(key)
         return self.container[idx][1]
 
     def _getslice(self, key):
@@ -62,14 +62,6 @@ class SortedPairContainer(object):
             raise NotImplementedError
 
         indices = self.indices
-        start = self._find_index_low(key.start)
-        stop = self._find_index_high(key.stop) - 1 
+        start = bisect.bisect_left(self.indices, key.start)
+        stop = bisect.bisect_left(self.indices, key.stop)
         return self.container[start:stop]
-
-    def _find_index_low(self, key):
-        "Find the leftmost index less than or equal to key"
-        return bisect.bisect_left(self.indices, key)
-
-    def _find_index_high(self, key):
-        "Find the rightmost index gte to key"
-        return bisect.bisect_right(self.indices, key)

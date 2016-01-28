@@ -7,7 +7,7 @@ def maketestdata():
 
 def test_sparsecontainer_slice():
 	t = maketestdata()
-	assert t[4:6] == [(5,'b'), (6,'c')]
+	assert t[4:7] == [(5,'b'), (6,'c')]
 
 def test_sparsecontainer_get():
 	from nose.tools import assert_raises

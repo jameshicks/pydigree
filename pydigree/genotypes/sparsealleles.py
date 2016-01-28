@@ -161,7 +161,11 @@ class SparseAlleles(AlleleContainer):
     def copy_span(self, template, copy_start, copy_stop):
         if not isinstance(template, SparseAlleles):
             raise TypeError('invalid container')
-        before = [x for x in self.non_refalleles.items if x[0] < copy_start]
-        after = [x for x in self.non_refalleles.items if x[0] > copy_start]
+
+        nr = self.non_refalleles
+        before = self.non_refalleles[0:copy_start]
+        after = self.non_refalleles[copy_stop:]
         middle = template.non_refalleles[copy_start:copy_stop]
+
+
         self.non_refalleles.container = before + middle + after
