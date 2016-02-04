@@ -63,5 +63,5 @@ class SortedPairContainer(object):
 
         indices = self.indices
         start = bisect.bisect_left(self.indices, key.start)
-        stop = bisect.bisect_left(self.indices, key.stop)
+        stop = bisect.bisect_left(self.indices, key.stop, lo=start)
         return self.container[start:stop]
