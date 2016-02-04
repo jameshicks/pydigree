@@ -139,13 +139,16 @@ class MixedModel(object):
     """
 
     def __init__(self, pedigrees, outcome=None, fixed_effects=None,
-                 random_effects=None, covariance_matrices=None):
+                 random_effects=None, covariance_matrices=None, only=None):
         self.mle = None
         self.pedigrees = pedigrees
 
         self.outcome = outcome
         self.fixed_effects = fixed_effects if fixed_effects else []
         self.obs = []
+
+        if only is not None:
+            self.only = frozenset(only)
 
         if not random_effects:
             self.random_effects = []
