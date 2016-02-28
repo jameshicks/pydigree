@@ -118,9 +118,9 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
             continue
 
         maj_allele = alleles[0]
-
-        for min_allele in alleles[1:]:
-            predictorname = '{0}{1}'.format(markerlabel, min_allele)
+        minor_alleles = [allele for allele in alleles[1:] if allele != '']
+        for min_allele in minor_alleles:
+            predictorname = '{0}_{1}'.format(markerlabel, min_allele)
             maf = freqs[min_allele]
 
             peds.genotype_as_phenotype(locus,
