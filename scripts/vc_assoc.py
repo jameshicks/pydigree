@@ -17,6 +17,8 @@ parser.add_argument('--outcome', required=True, help='Response variable')
 parser.add_argument('--fixefs', required=False, nargs='*', default=[],
                     help='Names of fixed effects to include in model')
 parser.add_argument('--maxmethod', default='Fisher Scoring')
+parser.add_argument('--range', nargs='*', default=[],
+                    help='Chromosomal ranges to test')
 parser.add_argument('--only', required=False, default=None, nargs='*',
                     help='Labels of genotypes to be tested')
 parser.add_argument('--verbose', default=False, action='store_true')
@@ -43,6 +45,15 @@ null_model.fit_model()
 null_model.maximize(method=args.maxmethod, verbose=args.verbose)
 null_model.summary()
 llik_null = null_model.loglikelihood()
+
+
+def parse_range(rangestr):
+    chrom, span = rangestr.split(':')
+    chrom = chrom.replace('chr', '')
+    span = [int(x) for x in span.split('-')]
+    return chrom, span[0], span[1]
+
+granges = [parse_range(x) for x in args.range]
 
 
 def tableformat(*cells):
@@ -76,7 +87,18 @@ outlines = []
 print tableformat(*tableheader)
 
 for chromidx, chromobj in enumerate(peds.chromosomes):
+
+    if granges and (chromobj.label not in [x[0] for x in granges]):
+        continue
+
     for locidx, markerlabel in enumerate(chromobj.labels):
+
+        if granges:
+            inrange = any(x[1] <= chromobj.physical_map[locidx] <= x[2]
+                          for x in granges)
+            if not inrange:
+                continue
+
         locus = chromidx, locidx
 
         if args.only is not None and markerlabel not in only:
