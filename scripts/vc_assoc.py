@@ -12,6 +12,7 @@ parser.add_argument('--phen', required=True,
 parser.add_argument('--geno', required=True,
                     help='PLINK formatted genotype PED file')
 parser.add_argument('--map', required=True, help='PLINK formatted MAP file')
+parser.add_argument('--out', default=None, help='Filename for csv output')
 parser.add_argument('--outcome', required=True, help='Response variable')
 parser.add_argument('--fixefs', required=False, nargs='*', default=[],
                     help='Names of fixed effects to include in model')
@@ -32,6 +33,7 @@ pyd.io.read_phenotypes(peds, args.phen)
 print 'Reading genotypes'
 genodata = pyd.io.plink.read_plink(pedfile=args.geno,
                                    mapfile=args.map)
+
 peds.update(genodata)
 
 print 'Fitting polygenic model'
@@ -53,14 +55,14 @@ def measured_genotype_association(extrapredictor):
                        fixed_effects=args.fixefs + [extrapredictor])
     model.add_genetic_effect()
     model.fit_model()
-    
+
     # Under the null (i.e. most loci in the genome) estimates of beta
-    # for alleles should be close to zero most of the time. If they're 
-    # near zero, they're not explaining any of the variance in the 
+    # for alleles should be close to zero most of the time. If they're
+    # near zero, they're not explaining any of the variance in the
     # response variable, so variance component estimates shouldn't be
     # far from the null model. If we start with the null model's estimates
-    # we can probably save an iteration or two of scoring (or probably like 
-    # a hundred iterations of expectation-maximization), and get to our 
+    # we can probably save an iteration or two of scoring (or probably like
+    # a hundred iterations of expectation-maximization), and get to our
     # null result sooner. If we're not there, we'll move out to real estimate
     # anyway so it's essentially a free optimization.
     model.maximize(method=args.maxmethod,
@@ -68,8 +70,11 @@ def measured_genotype_association(extrapredictor):
                    verbose=args.verbose)
     return model
 
-print tableformat('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
+tableheader = ('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
                   'MAF', 'BETA', 'LOD', 'PVALUE')
+outlines = [] 
+print tableformat(*tableheader)
+
 for chromidx, chromobj in enumerate(peds.chromosomes):
     for locidx, markerlabel in enumerate(chromobj.labels):
         locus = chromidx, locidx
@@ -103,17 +108,27 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
             beta = np.matrix.item(alt_model.beta[-1])  # Slope of marker effect
 
             lrt = LikelihoodRatioTest(null_model, alt_model)
+            
+            oline = (chromobj.label,
+                     chromobj.physical_map[locidx],
+                     markerlabel,
+                     maj_allele,
+                     min_allele,
+                     '{:<10.3g}'.format(maf),
+                     '{:<10.3g}'.format(beta),
+                     '{:<10.3f}'.format(lrt.lod),
+                     '{:<10.4g}'.format(lrt.pvalue))
+            
+            outlines.append(oline)
+            print tableformat(*oline)
 
-            print tableformat(chromobj.label,
-                              chromobj.physical_map[locidx],
-                              markerlabel,
-                              maj_allele,
-                              min_allele,
-                              '{:<10.3g}'.format(maf),
-                              '{:<10.3g}'.format(beta),
-                              '{:<10.3f}'.format(lrt.lod),
-                              '{:<10.4g}'.format(lrt.pvalue))
             if args.interact:
                 import IPython
                 IPython.embed()
             peds.delete_phenotype(predictorname)
+
+if args.out is not None:
+  with open(args.out, 'w') as outf:
+    outf.write(','.join(tableheader) + '\n')
+    for oline in outlines:
+      outf.write(','.join(str(x).strip() for x in oline) + '\n')
