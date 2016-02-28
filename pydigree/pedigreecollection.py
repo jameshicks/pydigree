@@ -125,6 +125,10 @@ class PedigreeCollection(MutableMapping):
 
     def update(self, pop):
         for ped in self:
+            ped.chromosomes = pop.chromosomes
+            if ped.label not in pop.pedigrees.keys(): 
+                continue
+
             ped.update(pop[ped.label])
 
     def delete_phenotype(self, phenotype):
