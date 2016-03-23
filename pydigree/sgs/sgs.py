@@ -465,7 +465,7 @@ def sgs_unphased(ind1, ind2, chromosome_idx, seed_size=255,
                                        min_density=min_density,
                                        maxmiss=maxmiss))
     ibd2 = set_intervals_to_value(ibd2_segs, nmark, 2)
-    ibd = np.maximum(ibd1, ibd2, dtype=np.uint8)
+    ibd = np.maximum(ibd1, ibd2)
     if array:
         return ibd
 
