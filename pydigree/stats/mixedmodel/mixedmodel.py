@@ -466,7 +466,7 @@ class MixedModel(object):
         if verbose:
             print r
 
-        mle = MLEResult(r.x, r.fun, 'scipy', r.jac, r.hess)
+        mle = MLEResult(r.x, r.fun, 'scipy', r.jac, None)
         return mle
 
     def loglikelihood(self, restricted=False, vcs=None, vmat=None):
