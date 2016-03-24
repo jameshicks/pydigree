@@ -27,7 +27,7 @@ c_ext = Extension(
     include_dirs=[numpy.get_include()]
 )
 
-cysources = ['pydigree/cyfuncs.pyx']
+cysources = ['pydigree/cydigree/cyfuncs.pyx']
 if not all(os.path.exists(x) for x in cysources):
     error('ERROR: Cython sources not found! Giving up.')
     exit(1)
