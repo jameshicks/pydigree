@@ -2,7 +2,7 @@ import numpy as np
 
 import pydigree
 from itertools import combinations
-from pydigree.sgs import nshares, make_intervals
+from pydigree.sgs import make_intervals
 from pydigree.sgs import SGSAnalysis, SGS, Segment
 
 
@@ -22,24 +22,6 @@ def to_SGSAnalysis(shared):
     return obj
 
 
-def test_nshares():
-    shared = {frozenset([1, 2]): [(1, 5)], frozenset(
-        [1, 3]): [(1, 3)], frozenset([2, 3]): [(1, 2)]}
-    affecteds = range(1, 4)
-    nmark = 6
-    assert all(nshares(affecteds, shared, nmark) == np.array(
-        [0, 3, 3, 2, 1, 1], dtype=np.uint16))
-
-    shared = {}
-    affecteds = [1, 2, 3, 4]
-    nmark = 6
-    assert all(nshares(affecteds, shared, 6) == np.zeros(6))
-
-    shared = {frozenset([1, 2]): [(1, 5), (1, 5)]}
-    affecteds = range(1, 4)
-    nmark = 6
-    assert all(nshares(affecteds, shared, nmark) == np.array(
-        [0, 2, 2, 2, 2, 2], dtype=np.uint16))
 
 
 def test_makeintervals():
