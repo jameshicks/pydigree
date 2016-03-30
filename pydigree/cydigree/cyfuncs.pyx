@@ -2,6 +2,7 @@
 import numpy as np
 cimport numpy as np
 cimport cython
+from libc.stdint cimport int32_t, uint32_t
 
 cpdef ibs(g1,g2, missingval=None):
     '''
@@ -146,3 +147,19 @@ def set_intervals_to_value(intervals, size, value):
     for start, stop in intervals:
         array[start:(stop+1)] = value
     return array
+
+
+cdef class Segment:
+    cdef object ind1, ind2, chromosome
+    cdef public int32_t start, stop
+    cdef public uint32_t physical_start, physical_stop
+
+    def __init__(self, ind1, ind2, chromosome, start, stop, physical_position):
+        self.ind1 = ind1
+        self.ind2 = ind2
+        self.chromosome = chromosome
+
+        if start is None or stop is None:
+            self.start, self.stop = -1, -1
+        
+        self.physical_start, self.physical_stop = physical_position
