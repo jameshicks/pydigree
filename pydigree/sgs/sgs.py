@@ -44,8 +44,7 @@ class SGSAnalysis(object):
 
         locus: a 2-tuple in the form (chromosome, position)
         location_type: the type of location units specified. Valid entries are
-        'index' (the index of the markers), 'physical' (the positions in bp),
-        and 'genetic' (location in cM)
+        'index' (the index of the markers), and 'physical' (the positions in bp)
 
         Returns 0 in the case of ind1 and ind2 not having any identified
         segments (or not being in the analysis at all)
@@ -200,8 +199,7 @@ class SGS(object):
         '''
         locus: a 2-tuple in the form (chromosome, position)
         location_type: the type of location units specified. Valid entries are
-        'index' (the index of the markers), 'physical' (the positions in bp),
-        and 'genetic' (location in cM)
+        'index' (the index of the markers), and 'physical' (positions in bp)
         '''
         if not self.segments:
             return 0
@@ -219,20 +217,16 @@ class SGS(object):
                     for x in self.segments]
             ibd = sum(1 for segchrom, start, stop in segs
                       if segchrom == chrom and (start <= pos <= stop))
-        elif location_type == 'genetic':
-            segs = [(x._chridx, x.genetic_start, x.genetic_stop)
-                    for x in self.segments]
-            ibd = sum(1 for segchrom, start, stop in segs
-                      if segchrom == chrom and (start <= pos <= stop))
+
         return ibd
 
 
 class Segment(object):
     __slots__ = ['ind1', 'ind2', 'chromosome', 'start', 'stop',
-                 '_chridx', 'physical_location', 'genetic_location']
+                 '_chridx', 'physical_location',]
 
     def __init__(self, ind1, ind2, chromosome, startidx, stopidx,
-                 physical_location=None, genetic_location=None):
+                 physical_location=None):
         self.ind1 = ind1
         self.ind2 = ind2
         self.chromosome = chromosome
@@ -260,21 +254,6 @@ class Segment(object):
         else:
             self.physical_location = None
 
-        # Do the same thing with genetic positions
-        if isinstance(self.chromosome, ChromosomeTemplate):
-            genetic_start = self.chromosome.genetic_map[self.start]
-            genetic_stop = self.chromosome.genetic_map[self.stop]
-            self.genetic_location = genetic_start, genetic_stop
-
-        elif genetic_location is not None:
-            gstart, gstop = genetic_location
-            genetic_start = float(gstart)
-            genetic_stop = float(gstop)
-            self.genetic_location = genetic_start, genetic_stop
-
-        else:
-            self.genetic_location = None
-
     @property
     def marker_labels(self):
         startlab = self.chromosome.labels[self.start]
@@ -285,12 +264,6 @@ class Segment(object):
     def physical_size(self):
         ''' The size of the segmend in base pairs '''
         start, stop = self.physical_location
-        return stop - start
-
-    @property
-    def genetic_size(self):
-        ''' The size of the segment in centimorgans '''
-        start, stop = self.genetic_location
         return stop - start
 
     @property
@@ -327,7 +300,7 @@ class Segment(object):
         #     8) Segment end (SNP)
         #     9) Total SNPs in segment
         #     10) Genetic length of segment
-        #     11) Units for genetic length (cM or MB)
+        #     11) Units for genetic length (always MB)
         #     12) Mismatching SNPs in segment
         #     13) 1 if Individual 1 is homozygous in match; 0 otherwise
         #     14) 1 if Individual 2 is homozygous in match; 0 otherwise
@@ -511,8 +484,6 @@ def filter_segments(chromosome, intervals, identical, min_length=1.0,
         locations = chromosome.physical_map
         min_length *= 1000
         min_density /= 1e3
-    elif size_unit == 'cm':
-        locations = chromosome.genetic_map
     else:
         raise ValueError('Invalid size unit: {}'.format(size_unit))
 

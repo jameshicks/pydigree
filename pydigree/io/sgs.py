@@ -99,13 +99,13 @@ def read_germline(filename):
         7) Segment start (SNP)
         8) Segment end (SNP)
         9) Total SNPs in segment
-        10) Genetic length of segment
+        10) Length of segment
         11) Units for genetic length (cM or MB)
         12) Mismatching SNPs in segment
         13) 1 if Individual 1 is homozygous in match; 0 otherwise
         14) 1 if Individual 2 is homozygous in match; 0 otherwise
 
-    This function only uses 0-6 and 11.
+    This function only uses 0-6.
     '''
     analysis = SGSAnalysis()
     with open(filename) as f:
@@ -118,8 +118,7 @@ def read_germline(filename):
             phys_loc = (rec.location if rec.bp_locations else None)
             gen_loc = (rec.location if not rec.bp_locations else None)
             seg = Segment(rec.ind1, rec.ind2, rec.chromosome, None, None,
-                          physical_location=phys_loc,
-                          genetic_location=gen_loc)
+                          physical_location=phys_loc)
             
             analysis[rec.pair].append(seg)
     return analysis
