@@ -163,3 +163,20 @@ cdef class Segment:
             self.start, self.stop = -1, -1
         
         self.physical_start, self.physical_stop = physical_position
+
+    property physical_position:
+        def __get__(self):
+            return self.physical_start, self.physical_stop
+
+    property marker_labels:
+        def __get__(self):
+            if self.start == -1 or self.stop == -1:
+                raise ValueError('ChromsomeTemplate not supplied')
+            return (self.chromosome[self.start], 
+                    self.chromosome[self.stop])
+
+    property nmark:
+        def __get__(self):
+            if self.start == -1 or self.stop == -1:
+                raise ValueError('ChromsomeTemplate not supplied')
+            return self.stop - self.start
