@@ -14,8 +14,11 @@ from pydigree.pedigree import Pedigree
 
 class PedigreeCollection(MutableMapping):
 
-    def __init__(self):
+    def __init__(self, peds=None):
         self.pedigrees = {}
+        if peds:
+            for ped in peds:
+                self.add_pedigree(ped)
 
     # Things I have to implement for the ABC
     ###
