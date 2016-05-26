@@ -36,13 +36,13 @@ def inv(M):
 def make_incidence_matrix(individuals, effect_name):
     if effect_name.lower() == 'residual':
         incidence_matrix = sparseeye(len(individuals))
-    
+
     elif is_genetic_effect(effect_name):
         incidence_matrix = sparseeye(len(individuals))
-    
+
     else:
         levels = sorted({ind.phenotypes[effect_name] for ind in individuals})
-        
+
         # Missing values are not a valid level
         levels = [x for x in levels if x is not None]
 
@@ -53,10 +53,10 @@ def make_incidence_matrix(individuals, effect_name):
                product(individuals, levels))
         Z = np.fromiter(gen, dtype=np.uint8)
 
-        # Shout out to scipy for both not documenting reshape on any of their 
+        # Shout out to scipy for both not documenting reshape on any of their
         # sparse matrix objects and also not making them take the same number
         # of arguments
-        Z = Z.reshape(-1, nlevels) 
+        Z = Z.reshape(-1, nlevels)
 
         # Check for missing values and complain about them!
         # Kind of hard to read but heres how it goes:
