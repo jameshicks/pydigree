@@ -209,15 +209,8 @@ class SGS(object):
         if isinstance(chrom, int) and isinstance(self.segments[0].chromosome, ChromosomeTemplate):
             chrom = self.ind1.population.chromosomes[chrom]
 
-        if location_type == 'index':
-            ibd = sum(1 for x in self.segments if x.chromosome == chrom and
-                      x.start <= pos <= (x.stop+1))
-        elif location_type == 'physical':
-            segs = [(x._chridx, x.physical_start, x.physical_stop)
-                    for x in self.segments]
-            ibd = sum(1 for segchrom, start, stop in segs
-                      if segchrom == chrom and (start <= pos <= stop))
 
+        ibd = sum(1 for seg in self.segments if seg.contains(locus, location_type))
         return ibd
 
 
@@ -310,6 +303,20 @@ class Segment(object):
         fields += ('X', 'X', 'X')
         outline = '\t'.join(map(str, fields))
         return outline
+
+    def contains(self, locus, location_type='index'):
+        chrom, pos = locus
+
+        if isinstance(chrom, int):
+            chrom = self.ind1.population.chromosomes[chrom]
+
+        if self.chromosome != chrom:
+            return False
+
+        if location_type == 'index':
+            return self.start <=  pos <= self.stop 
+        elif location_type == 'physical':
+            return self.physical_location[0] <= pos <= self.physical_location[1] 
 
 
 def _pair_sgs(pair, seed_size=500, phaseknown=False,
