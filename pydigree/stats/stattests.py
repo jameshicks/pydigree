@@ -4,14 +4,15 @@ from scipy import stats
 def LikelihoodRatioTest(null_model, alt_model):
 	chisq = -2.0 * null_model.loglikelihood() + 2.0 * alt_model.loglikelihood()
 	df = null_model.df - alt_model.df # Null model has more DFs
-	res = LikelihoodRatioTestResult(chisq, df, stats.chi2)
+	res = LikelihoodRatioTestResult(chisq, df, stats.chi2, len(null_model.observations()))
 	return res
 
 class LikelihoodRatioTestResult(object):
-	def __init__(self, statistic, df, distribution):
+	def __init__(self, statistic, df, distribution, n):
 		self.statistic = statistic
 		self.df = df
 		self.distribution = distribution
+		self.n = n
 	
 	@property
 	def pvalue(self):
