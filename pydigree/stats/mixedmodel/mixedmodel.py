@@ -611,6 +611,8 @@ class MixedModel(object):
             to 1. This is the default method used by SAS's PROC MIXED.
         'minque1': Starting values are those from MINQUE with all weights
             set equal to 1
+        'ols': Starting values are all 0 except residual, which is 
+            var(y - X*Beta)
         'EM': the starting values are the variance components after
             100 iterations of expectation-maximization REML (started from all
             equal values).
@@ -628,6 +630,11 @@ class MixedModel(object):
             zero = minque(self, value=0, return_after=1, return_vcs=True)
             one = minque(self, value=1, return_after=1, return_vcs=True)
             return (zero + one) / 2.0
+
+        if kind.lower() == 'ols':
+            vcs_start = np.zeros(len(self.random_effects))
+            vcs_start[-1] = self._variance_after_fixefs()
+            return vcs_start
 
         if kind.lower() == 'equal':
             v = self._variance_after_fixefs()
