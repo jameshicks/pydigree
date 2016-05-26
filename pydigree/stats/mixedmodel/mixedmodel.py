@@ -636,9 +636,12 @@ class MixedModel(object):
             return vcs_start
 
         if kind.lower() == 'em':
-            vcs_start = expectation_maximization_reml(self, starts=vcs_start,
+            starts = np.zeros(len(self.random_effects))
+            starts[-1] = 1
+            vcs_start = expectation_maximization_reml(self,
+                                                      starts=starts,
                                                       maxiter=100,
                                                       return_after=100)
-            return vcs_start
+            return vcs_start.parameters
         else:
             raise ValueError('Unknown method: {}'.format(kind))
