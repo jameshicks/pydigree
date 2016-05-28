@@ -79,12 +79,14 @@ class RandomEffect(object):
 
         self.label = label
         self.variance_component = variance
-        if incidence_matrix is None:
+        
+        if isinstance(incidence_matrix, str) and incidence_matrix == 'eye':
+            self.incidence_matrix = sparseeye(nobs, nobs)
+        elif incidence_matrix is None:
             m = make_incidence_matrix(individuals,
                                       self.label)
             self.incidence_matrix = m
-        elif incidence_matrix == 'eye':
-            self.incidence_matrix = sparseeye(nobs, nobs)
+            
         else:
             self.incidence_matrix = incidence_matrix
 
