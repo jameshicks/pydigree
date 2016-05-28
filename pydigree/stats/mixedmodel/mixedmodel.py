@@ -416,16 +416,16 @@ class MixedModel(object):
 
         elif method == 'scipy':
             if starts is None:
-                starts = self.__starting_variance_components()
+                starts = self._starting_variance_components()
             mle = self._maximize_scipy(verbose=verbose)
 
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             if starts is None:
-                starts = self.__starting_variance_components()
+                starts = self._starting_variance_components()
             mle = expectation_maximization_reml(self, starts, verbose=verbose)
         else:
             if starts is None:
-                starts = self.__starting_variance_components()
+                starts = self._starting_variance_components()
             mle = newtonlike_maximization(self, starts, method,
                                           verbose=verbose)
 
@@ -450,7 +450,7 @@ class MixedModel(object):
         Only for debugging use at the moment.
         """
 
-        starts = self.__starting_variance_components()
+        starts = self._starting_variance_components()
 
         def cb(x):
             if verbose:
@@ -604,7 +604,7 @@ class MixedModel(object):
         Q = self._makeV(vcs.tolist())
         return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
-    def __starting_variance_components(self, kind='equal'):
+    def _starting_variance_components(self, kind='equal'):
         """
         Starting variance components in optimization.
         Valid values:
@@ -645,11 +645,9 @@ class MixedModel(object):
             return vcs_start
 
         if kind.lower() == 'em':
-            starts = np.zeros(len(self.random_effects))
-            starts[-1] = 1
+            starts = self._starting_variance_components('equal')
             vcs_start = expectation_maximization_reml(self,
                                                       starts=starts,
-                                                      maxiter=100,
                                                       return_after=100)
             return vcs_start.parameters
         else:
