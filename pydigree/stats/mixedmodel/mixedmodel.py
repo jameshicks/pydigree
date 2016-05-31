@@ -520,13 +520,11 @@ class MixedModel(object):
 
         return -2 * loglike + nparam * np.log(n)
 
-    def blup(self):
-        if not all(self.variance_components):
-            raise ValueError('Varcomps not specified! Maximize or set them')
-        b = blup(self.y, self.X, self.Zlist,
-                 self.covariance_matrices,
-                 self.variance_components).transpose().tolist()[0]
-        return b
+    def blup(self, idx):
+        rf = self.random_effects[idx]
+        res = (self.y - self.X * self.beta) 
+        blups = rf.G * rf.Z.T * inv(self.V.todense()) * res
+        return np.array(blups.T)[0]
 
     def summary(self):
         """ Prints a summary of the current model """
