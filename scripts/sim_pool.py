@@ -7,11 +7,11 @@ from pydigree.population import logistic_growth
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--chromosomes', dest='chromosomes',nargs='+', 
-                    help='genomeSIMLA format chromosome templates')
+                    help='genomeSIMLA format chromosome templates', required=True)
 parser.add_argument('--n0', dest='n0', type=int, help='Initial pool size', default=5000)
 parser.add_argument('--rate', dest='rate', type=float, help='Growth rate', default=1.0)
 parser.add_argument('--final', type=int, help='Final pool size', default=50000)
-parser.add_argument('--gens', type=int)
+parser.add_argument('--gens', type=int, default=20)
 args = parser.parse_args()
 
 
@@ -20,6 +20,8 @@ gensize = lambda x: logistic_growth(args.n0, args.rate, args.final, x)
 chroms = [read_gs_chromosome_template(x) for x in args.chromosomes]
 
 pool = ChromosomePool(chromosomes=chroms, size=args.n0)
+
+print 'Creating pool'
 pool.initialize_pool(args.n0)
 
 for x in xrange(args.gens):
