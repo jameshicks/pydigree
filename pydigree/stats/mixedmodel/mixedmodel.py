@@ -71,10 +71,10 @@ def make_incidence_matrix(individuals, effect_name):
 
 class RandomEffect(object):
     __slots__ = ['label', 'variance_component',
-                 'incidence_matrix', 'covariance_matrix']
+                 'incidence_matrix', 'covariance_matrix', 'levels']
 
     def __init__(self, individuals, label, variance=None,
-                 incidence_matrix=None, covariance_matrix=None):
+                 incidence_matrix=None, covariance_matrix=None, levels=None):
         nobs = len(individuals)
 
         self.label = label
@@ -103,6 +103,13 @@ class RandomEffect(object):
                 raise LinAlgError('Incidence and covariance matrix '
                                   'not conformable')
             self.covariance_matrix = covariance_matrix
+
+        if not levels:
+            self.levels = ['L{}'.format(i) for i in xrange(self.incidence_matrix.shape[1])]
+        else:
+            if len(levels) != incidence_matrix.shape[1]:
+                raise ValueError('Number of levels not correct')
+            self.levels = levels
 
     def __repr__(self):
         return 'Random Effect: {}'.format(self.label)
