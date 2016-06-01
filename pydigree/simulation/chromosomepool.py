@@ -43,9 +43,15 @@ class ChromosomePool(object):
         # non-integer values, which doesn't make much sense here.
         gensize = int(gensize)
         for i, c in enumerate(self.chromosomes):
+
             # Chromosomes have a 1/2 chance of being recombined with another
             def choose_chrom(pool, chrmap):
-                q, w = np.random.choice(pool), np.random.choice(pool)
+                # Since Alleles is a subclass of ndarray, numpy has been
+                # treating pool as a multidimensional array. We'll generate
+                # the indices ourself and get them that way. Eventually
+                # I'll come back and fix the isinstancing of Alleles.
+                qi, qw = np.random.randint(0, len(pool), 2)
+                q, w = pool[qi], pool[qw]
                 r = recombine(q, w, chrmap)
                 return r
 
