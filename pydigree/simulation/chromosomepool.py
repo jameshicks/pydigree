@@ -1,3 +1,5 @@
+from itertools import chain
+
 import numpy as np
 
 from pydigree.recombination import recombine
@@ -70,3 +72,14 @@ class ChromosomePool(object):
         ''' Gives a full set of genotypes drawn from the chromosome pool '''
         return [[self.chromosome(i), self.chromosome(i)]
                 for i, x in enumerate(self.chromosomes)]
+
+    @staticmethod
+    def from_population(pop):
+        newpool = ChromosomePool(chromosomes=pop.chromosomes)
+        newpool.n0 = len(pop.individuals) *2
+        for chridx, chrom in enumerate(pop.chromosomes):
+            poolchroms = chain.from_iterable(ind.genotypes[chridx]
+                                             for ind in pop.individuals)
+            thischrom = list(poolchroms)
+            newpool.pool[chridx] = thischrom
+        return newpool
