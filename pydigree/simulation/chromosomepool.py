@@ -24,7 +24,7 @@ class ChromosomePool(object):
         if self.n0 and not size:
             size = self.n0
         for i, q in enumerate(self.chromosomes):
-            self.pool[i] = q.linkageequilibrium_chromosome(2 * size)
+            self.pool[i] = q.linkageequilibrium_chromosomes(2 * size)
         self.generations.append(size)
 
     def iterate_pool(self, gensize):
