@@ -199,10 +199,7 @@ class Population(MutableMapping):
         with chromosomes from the chromosome pool '''
         if not self.pool:
             raise ValueError('Nothing in chromosome pool')
-        g = []
-        for i, x in enumerate(self.pool):
-            g.append([np.random.choice(x), np.random.choice(x)])
-        return g
+        return self.pool.get_genotype_set()
 
     def get_genotypes(self):
         ''' 
