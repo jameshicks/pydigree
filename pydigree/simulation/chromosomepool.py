@@ -39,6 +39,12 @@ class ChromosomePool(object):
         for i, q in enumerate(self.chromosomes):
             self.pool[i] = q.linkageequilibrium_chromosomes(2 * size)
 
+    def fix(self, loc, value):
+        ''' Sets all alleles at loc to value'''  
+        chromidx, posidx = loc
+        p = self.pool[chromidx]
+        for chrom in p:
+            chrom[posidx] = value
 
     def iterate_pool(self, gensize):
         """
