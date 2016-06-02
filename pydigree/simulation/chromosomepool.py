@@ -5,6 +5,18 @@ import numpy as np
 from pydigree.recombination import recombine
 
 
+def richards(A, C, M, B, T)
+    '''
+    Generates a population growth model function
+
+    A: Lower Asymptope
+    C: Upper Asymptope
+    M: Maximum growth time
+    B: Growth Rate
+    T: Maximum growth position
+    '''
+    return lambda gen: A + (C / (1+ T * np.exp(-B *(gen - M)) ** (1/T))
+
 class ChromosomePool(object):
 
     def __init__(self, population=None, chromosomes=None, size=0):
@@ -71,6 +83,16 @@ class ChromosomePool(object):
         ''' Gives a full set of genotypes drawn from the chromosome pool '''
         return [[self.chromosome(i), self.chromosome(i)]
                 for i, x in enumerate(self.chromosomes)]
+
+    def evolve(self, growth_func, gens):
+        ''' 
+        Iterates the pool according to a popuation growth model.
+        
+        growth_func: A function that takes a generation number as an argument
+            and returns a generation size 
+        '''
+        for x in xrange(gens):
+            self.iterate_pool(growth_func(x))
 
     @staticmethod
     def from_population(pop):
