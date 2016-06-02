@@ -14,7 +14,6 @@ class ChromosomePool(object):
             self.chromosomes = chromosomes
         self.pool = [[] * len(self.chromosomes)]
         self.n0 = size
-        self.generations = []
 
     # Pool functions
     def size(self):
@@ -27,7 +26,7 @@ class ChromosomePool(object):
             size = self.n0
         for i, q in enumerate(self.chromosomes):
             self.pool[i] = q.linkageequilibrium_chromosomes(2 * size)
-        self.generations.append(size)
+
 
     def iterate_pool(self, gensize):
         """
@@ -60,8 +59,6 @@ class ChromosomePool(object):
             newpool = [choose_chrom(self.pool[i], c.genetic_map)
                        for x in xrange(gensize)]
             self.pool[i] = newpool
-
-        self.generations.append(gensize)
 
     # Chromosome functions
     def chromosome(self, chromindex):
