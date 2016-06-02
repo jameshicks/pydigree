@@ -35,8 +35,10 @@ class Simulation(object):
 
     def get_founder_genotypes(self, linkeq=True):
         geno_constraints = self.constraints['genotype']
+        
         for ind in self.template.founders():
             ind.clear_genotypes()
+            
             if ind not in geno_constraints:
                 ind.get_genotypes(linkeq=linkeq)
             else:
