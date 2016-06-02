@@ -66,9 +66,11 @@ class ChromosomePool(object):
     # Chromosome functions
     def chromosome(self, chromindex):
         # Get a random chromomsome
-        return np.random.choice(self.pool[chromindex])
+        chidx = np.random.randint(0, len(self.pool[i]))
 
-    def genotypes(self):
+        return self.pool[chromindex][chidx]
+
+    def get_genotype_set(self):
         ''' Gives a full set of genotypes drawn from the chromosome pool '''
         return [[self.chromosome(i), self.chromosome(i)]
                 for i, x in enumerate(self.chromosomes)]
