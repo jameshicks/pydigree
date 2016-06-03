@@ -1,4 +1,6 @@
 from itertools import chain
+from operator import add
+
 from pydigree.common import table
 
 class IndividualContainer(object):
@@ -37,6 +39,11 @@ class IndividualContainer(object):
         for ind in self.individuals:
             ind.delete_phenotype(trait)
 
+    def phenotypes(self):
+        """ Returns the available phenotypes for analysis """
+        return set(reduce(add, [x.phenotypes.keys() for x in
+                                self.individuals]))
+
     def phenotype_dataframe(self, onlyphenotyped=True):
         records = [x._phenotypes_to_series() for x in self.individuals]
         df = pd.DataFrame.from_records(records)
@@ -56,9 +63,20 @@ class IndividualContainer(object):
         for ind in self.individuals:
             ind.genotype_as_phenotype(locus, minor_allele, label)
 
-    # Genotype frequency functions
+    # Genotype generation
+    def clear_genotypes(self):
+        for x in self.individuals:
+            x.clear_genotypes()
 
-    #
+    def get_founder_genotypes(self):
+        for x in self.founders():
+            x.get_founder_genotypes()
+
+    def get_genotypes(self):
+        for x in self.individuals:
+            x.get_genotypes()
+
+    # Genotype frequency functions
     def genotype_missingness(self, location):
         """
         Returns the percentage of individuals in the population missing a

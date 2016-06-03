@@ -3,7 +3,6 @@
 import itertools
 
 from common import *
-from operator import add
 from collections import MutableMapping
 
 import pandas as pd
@@ -65,24 +64,12 @@ class PedigreeCollection(IndividualContainer):
     def pedigrees(self):
         return list(self.container.values())
 
-    def founders(self):
-        ''' Returns a list of founder individuals across all pedigrees '''
-        return [x for x in self.individuals if x.is_founder()]
-
-    def nonfounders(self):
-        ''' Returns a list of founder individuals across all pedigrees '''
-        return [x for x in self.individuals if not x.is_founder()]
 
     def _getindividual(self, label):
         for x in self.individuals:
             if x.label == label:
                 return x
         raise KeyError('Individual not in collection')
-
-    def phenotypes(self):
-        """ Returns the available phenotypes for analysis """
-        return set(reduce(add, [x.phenotypes.keys() for x in
-                                self.individuals]))
 
     @property
     def chromosomes(self):
@@ -92,18 +79,6 @@ class PedigreeCollection(IndividualContainer):
     def add_chromosome(self, chrom):
         for x in self.pedigrees:
             x.add_chromosome(chrom)
-
-    def clear_genotypes(self):
-        for x in self.individuals:
-            x.clear_genotypes()
-
-    def get_founder_genotypes(self):
-        for x in self.founders():
-            x.get_founder_genotypes()
-
-    def get_genotypes(self):
-        for x in self.individuals:
-            x.get_genotypes()
 
     def update(self, pop):
         for ped in self.pedigrees:
