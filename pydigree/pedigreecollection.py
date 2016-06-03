@@ -10,6 +10,7 @@ import pandas as pd
 from scipy.sparse import block_diag
 
 from pydigree.pedigree import Pedigree
+from pydigree.individualcontainer import IndividualContainer
 
 
 class PedigreeCollection(MutableMapping):
@@ -90,7 +91,7 @@ class PedigreeCollection(MutableMapping):
         return self.pedigrees[k].chromosomes
 
     def add_chromosome(self, chrom):
-        for x in self:
+        for x in self.pedigrees.values():
             x.add_chromosome(chrom)
 
     def clear_genotypes(self):
@@ -98,33 +99,12 @@ class PedigreeCollection(MutableMapping):
             x.clear_genotypes()
 
     def get_founder_genotypes(self):
-        for x in self:
+        for x in self.founders():
             x.get_founder_genotypes()
 
     def get_genotypes(self):
-        for x in self:
+        for x in self.individuals:
             x.get_genotypes()
-
-    def alleles(self, locus, nonfounders=False, constraint=None):
-        allelesets = (ped.alleles(locus,
-                                  constraint=constraint)
-                      for ped in self.pedigrees.values())
-        return reduce(set.union, allelesets)
-
-    def allele_list(self, locus, constraint=None):
-        allelelist = (ped.allele_list(locus,
-                                      constraint=constraint)
-                      for ped in self.pedigrees.values())
-        return list(itertools.chain.from_iterable(allelelist))
-
-    def allele_frequencies(self, locus, nonfounders=False, constraint=None):
-        allelelist = self.allele_list(locus, constraint=constraint)
-        ninds = len(allelelist) / 2.0
-        freqs = table(allelelist)
-        for allele in freqs:
-            freqs[allele] /= float(ninds)
-
-        return freqs
 
     def update(self, pop):
         for ped in self:
@@ -134,23 +114,6 @@ class PedigreeCollection(MutableMapping):
 
             ped.update(pop[ped.label])
 
-    def delete_phenotype(self, phenotype):
-        for ped in self:
-            ped.delete_phenotype(phenotype)
-
-    def phenotype_dataframe(self, onlyphenotyped=True):
-        return pd.concat([x.phenotype_dataframe(onlyphenotyped=onlyphenotyped)
-                          for x in self])
-
-    def genotype_as_phenotype(self, locus, minor_allele, label):
-        """ 
-        Dispatches a genotype_as_phenotype to each pedigree.
-
-        See docstring for Individual.genotype_as_phenotype for more
-        details
-        """
-        for ped in self:
-            ped.genotype_as_phenotype(locus, minor_allele, label)
 
     # Matrix functions
     ###

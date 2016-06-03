@@ -33,36 +33,6 @@ class Pedigree(Population):
         t = table([x.is_founder() for x in self])
         return 2 * t[False] - t[True]
 
-    # Frequency
-    def alleles(self, location, constraint=None, nonfounders=False):
-        """
-        Like Population.alleles, except constrained to founder individuals
-
-        If nonfounders is True, it's just a call to Population.alleles.
-
-        Returns: a list
-        """
-        if nonfounders:
-            return Population.alleles(self, location, constraint)
-        con = self.__prepare_nonfounder_constraint(constraint)
-        return Population.alleles(self, location, con)
-
-    def allele_frequency(self, location, allele,
-                         constraint=None, nonfounders=False):
-        """
-        Like Population.alleles, except constrained to founder individuals.
-        If nonfounders is True, it's just a call to Population.alleles.
-
-        Returns: a double
-        """
-        if nonfounders:
-            return Population.allele_frequency(self,
-                                               location, allele, constraint)
-        constraint = self.__prepare_nonfounder_constraint(constraint)
-        return Population.allele_frequency(self,
-                                           location, allele,
-                                           constraint=constraint)
-
     def ld(self):
         raise NotImplementedError('LD not meaningful for pedigrees?')
 
