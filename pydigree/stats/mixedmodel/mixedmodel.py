@@ -11,7 +11,6 @@ from scipy.linalg import inv as scipy_inv
 from scipy.linalg import pinv
 from scipy.optimize import minimize
 
-from pydigree.stats.mixedmodel.blup import blup, makeLHS
 from pydigree.stats.mixedmodel.likelihood import makeP
 from pydigree.stats.mixedmodel.likelihood import restricted_loglikelihood
 from pydigree.stats.mixedmodel.likelihood import reml_gradient, reml_hessian
