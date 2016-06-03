@@ -15,7 +15,7 @@ class NaiveGeneDroppingSimulation(Simulation):
         for ind in self.template.individuals:
             ind.clear_genotypes()
 
-        for ped in self.template.pedigrees.values():
+        for ped in self.template.pedigrees:
 
             for attempt in xrange(self.genedrop_attempts):
 

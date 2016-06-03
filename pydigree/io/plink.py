@@ -156,7 +156,7 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
     afflab = {1: '2', 0: '1', None: '-9'}
 
     with open(pedfile, 'w') as f:
-        for pedigree in pedigrees.pedigrees.values():
+        for pedigree in pedigrees.pedigrees:
             for ind in pedigree.individuals:
                 if not predicate(ind):
                     continue

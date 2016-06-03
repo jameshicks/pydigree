@@ -16,35 +16,35 @@ from pydigree.individualcontainer import IndividualContainer
 class PedigreeCollection(IndividualContainer):
 
     def __init__(self, peds=None):
-        self.pedigrees = {}
+        self.container = {}
         if peds:
             for ped in peds:
                 self.add_pedigree(ped)
 
     def __getitem__(self, key):
         if isinstance(key, tuple) or isinstance(key, list):
-            return self.pedigrees[key[0]][key[1]]
-        return self.pedigrees[key]
+            return self.container[key[0]][key[1]]
+        return self.container[key]
 
     def __contains__(self, item):
-        return item in self.pedigrees.values()
+        return item in self.pedigrees
 
     def __len__(self):
-        return len(self.pedigrees)
+        return len(self.container)
 
     def __setitem__(self, key, value):
-        self.pedigrees[key] = value
+        self.container[key] = value
 
     def __delitem__(self, key):
-        del self.pedigrees[key]
+        del self.container[key]
 
     def keys(self):
-        return self.pedigrees.keys()
+        return self.container.keys()
 
     def add_pedigree(self, ped):
         if not isinstance(ped, Pedigree):
             raise ValueError('{} not of type Pedigree')
-        elif ped.label in self.pedigrees.keys():
+        elif ped.label in self.container.keys():
             raise ValueError(
                 'Pedigree label {} already in collection'.format(ped.label))
         else:
@@ -57,9 +57,13 @@ class PedigreeCollection(IndividualContainer):
         sorted by pedigree label, id label 
         '''
         inds = []
-        for pedigree in sorted(self.pedigrees.values(), key=lambda x: x.label):
+        for pedigree in sorted(self.pedigrees, key=lambda x: x.label):
             inds.extend(sorted((x for x in pedigree.individuals), key=lambda x: x.label))
         return inds
+
+    @property
+    def pedigrees(self):
+        return list(self.container.values())
 
     def founders(self):
         ''' Returns a list of founder individuals across all pedigrees '''
@@ -82,11 +86,11 @@ class PedigreeCollection(IndividualContainer):
 
     @property
     def chromosomes(self):
-        k = self.pedigrees.keys()[0]
-        return self.pedigrees[k].chromosomes
+        k = self.container.keys()[0]
+        return self.container[k].chromosomes
 
     def add_chromosome(self, chrom):
-        for x in self.pedigrees.values():
+        for x in self.pedigrees:
             x.add_chromosome(chrom)
 
     def clear_genotypes(self):
@@ -102,7 +106,7 @@ class PedigreeCollection(IndividualContainer):
             x.get_genotypes()
 
     def update(self, pop):
-        for ped in self.pedigrees.values():
+        for ped in self.pedigrees:
             ped.chromosomes = pop.chromosomes
             if ped.label not in pop.pedigrees.keys(): 
                 continue
@@ -120,7 +124,7 @@ class PedigreeCollection(IndividualContainer):
         See notes on Pedigree.additive_relationship_matrix
         """
         mats = [x.additive_relationship_matrix(ids) for x in
-                sorted(self.pedigrees.values(), key=lambda x: x.label)]
+                sorted(self.pedigrees, key=lambda x: x.label)]
         mats = [x for x in mats if x.size > 0]
         return block_diag(mats, format='bsr')
 
@@ -132,7 +136,7 @@ class PedigreeCollection(IndividualContainer):
         See notes on Pedigree.dominance_relationship_matrix
         """
         mats = [x.dominance_relationship_matrix(ids) for x in
-                sorted(self.pedigrees.values(), key=lambda x: x.label)]
+                sorted(self.pedigrees, key=lambda x: x.label)]
         mats = [x for x in mats if x.size > 0]
         return block_diag(mats, format='bsr')
 
@@ -144,5 +148,5 @@ class PedigreeCollection(IndividualContainer):
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
         mats = [x.mitochondrial_relationship_matrix(ids) for x in
-                sorted(self.pedigrees.values(), key=lambda x: x.label)]
+                sorted(self.pedigrees, key=lambda x: x.label)]
         return block_diag(mats, format='bsr')
