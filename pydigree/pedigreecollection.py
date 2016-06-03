@@ -13,18 +13,13 @@ from pydigree.pedigree import Pedigree
 from pydigree.individualcontainer import IndividualContainer
 
 
-class PedigreeCollection(MutableMapping):
+class PedigreeCollection(IndividualContainer):
 
     def __init__(self, peds=None):
         self.pedigrees = {}
         if peds:
             for ped in peds:
                 self.add_pedigree(ped)
-
-    # Things I have to implement for the ABC
-    ###
-    def __iter__(self):
-        return (x for x in self.pedigrees.values())
 
     def __getitem__(self, key):
         if isinstance(key, tuple) or isinstance(key, list):
@@ -49,7 +44,7 @@ class PedigreeCollection(MutableMapping):
     def add_pedigree(self, ped):
         if not isinstance(ped, Pedigree):
             raise ValueError('{} not of type Pedigree')
-        elif ped.label in self.keys():
+        elif ped.label in self.pedigrees.keys():
             raise ValueError(
                 'Pedigree label {} already in collection'.format(ped.label))
         else:
@@ -62,8 +57,8 @@ class PedigreeCollection(MutableMapping):
         sorted by pedigree label, id label 
         '''
         inds = []
-        for pedigree in sorted(self, key=lambda x: x.label):
-            inds.extend(sorted((x for x in pedigree), key=lambda x: x.label))
+        for pedigree in sorted(self.pedigrees.values(), key=lambda x: x.label):
+            inds.extend(sorted((x for x in pedigree.individuals), key=lambda x: x.label))
         return inds
 
     def founders(self):
@@ -107,7 +102,7 @@ class PedigreeCollection(MutableMapping):
             x.get_genotypes()
 
     def update(self, pop):
-        for ped in self:
+        for ped in self.pedigrees.values():
             ped.chromosomes = pop.chromosomes
             if ped.label not in pop.pedigrees.keys(): 
                 continue
@@ -125,7 +120,7 @@ class PedigreeCollection(MutableMapping):
         See notes on Pedigree.additive_relationship_matrix
         """
         mats = [x.additive_relationship_matrix(ids) for x in
-                sorted(self, key=lambda x: x.label)]
+                sorted(self.pedigrees.values(), key=lambda x: x.label)]
         mats = [x for x in mats if x.size > 0]
         return block_diag(mats, format='bsr')
 
@@ -137,7 +132,7 @@ class PedigreeCollection(MutableMapping):
         See notes on Pedigree.dominance_relationship_matrix
         """
         mats = [x.dominance_relationship_matrix(ids) for x in
-                sorted(self, key=lambda x: x.label)]
+                sorted(self.pedigrees.values(), key=lambda x: x.label)]
         mats = [x for x in mats if x.size > 0]
         return block_diag(mats, format='bsr')
 
@@ -149,5 +144,5 @@ class PedigreeCollection(MutableMapping):
         See notes on Pedigree.mitochondrial_relationship_matrix
         """
         mats = [x.mitochondrial_relationship_matrix(ids) for x in
-                sorted(self, key=lambda x: x.label)]
+                sorted(self.pedigrees.values(), key=lambda x: x.label)]
         return block_diag(mats, format='bsr')

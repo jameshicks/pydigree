@@ -15,11 +15,11 @@ class NaiveGeneDroppingSimulation(Simulation):
         for ind in self.template.individuals:
             ind.clear_genotypes()
 
-        for ped in self.template:
+        for ped in self.template.pedigrees.values():
 
             for attempt in xrange(self.genedrop_attempts):
 
-                for ind in ped:
+                for ind in ped.individuals:
                     ind.clear_genotypes()
 
                 # Step 1: Segregate labeled markers so we can know the IBD

@@ -156,8 +156,8 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
     afflab = {1: '2', 0: '1', None: '-9'}
 
     with open(pedfile, 'w') as f:
-        for pedigree in pedigrees:
-            for ind in pedigree:
+        for pedigree in pedigrees.pedigrees.values():
+            for ind in pedigree.individuals:
                 if not predicate(ind):
                     continue
                 # Get the phenotype code

@@ -85,7 +85,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
     # Fix the individual-level data
     if connect_inds:
-        for ind in p:
+        for ind in p.individuals:
             fam, id = ind.label
             # Actually make the references instead of just pointing at strings
             ind.father = p[(fam, ind.father)] if ind.father != '0' else None

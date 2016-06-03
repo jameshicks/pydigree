@@ -74,7 +74,7 @@ class Simulation(object):
         # If you have data you want to identify IBD segments in, check
         # pydigree.sgs
         with smartopen('{0}-{1}.ibd.gz'.format(self.label, replicatenumber + 1), 'w') as of:
-            for ped in self.template:
+            for ped in self.template.pedigrees.values():
                 for ind1, ind2 in combinations_with_replacement(ped.individuals, 2):
                     identical = []
                     for chrom_idx, chromosome in enumerate(ind1.chromosomes):

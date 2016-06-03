@@ -30,7 +30,7 @@ class Pedigree(Population):
 
         Returns: an integer
         """
-        t = table([x.is_founder() for x in self])
+        t = table([x.is_founder() for x in self.individuals])
         return 2 * t[False] - t[True]
 
     def ld(self):
@@ -142,7 +142,7 @@ class Pedigree(Population):
         Returns: a numpy matrix
         """
         if not ids:
-            ids = sorted(x.label for x in self)
+            ids = sorted(x.label for x in self.individuals)
         else:
             ids = [label for ped, label in ids if ped == self.label and
                    label in self.population.keys()]
@@ -176,7 +176,7 @@ class Pedigree(Population):
         Returns: A numpy matrix
         """
         if not ids:
-            ids = sorted(x.label for x in self)
+            ids = sorted(x.label for x in self.individuals)
         else:
             ids = [label for ped, label in ids if ped == self.label and
                    label in self.population.keys()]
@@ -231,7 +231,7 @@ class Pedigree(Population):
         Pedigree Data". Genetic Epidemiology. (2013). 37,3:239-247
         """
         if not ids:
-            inds = sorted((x for x in self), key=lambda x: x.label)
+            inds = sorted((x for x in self.individuals), key=lambda x: x.label)
         else:
             inds = [self[id] for id in ids]
         mat = []

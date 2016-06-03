@@ -46,7 +46,7 @@ def logistic_growth(p, r, k, t):
 
 
 # Classes
-class Population(MutableMapping, IndividualContainer):
+class Population(IndividualContainer):
     # Methods for mapping types
 
     def __init__(self, intial_pop_size=0, name=None):
@@ -58,12 +58,6 @@ class Population(MutableMapping, IndividualContainer):
 
     def __hash__(self):
         return id(self)
-
-    # Things I have to implement for the ABC
-    #
-    #
-    def __iter__(self):
-        return iter(self.population.values())
 
     def __getitem__(self, key):
         return self.population[key]
@@ -86,7 +80,7 @@ class Population(MutableMapping, IndividualContainer):
 
     def remove_ancestry(self):
         """ Makes every individual in the population a founder """
-        for x in self:
+        for x in self.individuals:
             x.remove_ancestry()
 
     # Adding and removing people
@@ -112,7 +106,7 @@ class Population(MutableMapping, IndividualContainer):
         self.chromosomes = other.chromosomes
         self.clear_genotypes()
 
-        selfids = {x.label for x in self}
+        selfids = {x.label for x in self.individuals}
         otherids = {x.label for x in other.individuals}
         overlap = set.intersection(selfids, otherids)
 
@@ -128,8 +122,7 @@ class Population(MutableMapping, IndividualContainer):
     @property
     def individuals(self):
         ''' Returns a list of individuals in the population '''
-        return [x for x in self]
-
+        return [x for x in self.population.values()]
 
 
     # Chromosome functions
@@ -193,7 +186,7 @@ class Population(MutableMapping, IndividualContainer):
         Causes each Individual object in the pedigree to request genotypes
         from its parents
         '''
-        for x in self:
+        for x in self.individuals:
             x.get_genotypes()
 
     def get_linkage_equilibrium_genotypes(self):
@@ -249,7 +242,7 @@ class Population(MutableMapping, IndividualContainer):
             allelea = self.major_allele(locusa)
         if not alleleb:
             alleleb = self.major_allele(locusb)
-        pop = [x for x in self if
+        pop = [x for x in self.individuals if
                (not is_missing_genotype(x.get_genotype(locusa))) and
                (not is_missing_genotype(x.get_genotype(locusb)))]
         # Allele 1
