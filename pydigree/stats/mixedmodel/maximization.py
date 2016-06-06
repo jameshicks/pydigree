@@ -7,16 +7,14 @@ from scipy.sparse import csc_matrix
 from scipy import matrix
 import scipy.linalg
 
+from pydigree.stats.mathfuncs import is_positive_definite
+
 from likelihood import reml_gradient
 from likelihood import reml_observed_information_matrix
 from likelihood import reml_fisher_information_matrix
 from likelihood import reml_average_information_matrix
 from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
-
-
-def is_positive_definite(mat):
-    return all(np.linalg.eigvals(mat) > 0)
 
 
 class MLEResult(object):

@@ -1,6 +1,10 @@
 import numpy as np
 from scipy.optimize import approx_fprime
 
+def is_positive_definite(mat):
+    "Returns true if a matrix is positive definite (all eigvals > 0)"
+    return all(np.linalg.eigvals(mat) > 0)
+
 def approx_hessian(x0, func, epsilon=1.e-5, linear_approx=False, *args):
     """
     A numerical approximation to the Hessian matrix of cost function at
