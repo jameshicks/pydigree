@@ -148,6 +148,13 @@ class Population(IndividualContainer):
         return child
 
     def random_mating_generation(self, gensize):
+        '''
+        Simulates a generation of random mating.
+
+        Arguments
+        ----
+        gensize: The size of the new generation  
+        '''
 
         def rand_mate(pop, name=None):
             name = str(name) if not self.name else self.name + str(name)
@@ -162,7 +169,8 @@ class Population(IndividualContainer):
         self.population = newpop
 
     def founder_individual(self, register=True, sex=None):
-        ''' Creates a new founder individual and adds to the population '''
+        "Creates a new founder individual and adds to the population"
+
         if sex is not None:
             sex = sex.lower()
         sexd = {'m': 0, 'f': 1, None: np.random.choice([0, 1])}
@@ -175,8 +183,11 @@ class Population(IndividualContainer):
     #
     #
     def get_founder_genotypes(self):
-        ''' Gives genotypes to each founder in the population
-        with chromosomes from the chromosome pool '''
+        ''' 
+        Gives genotypes to each founder in the population with chromosomes 
+        from the chromosome pool 
+        '''
+        
         if not self.pool:
             raise ValueError('Nothing in chromosome pool')
         return self.pool.get_genotype_set()
@@ -191,49 +202,48 @@ class Population(IndividualContainer):
 
     def get_linkage_equilibrium_genotypes(self):
         '''
-        Returns a set of genotypes for an individual
-        in linkage equilibrium
+        Returns a set of genotypes for an individual in linkage equilibrium
         '''
         return [[c.linkageequilibrium_chromosome(),
                  c.linkageequilibrium_chromosome()]
                 for c in self.chromosomes]
 
     def ld(self, locusa, locusb, allelea=None, alleleb=None, method='r2'):
-        """
-        Returns a measure of linkage disquilibirum between alleles at two
-        loci, for methods in {D, Dprime, r2}. If alleles aren't specified,
-        the major alleles at each locus are chosen.
+        # """
+        # Returns a measure of linkage disquilibirum between alleles at two
+        # loci, for methods in {D, Dprime, r2}. If alleles aren't specified,
+        # the major alleles at each locus are chosen.
 
-        LD metrics are functions of D, the measure of deviance from
-        independence in sampling alleles. D = x11 - p1q1, where x11 is the
-        frequency of allele 1 at locus p occuring with allele 1 at locus q.
+        # LD metrics are functions of D, the measure of deviance from
+        # independence in sampling alleles. D = x11 - p1q1, where x11 is the
+        # frequency of allele 1 at locus p occuring with allele 1 at locus q.
 
-        Lewontin's D' is a normalization of D, since D is dependent on
-        frequency.
+        # Lewontin's D' is a normalization of D, since D is dependent on
+        # frequency.
 
-        D' = D / Dmax, where:
-        Dmax = min(p1*q1, p2*q2) if D > 0
-        Dmax = min(p2*q1,p1*q2) if D < 0
+        # D' = D / Dmax, where:
+        # Dmax = min(p1*q1, p2*q2) if D > 0
+        # Dmax = min(p2*q1,p1*q2) if D < 0
 
-        r2 is a third metric, equal to
-        D**2 / (p1 * p2 * q1 * q2)
-        r2 ranges from 0 to 1
+        # r2 is a third metric, equal to
+        # D**2 / (p1 * p2 * q1 * q2)
+        # r2 ranges from 0 to 1
 
-        Alleles are in linkage equilibrium if any of these metrics are 0.
+        # Alleles are in linkage equilibrium if any of these metrics are 0.
 
-        Arguments
-        -----
-        locusa:  The first locus
-        locusb:  The second locus
-        allelea: The allele at the first locus
-                 (the major allele if not specified)
-        alleleb: The allele at the second locus
-                 (the major allele if not specified)
-        method:  The metric of linkage disequilibrium
-                 (r2 [default], Dprime, or D)
+        # Arguments
+        # -----
+        # locusa:  The first locus
+        # locusb:  The second locus
+        # allelea: The allele at the first locus
+        #          (the major allele if not specified)
+        # alleleb: The allele at the second locus
+        #          (the major allele if not specified)
+        # method:  The metric of linkage disequilibrium
+        #          (r2 [default], Dprime, or D)
 
-        Returns: a double
-        """
+        # Returns: a double
+        # """
         raise NotImplementedError('LD requires phase known data')
         method = method.lower()
         if method not in set(['r2', 'dprime', 'd']):

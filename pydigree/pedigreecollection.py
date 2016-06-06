@@ -62,6 +62,9 @@ class PedigreeCollection(IndividualContainer):
 
     @property
     def pedigrees(self):
+        '''
+        Returns a list of the pedigree objects contained in the collection
+        '''
         return list(self.container.values())
 
 

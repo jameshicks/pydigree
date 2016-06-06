@@ -7,21 +7,32 @@ from pydigree.cyfuncs import runs, runs_gte, interleave
 from pydigree.cyfuncs import all_same_type
 
 
-def count(val, iter):
-    """ Counts how many times a value (val) occurs in an iterable """
-    return sum(1 for x in (y for y in iter if y is not None) if val == x)
+def count(val, iterable):
+    """ 
+    Counts how many times a value (val) occurs in an iterable, excluding `None`
+
+    Arguments:
+    val: The value to be counted
+    iterable: the iterable to be counted over 
+
+    Returns: An int
+    """
+    return sum(1 for x in (y for y in iterable if y is not None) if val == x)
 
 
 def table(seq):
     """
     For each unique value in seq, runs count() on it. Returns a dictionary in
     the form of {value1: count, value2: count}.
+
+    Returns: a dict
     """
     seq = [x for x in seq]
     keys = set(seq)
     return dict([(k, seq.count(k)) for k in keys])
 
 def random_choice(iterable):
+    ''' Randomly chooses an item from an iterable '''
     itersize = len(iterable)
     randidx = np.random.randint(0, itersize)
     return iterable[randidx]

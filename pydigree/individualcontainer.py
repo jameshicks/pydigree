@@ -45,6 +45,15 @@ class IndividualContainer(object):
                                 self.individuals]))
 
     def phenotype_dataframe(self, onlyphenotyped=True):
+        '''
+        Returns a pandas dataframe of the phenotypes available 
+        for the individuals present in the collection.
+
+        Arguments:
+        onlyphenotyped: Only include individuals who have phenotypes
+
+        Returns: A pandas dataframe
+        '''
         records = [x._phenotypes_to_series() for x in self.individuals]
         df = pd.DataFrame.from_records(records)
 
@@ -65,14 +74,19 @@ class IndividualContainer(object):
 
     # Genotype generation
     def clear_genotypes(self):
+        "Removes all the genotypes for individuals"
+
         for x in self.individuals:
             x.clear_genotypes()
 
     def get_founder_genotypes(self):
+        "Have founder individuals request genotypes"
+
         for x in self.founders():
             x.get_founder_genotypes()
 
     def get_genotypes(self):
+        "Have individuals request genotypes"
         for x in self.individuals:
             x.get_genotypes()
 
@@ -81,6 +95,8 @@ class IndividualContainer(object):
         """
         Returns the percentage of individuals in the population missing a
         genotype at location.
+
+        Returns: A float
         """
         genotypes = [x.get_genotype(location) for x in self.individuals]
         tab = table(genotypes)
@@ -92,6 +108,8 @@ class IndividualContainer(object):
 
         The argument constraint is a function that acts on an individual. If
         constraint(individual) can evaluate as True that person is included
+
+        Returns: a set of the available genotypes at a location
         """
         if not constraint:
             constraint = lambda x: True
@@ -120,6 +138,8 @@ class IndividualContainer(object):
 
         The argument constraint is a function that acts on an individual. If
         constraint(individual) can evaluate as True that person is included
+
+        Returns: a float 
         """
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
@@ -136,9 +156,8 @@ class IndividualContainer(object):
         location: the position to find the major allele at
         constraint: a constraint (see population.alleles)
 
-        Returns
-        -----
-        the major allele at a locus (type depends on how genotypes are stored)
+        Returns: the major allele at a locus (type depends on how genotypes 
+                    are stored)
         """
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)

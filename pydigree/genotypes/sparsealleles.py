@@ -136,8 +136,7 @@ class SparseAlleles(AlleleContainer):
 
     def todense(self):
         ''' 
-        Returns a non-sparse GenotypeChromosome equivalent
-        to a SparseAlleles object.
+        Returns a non-sparse Alleles equivalent to a SparseAlleles object.
         '''
         if np.issubdtype(self.dtype, np.integer):
             arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)

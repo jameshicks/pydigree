@@ -12,15 +12,18 @@ from pydigree.common import *
 from pydigree.genotypes import Alleles, LabelledAlleles
 from pydigree.exceptions import IterationError
 
+# TODO: Move this somewhere more useful
 missing_genotype = (0, 0)
-
 
 def is_missing_genotype(g):
     return g == missing_genotype
 
 
 class Individual(object):
-
+    '''
+    An object for working with the phenotypes and genotypes of an individual
+    in a genetic study or simulation
+    '''
     def __init__(self, population, label, father=None, mother=None, sex=None):
         # Every individual is observed within a population with certain
         # genotypes available. This makes recombination book-keeping easier.
@@ -59,9 +62,11 @@ class Individual(object):
         return self.__str__()
 
     def register_child(self, child):
+        ''' Add a child for this individual '''
         self.children.append(child)
 
     def register_with_parents(self):
+        ''' Inform the parent Individuals that this is their child '''
         if self.is_founder():
             return
         self.father.register_child(self)
