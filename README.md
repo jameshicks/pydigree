@@ -50,7 +50,7 @@ Pydigree includes a few useful scripts for dealing with pedigree data including:
 * `bitsize.py`: Calculates bit sizes for each pedigree
 * `kinship.py`: Caluclates inbreeding coefficients and pairwise kinship coefficients for pedigrees
 * `genedrop.py`: Performs gene dropping simulations to approximate the actual probability of an IBD configuration
-* `reml.py`: Calculates variance components for normally distributed continuous traits.
+* `polygenic.py`: Calculates variance components for normally distributed continuous traits.
 
 ### References 
 #### Pedigrees
