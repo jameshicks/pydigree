@@ -20,15 +20,6 @@ def logdet(M):
     return logdet
 
 
-def makeR(y, X, V=None, Vinv=None):
-    """ Makes the R matrix commonly found in REML estimation """
-    if V is None and Vinv is None:
-        raise ValueError('Variance matrix not specified')
-    elif Vinv is None and V is not None:
-        Vinv = makeVinv(V)
-    return y - X * pinv(X.transpose() * Vinv * X) * X.transpose() * Vinv * y
-
-
 def makeP(X, Vinv):
     """ Makes the P matrix commonly found in mixed model estimation """
     return Vinv - Vinv * X * pinv(X.T * Vinv * X) * X.T * Vinv
