@@ -13,7 +13,6 @@ from scipy.optimize import minimize
 
 from pydigree.stats.mixedmodel.likelihood import makeP
 from pydigree.stats.mixedmodel.likelihood import restricted_loglikelihood
-from pydigree.stats.mixedmodel.likelihood import reml_gradient, reml_hessian
 from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
@@ -420,11 +419,6 @@ class MixedModel(object):
         if method.lower().startswith('minque'):
             mle = minque(self, value=0, verbose=verbose, starts=starts)
 
-        elif method == 'scipy':
-            if starts is None:
-                starts = self._starting_variance_components()
-            mle = self._maximize_scipy(verbose=verbose)
-
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             if starts is None:
                 starts = self._starting_variance_components()
@@ -447,35 +441,6 @@ class MixedModel(object):
     @property
     def maximized(self):
         return isinstance(self.mle, MLEResult)
-
-    def _maximize_scipy(self, method='CG', verbose=True):
-        """
-        Finds the optimal values for variance components of the model by
-        restricted maximum likelihood estimation using scipy minimization.
-
-        Only for debugging use at the moment.
-        """
-
-        starts = self._starting_variance_components()
-
-        def cb(x):
-            if verbose:
-                print 'Iteration VC estimates: %s' % \
-                    ', '.join(str(y) for y in x.tolist())
-
-        r = minimize(self._reml_optimization_target, x0=starts,
-                     method='CG',
-                     jac=self._reml_gradient,
-                     callback=cb)
-
-        if not r.success:
-            raise np.linalg.LinAlgError('Model fit did not converge!')
-
-        if verbose:
-            print r
-
-        mle = MLEResult(r.x, r.fun, 'scipy', r.jac, None)
-        return mle
 
     def loglikelihood(self, restricted=False, vcs=None, vmat=None):
         """
@@ -594,19 +559,6 @@ class MixedModel(object):
 
     def _variance_after_fixefs(self):
         return np.var(self.y - self.X * self.beta)
-
-    def _reml_optimization_target(self, vcs):
-        """ Optimization target for maximization. """
-        Q = self._makeV(vcs=vcs.tolist())
-        return -1.0 * self.loglikelihood(restricted=True, vmat=Q)
-
-    def _reml_gradient(self, vcs):
-        Q = self._makeV(vcs=vcs.tolist())
-        return -1.0 * reml_gradient(self.y, self.X, Q, self.random_effects)
-
-    def _reml_hessian(self, vcs):
-        Q = self._makeV(vcs.tolist())
-        return -1.0 * reml_hessian(self.y, self.X, Q, self.random_effects)
 
     def _starting_variance_components(self, kind='equal'):
         """
