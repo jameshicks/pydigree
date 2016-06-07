@@ -91,13 +91,6 @@ def dREML_dsigma(y, Z, G, P):
     return matrix.item(dl_dsig)
 
 
-def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
-    common_term = P * dV_dsigma_a * P * dV_dsigma_b
-    a = .5 * np.trace(common_term)
-    b = y.T * common_term * P * y
-    return matrix.item(a - b)
-
-
 def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = makeVinv(V)
@@ -106,6 +99,12 @@ def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
 
     n_ranefs = len(ranefs)
     mat = np.zeros((n_ranefs, n_ranefs))
+
+    def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
+        common_term = P * dV_dsigma_a * P * dV_dsigma_b
+        a = .5 * np.trace(common_term)
+        b = y.T * common_term * P * y
+        return matrix.item(a - b)
 
     for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
@@ -128,10 +127,6 @@ def reml_observed_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     return -reml_hessian(y, X, V, ranefs, P, Vinv)
 
 
-def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
-    return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
-
-
 def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = makeVinv(V)
@@ -140,6 +135,9 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
 
     mat = np.zeros((len(ranefs), len(ranefs)))
 
+    def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
+        return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
+    
     for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
 
@@ -156,16 +154,16 @@ def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     return mat
 
 
-def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
-    return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
-
-
 def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
     if Vinv is None:
         Vinv = makeVinv(V)
     if P is None:
         P = makeP(X, Vinv)
     mat = np.zeros((len(ranefs), len(ranefs)))
+    
+    def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
+        return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+
     for i, ranef_a in enumerate(ranefs):
         dV_dsigma_a = ranef_a.V_i
 
