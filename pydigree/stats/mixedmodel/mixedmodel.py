@@ -12,8 +12,8 @@ from scipy.linalg import pinv
 from scipy.optimize import minimize
 
 from pydigree.stats.mixedmodel.likelihood import makeP
-from pydigree.stats.mixedmodel.likelihood import restricted_loglikelihood
 from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
+from pydigree.stats.mixedmodel.likelihood import REML
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
@@ -336,9 +336,10 @@ class MixedModel(object):
         return [csc_matrix(Z) for Z in Zlist]
 
     def _makeV(self, vcs=None):
-        if (not vcs) and (not all(x is not None for x in self.variance_components)):
+        if vcs is None and (not all(x is not None for x in self.variance_components)):
             raise ValueError('Variance components not set')
-        if not vcs:
+        
+        if vcs is None:
             variance_components = self.variance_components
         else:
             variance_components = vcs
@@ -426,8 +427,8 @@ class MixedModel(object):
         else:
             if starts is None:
                 starts = self._starting_variance_components()
-            mle = newtonlike_maximization(self, starts, method,
-                                          verbose=verbose)
+            llik = REML(self, starts=starts, info=method)
+            mle = newtonlike_maximization(self, llik, verbose=verbose)
 
         self.mle = mle
         self.set_variance_components(mle.parameters)
@@ -463,7 +464,7 @@ class MixedModel(object):
         if not restricted:
             return full_loglikelihood(self.y, V, self.X, self.beta)
         else:
-            return restricted_loglikelihood(self.y, V, self.X)
+            return REML(self).loglikelihood()
 
     @property
     def df(self):
@@ -521,6 +522,7 @@ class MixedModel(object):
         print
 
     def varianceplot1d(self, effect_index, nevals=20):
+        raise NotImplementedError
         import matplotlib.pyplot as plt
         if len(self.variance_components) > 2:
             raise ValueError(
@@ -542,7 +544,7 @@ class MixedModel(object):
         return results
 
     def varianceplot2d(self, idx1, idx2, nevals=10, restricted=True):
-
+        raise NotImplementedError
         total_variance = self._variance_after_fixefs()
 
         potential_sigmas = np.linspace(0.1, total_variance, nevals)

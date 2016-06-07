@@ -6,13 +6,18 @@ from math import log, pi
 
 import numpy as np
 from scipy.sparse import bsr_matrix, issparse
-from scipy.linalg import pinv, inv
+from scipy.linalg import pinv
+from scipy.linalg import inv as scipy_inv
 from scipy import matrix
 # np.seterr(invalid='ignore')
 
 
 l2pi = log(2 * pi)
 
+def inv(M):
+    if issparse(M):
+        M = M.todense()
+    return scipy_inv(M)
 
 def logdet(M):
     """ Returns the (positive) log determinant of a matrix. """
@@ -41,141 +46,179 @@ def full_loglikelihood(y, V, X, beta, Vinv=None):
         Vinv = makeVinv(V)
     n = X.shape[0]
     fixefresids = y - X * beta
-    llik = -0.5 * ( n * l2pi + logdet(V) + fixefresids.T * Vinv * fixefresids)
+    llik = -0.5 * (n * l2pi + logdet(V) + fixefresids.T * Vinv * fixefresids)
     return matrix.item(llik)
 
 
-def restricted_loglikelihood(y, V, X, P=None, Vinv=None):
+class MixedModelLikelihood(object):
     """
-    Returns the restricted loglikelihood for mixed model variance component
-    estimation.
-
-    References:
-
-    Harville. 'Maximum Likelihood Approaches to Variance Component Estimation
-    and to Related Problems' Journal of the American Statistical Association.
-    (1977) (72):258
-
-    Lange, Westlake, & Spence. 'Extensions to pedigree analysis III. Variance
-    components by the scoring method.' Ann Hum Genet. (1976). 39:4,485-491
-    DOI: 10.1111/j.1469-1809.1976.tb00156.x
-
-    SAS documentation for PROC MIXED
+    A class describing the state of a mixed model likelihood function being 
+    maximized
     """
-    if Vinv is None:
-        Vinv = makeVinv(V)
-    if P is None:
-        P = makeP(X, Vinv=Vinv)
-    n = X.shape[0]
-    rank = np.linalg.matrix_rank(X)
-    llik_restricted = -0.5 * (logdet(V.todense())
-                              + logdet(X.transpose() * Vinv * X)
-                              + y.T * P * y
-                              + (n - rank) * l2pi)
-    return matrix.item(llik_restricted)
+    def __init__(self, mm, starts=None, info='fisher'):
+        self.mm = mm
+        
+        if starts is not None:
+            self.set_parameters(starts)
+        if starts is None and all(vc is None for vc in mm.variance_components):
+            raise ValueError('No variance components!')
+        else:
+            self.set_parameters(mm.variance_components)
+        
+
+        if info.lower() in {'fs', 'fisher', 'fisher scoring'}:
+            self.set_info('fs')
+        elif info.lower() in {'newton-raphson', 'newton', 'nr'}:
+            self.set_info('nr')
+        elif info.lower() in {'average information', 'aireml', 'ai'}:
+            self.set_info('ai')
+        else:
+            raise ValueError('Unknown maximization method')
+
+        self.method = info
+        
+    def set_parameters(self, params):
+        self.parameters = np.array(params)
+
+        self.V = self.mm._makeV(params)
+        self.Vinv = inv(self.V)
+        self.P = makeP(self.mm.X, self.Vinv)
+
+        # We need beta for non-reml computations
+        X = self.mm.X
+        self.beta = pinv(X.T * self.Vinv * X) * X.T * self.Vinv * self.mm.y
 
 
-def reml_gradient(y, X, V, ranefs, P=None, Vinv=None):
-    if Vinv is None:
-        Vinv = makeVinv(V)
-    if P is None:
-        P = makeP(X, Vinv)
-    nabla = [dREML_dsigma(y, rf.Z, rf.G, P) for rf in ranefs]
-    return np.array(nabla)
+class REML(MixedModelLikelihood):
 
-
-def dREML_dsigma(y, Z, G, P):
-    "The REML derivative of V with regard to sigma"
-    PZGZt = P * Z * G * Z.T
-    dl_dsig = -.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y)
-    return matrix.item(dl_dsig)
-
-
-def reml_hessian(y, X, V, ranefs, P=None, Vinv=None):
-    if Vinv is None:
-        Vinv = makeVinv(V)
-    if P is None:
-        P = makeP(X, Vinv)
-
-    n_ranefs = len(ranefs)
-    mat = np.zeros((n_ranefs, n_ranefs))
-
-    def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
-        common_term = P * dV_dsigma_a * P * dV_dsigma_b
-        a = .5 * np.trace(common_term)
-        b = y.T * common_term * P * y
-        return matrix.item(a - b)
-
-    for i, ranef_a in enumerate(ranefs):
-        dV_dsigma_a = ranef_a.V_i
-        for j, ranef_b in enumerate(ranefs):
-
-            if j < i:
-                # Already set when we did the other side of the matrix
-                continue
-
-            dV_dsigma_b = ranef_b.V_i
-            element = reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b)
-
-            mat[i, j] = element
-            mat[j, i] = element
-
-    return np.array(mat)
-
-
-def reml_observed_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
-    return -reml_hessian(y, X, V, ranefs, P, Vinv)
-
-
-def reml_fisher_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
-    if Vinv is None:
-        Vinv = makeVinv(V)
-    if P is None:
-        P = makeP(X, Vinv)
-
-    mat = np.zeros((len(ranefs), len(ranefs)))
-
-    def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
-        return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
+    def set_info(self, info):
+        d = {'fs': self.reml_fisher_information_matrix,
+             'nr': self.reml_observed_information_matrix,
+             'ai': self.reml_average_information_matrix}
     
-    for i, ranef_a in enumerate(ranefs):
-        dV_dsigma_a = ranef_a.V_i
+        self.hessian = d[info]
 
-        for j, ranef_b in enumerate(ranefs):
-            if j < i:
-                # Already set when we did the other side of the matrix
-                continue
+    def gradient(self):
+        "The gradient of the REML function w/r/t each variance component"
 
-            element = reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
+        def dREML_dsigma(y, Z, G, P):
+            "The REML derivative with regard to a variance component"
+            PZGZt = P * Z * G * Z.T
+            dl_dsig = -.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y)
+            return matrix.item(dl_dsig)
 
-            mat[i, j] = element
-            mat[j, i] = element
+        ranefs = self.mm.random_effects
+        nabla = [dREML_dsigma(self.mm.y, rf.Z, rf.G, self.P) for rf in ranefs]
+        return np.array(nabla)
 
-    return mat
+    def loglikelihood(self):
+        """
+        Returns the restricted loglikelihood for mixed model variance component
+        estimation.
+
+        References:
+
+        Harville. 'Maximum Likelihood Approaches to Variance Component
+        Estimation and to Related Problems' Journal of the American Statistical
+        Association. (1977) (72):258
+
+        Lange, Westlake, & Spence. 'Extensions to pedigree analysis III.
+        Variance components by the scoring method.' Ann Hum Genet. (1976).
+        39:4,485-491
+        DOI: 10.1111/j.1469-1809.1976.tb00156.x
+
+        SAS documentation for PROC MIXED
+        """
+        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
+        n = X.shape[0]
+
+        rank = np.linalg.matrix_rank(X)
+        llik_restricted = -0.5 * (logdet(V.todense())
+                                  + logdet(X.transpose() * Vinv * X)
+                                  + y.T * P * y
+                                  + (n - rank) * l2pi)
+        return matrix.item(llik_restricted)
 
 
-def reml_average_information_matrix(y, X, V, ranefs, P=None, Vinv=None):
-    if Vinv is None:
-        Vinv = makeVinv(V)
-    if P is None:
-        P = makeP(X, Vinv)
-    mat = np.zeros((len(ranefs), len(ranefs)))
-    
-    def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
-        return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+    def reml_hessian(self):
+        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
+        ranefs = self.mm.random_effects
 
-    for i, ranef_a in enumerate(ranefs):
-        dV_dsigma_a = ranef_a.V_i
+        n_ranefs = len(ranefs)
+        mat = np.zeros((n_ranefs, n_ranefs))
 
-        for j, ranef_b in enumerate(ranefs):
-            if j < i:
-                # Already set when we did the other side of the matrix
-                continue
-            dV_dsigma_b = ranef_b.V_i
-            element = reml_average_information_element(y, P,
-                                                       dV_dsigma_a,
-                                                       dV_dsigma_b)
-            mat[i, j] = element
-            mat[j, i] = element
+        def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
+            common_term=P * dV_dsigma_a * P * dV_dsigma_b
+            a=.5 * np.trace(common_term)
+            b=y.T * common_term * P * y
+            return matrix.item(a - b)
 
-    return mat
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+            for j, ranef_b in enumerate(ranefs):
+
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+
+                dV_dsigma_b=ranef_b.V_i
+                element=reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b)
+
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return np.array(mat)
+
+
+    def reml_observed_information_matrix(self):        
+        return -self.reml_hessian()
+
+    def reml_fisher_information_matrix(self):
+        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
+        ranefs=self.mm.random_effects
+
+        mat=np.zeros((len(ranefs), len(ranefs)))
+
+        def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
+            return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
+
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+
+            for j, ranef_b in enumerate(ranefs):
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+
+                element=reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
+
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return mat
+
+
+    def reml_average_information_matrix():
+        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
+        ranefs=self.mm.random_effects
+        
+        mat=np.zeros((len(ranefs), len(ranefs)))
+
+        def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
+            return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
+
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+
+            for j, ranef_b in enumerate(ranefs):
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+                dV_dsigma_b=ranef_b.V_i
+                element=reml_average_information_element(y, P,
+                                                           dV_dsigma_a,
+                                                           dV_dsigma_b)
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return mat

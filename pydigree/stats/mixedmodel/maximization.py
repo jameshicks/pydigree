@@ -9,11 +9,6 @@ import scipy.linalg
 
 from pydigree.stats.mathfuncs import is_positive_definite
 
-from likelihood import reml_gradient
-from likelihood import reml_observed_information_matrix
-from likelihood import reml_fisher_information_matrix
-from likelihood import reml_average_information_matrix
-from likelihood import restricted_loglikelihood
 from likelihood import makeP, makeVinv
 
 
@@ -32,7 +27,7 @@ class MLEResult(object):
         self.hessian = hessian
 
 
-def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
+def newtonlike_maximization(mm, likelihood, maxiter=250,
                             tol=1e-4, constrained=False, scoring=10,
                             verbose=False):
     """
@@ -98,9 +93,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
 
     Arguments:
     mm: a MixedModel object to be maximized
-    starts: Starting values for the variance components
-    method: The method to use to fit the model.
-        * Options: 'Newton-Raphson', 'Fisher Scoring', 'Average Information'
+    likelihood: a Likelihood object
     maxiter: The maximum number of iterations of scoring before raising
         an error
     tol: The minimum amount of change in the proportion of variance by any of
@@ -116,39 +109,23 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
 
     Returns: A numpy array of the variance components at the MLE
     """
-    if method.lower() in {'newton-raphson', 'newton', 'nr'}:
-        information_mat = reml_observed_information_matrix
-        method = 'Newton-Raphson'
-    elif method.lower() in {'fisher scoring', 'fisher', 'fs'}:
-        information_mat = reml_fisher_information_matrix
-        method = 'Fisher Scoring'
-    elif method.lower() in {'average information', 'aireml', 'ai'}:
-        information_mat = reml_average_information_matrix
-        method = 'Average Information REML'
-    else:
-        raise ValueError('Unknown maximization method')
-
     if verbose:
-        print 'Maximizing model by {}'.format(method)
+        print 'Maximizing model by {}'.format(likelihood.method)
 
-    vcs = np.array(starts)
+    vcs = np.array(likelihood.parameters)
 
-    # Get the loglikelihood at the start
-    V = mm._makeV(vcs.tolist())
-    Vinv = makeVinv(V)
-    P = makeP(mm.X, Vinv)
-    llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
+    llik = likelihood.loglikelihood()
 
     if verbose:
         print '{} {} {} {}'.format(0, llik, vcs, vcs / vcs.sum())
 
     for i in xrange(maxiter):
         if (i - 1) == scoring:
-            information_mat = reml_observed_information_matrix
+            information_mat = likelihood.set_info('nr')
 
         # Make the information matrix and gradient
-        grad = reml_gradient(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
-        mat = information_mat(mm.y, mm.X, V, mm.random_effects, P=P, Vinv=Vinv)
+        grad = likelihood.gradient()
+        mat = likelihood.hessian()
         delta = scoring_iteration(mat, grad)
 
         if not is_positive_definite(mat):
@@ -157,6 +134,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         if np.linalg.cond(mat) > 1e4:
             raise LinAlgError(
                 'Condition number of information matrix too high')
+        
         if not np.isfinite(delta).all():
             raise LinAlgError('NaNs in scoring update')
 
@@ -165,14 +143,13 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
         else:
             new_vcs = vcs - delta
 
-            V = mm._makeV(new_vcs.tolist())
-            Vinv = makeVinv(V)
-            P = makeP(mm.X, Vinv)
+            likelihood.set_parameters(new_vcs)
 
-            new_llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
+            new_llik = likelihood.loglikelihood()
 
         if new_vcs.sum() / mm._variance_after_fixefs() > 10:
             raise LinAlgError('Optimizer left parameter space')
+        
         relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
 
         if verbose:
@@ -180,7 +157,7 @@ def newtonlike_maximization(mm, starts, method='Fisher', maxiter=250,
                 new_vcs / new_vcs.sum(), relative_changes
 
         if (abs(relative_changes) < tol).all():
-            mle = MLEResult(new_vcs.tolist(), new_llik, method,
+            mle = MLEResult(new_vcs.tolist(), new_llik, likelihood.method,
                             jacobian=grad, hessian=mat)
             return mle
         vcs = new_vcs
@@ -219,6 +196,7 @@ def line_search_reml(mm, prev_vcs, prev_llik, delta, tol, nsearches=25):
     mm: a MixedModel object
 
     """
+    raise NotImplementedError
     for n in xrange(nsearches):
         alpha = 2 ** (-n)
         new_vcs = prev_vcs - alpha * delta
