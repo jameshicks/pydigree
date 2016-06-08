@@ -23,7 +23,7 @@ def makemm():
 
     return mm
 
-def test_fisherscoring():
+def test_reml_fisher():
     model = makemm()
     model.maximize(method='FS')
 
@@ -31,7 +31,7 @@ def test_fisherscoring():
     # Allow a deviation up to 5 percentage points
     assert (model.variance_components[-2]/total_var - solar_h2) < 0.05  
 
-def test_newtonraphson():
+def test_reml_newton():
     model = makemm()
     model.maximize(method='NR')
 
@@ -39,7 +39,7 @@ def test_newtonraphson():
     # Allow a deviation up to 5 percentage points
     assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
 
-def test_aireml():
+def test_reml_ai():
     model = makemm()
     model.maximize(method='AI')
 
@@ -47,7 +47,7 @@ def test_aireml():
     # Allow a deviation up to 5 percentage points
     assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
 
-def test_emreml():
+def test_reml_em():
     model = makemm()
     model.maximize(method='EM')
 
