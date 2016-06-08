@@ -16,7 +16,7 @@ from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
 from pydigree.stats.mixedmodel.likelihood import REML, ML
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
-from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
+from pydigree.stats.mixedmodel.maximization import expectation_maximization
 from pydigree.stats.mixedmodel.maximization import minque
 from pydigree.stats.mixedmodel.maximization import MLEResult
 
@@ -428,7 +428,7 @@ class MixedModel(object):
             mle = minque(self, value=0, verbose=verbose, starts=starts)
 
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
-            mle = expectation_maximization_reml(self, llik, verbose=verbose)
+            mle = expectation_maximization(self, llik, verbose=verbose)
         else:
             mle = newtonlike_maximization(self, llik, verbose=verbose)
 
@@ -606,9 +606,9 @@ class MixedModel(object):
 
         if kind.lower() == 'em':
             starts = self._starting_variance_components('equal')
-            vcs_start = expectation_maximization_reml(self,
-                                                      starts=starts,
-                                                      return_after=100)
+            vcs_start = expectation_maximization(self,
+                                                 starts=starts,
+                                                 return_after=100)
             return vcs_start.parameters
         else:
             raise ValueError('Unknown method: {}'.format(kind))

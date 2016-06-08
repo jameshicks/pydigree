@@ -264,7 +264,7 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization_reml(mm, likelihood, maxiter=10000, tol=1e-4,
+def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
                                   verbose=False, return_after=1e300):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
