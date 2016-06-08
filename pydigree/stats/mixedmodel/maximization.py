@@ -18,7 +18,7 @@ class MLEResult(object):
     def __init__(self, parameters, restricted_loglikelihood, method,
                  jacobian=None, hessian=None, full_loglikelihood=None):
         self.restricted = True
-        self.restricted_loglikelihood = loglikelihood
+        self.restricted_loglikelihood = restricted_loglikelihood
         self.full_loglikelihood = full_loglikelihood
         self.method = method
         self.parameters = parameters
