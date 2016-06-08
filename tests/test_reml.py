@@ -23,9 +23,25 @@ def makemm():
 
     return mm
 
+def test_ml_newton():
+    model = makemm()
+    model.maximize(method='NR', restricted=False)
+
+    total_var = sum(model.variance_components)
+    # Allow a deviation up to 5 percentage points
+    assert (model.variance_components[-2]/total_var - solar_h2) < 0.05  
+
+def test_ml_fisher():
+    model = makemm()
+    model.maximize(method='FS', restricted=False)
+
+    total_var = sum(model.variance_components)
+    # Allow a deviation up to 5 percentage points
+    assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
+
 def test_reml_fisher():
     model = makemm()
-    model.maximize(method='FS')
+    model.maximize(method='FS', restricted=True)
 
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points
@@ -33,7 +49,7 @@ def test_reml_fisher():
 
 def test_reml_newton():
     model = makemm()
-    model.maximize(method='NR')
+    model.maximize(method='NR', restricted=True)
 
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points
@@ -41,7 +57,7 @@ def test_reml_newton():
 
 def test_reml_ai():
     model = makemm()
-    model.maximize(method='AI')
+    model.maximize(method='AI', restricted=True)
 
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points
@@ -49,7 +65,7 @@ def test_reml_ai():
 
 def test_reml_em():
     model = makemm()
-    model.maximize(method='EM')
+    model.maximize(method='EM', restricted=True)
 
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points

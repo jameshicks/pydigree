@@ -91,6 +91,100 @@ class MixedModelLikelihood(object):
         X = self.mm.X
         self.beta = pinv(X.T * self.Vinv * X) * X.T * self.Vinv * self.mm.y
 
+class ML(MixedModelLikelihood):
+    def set_info(self, info):
+        d = {'fs': self.ml_fisher_information_matrix,
+             'nr': self.ml_observed_information_matrix,
+             'ai': self.ml_average_information_matrix}
+    
+        self.hessian = d[info]
+
+    def gradient(self):
+        "The gradient of the ML function w/r/t each variance component"
+
+        def dML_dsigma(ranef):
+            "The ML derivative with regard to a variance component"
+
+            Z, G = ranef.Z, ranef.G
+            y, X, beta, Vinv = self.mm.y, self.mm.X, self.beta, self.Vinv
+            V_i = Z * G *Z.T
+
+            resid = y - X * beta
+            term1 = -0.5 * np.trace(Vinv * V_i)
+            term2 = 0.5 * resid.T * Vinv * V_i * Vinv * resid
+            return term1 + term2 
+
+        ranefs = self.mm.random_effects
+        nabla = [dML_dsigma(rf) for rf in ranefs]
+        return np.array(nabla)
+
+    def loglikelihood(self):
+        n = self.mm.nobs()
+
+        y, X, beta = self.mm.y, self.mm.X, self.beta
+        resid = y - X * beta
+        return -0.5 * (n*l2pi + logdet(self.V) + resid.T * self.Vinv * resid)
+
+    def ml_hessian(self):
+        ranefs = self.mm.random_effects
+        n_ranefs = len(ranefs)
+        mat = np.zeros((n_ranefs, n_ranefs))
+
+        resid = self.mm.y - self.mm.X * self.beta
+        
+        def ml_hessian_element(resid, Vinv, V_i, V_j):
+            common_term = Vinv * V_i * Vinv * V_j
+            a = 0.5 * np.trace(common_term)
+            b = resid.T * common_term * resid
+            return matrix.item(a - b)
+
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+            for j, ranef_b in enumerate(ranefs):
+
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+
+                dV_dsigma_b=ranef_b.V_i
+                element=ml_hessian_element(resid, self.Vinv, dV_dsigma_a, dV_dsigma_b)
+
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return np.array(mat)
+
+    def ml_observed_information_matrix(self):
+        return -self.ml_hessian()
+
+    def ml_fisher_information_matrix(self):
+        ranefs = self.mm.random_effects
+        n_ranefs = len(ranefs)
+        mat = np.zeros((n_ranefs, n_ranefs))
+
+        resid = self.mm.y - self.mm.X * self.beta
+        
+        def ml_fisher_element(Vinv, V_i, V_j):
+            return (0.5 * np.trace(Vinv * V_i * Vinv * V_j))
+
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+            for j, ranef_b in enumerate(ranefs):
+
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+
+                dV_dsigma_b=ranef_b.V_i
+                element=ml_fisher_element(self.Vinv, dV_dsigma_a, dV_dsigma_b)
+
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return np.array(mat)
+
+    def ml_average_information_matrix(self):
+        raise
 
 class REML(MixedModelLikelihood):
 

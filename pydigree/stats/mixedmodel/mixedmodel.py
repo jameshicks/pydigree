@@ -13,7 +13,7 @@ from scipy.optimize import minimize
 
 from pydigree.stats.mixedmodel.likelihood import makeP
 from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
-from pydigree.stats.mixedmodel.likelihood import REML
+from pydigree.stats.mixedmodel.likelihood import REML, ML
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization_reml
@@ -405,7 +405,7 @@ class MixedModel(object):
         for sigma, ranef in izip(variance_components, self.random_effects):
             ranef.variance_component = sigma
 
-    def maximize(self, method="Average Information",
+    def maximize(self, method="Average Information", restricted=False,
                  starts=None, verbose=False):
         """
         Finds the optimal values for variance components of the model by
@@ -420,7 +420,9 @@ class MixedModel(object):
         if starts is None:
             starts = self._starting_variance_components()
 
-        llik = REML(self, starts=starts, info=method)
+        likefunc = REML if restricted else ML
+        llik = likefunc(self, info=method)
+        llik.set_parameters(starts)
 
         if method.lower().startswith('minque'):
             mle = minque(self, value=0, verbose=verbose, starts=starts)
