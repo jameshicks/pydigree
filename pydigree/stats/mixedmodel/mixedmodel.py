@@ -417,17 +417,17 @@ class MixedModel(object):
             return
         self.fit_model()
 
+        if starts is None:
+            starts = self._starting_variance_components()
+
+        llik = REML(self, starts=starts, info=method)
+
         if method.lower().startswith('minque'):
             mle = minque(self, value=0, verbose=verbose, starts=starts)
 
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
-            if starts is None:
-                starts = self._starting_variance_components()
-            mle = expectation_maximization_reml(self, starts, verbose=verbose)
+            mle = expectation_maximization_reml(self, llik, verbose=verbose)
         else:
-            if starts is None:
-                starts = self._starting_variance_components()
-            llik = REML(self, starts=starts, info=method)
             mle = newtonlike_maximization(self, llik, verbose=verbose)
 
         self.mle = mle

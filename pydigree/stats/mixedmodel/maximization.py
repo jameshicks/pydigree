@@ -265,7 +265,7 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
+def expectation_maximization_reml(mm, likelihood, maxiter=10000, tol=1e-4,
                                   verbose=False, return_after=1e300):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
@@ -315,31 +315,20 @@ def expectation_maximization_reml(mm, starts, maxiter=10000, tol=1e-4,
     if verbose:
         print 'Maximizing model by Expectation-Maximization'
 
-    n = mm.nobs()
-    y = mm.y
-    vcs = np.array(starts)
+    vcs = likelihood.parameters
     while True:
-        V = mm._makeV(vcs.tolist())
+        if verbose:
+            print i, llik, vcs
 
-        # Complicated things we only want to calculate once
-        Vinv = makeVinv(V)
-        P = makeP(mm.X, Vinv)
+        new_vcs = likelihood.expectation_maximization()
+        likelihood.set_parameters(new_vcs)
 
-        coefficients = np.array([
-            matrix.item(y.T * P * cov * P * y - np.trace(P * cov))
-            for cov in mm.covariance_matrices])
+        llik = likelihood.loglikelihood()
 
-        delta = (vcs ** 2 / n) * coefficients
-        new_vcs = vcs + delta
-
-        llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
-
-        if (np.abs(delta / vcs.sum()) < tol).all():
+        if (np.abs((new_vcs - vcs) / vcs.sum()) < tol).all():
             break
 
         vcs = new_vcs
-        if verbose:
-            print i, llik, vcs
 
         if i > maxiter and vcs_after_maxiter:
             break

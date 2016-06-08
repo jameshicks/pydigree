@@ -1,6 +1,7 @@
 """
 Functions for computing likelihoods of linear mixed models
 """
+from __future__ import division
 
 from math import log, pi
 
@@ -72,6 +73,8 @@ class MixedModelLikelihood(object):
             self.set_info('nr')
         elif info.lower() in {'average information', 'aireml', 'ai'}:
             self.set_info('ai')
+        elif info.lower() in {'em', 'emreml', 'expectation-maximization'}:
+            pass
         else:
             raise ValueError('Unknown maximization method')
 
@@ -222,3 +225,15 @@ class REML(MixedModelLikelihood):
                 mat[j, i]=element
 
         return mat
+
+    def expectation_maximization(self):
+        "Performs a round of Expectation-Maximization REML"
+        y, P = self.mm.y, self.P
+
+        n = self.mm.nobs()
+        coefficients = np.array([
+            matrix.item(y.T * P * cov * P * y - np.trace(P * cov))
+            for cov in self.mm.covariance_matrices])
+
+        delta = (self.parameters ** 2 / n) * coefficients
+        return self.parameters + delta
