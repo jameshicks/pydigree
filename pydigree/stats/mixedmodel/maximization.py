@@ -13,14 +13,13 @@ from likelihood import makeP, makeVinv
 
 
 class MLEResult(object):
+    " An object representing the result of maximization of a mixed model "
 
-    " An object representing the result of REML maximization of a mixed model "
-
-    def __init__(self, parameters, loglikelihood, method,
-                 jacobian=None, hessian=None):
+    def __init__(self, parameters, restricted_loglikelihood, method,
+                 jacobian=None, hessian=None, full_loglikelihood=None):
         self.restricted = True
         self.restricted_loglikelihood = loglikelihood
-        self.full_loglikelihood = None
+        self.full_loglikelihood = full_loglikelihood
         self.method = method
         self.parameters = parameters
         self.jacobian = jacobian
@@ -107,7 +106,7 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
         estimates at each iteration. Useful for debugging or watching the
         direction the optimizer is taking.
 
-    Returns: A numpy array of the variance components at the MLE
+    Returns: An MLE object of the variance components at the MLE
     """
     if verbose:
         print 'Maximizing model by {}'.format(likelihood.method)
@@ -272,12 +271,12 @@ def expectation_maximization_reml(mm, likelihood, maxiter=10000, tol=1e-4,
 
     Formulas for EM-REML are given in Lynch & Walsh, Ch 27, Example 5 (pg. 799)
 
-    Unlike the Newton-type algorithms, EM-REML only makes use of the first 
+    Unlike the Newton-type algorithms, EM only makes use of the first 
     derivative of the loglikelihood function. The presence of second 
     derivatives means that Newton-type maximization will converge very quickly,
     since it works on a better approximation of the likelihood surface. 
 
-    EM-REML tends to converge VERY slowly, because the changes at every step
+    EM tends to converge VERY slowly, because the changes at every step
     are so small. For example, a model that took 3 iterations/0m3.927s to 
     converge with AI-REML took 52 iterations/0m32.803s with EM-REML. 
     Individual EM iterations are relatively fast because you don't have to
@@ -285,17 +284,14 @@ def expectation_maximization_reml(mm, likelihood, maxiter=10000, tol=1e-4,
     invert the variance-covariance matrix of observations each iteration
     regardless, time adds up quickly.
 
-    However, EM-REML has the nice property that it monotonically converges to
+    However, EM has the nice property that it monotonically converges to
     a maximum, and avoids the parameter esimtate out-of-range problems 
     occasionally found with Newton-type methods and have to be remedied as 
     a special case. 
 
-    Since it does take so much real time to solve the REML equations with 
-    EM-REML, it's better used 
-
     Arguments:
     mm: a MixedModel object to be maximized
-    starts: Starting values for the variance components
+    likelihood: A likelihood object
     maxiter: The maximum number of iterations of scoring before raising 
         an error
     tol: The minimum amount of change in the proportion of variance by any of 
@@ -308,7 +304,7 @@ def expectation_maximization_reml(mm, likelihood, maxiter=10000, tol=1e-4,
         for variance components if generic starting values aren't working for
         some reason.
 
-    Returns: A numpy array of the variance components at the MLE
+    Returns: An MLE object of the variance components at the MLE
     '''
     i = 0
 
