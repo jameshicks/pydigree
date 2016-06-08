@@ -198,7 +198,7 @@ class REML(MixedModelLikelihood):
         return mat
 
 
-    def reml_average_information_matrix():
+    def reml_average_information_matrix(self):
         y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
         ranefs=self.mm.random_effects
         
