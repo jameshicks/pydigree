@@ -41,7 +41,7 @@ def test_newtonraphson():
 
 def test_aireml():
     model = makemm()
-    model.maximize(method='NR')
+    model.maximize(method='AI')
 
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points
