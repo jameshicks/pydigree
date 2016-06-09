@@ -39,6 +39,14 @@ def test_ml_fisher():
     # Allow a deviation up to 5 percentage points
     assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
 
+def test_ml_ai():
+    model = makemm()
+    model.maximize(method='AI', restricted=False)
+
+    total_var = sum(model.variance_components)
+    # Allow a deviation up to 5 percentage points
+    assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
+
 def test_reml_fisher():
     model = makemm()
     model.maximize(method='FS', restricted=True)

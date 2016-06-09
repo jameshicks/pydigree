@@ -184,7 +184,30 @@ class ML(MixedModelLikelihood):
         return np.array(mat)
 
     def ml_average_information_matrix(self):
-        raise
+        ranefs = self.mm.random_effects
+        n_ranefs = len(ranefs)
+        mat = np.zeros((n_ranefs, n_ranefs))
+
+        resid = self.mm.y - self.mm.X * self.beta
+        
+        def ml_fisher_element(Vinv, V_i, V_j):
+            return (0.5 * resid.T * (Vinv * V_i * Vinv * V_j) * resid)
+
+        for i, ranef_a in enumerate(ranefs):
+            dV_dsigma_a=ranef_a.V_i
+            for j, ranef_b in enumerate(ranefs):
+
+                if j < i:
+                    # Already set when we did the other side of the matrix
+                    continue
+
+                dV_dsigma_b=ranef_b.V_i
+                element=ml_fisher_element(self.Vinv, dV_dsigma_a, dV_dsigma_b)
+
+                mat[i, j]=element
+                mat[j, i]=element
+
+        return np.array(mat)
 
 class REML(MixedModelLikelihood):
 
