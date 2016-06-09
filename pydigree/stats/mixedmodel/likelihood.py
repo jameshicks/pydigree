@@ -105,9 +105,8 @@ class ML(MixedModelLikelihood):
         def dML_dsigma(ranef):
             "The ML derivative with regard to a variance component"
 
-            Z, G = ranef.Z, ranef.G
             y, X, beta, Vinv = self.mm.y, self.mm.X, self.beta, self.Vinv
-            V_i = Z * G *Z.T
+            V_i = ranef.V_i
 
             resid = y - X * beta
             term1 = -0.5 * np.trace(Vinv * V_i)
