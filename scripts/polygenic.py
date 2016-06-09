@@ -15,6 +15,8 @@ parser.add_argument('--phen', required=True,
 parser.add_argument('--outcome', required=True, help='Outcome phenotype')
 parser.add_argument('--fixedeffects', '--fixefs', nargs="*", dest='fixefs',
                     help='Fixed effects for model')
+parser.add_argument('--reml', action='store_true', 
+    help='Use restricted maximum likelihood (REML) for maximization')
 parser.add_argument('--maxmethod', help='Method for maximization',
                     default='Fisher')
 parser.add_argument('--starts', help='Starting values for variance components',
@@ -52,7 +54,7 @@ if args.garbley:
 starts = args.starts
 if starts is not None:
     starts = [float(x) for x in starts]
-m.maximize(method=args.maxmethod, verbose=True, starts=starts)
+m.maximize(method=args.maxmethod, verbose=True, starts=starts, restricted=args.reml)
 
 m.summary()
 

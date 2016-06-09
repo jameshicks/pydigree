@@ -42,7 +42,7 @@ print 'Fitting polygenic model'
 null_model = MixedModel(peds, outcome=args.outcome, fixed_effects=args.fixefs)
 null_model.add_genetic_effect()
 null_model.fit_model()
-null_model.maximize(method=args.maxmethod, verbose=args.verbose)
+null_model.maximize(method=args.maxmethod, verbose=args.verbose, restricted=False)
 null_model.summary()
 llik_null = null_model.loglikelihood()
 
@@ -78,7 +78,8 @@ def measured_genotype_association(extrapredictor):
     # anyway so it's essentially a free optimization.
     model.maximize(method=args.maxmethod,
                    starts=null_model.variance_components,
-                   verbose=args.verbose)
+                   verbose=args.verbose,
+                   restricted=False)
     return model
 
 tableheader = ('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
