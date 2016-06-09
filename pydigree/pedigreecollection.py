@@ -84,9 +84,10 @@ class PedigreeCollection(IndividualContainer):
             x.add_chromosome(chrom)
 
     def update(self, pop):
+        collection_labels = {x.label for x in self.pedigrees}
         for ped in self.pedigrees:
             ped.chromosomes = pop.chromosomes
-            if ped.label not in pop.pedigrees.keys(): 
+            if ped.label not in collection_labels: 
                 continue
 
             ped.update(pop[ped.label])
