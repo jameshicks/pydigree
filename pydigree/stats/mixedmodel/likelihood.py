@@ -123,8 +123,9 @@ class ML(MixedModelLikelihood):
 
         y, X, beta = self.mm.y, self.mm.X, self.beta
         resid = y - X * beta
-        return -0.5 * (n*l2pi + logdet(self.V) + resid.T * self.Vinv * resid)
-
+        llik = -0.5 * (n*l2pi + logdet(self.V) + resid.T * self.Vinv * resid)
+        return matrix.item(llik)
+        
     def ml_hessian(self):
         ranefs = self.mm.random_effects
         n_ranefs = len(ranefs)
