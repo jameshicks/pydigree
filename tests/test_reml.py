@@ -78,6 +78,3 @@ def test_reml_em():
     total_var = sum(model.variance_components)
     # Allow a deviation up to 5 percentage points
     assert (model.variance_components[-2]/total_var - solar_h2) < 0.05 
-
-if __name__ == '__main__':
-    test_fisherscoring()
