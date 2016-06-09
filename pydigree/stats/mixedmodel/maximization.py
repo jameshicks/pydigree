@@ -7,7 +7,7 @@ from scipy.sparse import csc_matrix
 from scipy import matrix
 import scipy.linalg
 
-from pydigree.stats.mathfuncs import is_positive_definite
+from pydigree.stats.mathfuncs import is_positive_definite, grid
 
 from likelihood import makeP, makeVinv
 
@@ -345,3 +345,41 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
             print i, llik, vcs
         vcs = new_vcs
         weights = vcs
+
+def grid_search(mm, likelihood, nevals=10, oob=False):
+    ''' 
+    Grid searches a likelihood function over a range of variance 
+    component values
+
+    Arguments
+    ------
+    mm: A mixed model object to be maximized
+    likelihood: a MixedModelLikelihood object (i.e. ML, or REML)
+    nevals: number of evaluations over each component
+    oob: Evaluate out of bounds arguments (e.g. sum(vcs) > var(y))
+
+    Returns: An MLE object
+    '''
+    totvar =  mm.y.var()
+    
+    if not oob:
+        pred = lambda *x: sum(x) <= totvar
+    else:
+        pred = None
+
+
+    low, high = 0, totvar
+
+    best = None, -np.inf
+
+    def likefunc(*args):
+        likelihood.set_parameters(args)
+        return likelihood.loglikelihood()
+
+    for test in grid(likefunc, len(mm.random_effects), low, high, nevals, predicate=pred):
+
+        if test[1] > best[1]:
+            best = test
+
+    mle = MLEResult(best[0], best[1], 'GRID')
+    return mle

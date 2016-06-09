@@ -18,6 +18,7 @@ from pydigree.stats.mixedmodel.likelihood import REML, ML
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization
 from pydigree.stats.mixedmodel.maximization import minque
+from pydigree.stats.mixedmodel.maximization import grid_search
 from pydigree.stats.mixedmodel.maximization import MLEResult
 
 
@@ -433,6 +434,10 @@ class MixedModel(object):
 
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             mle = expectation_maximization(self, llik, verbose=verbose)
+
+        elif method.lower() == 'grid':
+            mle = grid_search(self, llik, nevals=20, oob=False)
+
         else:
             mle = newtonlike_maximization(self, llik, verbose=verbose)
 

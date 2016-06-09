@@ -73,7 +73,7 @@ class MixedModelLikelihood(object):
             self.set_info('nr')
         elif info.lower() in {'average information', 'aireml', 'ai'}:
             self.set_info('ai')
-        elif info.lower() in {'em', 'emreml', 'expectation-maximization'}:
+        elif info.lower() in {'em', 'emreml', 'expectation-maximization', 'grid'}:
             pass
         else:
             raise ValueError('Unknown maximization method')
