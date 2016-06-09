@@ -112,6 +112,10 @@ class RandomEffect(object):
     def __repr__(self):
         return 'Random Effect: {}'.format(self.label)
 
+    @property
+    def nlevels(self):
+        return len(self.levels)
+
     # Convenience properties for linear algebra
     @property
     def sigma(self):

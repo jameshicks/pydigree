@@ -349,8 +349,10 @@ class REML(MixedModelLikelihood):
 
         n = self.mm.nobs()
         coefficients = np.array([
-            matrix.item(y.T * P * cov * P * y - np.trace(P * cov))
-            for cov in self.mm.covariance_matrices])
+            matrix.item(y.T * P * rf.V_i * P * y - np.trace(P * rf.V_i))
+                        for rf in self.mm.random_effects])
 
-        delta = (self.parameters ** 2 / n) * coefficients
+        levelsizes = np.array([x.nlevels for x in self.mm.random_effects])
+
+        delta = (self.parameters ** 2 / levelsizes) * coefficients
         return self.parameters + delta
