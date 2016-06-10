@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pydigree as pyd
 from scipy.optimize import check_grad
+from pydigree.stats.mathfuncs import approx_hessian
 
 from pydigree.stats.mixedmodel.mixedmodel import make_incidence_matrix
 from pydigree.stats.mixedmodel import MixedModel
@@ -70,8 +71,49 @@ def test_ml_gradient():
         lik.set_parameters(params)    
         return lik.loglikelihood()
 
+
     diff = check_grad(func, grad, [.5, .5])
     assert diff < 0.001
+
+def test_reml_hessian():
+    model = makemm()
+    model.fit_model()
+
+    lik = REML(model, info='newton')
+
+    def hessian(params):
+        lik.set_parameters(params)
+        return lik.reml_hessian()
+
+    def func(params):
+        lik.set_parameters(params)    
+        return lik.loglikelihood()
+
+    testpoint = np.array([0.5, 0.5])
+    real_hess = hessian(testpoint)
+    test_hess = approx_hessian(testpoint, func)
+    diff = (test_hess - real_hess)
+    assert np.abs(diff).sum() < 0.001
+
+def test_ml_hessian():
+    model = makemm()
+    model.fit_model()
+
+    lik = ML(model, info='newton')
+
+    def hessian(params):
+        lik.set_parameters(params)
+        return lik.ml_hessian()
+
+    def func(params):
+        lik.set_parameters(params)    
+        return lik.loglikelihood()
+
+    testpoint = np.array([0.5, 0.5])
+    real_hess = hessian(testpoint)
+    test_hess = approx_hessian(testpoint, func, epsilon=.000001)
+    diff = (test_hess - real_hess)
+    assert np.abs(diff).sum() < 0.001
 
 def test_ml_newton():
     model = makemm()
