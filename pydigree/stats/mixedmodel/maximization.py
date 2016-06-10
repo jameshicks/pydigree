@@ -236,7 +236,7 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
     if verbose:
         print 'Maximizing model by Expectation-Maximization'
 
-    vcs = likelihood.parameters
+    vcs, llik = likelihood.parameters, likelihood.loglikelihood()
     while True:
         if verbose:
             print i, llik, vcs
