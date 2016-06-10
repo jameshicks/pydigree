@@ -3,9 +3,11 @@ import os
 
 import numpy as np
 import pydigree as pyd
+from scipy.optimize import check_grad
 
 from pydigree.stats.mixedmodel.mixedmodel import make_incidence_matrix
 from pydigree.stats.mixedmodel import MixedModel
+from pydigree.stats.mixedmodel.likelihood import ML, REML
 
 testdir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                        'test_data',
@@ -36,6 +38,40 @@ def makemm():
     mm.add_genetic_effect()
 
     return mm
+
+def test_reml_gradient():
+    model = makemm()
+    model.fit_model()
+
+    lik = REML(model, info='newton')
+
+    def grad(params):
+        lik.set_parameters(params)
+        return lik.gradient()
+
+    def func(params):
+        lik.set_parameters(params)    
+        return lik.loglikelihood()
+
+    diff = check_grad(func, grad, [.5, .5])
+    assert diff < 0.001
+
+def test_ml_gradient():
+    model = makemm()
+    model.fit_model()
+
+    lik = REML(model, info='newton')
+
+    def grad(params):
+        lik.set_parameters(params)
+        return lik.gradient()
+
+    def func(params):
+        lik.set_parameters(params)    
+        return lik.loglikelihood()
+
+    diff = check_grad(func, grad, [.5, .5])
+    assert diff < 0.001
 
 def test_ml_newton():
     model = makemm()
