@@ -135,7 +135,7 @@ class ML(MixedModelLikelihood):
         def ml_hessian_element(resid, Vinv, V_i, V_j):
             common_term = Vinv * V_i * Vinv * V_j
             a = 0.5 * np.trace(common_term)
-            b = resid.T * common_term * resid
+            b = resid.T * common_term * Vinv * resid
             return matrix.item(a - b)
 
         for i, ranef_a in enumerate(ranefs):
@@ -169,6 +169,7 @@ class ML(MixedModelLikelihood):
 
         for i, ranef_a in enumerate(ranefs):
             dV_dsigma_a=ranef_a.V_i
+            
             for j, ranef_b in enumerate(ranefs):
 
                 if j < i:
