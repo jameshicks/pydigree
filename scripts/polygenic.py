@@ -27,6 +27,7 @@ parser.add_argument('--d7', '--dominance', action='store_true', dest='d7',
                     help='Include dominance term in model')
 parser.add_argument('--garbley', action='store_true',
                     help='Replace y values with random normal deviates')
+parser.add_argument('--inflate', action='store_true')
 parser.add_argument(
     '--center', action='store_true', help='Center outcome data')
 args = parser.parse_args()
@@ -48,6 +49,9 @@ m.fit_model()
 
 if args.center:
     m.y = m._centery()
+
+if args.inflate:
+    m.y *= 100
 if args.garbley:
     m.y = np.matrix(np.random.normal(10, 5, len(m.y))).T
 
