@@ -57,6 +57,11 @@ def test_reml_gradient():
     diff = check_grad(func, grad, [.5, .5])
     assert diff < 0.001
 
+    assert check_grad(func, grad, [0.2, 0.8]) < 0.001
+    assert check_grad(func, grad, [0.8, 0.2]) < 0.001
+    assert check_grad(func, grad, [0.0, 1.0]) < 0.001
+    assert check_grad(func, grad, [10, 20]) < 0.001
+
 def test_ml_gradient():
     model = makemm()
     model.fit_model()
@@ -74,6 +79,12 @@ def test_ml_gradient():
 
     diff = check_grad(func, grad, [.5, .5])
     assert diff < 0.001
+
+    assert check_grad(func, grad, [0.2, 0.8]) < 0.001
+    assert check_grad(func, grad, [0.8, 0.2]) < 0.001
+    assert check_grad(func, grad, [0.0, 1.0]) < 0.001
+    assert check_grad(func, grad, [10, 20]) < 0.001
+
 
 def test_reml_hessian():
     model = makemm()
