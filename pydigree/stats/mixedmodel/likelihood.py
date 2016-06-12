@@ -124,91 +124,71 @@ class ML(MixedModelLikelihood):
         resid = y - X * beta
         llik = -0.5 * (n*l2pi + logdet(self.V) + resid.T * self.Vinv * resid)
         return matrix.item(llik)
-        
+
     def ml_hessian(self):
-        ranefs = self.mm.random_effects
-        n_ranefs = len(ranefs)
-        mat = np.zeros((n_ranefs, n_ranefs))
+        varmats = [x.V_i for x in self.mm.random_effects]
+        nrf = len(varmats)
 
-        resid = self.mm.y - self.mm.X * self.beta
-        
-        def ml_hessian_element(resid, Vinv, V_i, V_j):
-            common_term = Vinv * V_i * Vinv * V_j
-            a = 0.5 * np.trace(common_term)
-            b = resid.T * common_term * Vinv * resid
-            return matrix.item(a - b)
+        mat = np.zeros((nrf, nrf))
 
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-            for j, ranef_b in enumerate(ranefs):
-
-                if j < i:
-                    # Already set when we did the other side of the matrix
+        resid = (self.mm.y - self.mm.X * self.beta)
+        Vinv = self.Vinv
+        for i, V_i in enumerate(varmats):
+            for j, V_j in enumerate(varmats):
+                if j < i: 
                     continue
 
-                dV_dsigma_b=ranef_b.V_i
-                element=ml_hessian_element(resid, self.Vinv, dV_dsigma_a, dV_dsigma_b)
+                term1 = .5 * np.trace(Vinv * V_i * Vinv * V_j)
+                term2 = resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
+                element = matrix.item(term1 - term2)
 
-                mat[i, j]=element
-                mat[j, i]=element
+                mat[i, j] = element
+                mat[j, i] = element
 
-        return np.array(mat)
+        return np.matrix(mat)
 
     def ml_observed_information_matrix(self):
-        return -self.ml_hessian()
+        return -1.0 * self.ml_hessian()
 
     def ml_fisher_information_matrix(self):
-        ranefs = self.mm.random_effects
-        n_ranefs = len(ranefs)
-        mat = np.zeros((n_ranefs, n_ranefs))
+        varmats = [x.V_i for x in self.mm.random_effects]
+        nrf = len(varmats)
 
-        resid = self.mm.y - self.mm.X * self.beta
-        
-        def ml_fisher_element(Vinv, V_i, V_j):
-            return (0.5 * np.trace(Vinv * V_i * Vinv * V_j))
+        mat = np.zeros((nrf, nrf))
 
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-            
-            for j, ranef_b in enumerate(ranefs):
-
-                if j < i:
-                    # Already set when we did the other side of the matrix
+        resid = (self.mm.y - self.mm.X * self.beta)
+        Vinv = self.Vinv
+        for i, V_i in enumerate(varmats):
+            for j, V_j in enumerate(varmats):
+                if j < i: 
                     continue
 
-                dV_dsigma_b=ranef_b.V_i
-                element=ml_fisher_element(self.Vinv, dV_dsigma_a, dV_dsigma_b)
+                element = 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
 
-                mat[i, j]=element
-                mat[j, i]=element
+                mat[i, j] = element
+                mat[j, i] = element
 
-        return np.array(mat)
+        return np.matrix(mat)
 
     def ml_average_information_matrix(self):
-        ranefs = self.mm.random_effects
-        n_ranefs = len(ranefs)
-        mat = np.zeros((n_ranefs, n_ranefs))
+        varmats = [x.V_i for x in self.mm.random_effects]
+        nrf = len(varmats)
 
-        resid = self.mm.y - self.mm.X * self.beta
-        
-        def ml_fisher_element(Vinv, V_i, V_j):
-            return (0.5 * resid.T * (Vinv * V_i * Vinv * V_j) * resid)
+        mat = np.zeros((nrf, nrf))
 
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-            for j, ranef_b in enumerate(ranefs):
-
-                if j < i:
-                    # Already set when we did the other side of the matrix
+        resid = (self.mm.y - self.mm.X * self.beta)
+        Vinv = self.Vinv
+        for i, V_i in enumerate(varmats):
+            for j, V_j in enumerate(varmats):
+                if j < i: 
                     continue
 
-                dV_dsigma_b=ranef_b.V_i
-                element=ml_fisher_element(self.Vinv, dV_dsigma_a, dV_dsigma_b)
+                element = 0.5 * resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
 
-                mat[i, j]=element
-                mat[j, i]=element
+                mat[i, j] = element
+                mat[j, i] = element
 
-        return np.array(mat)
+        return np.matrix(mat)
 
 class REML(MixedModelLikelihood):
 
