@@ -122,9 +122,10 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
         if (i - 1) == scoring:
             information_mat = likelihood.set_info('nr')
 
+
         # Make the information matrix and gradient
         grad = likelihood.gradient()
-        mat = likelihood.hessian()
+        mat = likelihood.info_matrix()
         delta = scoring_iteration(mat, grad)
 
         if not is_positive_definite(mat):

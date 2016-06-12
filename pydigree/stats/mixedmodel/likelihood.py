@@ -79,7 +79,10 @@ class MixedModelLikelihood(object):
             raise ValueError('Unknown maximization method')
 
         self.method = info
-        
+    
+    def set_info(self, info):
+        self.method = info
+
     def set_parameters(self, params):
         self.parameters = np.array(params)
 
@@ -90,32 +93,48 @@ class MixedModelLikelihood(object):
         # We need beta for non-reml computations
         X = self.mm.X
         self.beta = pinv(X.T * self.Vinv * X) * X.T * self.Vinv * self.mm.y
-
-class ML(MixedModelLikelihood):
-    def set_info(self, info):
-        d = {'fs': self.ml_fisher_information_matrix,
-             'nr': self.ml_observed_information_matrix,
-             'ai': self.ml_average_information_matrix}
-    
-        self.hessian = d[info]
+        self.resid = self.mm.y - X * self.beta
 
     def gradient(self):
-        "The gradient of the ML function w/r/t each variance component"
-
-        def dML_dsigma(ranef):
-            "The ML derivative with regard to a variance component"
-
-            y, X, beta, Vinv = self.mm.y, self.mm.X, self.beta, self.Vinv
-            V_i = ranef.V_i
-
-            resid = y - X * beta
-            term1 = -0.5 * np.trace(Vinv * V_i)
-            term2 = 0.5 * resid.T * Vinv * V_i * Vinv * resid
-            return term1 + term2 
-
+        "The gradient of the likelihood function w/r/t each variance component"
         ranefs = self.mm.random_effects
-        nabla = [dML_dsigma(rf) for rf in ranefs]
+        nabla = [self.gradient_element(rf.V_i) for rf in ranefs]
         return np.array(nabla)
+
+    def info_matrix(self, kind=None):
+
+        if not kind:
+            kind = self.method
+        
+        if kind.lower() == 'fs':
+            information_element = self.fisher_element
+        elif kind.lower() == 'nr':
+            information_element = self.observed_element
+        elif kind.lower() == 'ai':
+            information_element = self.ai_element
+        elif kind.lower() == 'hessian':
+            information_element = self.hessian_element
+        else:
+            raise ValueError('Unknown information matrix: {}'.format(kind))
+
+        varmats = [x.V_i for x in self.mm.random_effects]
+        nrf = len(varmats)
+
+        mat = np.zeros((nrf, nrf))
+
+        for i, V_i in enumerate(varmats):
+            for j, V_j in enumerate(varmats):
+                if j < i: 
+                    continue
+
+                element = information_element(V_i, V_j)
+
+                mat[i, j] = element
+                mat[j, i] = element
+
+        return np.matrix(mat)
+
+class ML(MixedModelLikelihood):
 
     def loglikelihood(self):
         n = self.mm.nobs()
@@ -125,92 +144,30 @@ class ML(MixedModelLikelihood):
         llik = -0.5 * (n*l2pi + logdet(self.V) + resid.T * self.Vinv * resid)
         return matrix.item(llik)
 
-    def ml_hessian(self):
-        varmats = [x.V_i for x in self.mm.random_effects]
-        nrf = len(varmats)
+    def gradient_element(self, V_i):
+        resid, Vinv = self.resid, self.Vinv
 
-        mat = np.zeros((nrf, nrf))
+        return -0.5 * np.trace(Vinv * V_i) + 0.5 * resid.T * Vinv * V_i * Vinv * resid
 
-        resid = (self.mm.y - self.mm.X * self.beta)
+    def hessian_element(self, V_i, V_j):
+        resid, Vinv = self.resid, self.Vinv
+        term1 = 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
+        term2 = resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
+
+        return matrix.item(term1 - term2)
+
+    def observed_element(self, V_i, V_j):
+        return -1 * self.hessian_element(V_i, V_j)
+
+    def fisher_element(self, V_i, V_j):
         Vinv = self.Vinv
-        for i, V_i in enumerate(varmats):
-            for j, V_j in enumerate(varmats):
-                if j < i: 
-                    continue
-
-                term1 = .5 * np.trace(Vinv * V_i * Vinv * V_j)
-                term2 = resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
-                element = matrix.item(term1 - term2)
-
-                mat[i, j] = element
-                mat[j, i] = element
-
-        return np.matrix(mat)
-
-    def ml_observed_information_matrix(self):
-        return -1.0 * self.ml_hessian()
-
-    def ml_fisher_information_matrix(self):
-        varmats = [x.V_i for x in self.mm.random_effects]
-        nrf = len(varmats)
-
-        mat = np.zeros((nrf, nrf))
-
-        resid = (self.mm.y - self.mm.X * self.beta)
-        Vinv = self.Vinv
-        for i, V_i in enumerate(varmats):
-            for j, V_j in enumerate(varmats):
-                if j < i: 
-                    continue
-
-                element = 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
-
-                mat[i, j] = element
-                mat[j, i] = element
-
-        return np.matrix(mat)
-
-    def ml_average_information_matrix(self):
-        varmats = [x.V_i for x in self.mm.random_effects]
-        nrf = len(varmats)
-
-        mat = np.zeros((nrf, nrf))
-
-        resid = (self.mm.y - self.mm.X * self.beta)
-        Vinv = self.Vinv
-        for i, V_i in enumerate(varmats):
-            for j, V_j in enumerate(varmats):
-                if j < i: 
-                    continue
-
-                element = 0.5 * resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
-
-                mat[i, j] = element
-                mat[j, i] = element
-
-        return np.matrix(mat)
+        return 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
+    
+    def ai_element(self, V_i, V_j):
+        resid, Vinv = self.resid, self.Vinv
+        return 0.5 * resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
 
 class REML(MixedModelLikelihood):
-
-    def set_info(self, info):
-        d = {'fs': self.reml_fisher_information_matrix,
-             'nr': self.reml_observed_information_matrix,
-             'ai': self.reml_average_information_matrix}
-    
-        self.hessian = d[info]
-
-    def gradient(self):
-        "The gradient of the REML function w/r/t each variance component"
-
-        def dREML_dsigma(y, Z, G, P):
-            "The REML derivative with regard to a variance component"
-            PZGZt = P * Z * G * Z.T
-            dl_dsig = -.5 * np.trace(PZGZt) + .5 * (y.T * PZGZt * P * y)
-            return matrix.item(dl_dsig)
-
-        ranefs = self.mm.random_effects
-        nabla = [dREML_dsigma(self.mm.y, rf.Z, rf.G, self.P) for rf in ranefs]
-        return np.array(nabla)
 
     def loglikelihood(self):
         """
@@ -222,13 +179,6 @@ class REML(MixedModelLikelihood):
         Harville. 'Maximum Likelihood Approaches to Variance Component
         Estimation and to Related Problems' Journal of the American Statistical
         Association. (1977) (72):258
-
-        Lange, Westlake, & Spence. 'Extensions to pedigree analysis III.
-        Variance components by the scoring method.' Ann Hum Genet. (1976).
-        39:4,485-491
-        DOI: 10.1111/j.1469-1809.1976.tb00156.x
-
-        SAS documentation for PROC MIXED
         """
         y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
         n = X.shape[0]
@@ -240,89 +190,28 @@ class REML(MixedModelLikelihood):
                                   + (n - rank) * l2pi)
         return matrix.item(llik_restricted)
 
+    def gradient_element(self, V_i):
+        y, P = self.mm.y, self.P
+        term1 = -0.5 * np.trace(P * V_i)
+        term2 = y.T * P * V_i * P * y
+        return matrix.item(term1+term2)
 
-    def reml_hessian(self):
-        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
-        ranefs = self.mm.random_effects
+    def hessian_element(self, V_i, V_j):
+        y, P = self.mm.y, self.P
+        common_term = P * V_i * P * V_j
+        a = 0.5 * np.trace(common_term)
+        b = y.T * common_term * P * y
+        return matrix.item(a - b)
 
-        n_ranefs = len(ranefs)
-        mat = np.zeros((n_ranefs, n_ranefs))
-
-        def reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b):
-            common_term=P * dV_dsigma_a * P * dV_dsigma_b
-            a=.5 * np.trace(common_term)
-            b=y.T * common_term * P * y
-            return matrix.item(a - b)
-
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-            for j, ranef_b in enumerate(ranefs):
-
-                if j < i:
-                    # Already set when we did the other side of the matrix
-                    continue
-
-                dV_dsigma_b=ranef_b.V_i
-                element=reml_hessian_element(y, P, dV_dsigma_a, dV_dsigma_b)
-
-                mat[i, j]=element
-                mat[j, i]=element
-
-        return np.array(mat)
-
-
-    def reml_observed_information_matrix(self):        
-        return -self.reml_hessian()
-
-    def reml_fisher_information_matrix(self):
-        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
-        ranefs=self.mm.random_effects
-
-        mat=np.zeros((len(ranefs), len(ranefs)))
-
-        def reml_fisher_element(P, dV_dsigma_a, dV_dsigma_b):
-            return .5 * np.trace(P * dV_dsigma_a * P * dV_dsigma_b)
-
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-
-            for j, ranef_b in enumerate(ranefs):
-                if j < i:
-                    # Already set when we did the other side of the matrix
-                    continue
-
-                element=reml_fisher_element(P, dV_dsigma_a, ranef_b.V_i)
-
-                mat[i, j]=element
-                mat[j, i]=element
-
-        return mat
-
-
-    def reml_average_information_matrix(self):
-        y, V, X, P, Vinv = self.mm.y, self.V, self.mm.X, self.P, self.Vinv
-        ranefs=self.mm.random_effects
-        
-        mat=np.zeros((len(ranefs), len(ranefs)))
-
-        def reml_average_information_element(y, P, dV_dsigma_a, dV_dsigma_b):
-            return .5 * y.T * P * dV_dsigma_a * P * dV_dsigma_b * P * y
-
-        for i, ranef_a in enumerate(ranefs):
-            dV_dsigma_a=ranef_a.V_i
-
-            for j, ranef_b in enumerate(ranefs):
-                if j < i:
-                    # Already set when we did the other side of the matrix
-                    continue
-                dV_dsigma_b=ranef_b.V_i
-                element=reml_average_information_element(y, P,
-                                                           dV_dsigma_a,
-                                                           dV_dsigma_b)
-                mat[i, j]=element
-                mat[j, i]=element
-
-        return mat
+    def observed_element(self, V_i, V_j):        
+        return -1.0 * self.hessian_element(V_i, V_j)
+  
+    def fisher_element(self, V_i, V_j):
+        return .5 * np.trace(self.P * V_i * self.P * V_j)
+    
+    def ai_element(self, V_i, V_j):
+        y, P = self.mm.y, self.P
+        return .5 * y.T * P * V_i * P * V_j * P * y
 
     def expectation_maximization(self):
         "Performs a round of Expectation-Maximization REML"
