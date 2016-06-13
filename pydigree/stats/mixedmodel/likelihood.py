@@ -167,6 +167,20 @@ class ML(MixedModelLikelihood):
         resid, Vinv = self.resid, self.Vinv
         return 0.5 * resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
 
+    def expectation_maximization(self):
+        "Performs a round of Expectation-Maximization ML"
+        resid, Vinv = self.resid, self.Vinv
+
+        n = self.mm.nobs()
+        coefficients = np.array([
+            matrix.item(resid.T * Vinv * rf.V_i * Vinv * resid - np.trace(Vinv * rf.V_i))
+                        for rf in self.mm.random_effects])
+
+        levelsizes = np.array([x.nlevels for x in self.mm.random_effects])
+
+        delta = (self.parameters ** 2 / levelsizes) * coefficients
+        return self.parameters + delta
+
 class REML(MixedModelLikelihood):
 
     def loglikelihood(self):
