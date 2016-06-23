@@ -180,3 +180,34 @@ cdef class Segment:
             if self.start == -1 or self.stop == -1:
                 raise ValueError('ChromsomeTemplate not supplied')
             return self.stop - self.start
+
+
+cdef class SparseListElement:
+    cdef uint32_t index
+    cdef object element
+
+    def __init__(self, index, element):
+        self.index = index
+        self.element = element
+
+    def __richcmp__(self, other, int op):
+        # Op codes
+        # <   0
+        # ==  2
+        # >   4
+        # <=  1
+        # !=  3
+        # >=  5
+
+        if not isinstance(other, SparseListElement):
+            t = type(other)
+            raise ValueError("Can't compare SortedListElement and {}".format(t))
+
+        if op == 2: # Equality
+            return self.__eq(other)
+        elif op == 3: # Not equality
+            return not self._eq(other)
+
+    cpdef bint __eq(self, other):
+        res = self.index == other.index and self.element == other.element
+        return res
