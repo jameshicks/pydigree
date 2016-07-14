@@ -181,14 +181,74 @@ cdef class Segment:
                 raise ValueError('ChromsomeTemplate not supplied')
             return self.stop - self.start
 
+cdef class SparseArray:
+    # I imagine at some point I'll have to rewrite this whole thing
+    # as a red-black tree or something, but until then we'll just bsearch
+    # a sorted list
 
-cdef class SparseListElement:
-    cdef uint32_t index
-    cdef object element
+    cdef readonly list container
+    cdef object default
+    cdef Py_ssize_t size
 
-    def __init__(self, index, element):
+    def __init__(self, size, refcode=None, initial=None):
+        pass
+
+    cdef Py_ssize_t bsearch(self, Py_ssize_t idx_saught):
+        cdef Py_ssize_t high = len(self.container)
+        cdef Py_ssize_t low = 0
+        cdef Py_ssize_t mid = (high + low) / 2
+        cdef SparseArrayElement pivot
+        
+        while low <= high:
+            pivot = self.container[mid]
+            if pivot.index >= high:
+                high = pivot.index - 1
+            else:
+                low = pivot.index + 1
+        return low
+
+    def __getitem__(self, Py_ssize_t index):
+        cdef Py_ssize_t putative_idx = self.bsearch(index)
+        cdef SparseArrayElement element = self.container[putative_idx]
+        if element.index == index:
+            return element.value
+        else:
+            return self.refcode
+
+    def __setitem__(self, Py_ssize_t index, object value):
+        cdef Py_ssize_t internal_index = self.bsearch(index)
+        cdef SparseArrayElement element = self.container[internal_index]
+
+        # There are four scenarios here:
+        # 1) There's a non-sparse element at `index` and we have to 
+        #    change the value to another non-sparse value
+        # 2) There's a non-sparse element at `index` and we need to change
+        #    it to the sparse value (i.e. remove the SparseArrayElement)
+        # 3) There's sparsity at the index and we have to put something there
+        # 4) There's sparsity at the index and we have to leave it sparse
+
+        
+        if internal_index == element.index:
+            if value == self.refcode:
+                # Scenario 2
+                del self.container[internal_index]
+            else:
+                # Scenario 1
+                element.value = value
+        # Scenario 3 
+        if internal_index != element.index:
+            newelement = SparseArrayElement(index, value)
+            self.container.insert(internal_index, newelement)
+
+        # Scenario 4 (sparse to sparse) doesnt need anything
+
+cdef class SparseArrayElement:
+    cdef Py_ssize_t index
+    cdef object value
+
+    def __init__(self, index, value):
         self.index = index
-        self.element = element
+        self.element = value
 
     def __richcmp__(self, other, int op):
         # Op codes
@@ -199,9 +259,9 @@ cdef class SparseListElement:
         # !=  3
         # >=  5
 
-        if not isinstance(other, SparseListElement):
+        if not isinstance(other, SparseArrayElement):
             t = type(other)
-            raise ValueError("Can't compare SortedListElement and {}".format(t))
+            raise ValueError("Can't compare SparseArrayElement and {}".format(t))
 
         if op == 2: # Equality
             return self.__eq(other)
@@ -209,5 +269,5 @@ cdef class SparseListElement:
             return not self._eq(other)
 
     cpdef bint __eq(self, other):
-        res = self.index == other.index and self.element == other.element
+        res = self.index == other.index and self.value == other.value
         return res
