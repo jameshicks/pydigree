@@ -193,6 +193,7 @@ cdef class SparseArray:
     def __init__(self, size, refcode=None, initial=None):
         self.container = []
         self.refcode = refcode
+        self.size = size
 
     cdef Py_ssize_t bsearch(self, Py_ssize_t idx_saught):
         cdef Py_ssize_t high = len(self.container)
