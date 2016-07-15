@@ -209,15 +209,24 @@ cdef class SparseArray:
                 low = mid + 1
         return low
 
-    def __getitem__(self, Py_ssize_t index):
+    def __getitem__(self, Py_ssize_t index):     
+        if len(self.container) == 0:
+            return self.refcode
+        
         cdef Py_ssize_t putative_idx = self.bsearch(index)
         cdef SparseArrayElement element = self.container[putative_idx]
+        
         if element.index == index:
             return element.value
         else:
             return self.refcode
 
     def __setitem__(self, Py_ssize_t index, object value):
+        if len(self.container) == 0:
+            newelement = SparseArrayElement(index, value)
+            self.container.append(newelement)
+            return 
+
         cdef Py_ssize_t internal_index = self.bsearch(index)
         cdef SparseArrayElement element = self.container[internal_index]
 
