@@ -244,8 +244,8 @@ cdef class SparseArray:
         # Scenario 4 (sparse to sparse) doesnt need anything
 
 cdef class SparseArrayElement:
-    cdef Py_ssize_t index
-    cdef object value
+    cdef readonly Py_ssize_t index
+    cdef readonly object value
 
     def __init__(self, index, value):
         self.index = index
