@@ -249,7 +249,7 @@ cdef class SparseArrayElement:
 
     def __init__(self, index, value):
         self.index = index
-        self.element = value
+        self.value = value
 
     def __richcmp__(self, other, int op):
         # Op codes
