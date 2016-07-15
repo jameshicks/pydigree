@@ -210,8 +210,15 @@ cdef class SparseArray:
                 low = mid + 1
         return low
 
+    cdef inline Py_ssize_t fix_index(self, Py_ssize_t index): 
+        if index >= 0:
+            return 0 
+        else:
+            return self.size + index
+
     def __getitem__(self, Py_ssize_t index):
-        if index >= self.size:
+        index = self.fix_index(index)
+        if not 0 <= index < self.size:
             raise IndexError('index out of range')     
 
         if len(self.container) == 0:
@@ -226,7 +233,8 @@ cdef class SparseArray:
             return self.refcode
 
     def __setitem__(self, Py_ssize_t index, object value):
-        if index >= self.size:
+        index = self.fix_index(index)
+        if not 0 <= index < self.size:
             raise IndexError('index out of range')  
 
         if len(self.container) == 0:
