@@ -210,7 +210,10 @@ cdef class SparseArray:
                 low = mid + 1
         return low
 
-    def __getitem__(self, Py_ssize_t index):     
+    def __getitem__(self, Py_ssize_t index):
+        if index >= self.size:
+            raise IndexError('index out of range')     
+
         if len(self.container) == 0:
             return self.refcode
         
@@ -223,6 +226,9 @@ cdef class SparseArray:
             return self.refcode
 
     def __setitem__(self, Py_ssize_t index, object value):
+        if index >= self.size:
+            raise IndexError('index out of range')  
+
         if len(self.container) == 0:
             newelement = SparseArrayElement(index, value)
             self.container.append(newelement)
