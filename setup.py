@@ -30,7 +30,9 @@ else:
     macros = None
 
 cyext = [Extension('pydigree.cyfuncs', cysources,
-                   include_dirs=[numpy.get_include()], define_macros=macros)]
+                   include_dirs=[numpy.get_include()],
+                   extra_compile_args=['-Wno-unused-function'],
+                   define_macros=macros)]
 
 setup(
     packages=['pydigree'],
