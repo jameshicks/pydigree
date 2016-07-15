@@ -268,6 +268,9 @@ cdef class SparseArrayElement:
         self.index = index
         self.value = value
 
+    def __repr__(self):
+        return 'SparseArrayElement({},{})'.format(self.index, self.value)
+
     def __richcmp__(self, other, int op):
         # Op codes
         # <   0
