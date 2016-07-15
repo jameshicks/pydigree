@@ -187,8 +187,8 @@ cdef class SparseArray:
     # a sorted list
 
     cdef readonly list container
-    cdef object refcode
-    cdef Py_ssize_t size
+    cdef readonly object refcode
+    cdef readonly Py_ssize_t size
 
     def __init__(self, size, refcode=None, initial=None):
         self.container = []
