@@ -196,7 +196,8 @@ cdef class SparseArray:
         self.size = size
 
     cdef Py_ssize_t bsearch(self, Py_ssize_t idx_saught):
-        cdef Py_ssize_t high = len(self.container)
+        'Return the leftmost internal index for a saught full-index'
+        cdef Py_ssize_t high = len(self.container) - 1
         cdef Py_ssize_t low = 0
         cdef Py_ssize_t mid = (high + low) / 2
         cdef SparseArrayElement pivot
@@ -204,15 +205,19 @@ cdef class SparseArray:
         while low <= high:
             mid = (high + low) / 2
             pivot = self.container[mid]
-            if pivot.index >= high:
+
+            if pivot.index > idx_saught:
                 high = mid - 1
-            else:
+            elif pivot.index < idx_saught:
                 low = mid + 1
+            else:
+                return mid
+
         return low
 
     cdef inline Py_ssize_t fix_index(self, Py_ssize_t index): 
         if index >= 0:
-            return 0 
+            return index 
         else:
             return self.size + index
 
@@ -243,8 +248,14 @@ cdef class SparseArray:
             return 
 
         cdef Py_ssize_t internal_index = self.bsearch(index)
-        cdef SparseArrayElement element = self.container[internal_index]
 
+        if internal_index >= len(self.container):
+            newelement = SparseArrayElement(index, value)
+            self.container.append(newelement)
+            return 
+
+        cdef SparseArrayElement element = self.container[internal_index]
+        cdef Py_ssize_t insertion_point
         # There are four scenarios here:
         # 1) There's a non-sparse element at `index` and we have to 
         #    change the value to another non-sparse value
@@ -253,7 +264,6 @@ cdef class SparseArray:
         # 3) There's sparsity at the index and we have to put something there
         # 4) There's sparsity at the index and we have to leave it sparse
 
-        
         if internal_index == element.index:
             if value == self.refcode:
                 # Scenario 2
@@ -264,7 +274,11 @@ cdef class SparseArray:
         # Scenario 3 
         if internal_index != element.index:
             newelement = SparseArrayElement(index, value)
-            self.container.insert(internal_index, newelement)
+            if element.index < index:
+                insertion_point = internal_index + 1
+            else:
+                insertion_point = internal_index
+            self.container.insert(insertion_point, newelement)
 
         # Scenario 4 (sparse to sparse) doesnt need anything
 
@@ -277,7 +291,7 @@ cdef class SparseArrayElement:
         self.value = value
 
     def __repr__(self):
-        return 'SparseArrayElement({},{})'.format(self.index, self.value)
+        return 'SparseArrayElement({},{})'.format(self.index, repr(self.value))
 
     def __richcmp__(self, other, int op):
         # Op codes
