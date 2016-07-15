@@ -201,11 +201,12 @@ cdef class SparseArray:
         cdef SparseArrayElement pivot
         
         while low <= high:
+            mid = (high + low) / 2
             pivot = self.container[mid]
             if pivot.index >= high:
-                high = pivot.index - 1
+                high = mid - 1
             else:
-                low = pivot.index + 1
+                low = mid + 1
         return low
 
     def __getitem__(self, Py_ssize_t index):
