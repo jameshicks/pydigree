@@ -272,7 +272,7 @@ cdef class SparseArray:
         # 3) There's sparsity at the index and we have to put something there
         # 4) There's sparsity at the index and we have to leave it sparse
 
-        if internal_index == element.index:
+        if index == element.index:
             if value == self.refcode:
                 # Scenario 2
                 del self.container[internal_index]
@@ -280,7 +280,7 @@ cdef class SparseArray:
                 # Scenario 1
                 element.value = value
         # Scenario 3 
-        if internal_index != element.index:
+        if index != element.index:
             newelement = SparseArrayElement(index, value)
             if element.index < index:
                 insertion_point = internal_index + 1
