@@ -2,7 +2,7 @@ from nose.tools import assert_raises
 
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper, log_base_change
-from pydigree.common import runs, runs_gte, interleave
+from pydigree.common import runs, runs_gte, interleave, is_sorted
 from pydigree.cyfuncs import runs_gte_uint8
 
 from math import log, log10, e
@@ -11,6 +11,14 @@ import numpy as np
 def float_equality(a,b):
     return abs(a-b) < 1e-15
  
+def test_issorted():
+    assert is_sorted([]) 
+    assert is_sorted([1])
+
+    assert is_sorted([1,2])
+    assert not is_sorted([2,1])
+    assert is_sorted([1,1,1,1])
+
 def test_count():
     assert count(1, [0,0,0,1,1,1,0,0,0]) == 3
     assert count(1, [0]*10) == 0

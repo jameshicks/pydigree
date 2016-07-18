@@ -148,6 +148,18 @@ def set_intervals_to_value(intervals, size, value):
         array[start:(stop+1)] = value
     return array
 
+cpdef bint is_sorted(sequence):
+    cdef Py_ssize_t n = len(sequence)
+    cdef Py_ssize_t i = 0
+
+    if n < 2:
+        return True 
+
+    for i in range(1, n):
+        if sequence[i] < sequence[i-1]:
+            return False
+
+    return True
 
 cdef class Segment:
     cdef object ind1, ind2, chromosome
