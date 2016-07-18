@@ -316,6 +316,14 @@ cdef class SparseArray:
 
         # Scenario 4 (sparse to sparse) doesnt need anything
 
+    @staticmethod
+    def from_sequence(seq, refcode): 
+        cdef Py_ssize_t n = len(seq)
+        sa = SparseArray(n, refcode)
+        sa.container = [SparseArrayElement(i,x) for i,x in 
+                        enumerate(seq) if x != refcode]
+        return sa
+
 cdef class SparseArrayElement:
     cdef readonly Py_ssize_t index
     cdef readonly object value
