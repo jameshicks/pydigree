@@ -35,6 +35,16 @@ def test_setitem():
     assert s.indices == [5, 10, 20]
     assert s.values == [1, 1, 2]
 
+def test_setslice():
+	s = SparseArray(100, 0)
+	s[1] = 2
+	s[99] = 2
+
+	s[5:8] = 3
+	assert len(s.container) == 5
+	assert s.indices == [1, 5, 6, 7, 99]
+	assert s.values == [2, 3, 3, 3, 2]
+
 
 def test_staticbuilted():
     s = SparseArray(100, 0)

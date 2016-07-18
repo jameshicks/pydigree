@@ -1,4 +1,4 @@
-
+from collections import Sequence
 import numpy as np
 cimport numpy as np
 cimport cython
@@ -315,6 +315,20 @@ cdef class SparseArray:
             self.container.insert(insertion_point, newelement)
 
         # Scenario 4 (sparse to sparse) doesnt need anything
+
+    def __setslice__(self, Py_ssize_t start, Py_ssize_t stop, object value):
+        if isinstance(value, SparseArray):
+            raise NotImplementedError
+        elif isinstance(value, Sequence):
+            raise NotImplementedError
+        else:
+            self.set_slice_to_value(start, stop, value)
+
+    cdef set_slice_to_value(self, Py_ssize_t start, Py_ssize_t stop, object value):
+        cdef list before = [x for x in self.container if x.index < start]
+        cdef list after = [x for x in self.container if x.index >= stop]
+        cdef list mid = [SparseArrayElement(i, value) for i in range(start, stop)]
+        self.container = before + mid + after
 
     @staticmethod
     def from_sequence(seq, refcode): 
