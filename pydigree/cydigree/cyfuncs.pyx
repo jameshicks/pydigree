@@ -207,6 +207,9 @@ cdef class SparseArray:
         self.refcode = refcode
         self.size = size
 
+    def __len__(self):
+        return self.size
+
     property values:
         def __get__(self):
             return [x.value for x in self.container]
