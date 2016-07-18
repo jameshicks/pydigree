@@ -258,7 +258,13 @@ cdef class SparseArray:
         else:
             return self.size + index
 
-    def __getitem__(self, Py_ssize_t index):
+    def __getitem__(self, index):
+        if type(index) is slice:
+            return self._get_slice(index.start, index.stop)
+        else:
+            return self._get_item(index)
+
+    def _get_item(self, index):
         index = self.fix_index(index)
         if not 0 <= index < self.size:
             raise IndexError('index out of range')     
@@ -274,7 +280,21 @@ cdef class SparseArray:
         else:
             return self.refcode
 
-    def __setitem__(self, Py_ssize_t index, object value):
+    def _get_slice(self, Py_ssize_t start, Py_ssize_t stop):
+        cdef Py_ssize_t slicelen = stop - start
+        cdef nonsparsevals = [x for x in self.container if start <= x.index < stop]
+        cdef SparseArray sliced = SparseArray(slicelen, self.refcode)
+        sliced.container = nonsparsevals
+
+        return sliced  
+
+    def __setitem__(self, index, object value):
+        if type(index) is slice:
+            self._set_slice(index.start, index.stop, value)
+        else:
+            self._set_value(index, value)
+
+    def _set_value(self, Py_ssize_t index, object value):
         index = self.fix_index(index)
         if not 0 <= index < self.size:
             raise IndexError('index out of range')  
@@ -319,18 +339,18 @@ cdef class SparseArray:
 
         # Scenario 4 (sparse to sparse) doesnt need anything
 
-    def __setslice__(self, Py_ssize_t start, Py_ssize_t stop, object value):
+    def _set_slice(self, Py_ssize_t start, Py_ssize_t stop, object value):
+        cdef list before = [x for x in self.container if x.index < start]
+        cdef list after = [x for x in self.container if x.index >= stop]
+        cdef list mid
+
         if isinstance(value, SparseArray):
-            raise NotImplementedError
+            mid = [x for x in value.container if start <= (x.index+start) < stop]       
         elif isinstance(value, Sequence):
             raise NotImplementedError
         else:
-            self.set_slice_to_value(start, stop, value)
+            mid = [SparseArrayElement(i, value) for i in range(start, stop)]
 
-    cdef set_slice_to_value(self, Py_ssize_t start, Py_ssize_t stop, object value):
-        cdef list before = [x for x in self.container if x.index < start]
-        cdef list after = [x for x in self.container if x.index >= stop]
-        cdef list mid = [SparseArrayElement(i, value) for i in range(start, stop)]
         self.container = before + mid + after
 
     @staticmethod
