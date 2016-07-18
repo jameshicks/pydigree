@@ -1,12 +1,14 @@
 from pydigree.cyfuncs import SparseArray, SparseArrayElement
 
+
 def SLE_eq():
-	a = SparseArrayElement(1,1)
-	b = SparseArrayElement(1,1)
-	c = SparseArrayElement(2,2)
-	assert a == b
-	assert not a == c
-	assert a != c
+    a = SparseArrayElement(1, 1)
+    b = SparseArrayElement(1, 1)
+    c = SparseArrayElement(2, 2)
+    assert a == b
+    assert not a == c
+    assert a != c
+
 
 def test_setitem():
     s = SparseArray(100, 0)
@@ -35,16 +37,38 @@ def test_setitem():
     assert s.indices == [5, 10, 20]
     assert s.values == [1, 1, 2]
 
+def test_getslice():
+    s = SparseArray(100,0)
+    s[5] = 20
+    s[10] = 40
+
+    assert len(s[4:20].container) == 2
+
+    s2 = SparseArray(100, 0)
+    s2[1] = 2
+    s2[99] = 2
+    s2[5] = 20
+    s2[10] = 40
+
+    assert len(s2[4:20].container) == 2     
+
 def test_setslice():
-	s = SparseArray(100, 0)
-	s[1] = 2
-	s[99] = 2
+    s = SparseArray(100, 0)
+    s[1] = 2
+    s[99] = 2
 
-	s[5:8] = 3
-	assert len(s.container) == 5
-	assert s.indices == [1, 5, 6, 7, 99]
-	assert s.values == [2, 3, 3, 3, 2]
+    s[5:8] = 3
+    assert len(s.container) == 5
+    assert s.indices == [1, 5, 6, 7, 99]
+    assert s.values == [2, 3, 3, 3, 2]
 
+    s = SparseArray(100, 0)
+    t = SparseArray(100,0)
+    t[5:10] = 1
+    s[5:10] = t[5:10]
+    assert len(t.container) == 5
+    assert t.values == [1]*5
+    assert t.indices == [5, 6, 7, 8, 9]
 
 def test_staticbuilted():
     s = SparseArray(100, 0)
