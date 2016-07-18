@@ -211,10 +211,24 @@ cdef class SparseArray:
         def __get__(self):
             return [x.value for x in self.container]
 
+        def __set__(self, vals):
+            cdef Py_ssize_t n = len(vals)
+            cdef Py_ssize_t i
+
+            for i in range(n):
+                self.container[i].value = vals[i]
+
     property indices:
         def __get__(self):
             return [x.index for x in self.container]
 
+        def __set__(self, vals):
+            cdef Py_ssize_t n = len(vals)
+            cdef Py_ssize_t i
+
+            for i in range(n):
+                self.container[i].index = vals[i]
+    
     cdef Py_ssize_t bsearch(self, Py_ssize_t idx_saught):
         'Return the leftmost internal index for a saught full-index'
         cdef Py_ssize_t high = len(self.container) - 1
