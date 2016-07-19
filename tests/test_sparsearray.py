@@ -52,6 +52,18 @@ def test_getslice():
 
     assert len(s2[4:20].container) == 2
 
+def test_fancy_index_get():
+    s = SparseArray(5,0)
+    s[3] = 1
+    s[(False, False, True, False, True)].tolist() == [1,0]
+
+    try:
+        s[(False, True)] 
+        assert False
+    except IndexError:
+        # We wanted this error
+        pass
+
 def test_tolist():
     s = SparseArray(5, 0)
     assert s.tolist() == [0,0,0,0,0]

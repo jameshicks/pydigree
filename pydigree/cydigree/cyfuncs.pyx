@@ -261,10 +261,12 @@ cdef class SparseArray:
     def __getitem__(self, index):
         if type(index) is slice:
             return self._get_slice(index.start, index.stop)
+        elif isinstance(index, Sequence) and type(index[0]) is bool:
+            return self._get_bool_indices(index)
         else:
-            return self._get_item(index)
+            return self._get_single_item(index)
 
-    def _get_item(self, index):
+    def _get_single_item(self, index):
         index = self.fix_index(index)
         if not 0 <= index < self.size:
             raise IndexError('index out of range')     
@@ -286,7 +288,16 @@ cdef class SparseArray:
         cdef SparseArray sliced = SparseArray(slicelen, self.refcode)
         sliced.container = nonsparsevals
 
-        return sliced  
+        return sliced
+
+    def _get_bool_indices(self, bools):
+        if len(bools) != self.size:
+            raise IndexError('Bool index not right length')
+        cdef set wantedsites = {i for i,x in enumerate(bools) if x}  
+        cdef Py_ssize_t size = len(wantedsites)
+        ns = SparseArray(size, self.refcode)
+        ns.container = [x for x in self.container if x.index in wantedsites]
+        return ns
 
     def __setitem__(self, index, object value):
         if type(index) is slice:
