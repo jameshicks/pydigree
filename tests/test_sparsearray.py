@@ -50,7 +50,16 @@ def test_getslice():
     s2[5] = 20
     s2[10] = 40
 
-    assert len(s2[4:20].container) == 2     
+    assert len(s2[4:20].container) == 2
+
+def test_tolist():
+    s = SparseArray(5, 0)
+    assert s.tolist() == [0,0,0,0,0]
+
+    s = SparseArray(8, 1)
+    s[1] = 2
+    s[5] = 3
+    assert s.tolist() == [1, 2, 1, 1, 1, 3, 1, 1]
 
 def test_setslice():
     s = SparseArray(100, 0)

@@ -353,6 +353,13 @@ cdef class SparseArray:
 
         self.container = before + mid + after
 
+    def tolist(self):
+        cdef Py_ssize_t i
+        cdef list dense
+        cdef set denselocs = {x.index for x in self.container}
+        dense = [(self[i] if i in denselocs else self.refcode) for i in range(self.size)]
+        return dense
+
     @staticmethod
     def from_sequence(seq, refcode): 
         cdef Py_ssize_t n = len(seq)
