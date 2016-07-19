@@ -263,6 +263,8 @@ cdef class SparseArray:
             return self._get_slice(index.start, index.stop)
         elif isinstance(index, Sequence) and type(index[0]) is bool:
             return self._get_bool_indices(index)
+        elif isinstance(index, Sequence) and type(index[0]) is int:
+            return self._get_multiple_indices(index)
         else:
             return self._get_single_item(index)
 
@@ -299,9 +301,18 @@ cdef class SparseArray:
         ns.container = [x for x in self.container if x.index in wantedsites]
         return ns
 
+    def _get_multiple_indices(self, indices):
+        vals = [self[i] for i in indices]
+        ns = SparseArray.from_sequence(vals, self.refcode)
+        return ns
+
     def __setitem__(self, index, object value):
         if type(index) is slice:
             self._set_slice(index.start, index.stop, value)
+        elif isinstance(index, Sequence) and type(index[0]) is bool:
+            self._set_bool_indices(index, value)
+        elif isinstance(index, Sequence) and type(index[0]) is int:
+            self._set_multiple_values(index, value)
         else:
             self._set_value(index, value)
 
@@ -363,6 +374,25 @@ cdef class SparseArray:
             mid = [SparseArrayElement(i, value) for i in range(start, stop)]
 
         self.container = before + mid + after
+
+    def _set_bool_indices(self, bools, vals):
+        cdef Py_ssize_t i, fullidx
+        cdef object x
+        cdef list trueidx = [i for i,x in enumerate(bools) if x]
+
+        if not len(bools) == self.size:
+            raise IndexError('Mask not same size as array')        
+
+        self._set_multiple_values(trueidx, vals)
+
+    def _set_multiple_values(self, indices, values):
+        cdef Py_ssize_t fullidx, i
+        if not len(indices) == len(values):
+            raise IndexError('Index and values different sizes')
+
+        for i in range(len(indices)):
+            fullidx = indices[i]
+            self[fullidx] = values[i]
 
     def tolist(self):
         cdef Py_ssize_t i
