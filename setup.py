@@ -29,13 +29,18 @@ if cyprofile:
 else:
     macros = None
 
-cyext = [Extension('pydigree.cyfuncs', cysources,
+cyext = [Extension('pydigree.cyfuncs',
+                   sources=cysources,
                    include_dirs=[numpy.get_include()],
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)]
 
 setup(
-    packages=['pydigree'],
-    ext_modules=cythonize(cyext),
-    requires=['numpy', 'scipy', 'pandas']
-)
+        name='pydigree',
+        description='A package for operations on pedigree and genotype data',
+        author='James Hicks',
+        url='https://github.com/jameshicks/pydigree',
+        packages=['pydigree'],
+        ext_modules=cythonize(cyext),
+        requires=['numpy', 'scipy', 'pandas', 'cython']
+    )
