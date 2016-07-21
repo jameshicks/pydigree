@@ -21,14 +21,14 @@ cpdef ibs(g1,g2, missingval=None):
     return 0
 
 
-def runs(sequence, predicate, minlength=2):
+def runs(sequence, predicate, Py_ssize_t minlength=2):
     """
     Identifies runs of values in an interable for which predicate(value) 
     evaluates True and yields 2-tuples of the start and end (inclusive)
     indices
     """
-    cdef int inrun = False
-    cdef int start, stop
+    cdef bint inrun = False
+    cdef Py_ssize_t start, stop, i
     
     if not sequence:
         return []
@@ -268,7 +268,7 @@ cdef class SparseArray:
         else:
             return self._get_single_item(index)
 
-    def _get_single_item(self, index):
+    cdef _get_single_item(self, index):
         index = self.fix_index(index)
         if not 0 <= index < self.size:
             raise IndexError('index out of range')     
@@ -284,15 +284,15 @@ cdef class SparseArray:
         else:
             return self.refcode
 
-    def _get_slice(self, Py_ssize_t start, Py_ssize_t stop):
+    cdef _get_slice(self, Py_ssize_t start, Py_ssize_t stop):
         cdef Py_ssize_t slicelen = stop - start
-        cdef nonsparsevals = [x for x in self.container if start <= x.index < stop]
+        cdef list nonsparsevals = [x for x in self.container if start <= x.index < stop]
         cdef SparseArray sliced = SparseArray(slicelen, self.refcode)
         sliced.container = nonsparsevals
 
         return sliced
 
-    def _get_bool_indices(self, bools):
+    cdef _get_bool_indices(self, bools):
         if len(bools) != self.size:
             raise IndexError('Bool index not right length')
         cdef set wantedsites = {i for i,x in enumerate(bools) if x}  
@@ -301,9 +301,9 @@ cdef class SparseArray:
         ns.container = [x for x in self.container if x.index in wantedsites]
         return ns
 
-    def _get_multiple_indices(self, indices):
+    cdef _get_multiple_indices(self, indices):
         vals = [self[i] for i in indices]
-        ns = SparseArray.from_sequence(vals, self.refcode)
+        cdef SparseArray ns = SparseArray.from_sequence(vals, self.refcode)
         return ns
 
     def __setitem__(self, index, object value):
@@ -319,7 +319,8 @@ cdef class SparseArray:
         else:
             self._set_value(index, value)
 
-    def _set_value(self, Py_ssize_t index, object value):
+    cdef inline _set_value(self, Py_ssize_t index, object value):
+        cdef SparseArrayElement newelement
         index = self.fix_index(index)
         if not 0 <= index < self.size:
             raise IndexError('index out of range')  
@@ -364,7 +365,7 @@ cdef class SparseArray:
 
         # Scenario 4 (sparse to sparse) doesnt need anything
 
-    def _set_slice(self, Py_ssize_t start, Py_ssize_t stop, object value):
+    cdef _set_slice(self, Py_ssize_t start, Py_ssize_t stop, object value):
         cdef list before = [x for x in self.container if x.index < start]
         cdef list after = [x for x in self.container if x.index >= stop]
         cdef list mid
@@ -378,7 +379,7 @@ cdef class SparseArray:
 
         self.container = before + mid + after
 
-    def _set_bool_indices(self, bools, vals):
+    cdef _set_bool_indices(self, bools, vals):
         cdef Py_ssize_t i, fullidx
         cdef object x
         cdef list trueidx = [i for i,x in enumerate(bools) if x]
@@ -388,7 +389,7 @@ cdef class SparseArray:
 
         self._set_multiple_values(trueidx, vals)
 
-    def _set_multiple_values(self, indices, value):
+    cdef _set_multiple_values(self, indices, value):
         cdef Py_ssize_t fullidx, i
         cdef Py_ssize_t nidx = len(indices)
         
@@ -421,7 +422,7 @@ cdef class SparseArray:
     def _eq(self, val):
         return self._eqval(val)
 
-    def _eqval(self, val):
+    cdef _eqval(self, val):
         sparseval = self.refcode == val
         cdef SparseArray eq = SparseArray(self.size, sparseval)
         if sparseval:
@@ -434,15 +435,14 @@ cdef class SparseArray:
 
     def tolist(self):
         cdef Py_ssize_t i
-        cdef list dense
         cdef set denselocs = {x.index for x in self.container}
-        dense = [(self[i] if i in denselocs else self.refcode) for i in range(self.size)]
+        cdef list dense = [(self[i] if i in denselocs else self.refcode) for i in range(self.size)]
         return dense
 
     @staticmethod
     def from_sequence(seq, refcode): 
         cdef Py_ssize_t n = len(seq)
-        sa = SparseArray(n, refcode)
+        cdef SparseArray sa = SparseArray(n, refcode)
         sa.container = [SparseArrayElement(i,x) for i,x in 
                         enumerate(seq) if x != refcode]
         return sa
