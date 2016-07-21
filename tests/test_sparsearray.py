@@ -87,6 +87,11 @@ def test_fancy_index_set():
     s[(5,3)] = [20, 20]
     assert s.tolist() == [0, 0, 0, 20, 0, 20, 0, 0, 0, 0]
 
+    s = SparseArray(10,0)
+    mask = [False, False, False, True, False, True, False, False, False, False]
+    s[mask] = 2
+    assert s.tolist() == [0, 0, 0, 2, 0, 2, 0, 0, 0, 0]
+
 def test_tolist():
     s = SparseArray(5, 0)
     assert s.tolist() == [0,0,0,0,0]

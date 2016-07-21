@@ -309,10 +309,13 @@ cdef class SparseArray:
     def __setitem__(self, index, object value):
         if type(index) is slice:
             self._set_slice(index.start, index.stop, value)
-        elif isinstance(index, Sequence) and type(index[0]) is bool:
-            self._set_bool_indices(index, value)
-        elif isinstance(index, Sequence) and type(index[0]) is int:
-            self._set_multiple_values(index, value)
+
+        elif isinstance(index, Sequence):
+            if type(index[0]) is bool:
+                self._set_bool_indices(index, value)
+            elif type(index[0]) is int:
+                self._set_multiple_values(index, value)
+
         else:
             self._set_value(index, value)
 
@@ -385,14 +388,22 @@ cdef class SparseArray:
 
         self._set_multiple_values(trueidx, vals)
 
-    def _set_multiple_values(self, indices, values):
+    def _set_multiple_values(self, indices, value):
         cdef Py_ssize_t fullidx, i
-        if not len(indices) == len(values):
-            raise IndexError('Index and values different sizes')
+        cdef Py_ssize_t nidx = len(indices)
+        
 
-        for i in range(len(indices)):
-            fullidx = indices[i]
-            self[fullidx] = values[i]
+        if isinstance(value, Sequence):
+            if not nidx == len(value):
+                raise IndexError('Index and values different sizes')
+            
+            for i in range(nidx):
+                fullidx = indices[i]
+                self[fullidx] = value[i]
+        else:
+            for i in range(nidx):
+                fullidx = indices[i]
+                self[fullidx] = value
 
     def __richcmp__(self, other, int op):
         # Op codes
