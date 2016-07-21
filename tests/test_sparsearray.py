@@ -114,6 +114,12 @@ def test_setslice():
     assert t.values == [1]*5
     assert t.indices == [5, 6, 7, 8, 9]
 
+def test_eq():
+    s = SparseArray(5, 0)
+    s[(1,3)] = [1, 1]
+    eqv = (s == 1)
+    assert eqv.tolist() == [False, True, False, True, False]
+
 def test_staticbuilted():
     s = SparseArray(100, 0)
     a = SparseArray.from_sequence([0, 1, 1, 0, 0, 1], 0)

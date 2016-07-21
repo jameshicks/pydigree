@@ -394,6 +394,33 @@ cdef class SparseArray:
             fullidx = indices[i]
             self[fullidx] = values[i]
 
+    def __richcmp__(self, other, int op):
+        # Op codes
+        # <   0
+        # ==  2
+        # >   4
+        # <=  1
+        # !=  3
+        # >=  5
+
+        if op == 2: # Equality
+            return self._eq(other)
+        raise NotImplementedError
+
+    def _eq(self, val):
+        return self._eqval(val)
+
+    def _eqval(self, val):
+        sparseval = self.refcode == val
+        cdef SparseArray eq = SparseArray(self.size, sparseval)
+        if sparseval:
+            eq.container = [SparseArrayElement(x.index, False) for 
+                            x in self.container if x.value != val]
+        else:
+            eq.container = [SparseArrayElement(x.index, True) for 
+                            x in self.container if x.value == val]
+        return eq
+
     def tolist(self):
         cdef Py_ssize_t i
         cdef list dense
