@@ -35,11 +35,15 @@ cyext = [Extension('pydigree.cyfuncs',
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)]
 
+with open('LICENSE') as f:
+    license = f.read()
+
 setup(
         name='pydigree',
         description='A package for operations on pedigree and genotype data',
         author='James Hicks',
         url='https://github.com/jameshicks/pydigree',
+        license=license,
         packages=['pydigree'],
         ext_modules=cythonize(cyext),
         requires=['numpy', 'scipy', 'pandas', 'cython']
