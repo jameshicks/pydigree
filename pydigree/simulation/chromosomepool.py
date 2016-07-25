@@ -5,7 +5,7 @@ import numpy as np
 from pydigree.recombination import recombine
 
 
-def richards(A, C, M, B, T)
+def richards(A, C, M, B, T):
     '''
     Generates a population growth model function
 
