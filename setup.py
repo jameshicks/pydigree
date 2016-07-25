@@ -2,7 +2,7 @@
 import sys
 import os.path
 
-if sys.version_info[0:2] < (3,3):
+if sys.version_info[0:2] < (3, 3):
     raise ImportError('pydigree requires python >3.2')
 
 from setuptools import setup
@@ -42,13 +42,21 @@ with open('LICENSE.txt') as f:
     license = f.read()
 
 setup(
-        name='pydigree',
-        description='A package for operations on pedigree and genotype data',
-        author='James Hicks',
-        url='https://github.com/jameshicks/pydigree',
-        license=license,
-        packages=['pydigree'],
-        ext_modules=cythonize(cyext),
-        requires=['numpy', 'scipy', 'pandas', 'cython'],
-        classifers=['Programming Language :: Python :: 3 :: Only']
-    )
+    name='pydigree',
+    description='A package for operations on pedigree and genotype data',
+    author='James Hicks',
+    url='https://github.com/jameshicks/pydigree',
+    license=license,
+    packages=['pydigree'],
+    ext_modules=cythonize(cyext),
+    requires=['numpy', 'scipy', 'pandas', 'cython'],
+    classifers=['Programming Language :: Python :: 3 :: Only',
+                'Programming Language :: Cython',
+                'Intended Audience :: Science/Research',
+                'Topic :: Scientific/Engineering :: Bio-Informatics',
+                'Topic :: Scientific/Engineering :: Mathematics',
+                'Topic :: Sociology :: Genealogy',
+                'Topic :: Software Development :: Libraries :: Python Modules',
+                'Development Status :: 4 - Beta',
+                'License :: OSI Approved :: Apache Software License']
+)
