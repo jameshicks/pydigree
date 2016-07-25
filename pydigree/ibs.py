@@ -1,5 +1,3 @@
-from itertools import izip
-
 import numpy as np
 from pydigree.cyfuncs import ibs
 
