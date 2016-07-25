@@ -43,6 +43,7 @@ with open('LICENSE.txt') as f:
 
 setup(
     name='pydigree',
+    version='0.6',
     description='A package for operations on pedigree and genotype data',
     author='James Hicks',
     url='https://github.com/jameshicks/pydigree',
