@@ -1,1 +1,1 @@
-from sgs import *
+from .sgs import *

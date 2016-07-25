@@ -28,17 +28,17 @@ args = parser.parse_args()
 if args.only is not None:
     only = frozenset(args.only)
 
-print 'Reading pedigree'
+print('Reading pedigree')
 peds = pyd.io.read_ped(args.ped)
-print 'Reading phenotypes'
+print('Reading phenotypes')
 pyd.io.read_phenotypes(peds, args.phen)
-print 'Reading genotypes'
+print('Reading genotypes')
 genodata = pyd.io.plink.read_plink(pedfile=args.geno,
                                    mapfile=args.map)
 
 peds.update(genodata)
 
-print 'Fitting polygenic model'
+print('Fitting polygenic model')
 null_model = MixedModel(peds, outcome=args.outcome, fixed_effects=args.fixefs)
 null_model.add_genetic_effect()
 null_model.fit_model()
@@ -85,7 +85,7 @@ def measured_genotype_association(extrapredictor):
 tableheader = ('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
                   'MAF', 'BETA', 'LOD', 'PVALUE')
 outlines = [] 
-print tableformat(*tableheader)
+print(tableformat(*tableheader))
 
 for chromidx, chromobj in enumerate(peds.chromosomes):
 
@@ -107,12 +107,12 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
 
         freqs = peds.allele_frequencies(locus, nonfounders=True)
         alleles = [x[0]
-                   for x in sorted(freqs.items(),
+                   for x in sorted(list(freqs.items()),
                                    key=lambda x: x[1],
                                    reverse=True)]
 
         if len(alleles) == 1:
-            print 'Monomorphic genotype: {}'.format(markerlabel)
+            print('Monomorphic genotype: {}'.format(markerlabel))
             if args.interact:
                 import IPython
                 IPython.embed()
@@ -143,7 +143,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
                      '{:<10.4g}'.format(lrt.pvalue))
             
             outlines.append(oline)
-            print tableformat(*oline)
+            print(tableformat(*oline))
 
             if args.interact:
                 import IPython

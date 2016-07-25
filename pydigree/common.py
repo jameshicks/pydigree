@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import numpy as np
-from itertools import izip_longest
+from itertools import zip_longest
 from operator import mul as multiply
+from functools import reduce
 from math import log
+
 from pydigree.cyfuncs import runs, runs_gte, interleave
 from pydigree.cyfuncs import all_same_type, is_sorted
 
@@ -65,7 +67,7 @@ def grouper(iterable, n, fillvalue=None):
     
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
     args = [iter(iterable)] * n
-    return izip_longest(fillvalue=fillvalue, *args)
+    return zip_longest(fillvalue=fillvalue, *args)
 
 
 def invert_dict(d):

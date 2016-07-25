@@ -1,7 +1,9 @@
 from itertools import chain
 from operator import add
+from functools import reduce
 
 from pydigree.common import table
+
 
 class IndividualContainer(object):
 
@@ -41,7 +43,7 @@ class IndividualContainer(object):
 
     def phenotypes(self):
         """ Returns the available phenotypes for analysis """
-        return set(reduce(add, [x.phenotypes.keys() for x in
+        return set(reduce(add, [list(x.phenotypes.keys()) for x in
                                 self.individuals]))
 
     def phenotype_dataframe(self, onlyphenotyped=True):

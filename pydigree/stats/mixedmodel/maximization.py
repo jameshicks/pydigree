@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 
 import numpy as np
@@ -9,7 +9,7 @@ import scipy.linalg
 
 from pydigree.stats.mathfuncs import is_positive_definite, grid
 
-from likelihood import makeP, makeVinv
+from .likelihood import makeP, makeVinv
 
 
 class MLEResult(object):
@@ -109,16 +109,16 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
     Returns: An MLE object of the variance components at the MLE
     """
     if verbose:
-        print 'Maximizing model by {}'.format(likelihood.method)
+        print(('Maximizing model by {}'.format(likelihood.method)))
 
     vcs = np.array(likelihood.parameters)
 
     llik = likelihood.loglikelihood()
 
     if verbose:
-        print '{} {} {} {}'.format(0, llik, vcs, vcs / vcs.sum())
+        print(('{} {} {} {}'.format(0, llik, vcs, vcs / vcs.sum())))
 
-    for i in xrange(maxiter):
+    for i in range(maxiter):
         if (i - 1) == scoring:
             information_mat = likelihood.set_info('nr')
 
@@ -153,8 +153,8 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
         relative_changes = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
 
         if verbose:
-            print i+1, new_llik, new_vcs, \
-                new_vcs / new_vcs.sum(), relative_changes
+            print((i+1, new_llik, new_vcs, \
+                new_vcs / new_vcs.sum(), relative_changes))
 
         if (abs(relative_changes) < tol).all():
             mle = MLEResult(new_vcs.tolist(), new_llik, likelihood.method,
@@ -235,12 +235,12 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
     i = 0
 
     if verbose:
-        print 'Maximizing model by Expectation-Maximization'
+        print('Maximizing model by Expectation-Maximization')
 
     vcs, llik = likelihood.parameters, likelihood.loglikelihood()
     while True:
         if verbose:
-            print i, llik, vcs
+            print((i, llik, vcs))
 
         new_vcs = likelihood.expectation_maximization()
         likelihood.set_parameters(new_vcs)
@@ -290,7 +290,7 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
     """
     d = len(mm.random_effects)  # the number of random effects
     if verbose:
-        print 'Maximizing model by MINQUE'
+        print('Maximizing model by MINQUE')
 
     if starts is not None:
         weights = np.array(starts)
@@ -310,8 +310,8 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
     y = mm.y
 
     if verbose:
-        print vcs
-    for i in xrange(maxiter):
+        print(vcs)
+    for i in range(maxiter):
 
         if i + 1 > return_after:
             return vcs
@@ -343,7 +343,7 @@ def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
             return mle
 
         if verbose:
-            print i, llik, vcs
+            print((i, llik, vcs))
         vcs = new_vcs
         weights = vcs
 

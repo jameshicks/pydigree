@@ -14,12 +14,12 @@ TESTDATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_da
 
 def blank_chromosome(size=2):
     ch = ChromosomeTemplate()
-    for i in xrange(size):
+    for i in range(size):
         ch.add_genotype()
     return ch
 
 def test_seqalleles():
-    chroms = [blank_chromosome(2) for x in xrange(2)]
+    chroms = [blank_chromosome(2) for x in range(2)]
     seqalleles = '1 2 1 1 2 2 2 1'.split()
     gts = genotypes_from_sequential_alleles(chroms, seqalleles)
     spgts = genotypes_from_sequential_alleles(chroms, seqalleles, sparse=True)
@@ -36,7 +36,7 @@ def test_seqalleles():
 
 @raises(ValueError)
 def test_seqalleles_raiseforbadmissingval():
-    chroms = [blank_chromosome(2) for x in xrange(2)]
+    chroms = [blank_chromosome(2) for x in range(2)]
     seqalleles = '1 2 1 1 2 2 2 1'.split()
     gts = genotypes_from_sequential_alleles(chroms, seqalleles, missing_code=0)
 

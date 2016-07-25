@@ -44,7 +44,7 @@ def test_grouper():
 
 def test_runs():
     dregion = (10,20)
-    i = [1 if dregion[0] <= x <= dregion[1] else 0 for x in xrange(100)] 
+    i = [1 if dregion[0] <= x <= dregion[1] else 0 for x in range(100)] 
     assert runs(i, lambda x: x>0) == [dregion]
     assert runs_gte(i, 1) == [dregion]
     assert runs_gte(i, 1, 20) == []

@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from itertools import chain
 
@@ -11,10 +11,10 @@ from pydigree.common import grouper
 
 def setup_80freq():
     pop = Population()
-    for i in xrange(600):
+    for i in range(600):
         ind = pop.founder_individual()
         ind.genotypes = [ [ [1],[1] ] ]
-    for i in xrange(400):
+    for i in range(400):
         ind = pop.founder_individual()
         ind.genotypes = [ [ [2],[1] ] ]
     return pop
@@ -23,11 +23,11 @@ def test_allele_list():
     pop = Population()
     loc = 0,0
     # 2000 A alleles
-    for x in xrange(1000):
+    for x in range(1000):
         ind = pop.founder_individual()
         ind.genotypes = [ (Alleles([1]), Alleles([1]) )]
     # 500 A alleles, 500 B
-    for x in xrange(500):
+    for x in range(500):
         ind = pop.founder_individual()
         ind.genotypes = [ (Alleles([1]), Alleles([2]) )]
     assert sorted(pop.allele_list(loc)) == [1]*2500 + [2]*500
@@ -36,11 +36,11 @@ def test_major_allele():
     pop = Population()
 
     # 2000 A alleles
-    for x in xrange(1000):
+    for x in range(1000):
         ind = pop.founder_individual()
         ind.genotypes = [ (Alleles([1]), Alleles([1]) )]
     # 500 A alleles, 500 B
-    for x in xrange(500):
+    for x in range(500):
         ind = pop.founder_individual()
         ind.genotypes = [ (Alleles([1]), Alleles([2]) )]
     assert pop.major_allele((0,0)) == 1

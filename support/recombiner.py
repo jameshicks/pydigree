@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
 
@@ -18,14 +18,14 @@ mapp = [.1]*nmark
 
 
 
-print "Initializing pool"
+print("Initializing pool")
 pool = [c.linkageequilibrium_chromosome(sparse=True) for x in range(poolsize)]
 
-for x in xrange(ngen):
-    print "Iteration {}".format(x)
+for x in range(ngen):
+    print("Iteration {}".format(x))
     recombs = [recombine(randchoice(pool),
                          randchoice(pool),
                          mapp)
-               for x in xrange(poolsize)]
+               for x in range(poolsize)]
     pool = sample_with_replacement(recombs+pool, poolsize)
 

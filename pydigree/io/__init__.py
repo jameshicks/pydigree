@@ -7,6 +7,6 @@ from pydigree.io.base import read_ped, read_phenotypes
 from pydigree.io.plink import read_plink
 from pydigree.io.vcf import read_vcf
 
-import plink
-import merlin
-import vcf 
+from . import plink
+from . import merlin
+from . import vcf 

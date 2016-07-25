@@ -1,7 +1,7 @@
 """
 Functions for computing likelihoods of linear mixed models
 """
-from __future__ import division
+
 
 from math import log, pi
 

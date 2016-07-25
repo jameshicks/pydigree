@@ -14,7 +14,7 @@ def to_Segment(ind1, ind2, i):
 def to_SGSAnalysis(shared):
     ''' Convert the dicts I've been using to SGSAnalysis '''
     obj = SGSAnalysis()
-    for key, value in shared.items():
+    for key, value in list(shared.items()):
         k = list(key)
         ind1, ind2 = k
         obj[key] = SGS(ind1, ind2,

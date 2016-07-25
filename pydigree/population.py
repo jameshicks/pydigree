@@ -163,7 +163,7 @@ class Population(IndividualContainer):
                              name)
 
         newpop = {}
-        for i in xrange(gensize):
+        for i in range(gensize):
             newind = rand_mate(self, name=i)
             newpop[newind.label] = newind
         self.population = newpop

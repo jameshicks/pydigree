@@ -1,6 +1,9 @@
 # setup.py
-
+import sys
 import os.path
+
+if sys.version_info[0:2] < (3,3):
+    raise ImportError('pydigree requires python >3.2')
 
 from setuptools import setup
 
@@ -46,5 +49,6 @@ setup(
         license=license,
         packages=['pydigree'],
         ext_modules=cythonize(cyext),
-        requires=['numpy', 'scipy', 'pandas', 'cython']
+        requires=['numpy', 'scipy', 'pandas', 'cython'],
+        classifers=['Programming Language :: Python :: 3 :: Only']
     )

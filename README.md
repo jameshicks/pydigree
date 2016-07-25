@@ -1,7 +1,9 @@
 pydigree
 ========
 
-A python package for operations on pedigree and genotype data, including simulation of genotype-phenotype associations under quantitative genetic models
+A python3 package for operations on pedigree and genotype data, including simulation of genotype-phenotype associations under quantitative genetic models
+
+Requires: Python 3.4+, numpy, scipy, pandas, cython
 
 Submodules
 -----

@@ -1,2 +1,2 @@
-from mixedmodel import MixedModel
-import stattests
+from .mixedmodel import MixedModel
+from . import stattests

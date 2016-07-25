@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pydigree
 import sys
@@ -12,4 +12,4 @@ import sys
 ped = pydigree.io.read_ped(sys.argv[1])
 
 for pedigree in sorted(ped,key=lambda x: x.label):
-    print pedigree.label, pedigree.bit_size()
+    print(pedigree.label, pedigree.bit_size())

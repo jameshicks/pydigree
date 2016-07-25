@@ -1,4 +1,4 @@
-from __future__ import division
+
 import os
 
 import numpy as np
@@ -23,7 +23,7 @@ solar_h2 = 0.4592420
 
 def test_make_incidence_matrix():
 	phenlab = 'testvar'
-	inds = [pyd.Individual(None, i) for i in xrange(6)]
+	inds = [pyd.Individual(None, i) for i in range(6)]
 	phens = [1,2,3,1,2,3]
 	for ind, phen in zip(inds, phens):
 		ind.phenotypes[phenlab] = phen

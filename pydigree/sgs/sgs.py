@@ -1,4 +1,4 @@
-from itertools import izip, combinations, product, chain, imap
+from itertools import combinations, product, chain
 from functools import partial
 from bisect import bisect_left
 import multiprocessing
@@ -12,6 +12,7 @@ from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree.io import smartopen as open
 from pydigree import Population, PedigreeCollection
 from pydigree import Individual, ChromosomeTemplate
+from functools import reduce
 
 
 class SGSAnalysis(object):
@@ -98,12 +99,12 @@ class SGSAnalysis(object):
     @property
     def segments(self):
         ''' Returns an iterable of all the segments in the Analysis '''
-        return chain.from_iterable([x.segments for x in self.pairs.values()])
+        return chain.from_iterable([x.segments for x in list(self.pairs.values())])
 
     @property
     def individuals(self):
         """ Returns a set of all individuals present in the analysis """
-        inds = reduce(frozenset.union, self.pairs.keys())
+        inds = reduce(frozenset.union, list(self.pairs.keys()))
         return inds
 
     def update_segment_references(self, pedigrees):
@@ -150,14 +151,14 @@ class SGSAnalysis(object):
             except ValueError:
                 raise ValueError('Positions not in chromosome data')
 
-        for sgsobj in self.pairs.values():
+        for sgsobj in list(self.pairs.values()):
             sgsobj.ind1 = pedigrees[sgsobj.ind1]
             sgsobj.ind2 = pedigrees[sgsobj.ind2]
 
         def pairlookup(pair):
             newpair = frozenset({pedigrees[ind] for ind in pair})
             return newpair
-        self.pairs = {pairlookup(k): v for k, v in self.pairs.items()}
+        self.pairs = {pairlookup(k): v for k, v in list(self.pairs.items())}
 
     @staticmethod
     def direct_to_disk(filename, pop, seed_size=500, phaseknown=False,
@@ -372,7 +373,7 @@ def _perform_sgs(pop, seed_size=500, phaseknown=False,
 
     njobs = int(njobs)
     if njobs == 1:
-        res = imap(pair_sgs, pairs)
+        res = map(pair_sgs, pairs)
     elif njobs > 1:
         pool = multiprocessing.Pool(processes=njobs)
         res = pool.imap(pair_sgs, pairs, chunksize=10000)
@@ -523,7 +524,7 @@ def join_gaps(seq, max_gap=1):
 
     iseq = iter(seq)
     # Get the first item
-    prev_start, prev_stop = iseq.next()
+    prev_start, prev_stop = next(iseq)
     for start, stop in iseq:
         if start - prev_stop > max_gap:
             yield prev_start, prev_stop

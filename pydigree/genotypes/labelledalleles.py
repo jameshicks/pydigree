@@ -1,6 +1,6 @@
-from itertools import izip
+
 from pydigree.common import all_same_type
-from genoabc import AlleleContainer
+from .genoabc import AlleleContainer
 
 class LabelledAlleles(AlleleContainer):
 
@@ -14,7 +14,7 @@ class LabelledAlleles(AlleleContainer):
     def __eq__(self, other):
         if not isinstance(other, LabelledAlleles):
             return False
-        return all(x == y for x, y in izip(self.spans, other.spans))
+        return all(x == y for x, y in zip(self.spans, other.spans))
 
     def __getitem__(self, index):
         for span in self.spans:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import pydigree as pyd
@@ -17,7 +17,7 @@ parser.add_argument('--initial', help='Prefix for initial data for pool (plink f
 args = parser.parse_args()
 
 if not (args.chromosomes or args.initial):
-	print 'One of --chromosomes or --initial required'
+	print('One of --chromosomes or --initial required')
 	exit(1)
 
 if args.initial:
@@ -26,11 +26,11 @@ if args.initial:
 else:
 	chroms = [read_gs_chromosome_template(x) for x in args.chromosomes]
 	pool = ChromosomePool(chromosomes=chroms, size=args.n0)
-	print 'Creating pool'
+	print('Creating pool')
 	pool.initialize_pool(args.n0)
 
 gensize = lambda x: int(logistic_growth(pool.n0, args.rate, args.final, x))
 
-for x in xrange(args.gens):
-    print 'Generation {}: {}'.format(x, gensize(x))
+for x in range(args.gens):
+    print('Generation {}: {}'.format(x, gensize(x)))
     pool.iterate_pool(gensize(x))

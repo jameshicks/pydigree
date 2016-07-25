@@ -1,7 +1,7 @@
 import numpy as np
 
 from pydigree.exceptions import NotMeaningfulError
-from genoabc import AlleleContainer
+from .genoabc import AlleleContainer
 
 class Alleles(np.ndarray, AlleleContainer):
 

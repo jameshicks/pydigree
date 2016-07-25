@@ -27,7 +27,7 @@ def grid(func, nargs, low, high, ntests=10, predicate=None, catch=None):
     if predicate is None:
         predicate = lambda *x: True
 
-    testvals = [np.linspace(low, high, ntests) for x in xrange(nargs)]
+    testvals = [np.linspace(low, high, ntests) for x in range(nargs)]
 
     for testargs in itertools.product(*testvals):
 

@@ -1,4 +1,4 @@
-from itertools import izip, chain, imap
+from itertools import chain
 
 from pydigree.common import grouper, cumsum
 from pydigree.common import interleave
@@ -6,6 +6,7 @@ from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.exceptions import FileFormatError
 from pydigree.io.smartopen import smartopen as open
+import collections
 
 
 def create_pop_handler_func(mapfile):
@@ -150,7 +151,7 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
         predicate = lambda x: x.phenotypes['affected'] == 1
     elif predicate == 'phenotyped':
         predicate = lambda x: x.phenotypes['affected'] in set([0, 1])
-    elif not callable(predicate):
+    elif not isinstance(predicate, collections.Callable):
         raise ValueError('Not a valid predicate!')
 
     afflab = {1: '2', 0: '1', None: '-9'}
@@ -169,11 +170,11 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
                            1 if ind.sex == 0 else 2,
                            aff]
                 # Make strings
-                outline = map(str, outline)
+                outline = list(map(str, outline))
 
                 # Get the genotypes in the format we need them
                 g = []
-                for template, chromatids in izip(ind.chromosomes, ind.genotypes):
+                for template, chromatids in zip(ind.chromosomes, ind.genotypes):
                     if checkchroms and template.outputlabel not in output_chromosomes:
                         continue
                     chroma, chromb = chromatids

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-if sys.version[0] < 3:
+if sys.version_info < (3,3):
     raise ImportError('pydigree requires Python 3')
 
 # Common functions (cumsum, table, etc)

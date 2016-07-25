@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from pydigree.simulation.architecture import Architecture
 from pydigree.simulation.simulation import Simulation, SimulationError
@@ -17,7 +17,7 @@ class NaiveGeneDroppingSimulation(Simulation):
 
         for ped in self.template.pedigrees:
 
-            for attempt in xrange(self.genedrop_attempts):
+            for attempt in range(self.genedrop_attempts):
 
                 for ind in ped.individuals:
                     ind.clear_genotypes()
@@ -48,8 +48,8 @@ class NaiveGeneDroppingSimulation(Simulation):
                     if accuracy < self.accuracy_threshold:
                         continue
                 if verbose:
-                    print 'Success (%s%%) after %s attempts' % (accuracy * 100,
-                                                                attempt)
+                    print('Success (%s%%) after %s attempts' % (accuracy * 100,
+                                                                attempt))
                 break
             else:
                 raise SimulationError('Ran out of gene dropping attempts!')

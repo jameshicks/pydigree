@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pydigree
 import sys
@@ -19,7 +19,7 @@ for x in range(nchrom):
 trait = Architecture('q','quantitative')
 for i in range(nchrom):
     trait.add_effect_liability((i,0), 0, 1)
-print trait
+print(trait)
 
 pop.initialize_pool()
 for x in range(popsize):
@@ -31,6 +31,6 @@ def gen(popsize):
     pop.remove_ancestry()
     return pop.allele_frequency((0,0),1)
 
-print [round(gen(popsize),2) for x in range(ngen)]
+print([round(gen(popsize),2) for x in range(ngen)])
 
 

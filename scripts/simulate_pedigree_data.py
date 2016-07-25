@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 
@@ -43,7 +43,7 @@ template = read_ped(args.template)
 
 # Read the chromosomes
 if not args.chromosomes:
-    print 'No chromosomes specified!'
+    print('No chromosomes specified!')
     exit()
 for cfile in args.chromosomes:
     c = read_gs_chromosome_template(cfile)

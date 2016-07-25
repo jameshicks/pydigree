@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pydigree
 import sys
@@ -47,7 +47,7 @@ def sbool(ped, inds, loc):
 
 def genedrop(ped, affs, scorer, iteration):
     if iteration % (args.niter / 10) == 0:
-        print 'Simulation %s' % x
+        print('Simulation %s' % x)
     ped.simulate_ibd_states(inds=affs)
     s = scorer(ped, affs, (0, 0))
     return s
@@ -55,7 +55,7 @@ def genedrop(ped, affs, scorer, iteration):
 try:
     scorefunction = {'sbool': sbool, 'spairs': spairs}[args.scorefunc]
 except KeyError:
-    print "Invalid score function {}".format(args.scorefunc)
+    print("Invalid score function {}".format(args.scorefunc))
 
 pop = pydigree.Population(5000)
 
@@ -69,14 +69,14 @@ peds.add_chromosome(c)
 nulldist = {}
 
 naff = sum(1 for ind in peds.individuals if ind.phenotypes['affected'])
-print '{} affecteds'.format(naff)
+print('{} affecteds'.format(naff))
 
 if args.remove_mif:
     for ind in peds.individuals:
         if ind.is_marryin_founder(): 
             ind.phenotypes['affected'] = False
     naff = sum(1 for ind in peds.individuals if ind.phenotypes['affected'])
-    print '{} affecteds after removing marry-in founders'.format(naff)
+    print('{} affecteds after removing marry-in founders'.format(naff))
 
 for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     if args.onlypeds and ped.label not in args.onlypeds:
@@ -89,16 +89,16 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     affs = {x for x in ped if x.phenotypes['affected']}
 
     if len(affs) < 2:
-        print 'Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label)
+        print('Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label))
         continue
 
-    print "Pedigree %s (%s/%s), %s affecteds, %s bits, %s simulations" % (ped.label, i+1, len(peds), len(affs), ped.bit_size(),  args.niter)
+    print("Pedigree %s (%s/%s), %s affecteds, %s bits, %s simulations" % (ped.label, i+1, len(peds), len(affs), ped.bit_size(),  args.niter))
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
-                             for x in xrange(args.niter)])
+                             for x in range(args.niter)])
     nulldist[ped.label] = sim_share
 
-    print 
+    print() 
 
 
 def stringify(n):
@@ -107,13 +107,13 @@ def stringify(n):
     else:
         return "{:.1e}".format(n)
 
-print '\t'.join(['Pedigree','Min','Mean','SD','Max'])
-for ped, dist in nulldist.iteritems():
-    print '\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.std(), dist.max()])
+print('\t'.join(['Pedigree','Min','Mean','SD','Max']))
+for ped, dist in nulldist.items():
+    print('\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.std(), dist.max()]))
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
-        print "Outputting distribution to %s" % args.writedist
+        print("Outputting distribution to %s" % args.writedist)
         for ped in sorted(peds, key=lambda q: q.label):
             try:
                 of.write('{} {}\n'.format(ped.label, ' '.join(str(x) for x in nulldist[ped.label])))

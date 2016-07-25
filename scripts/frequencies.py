@@ -24,12 +24,12 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
             continue
 
         locus = chromidx, locidx
-        freqs = peds.allele_frequencies(locus).items()
+        freqs = list(peds.allele_frequencies(locus).items())
         freqs = sorted(freqs, key=lambda x: x[1], reverse=True)
         maj_allele = freqs[0][0]
         for min_allele, maf in freqs[1:]:
             maf_str = '{:5.4g}'.format(maf)
-            print formatted(chromobj.label, chromobj.physical_map[locidx],
+            print(formatted(chromobj.label, chromobj.physical_map[locidx],
                             chromobj.labels[locidx], maj_allele, min_allele,
-                            maf_str)
+                            maf_str))
 

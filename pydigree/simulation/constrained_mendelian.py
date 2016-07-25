@@ -6,6 +6,7 @@ from pydigree.simulation import *
 from pydigree.simulation.simulation import Simulation, SimulationError
 from pydigree import paths
 from pydigree import Individual
+import collections
 
 
 class ConstrainedMendelianSimulation(Simulation):
@@ -74,7 +75,7 @@ class ConstrainedMendelianSimulation(Simulation):
 
         # Now replace the label genotypes in the nonfounders with the
         # genotypes of the founders
-        if callable(self.only):
+        if isinstance(self.only, collections.Callable):
             siminds = [x for x in self.template.nonfounders() if self.only(x)]
         else:
             siminds = self.template.nonfounders()
@@ -89,4 +90,4 @@ class ConstrainedMendelianSimulation(Simulation):
 
         if verbose:
             for ind in siminds:
-                print ind, ind.get_genotype(location)
+                print(ind, ind.get_genotype(location))

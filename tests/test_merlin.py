@@ -1,5 +1,5 @@
 import os
-from itertools import izip
+
 
 from nose.tools import raises, assert_raises
 import numpy as np
@@ -29,7 +29,7 @@ def test_read_map():
 
     expected_maps = [[1.0, 20.5, 100.1], [2.5, 21.1], [22.2]]
     expected_labs = [['rsA', 'rsB', 'rsC'], ['rsD', 'rsE'], ['rsF']]
-    for chrom, expected_map, expected_lab in izip(chroms, expected_maps, expected_labs):
+    for chrom, expected_map, expected_lab in zip(chroms, expected_maps, expected_labs):
         assert all(np.array(chrom.labels) == np.array(expected_lab))
         assert all(np.array(chrom.genetic_map) == np.array(expected_map))
 

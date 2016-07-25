@@ -1,4 +1,4 @@
-from itertools import izip, chain, imap
+from itertools import chain
 
 import numpy as np
 
@@ -9,6 +9,9 @@ from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
 from pydigree.pedigreecollection import PedigreeCollection
 from pydigree.genotypes import Alleles, SparseAlleles
+
+from collections import Callable
+from functools import reduce
 
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
@@ -53,7 +56,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     population = Population()
 
     p = Pedigree()
-    if callable(population_handler):
+    if isinstance(population_handler, Callable):
         population_handler(p)
 
     pc = PedigreeCollection()
@@ -79,7 +82,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
             p[id].pedigree = p
             p[id].sex = sex_codes[p[id].sex]
 
-            if callable(data_handler) and len(split) > 6:
+            if isinstance(data_handler, Callable) and len(split) > 6:
                 data = split[6:]
                 data_handler(p[id],  data)
 
@@ -101,10 +104,10 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
         pedigrees[ind.label[0]].append(ind)
 
-    for pedigree_label, ped_inds in pedigrees.items():
+    for pedigree_label, ped_inds in list(pedigrees.items()):
         ped = Pedigree(label=pedigree_label)
 
-        if callable(population_handler):
+        if isinstance(population_handler, Callable):
             population_handler(ped)
         
         for ind in ped_inds:
@@ -135,8 +138,8 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
         header = f.readline().strip().split(delimiter)
         for line in f:
             # Match columns to their column name
-            d = dict(zip(header, line.strip().split(delimiter)))
-            for k, v in d.items():
+            d = dict(list(zip(header, line.strip().split(delimiter))))
+            for k, v in list(d.items()):
                 # Convert all phenotypes into floats
                 try:
                     v = float(v)
@@ -168,7 +171,7 @@ def write_phenotypes(pedigrees, filename, predicate=None,
     "Writes phenotypes to a CSV (or other delimited) file"
     inds = pedigrees.individuals
 
-    if callable(predicate):
+    if isinstance(predicate, Callable):
         inds = [x for x in inds if predicate(x)]
 
     available_phenotypes = reduce(set.union,

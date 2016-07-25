@@ -2,7 +2,7 @@
 
 import itertools
 
-from common import *
+from .common import *
 from collections import MutableMapping
 
 import pandas as pd
@@ -38,12 +38,12 @@ class PedigreeCollection(IndividualContainer):
         del self.container[key]
 
     def keys(self):
-        return self.container.keys()
+        return list(self.container.keys())
 
     def add_pedigree(self, ped):
         if not isinstance(ped, Pedigree):
             raise ValueError('{} not of type Pedigree')
-        elif ped.label in self.container.keys():
+        elif ped.label in list(self.container.keys()):
             raise ValueError(
                 'Pedigree label {} already in collection'.format(ped.label))
         else:
@@ -76,7 +76,7 @@ class PedigreeCollection(IndividualContainer):
 
     @property
     def chromosomes(self):
-        k = self.container.keys()[0]
+        k = list(self.container.keys())[0]
         return self.container[k].chromosomes
 
     def add_chromosome(self, chrom):

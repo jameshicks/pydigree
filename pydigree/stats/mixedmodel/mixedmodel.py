@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from __future__ import division
 
-from itertools import izip, product
+
+from itertools import product
 import copy
 
 import numpy as np
@@ -104,7 +104,7 @@ class RandomEffect(object):
             self.covariance_matrix = covariance_matrix
 
         if not levels:
-            self.levels = ['L{}'.format(i) for i in xrange(self.incidence_matrix.shape[1])]
+            self.levels = ['L{}'.format(i) for i in range(self.incidence_matrix.shape[1])]
         else:
             if len(levels) != incidence_matrix.shape[1]:
                 raise ValueError('Number of levels not correct')
@@ -326,7 +326,7 @@ class MixedModel(object):
         xmat = [[1] * len(obs)]
         for phen in self.fixed_effects:
             xmat.append([ob.phenotypes[phen] for ob in obs])
-        X = np.matrix(zip(*xmat))
+        X = np.matrix(list(zip(*xmat)))
         return X
 
     def _makeZs(self):
@@ -350,7 +350,7 @@ class MixedModel(object):
             variance_components = vcs
 
         V = sum(sigma * Z * A * Z.T for sigma, Z, A in
-                izip(variance_components,
+                zip(variance_components,
                      self.Zlist,
                      self.covariance_matrices))
 
@@ -407,7 +407,7 @@ class MixedModel(object):
         """
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
-        for sigma, ranef in izip(variance_components, self.random_effects):
+        for sigma, ranef in zip(variance_components, self.random_effects):
             ranef.variance_component = sigma
 
     def maximize(self, method="Average Information", restricted=False,
@@ -509,28 +509,28 @@ class MixedModel(object):
 
         self._fit_results()
 
-        print
-        print 'Linear mixed model fit by {}'.format(self.mle.method)
-        print
-        print 'Fixed effects:'
+        print()
+        print('Linear mixed model fit by {}'.format(self.mle.method))
+        print()
+        print('Fixed effects:')
         fixefnames = ['(Intercept)'] + self.fixed_effects
         betas = self.beta.T.tolist()[0]
-        print '\t'.join(['Name', 'Estimate'])
+        print('\t'.join(['Name', 'Estimate']))
         for name, beta in zip(fixefnames, betas):
-            print '\t'.join(q for q in [name, '{:5.3f}'.format(beta)])
-        print
-        print 'Variance components:'
-        print '\t'.join(['Component', 'Variance', '% Variance'])
+            print('\t'.join(q for q in [name, '{:5.3f}'.format(beta)]))
+        print()
+        print('Variance components:')
+        print('\t'.join(['Component', 'Variance', '% Variance']))
         totalvar = sum(self.variance_components)
         for effect, vc in zip(self.random_effects, self.variance_components):
-            print '\t'.join(v for v in [effect.label,
+            print('\t'.join(v for v in [effect.label,
                                         '{:5.3f}'.format(vc),
-                                        '{:5.3f}'.format(100 * vc / totalvar)])
-        print
-        print 'Observations: {}'.format(self.nobs())
-        print 'Loglikelihood: {:10.2f}'.format(self.loglikelihood())
-        print 'BIC: {:10.3f}'.format(self.bic)
-        print
+                                        '{:5.3f}'.format(100 * vc / totalvar)]))
+        print()
+        print('Observations: {}'.format(self.nobs()))
+        print('Loglikelihood: {:10.2f}'.format(self.loglikelihood()))
+        print('BIC: {:10.3f}'.format(self.bic))
+        print()
 
     def varianceplot1d(self, effect_index, nevals=20):
         raise NotImplementedError

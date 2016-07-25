@@ -75,7 +75,7 @@ class ChromosomePool(object):
                 return r
 
             newpool = [choose_chrom(self.pool[i], c.genetic_map)
-                       for x in xrange(gensize)]
+                       for x in range(gensize)]
             self.pool[i] = newpool
 
     # Chromosome functions
@@ -97,7 +97,7 @@ class ChromosomePool(object):
         growth_func: A function that takes a generation number as an argument
             and returns a generation size 
         '''
-        for x in xrange(gens):
+        for x in range(gens):
             self.iterate_pool(growth_func(x))
 
     @staticmethod

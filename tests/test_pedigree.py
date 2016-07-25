@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from pydigree.pedigree import Pedigree
 from nose.tools import raises

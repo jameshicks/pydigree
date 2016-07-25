@@ -12,27 +12,27 @@ traitname = 'synthetic'
 pop = pyd.Population()
 
 # Create chromosomes
-for i in xrange(100):
+for i in range(100):
 	c = pyd.ChromosomeTemplate()
 	c.add_genotype(maf, 0)
 	pop.add_chromosome(c)
 
 # Create trait architecture
 trait = Architecture('synthetic', 'quantitative', chromosomes=pop.chromosomes)
-for i in xrange(100):
+for i in range(100):
 	trait.add_effect((i,0), 1 * (-1 if i % 2 else 1))
 
-print 'Locus mean genotypic value: {}'.format(trait.effects[0].expected_genotypic_value)
-print 'Locus variance: {}'.format(trait.effects[0].locus_additive_variance)
+print('Locus mean genotypic value: {}'.format(trait.effects[0].expected_genotypic_value))
+print('Locus variance: {}'.format(trait.effects[0].locus_additive_variance))
 
-print 'Expected trait mean: {}'.format(trait.expected_genotypic_value)
-print 'Expected trait variance: {}'.format(trait.additive_genetic_variance)
-for i in xrange(ninds):
+print('Expected trait mean: {}'.format(trait.expected_genotypic_value))
+print('Expected trait variance: {}'.format(trait.additive_genetic_variance))
+for i in range(ninds):
 	i = pop.founder_individual()
 	i.get_genotypes(linkeq=True)
 	i.phenotypes[traitname] = trait.predict_phenotype(i)
 
 y = np.array([i.phenotypes[traitname] for i in pop.individuals])
-print 'Observed trait mean {}'.format(y.mean())
-print 'Observed trait variance: {}'.format(y.var())
+print('Observed trait mean {}'.format(y.mean()))
+print('Observed trait variance: {}'.format(y.var()))
 

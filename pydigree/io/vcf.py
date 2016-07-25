@@ -1,4 +1,4 @@
-from itertools import izip, chain
+from itertools import chain
 
 import numpy as np
 
@@ -115,7 +115,7 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
     genotypes = np.array(genotypes)
     genotypes = genotypes.reshape((-1, len(inds))).T
 
-    for ind, row in izip(inds, genotypes):
+    for ind, row in zip(inds, genotypes):
         row = [vcf_allele_parser(x) for x in row]
         row = chain.from_iterable(row)
         row = list(row)

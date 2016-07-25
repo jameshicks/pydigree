@@ -1,6 +1,6 @@
 import sys
 
-from itertools import izip
+
 
 import numpy as np
 
@@ -28,20 +28,20 @@ a = intervals_to_array(s[frozenset({ped['7'],ped['8']})][0], ped.chromosomes[0].
 b = trueibd[frozenset({'7','8'})]
 
 
-genos1 = izip(*ped['7'].genotypes[0])
-genos2 = izip(*ped['8'].genotypes[0])
-identical = [ibs(x,y) for x,y in izip(genos1, genos2)]
+genos1 = zip(*ped['7'].genotypes[0])
+genos2 = zip(*ped['8'].genotypes[0])
+identical = [ibs(x,y) for x,y in zip(genos1, genos2)]
 
 from pydigree.common import table, runs
 
 
 for start, stop in runs(list(a), lambda x: x>0, ms):
-    print 'Predicted segment: {}-{}'.format(start, stop)
+    print('Predicted segment: {}-{}'.format(start, stop))
 
-print
+print()
 
 for start, stop in runs(list(b), lambda x: x>0, 2):
-    print 'True IBD Segment: {}-{}'.format(start, stop)
+    print('True IBD Segment: {}-{}'.format(start, stop))
 
 correct_calls = a == b
-print 'Accuracy: {}'.format(correct_calls.sum() / float(correct_calls.shape[0]))
+print('Accuracy: {}'.format(correct_calls.sum() / float(correct_calls.shape[0])))

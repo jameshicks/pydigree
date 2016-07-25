@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pydigree
 import itertools
@@ -20,7 +20,7 @@ for pedigree in ped:
     # 1) Pairwise kinship coefs
     for x, y in itertools.combinations(ids, 2):
         k = pedigree.kinship(x, y)
-        print lab, x, y, k
+        print(lab, x, y, k)
     # 2) Inbreeding coefs.
     for x in ids:
-        print lab, x, x, pedigree.inbreeding(x)
+        print(lab, x, x, pedigree.inbreeding(x))

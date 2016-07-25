@@ -156,7 +156,7 @@ def test_labelledalleles():
     ngenos = 50
     p = Population()
     c = ChromosomeTemplate()
-    for i in xrange(ngenos):
+    for i in range(ngenos):
         c.add_genotype()
     p.add_chromosome(c)
 
@@ -172,7 +172,7 @@ def test_labelledallele_delabeler():
 
     p = Population()
     c = ChromosomeTemplate()
-    for i in xrange(ngenos):
+    for i in range(ngenos):
         c.add_genotype()
     p.add_chromosome(c)
 
@@ -186,11 +186,12 @@ def test_labelledallele_delabeler():
     b.genotypes[0][0] = Alleles([3] * ngenos)
     b.genotypes[0][1] = Alleles([4] * ngenos)
 
-    chromatid_spans = [InheritanceSpan(a, 0, 0, 0, ngenos/2),
-                       InheritanceSpan(b, 0, 1, ngenos/2, ngenos)]
+
+    chromatid_spans = [InheritanceSpan(a, 0, 0, 0, ngenos//2),
+                       InheritanceSpan(b, 0, 1, ngenos//2, ngenos)]
     chromatid = LabelledAlleles(spans=chromatid_spans, chromobj=c)
 
-    expected_value = [1]*(ngenos/2) + [4] * (ngenos/2)
+    expected_value = [1]*(ngenos//2) + [4] * (ngenos//2)
     expected_value = Alleles(expected_value)
 
     actual_value = chromatid.delabel()

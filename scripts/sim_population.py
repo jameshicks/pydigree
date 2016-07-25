@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-from __future__ import division
-
+#!/usr/bin/env python3
 import sys
 import pydigree
 import time
@@ -19,16 +17,16 @@ pop = pydigree.Population(n)
 for rx in range(1):
     c = pydigree.ChromosomeTemplate()
     for x in range(nmark): c.add_genotype(np.random.random(),intermark_dist_cm)
-    print c
+    print(c)
     pop.add_chromosome(c)
-print 'Initializing pool'
+print('Initializing pool')
 pop.initialize_pool()
 gen_sizes = [pydigree.logistic_growth(n,r,k,t) for t in range(gens)]
-print 'Iterating pool'
+print('Iterating pool')
 for i,g in enumerate(gen_sizes):
     #print 'Generation %d (%d chromosomes)...' % (i,pop.chrom_pool_size())
     #ng = pydigree.logistic_growth(p0,r,pfinal,g)
     t = time.time()
     pop.iterate_pool(g)
     t2 = time.time()
-    print '\t'.join(str(x) for x in [i, int(g), t2-t, (t2-t)/int(g)])
+    print('\t'.join(str(x) for x in [i, int(g), t2-t, (t2-t)/int(g)]))

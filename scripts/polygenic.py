@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import argparse
@@ -33,18 +33,18 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-print 'Reading files'
+print('Reading files')
 peds = pydigree.io.read_ped(args.pedf)
 pydigree.io.read_phenotypes(peds, args.phenf)
 
 m = MixedModel(peds, outcome=args.outcome, fixed_effects=args.fixefs)
-print 'Calculating Kinships'
+print('Calculating Kinships')
 m.add_genetic_effect()
 
 if args.d7:
     m.add_genetic_effect(kind='dominance')
 
-print 'Done'
+print('Done')
 m.fit_model()
 
 if args.center:
@@ -67,4 +67,4 @@ if args.interact:
         from IPython import embed
         embed()
     except ImportError:
-        print "IPython not found!"
+        print("IPython not found!")

@@ -1,6 +1,6 @@
 ''' A mixin class for building mixed models '''
 
-from itertools import izip
+
 
 import numpy as np
 
@@ -72,7 +72,7 @@ class MixedModelMixin(object):
     def vcov_matrix(self, incidence_matrices, covariance_matrices, variance_components):
         """ Returns the variance-covariance matrix (V) for individuals in a mixed model """
         return sum(sigma * Z * __getmatrix(G) * Z.T
-                   for Z, G, sigma in izip(incidence_matrices, covariance_matrices, variance_components))
+                   for Z, G, sigma in zip(incidence_matrices, covariance_matrices, variance_components))
 
     def inv_vcov_matrix(self, incidence_matrices, covariance_matrices, variance_components):
         V = vcov_matrix(

@@ -8,4 +8,4 @@ def choice(iter):
 
 def sample_with_replacement(seq, n):
 	l = len(seq)
-	return [seq[np.random.randint(0,l)] for x in xrange(n)]
+	return [seq[np.random.randint(0,l)] for x in range(n)]

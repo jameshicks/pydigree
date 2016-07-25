@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import itertools
-from itertools import izip
+
 
 import numpy as np
 import pandas as pd
@@ -363,7 +363,7 @@ class Individual(object):
     def constrained_gamete(self, constraints, attempts=1000):
         # Constraints here is a list of ((location, index), alleles) tuples
         # for alleles that the gamete has to have
-        for x in xrange(attempts):
+        for x in range(attempts):
             g = self.gamete()
             success = True
             for loc, allele in constraints:
@@ -382,7 +382,7 @@ class Individual(object):
         Combines a set of half-genotypes (from method gamete) to a full
         set of genotypes
         """
-        return [[x, y] for x, y in itertools.izip(father, mother)]
+        return [[x, y] for x, y in zip(father, mother)]
 
     # Phenotype functions
     def has_phenotype(self, phenotype):

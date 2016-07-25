@@ -1,4 +1,4 @@
-from itertools import izip, chain
+from itertools import chain
 
 import numpy as np
 
@@ -6,6 +6,8 @@ from pydigree.io import smartopen
 from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.exceptions import FileFormatError
+import collections
+from functools import reduce
 
 
 def create_pop_handler_func(chromosomes):
@@ -25,7 +27,7 @@ def create_data_handler_func(chromosomes,
 
         # Handle the phenotypes first
         phendata = data[phenotype_indices]
-        for phenotype, value in izip(phenotypes, phendata):
+        for phenotype, value in zip(phenotypes, phendata):
             kind, label = phenotype
             if kind == 'A':
                 value = True if value == '1' else False
@@ -61,7 +63,7 @@ def read_merlin(prefix=None, pedfile=None, datfile=None, mapfile=None):
 
     # Make sure that the order of markers in the dat file is the same as that
     # in the map file.
-    for datlab, maplab in izip(data_marker_labels, maplabs):
+    for datlab, maplab in zip(data_marker_labels, maplabs):
         if datlab != maplab:
             raise FileFormatError('Datfile and mapfile in different order')
 
@@ -141,7 +143,7 @@ def write_phenotypes(pedigrees, prefix, phenotypes=None,
                      phenotype_types=None, predicate=None,
                      skip_all_missing=True, missing_code='X', trait=None):
     output_inds = pedigrees.individuals
-    if callable(predicate):
+    if isinstance(predicate, collections.Callable):
         output_inds = [x for x in output_inds if predicate(x)]
 
     if phenotypes is None:
@@ -172,7 +174,7 @@ def write_phenotypes(pedigrees, prefix, phenotypes=None,
         return str(ind.phenotypes[phen])
 
     with open(prefix + '.phenotypes.dat', 'w') as datf:
-        for ptype, phen in izip(phenotype_types, available_phenotypes):
+        for ptype, phen in zip(phenotype_types, available_phenotypes):
             datf.write('{0} {1}\n'.format(ptype, phen))
 
     with open(prefix + '.phenotypes.ped', 'w') as phenf:

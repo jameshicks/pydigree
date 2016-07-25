@@ -1,5 +1,5 @@
 from bisect import bisect_right
-from itertools import izip
+
 import numpy as np
 
 from pydigree.genotypes import Alleles, SparseAlleles
@@ -55,10 +55,10 @@ class ChromosomeTemplate(object):
             return 0
 
     def __iter__(self):
-        return izip(self.labels, self.genetic_map, self.physical_map)
+        return zip(self.labels, self.genetic_map, self.physical_map)
 
     def _iinfo(self):
-        return izip(self.labels, self.genetic_map, self.physical_map,
+        return zip(self.labels, self.genetic_map, self.physical_map,
                     self.frequencies)
 
     @staticmethod

@@ -1,6 +1,6 @@
-from __future__ import division
 
-from itertools import combinations_with_replacement, izip
+
+from itertools import combinations_with_replacement
 
 from pydigree.common import *
 from pydigree.ibs import ibs
@@ -48,8 +48,8 @@ class Simulation(object):
 
     def run(self, verbose=False, writeibd=False, output_predicate=None, compression=None, output_chromosomes=None):
         #write_map(self.template, '{0}.map'.format(self.label))
-        for x in xrange(self.replications):
-            print 'Replicate {}/{}'.format(x+1, self.replications)
+        for x in range(self.replications):
+            print('Replicate {}/{}'.format(x+1, self.replications))
             self.replicate(
                 verbose=verbose, writeibd=writeibd, replicatenumber=x)
 
@@ -79,13 +79,13 @@ class Simulation(object):
                     identical = []
                     for chrom_idx, chromosome in enumerate(ind1.chromosomes):
                         if ind1 == ind2:
-                            genos = izip(*ind1.genotypes[chrom_idx])
+                            genos = zip(*ind1.genotypes[chrom_idx])
                             ibd = [2 * (x == y) for x, y in genos]
                         else:
-                            genos1 = izip(*ind1.genotypes[chrom_idx])
-                            genos2 = izip(*ind2.genotypes[chrom_idx])
+                            genos1 = zip(*ind1.genotypes[chrom_idx])
+                            genos2 = zip(*ind2.genotypes[chrom_idx])
                             ibd = [ibs(g1, g2)
-                                   for g1, g2 in izip(genos1, genos2)]
+                                   for g1, g2 in zip(genos1, genos2)]
                         identical.extend(ibd)
                     outline = [ped.label, ind1.label, ind2.label] + identical
                     outline = ' '.join([str(x) for x in outline])

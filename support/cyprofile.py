@@ -10,7 +10,7 @@ except ImportError:
 test_data = Alleles([0] * 10000)
 func = spans
 
-for start in xrange(1, 10000, 200):
+for start in range(1, 10000, 200):
 	test_data[start:(start+100)] = 1
 
 profile = line_profiler.LineProfiler(func)

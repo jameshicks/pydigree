@@ -1,6 +1,6 @@
 import numpy as np
 
-from itertools import izip
+
 
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, Alleles
@@ -91,7 +91,7 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
             if rec.identifier == 'I':
                 inds = [Individual(pop, label) for label in rec.data[::2]]
             elif rec.is_phenotype_record:
-                for ind, pheno_status in izip(inds, rec.data[::2]):
+                for ind, pheno_status in zip(inds, rec.data[::2]):
                     if rec.identifier == 'A':
                         pheno_status = pheno_status == '2'
                     else:
@@ -106,8 +106,8 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
         f.seek(0)
         gtrows = [list(grouper(BeagleGenotypeRecord(x).data, 2))
                   for x in f if x.startswith('M')]
-        genotypes = izip(*gtrows)
-        for ind, sequentialalleles in izip(inds, genotypes):
+        genotypes = zip(*gtrows)
+        for ind, sequentialalleles in zip(inds, genotypes):
             ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes,
                                                               sequentialalleles,
                                                               missingcode=missingcode)

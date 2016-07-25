@@ -1,5 +1,5 @@
 import numpy as np
-from itertools import izip
+
 
 from pydigree.datastructures import SortedPairContainer
 from pydigree.genotypes import AlleleContainer, Alleles
@@ -65,7 +65,7 @@ class SparseAlleles(AlleleContainer):
         idxes = np.where(np.logical_and(data != refcode,
                                         data != missingcode))[0]
         nonref_values = data[idxes]
-        return SortedPairContainer(izip(idxes, nonref_values))
+        return SortedPairContainer(zip(idxes, nonref_values))
 
     @staticmethod
     def _array2missing(data, missingcode):
