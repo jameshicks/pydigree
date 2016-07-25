@@ -15,7 +15,7 @@ def richards(A, C, M, B, T):
     B: Growth Rate
     T: Maximum growth position
     '''
-    return lambda gen: A + (C / (1+ T * np.exp(-B *(gen - M)) ** (1/T))
+    return lambda gen: A + (C / (1+ T * np.exp(-B *(gen - M)) ** (1/T)))
 
 class ChromosomePool(object):
 
