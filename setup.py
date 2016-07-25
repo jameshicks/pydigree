@@ -35,7 +35,7 @@ cyext = [Extension('pydigree.cyfuncs',
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)]
 
-with open('LICENSE') as f:
+with open('LICENSE.txt') as f:
     license = f.read()
 
 setup(
