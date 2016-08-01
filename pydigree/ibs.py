@@ -1,5 +1,5 @@
 import numpy as np
-from pydigree.cyfuncs import ibs
+from pydigree.cydigree.cyfuncs import ibs
 
 
 def get_ibs_states(ind1, ind2, chromosome_index, missingval=64):

@@ -5,8 +5,8 @@ from operator import mul as multiply
 from functools import reduce
 from math import log
 
-from pydigree.cyfuncs import runs, runs_gte, interleave
-from pydigree.cyfuncs import all_same_type, is_sorted
+from pydigree.cydigree.cyfuncs import runs, runs_gte, interleave
+from pydigree.cydigree.cyfuncs import all_same_type, is_sorted
 
 
 def count(val, iterable):

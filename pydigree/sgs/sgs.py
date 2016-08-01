@@ -8,7 +8,7 @@ from scipy.sparse import lil_matrix
 
 from pydigree.common import runs
 from pydigree.ibs import ibs, get_ibs_states
-from pydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
+from pydigree.cydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree.io import smartopen as open
 from pydigree import Population, PedigreeCollection
 from pydigree import Individual, ChromosomeTemplate

@@ -1,5 +1,6 @@
 *DS_Store
 *.bak
+
 ###### Python ignores
 *.py[code]
 
@@ -48,7 +49,7 @@ tests/cover
 ####### Cython ignores
 cyfuncs.c
 cyfuncs.html
-
+sparsearray.c
 ####### C ignores
 
 # Object files

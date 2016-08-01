@@ -4,7 +4,7 @@ import numpy as np
 from pydigree.datastructures import SortedPairContainer
 from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.exceptions import NotMeaningfulError
-from pydigree.cyfuncs import fastfirstitem
+from pydigree.cydigree.cyfuncs import fastfirstitem
 
 
 class SparseAlleles(AlleleContainer):

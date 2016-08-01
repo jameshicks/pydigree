@@ -1,4 +1,4 @@
-from pydigree.cyfuncs import SparseArray, SparseArrayElement
+from pydigree.cydigree.sparsearray import SparseArray, SparseArrayElement
 
 
 def SLE_eq():
