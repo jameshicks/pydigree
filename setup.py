@@ -23,7 +23,8 @@ if cyprofile:
 
 
 cysources = ['pydigree/cydigree/cyfuncs.pyx',
-             'pydigree/cydigree/sparsearray.pyx']
+             'pydigree/cydigree/sparsearray.pyx',
+             'pydigree/cydigree/inttree.pyx']
 if not all(os.path.exists(x) for x in cysources):
     error('ERROR: Cython sources not found! Giving up.')
     exit(1)
@@ -39,10 +40,10 @@ cyext = Extension('pydigree.cydigree.cyfuncs',
                   extra_compile_args=['-Wno-unused-function'],
                   define_macros=macros)
 
-sparrayext = Extension('pydigree.cydigree.sparsearray',
-                       sources=['pydigree/cydigree/sparsearray.pyx'],
-                       extra_compile_args=['-Wno-unused-function'],
-                       define_macros=macros)
+dsext = Extension('pydigree.cydigree.datastructures',
+                  sources=['pydigree/cydigree/datastructures.pyx'],
+                  extra_compile_args=['-Wno-unused-function'],
+                  define_macros=macros)
 
 with open('LICENSE.txt') as f:
     license = f.read()
@@ -55,7 +56,7 @@ setup(
     url='https://github.com/jameshicks/pydigree',
     license=license,
     packages=['pydigree'],
-    ext_modules=cythonize([cyext, sparrayext]),
+    ext_modules=cythonize([cyext, dsext]),
     requires=['numpy', 'scipy', 'pandas', 'cython'],
     classifers=['Programming Language :: Python :: 3 :: Only',
                 'Programming Language :: Cython',
