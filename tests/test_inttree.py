@@ -278,7 +278,7 @@ def test_traverse():
     tree = IntTree.from_keys([10, 5, 3, 18, 2])
     assert [x.key for x in tree.traverse()] == list(sorted(keys))
     assert [x.key for x in tree.traverse(reverse=True)] == list(sorted(keys, reverse=True))
-
+    assert [x.key for x in tree.to_stack()] == list(sorted(keys)) 
 
 
 def test_minmax():
@@ -286,7 +286,6 @@ def test_minmax():
 
     rvals = [10, 5, 3, 18, 2, 100, 4123, 4393014, 49310]
     for i, rval in enumerate(rvals):
-        print('({}) Inserting {}'.format(i,rval))
         tree.insert(rval)
 
     assert tree.min() == 2
@@ -349,19 +348,20 @@ def test_del():
     # except KeyError:
     #     pass
 
-# def test_intersect():
-#     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
-#     t2 = IntTree.from_keys([3,6,7])
+def test_intersect():
+    t1 = IntTree.from_keys([1, 3, 5, 7, 9])
+    t2 = IntTree.from_keys([3,6,7])
+    # assert 0
+    t_intersect = t1.intersection(t2)
+    # assert 0
+    assert [x.key for x in t_intersect.traverse()] == [3,7]
 
-#     t_intersect = t1.intersection(t2)
-#     assert [x.key for x in t_intersect.traverse()] == [3,7]
+def test_union():
+    t1 = IntTree.from_keys([1, 3, 5, 7, 9])
+    t2 = IntTree.from_keys([3,6,7])
 
-# def test_union():
-#     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
-#     t2 = IntTree.from_keys([3,6,7])
-
-#     t_union = t1.union(t2)
-#     assert [x.key for x in t_union.traverse()] == [1,3,5,6,7,9] 
+    t_union = t1.union(t2)
+    assert [x.key for x in t_union.traverse()] == [1,3,5,6,7,9] 
 
 def test_selfbalancing():
     tree = IntTree()
@@ -395,7 +395,7 @@ def test_selfbalancing():
     assert tree.find_node(6973).key == 6973
     assert tree.find_node(9015).key == 9015
     assert tree.size() == len(rvals)
-    print(tree.size())
+    # print(tree.size())
 
     for k in [5409, 3875, 1315, 5418, 1323, 1838, 7103, 6082, 963, 6084]:
         tree.delete(k)

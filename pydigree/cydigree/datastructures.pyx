@@ -400,7 +400,7 @@ cdef class IntTree(object):
                 yield node 
                 node = node.left
 
-    cdef NodeStack to_stack(self):
+    cpdef NodeStack to_stack(self):
         cdef NodeStack s = NodeStack()
         cdef NodeStack out = NodeStack()
         cdef IntTreeNode node = self.root
@@ -413,6 +413,7 @@ cdef class IntTree(object):
                 node = s.pop()
                 out.push(node)
                 node = node.left
+        return out
 
     cpdef uint32_t size(self):
         if self.root is None: 
