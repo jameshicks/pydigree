@@ -261,6 +261,15 @@ def test_insertion():
     assert tree.root.left.left.key == 5
     assert tree.root.left.right.key == 7
 
+def test_retrieval():
+    tree = IntTree.from_pairs(zip([5,10,15,20], ['a', 'b', 'c', 'd']))
+    assert tree.get(10) == 'b'
+    assert tree.get(5) == 'a'
+    assert tree.get(100, -1) == -1
+
+    assert tree.find(10) == 'b'
+    assert tree.find(5) == 'a'
+
 def test_path():
     tree = IntTree.from_keys([69, 60, 22, 91, 19, 71, 96, 27, 84, 43])
     assert tree.root.key == 60

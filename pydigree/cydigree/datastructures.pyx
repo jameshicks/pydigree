@@ -299,11 +299,13 @@ from libc.stdint cimport uint32_t, uint8_t, int8_t
 cdef class IntTreeNode(object):
     'An IntTree node'
     cdef readonly uint32_t key
+    cdef public object value
     cdef uint8_t height
     cdef public IntTreeNode left, right, parent
 
-    def __init__(self, uint32_t key):
+    def __init__(self, uint32_t key, value=None):
         self.key = key
+        self.value = value
         self.height = 0
         self.left = None
         self.right = None
@@ -346,6 +348,14 @@ cdef class IntTree(object):
         tree = IntTree()
         for key in keys:
             tree.insert(key)
+
+        return tree
+
+    @staticmethod
+    def from_pairs(pairs):
+        tree = IntTree()
+        for key, value in pairs:
+            tree.insert(key, value)
 
         return tree
 
@@ -435,6 +445,37 @@ cdef class IntTree(object):
     def keys(self):
         yield from (node.key for node in self.traverse())
 
+    cpdef object get(self, uint32_t key, default=None):
+        if not self.root:
+            return default
+
+        cdef IntTreeNode node = self.root
+        while node is not None:
+            if key > node.key:
+                node = node.right
+            elif key < node.key:
+                node = node.left
+            else:
+                return node.value
+
+        return default
+
+    cpdef object find(self, uint32_t key):
+        if not self.root:
+            raise KeyError('Node not found')
+
+        cdef IntTreeNode node = self.root
+        while node is not None:
+            if key > node.key:
+                node = node.right
+            elif key < node.key:
+                node = node.left
+            else:
+                return node.value
+
+        raise KeyError('Node not found')
+
+
     cpdef IntTreeNode find_node(self, uint32_t key):
         cdef IntTreeNode node = self.root
         while node is not None:
@@ -466,8 +507,8 @@ cdef class IntTree(object):
         s.reverse()
         return s
 
-    cpdef void insert(self, uint32_t key):
-        cdef IntTreeNode new_node = IntTreeNode(key)
+    cpdef void insert(self, uint32_t key, object value=None):
+        cdef IntTreeNode new_node = IntTreeNode(key, value)
 
         if self.root is None:
             self.root = new_node
