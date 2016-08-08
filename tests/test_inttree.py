@@ -357,6 +357,10 @@ def test_del():
     # except KeyError:
     #     pass
 
+    tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
+    tree.delrange(10,40)
+    assert list(tree.keys()) == [0,5,40,45,50]
+
 def test_intersect():
     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
     t2 = IntTree.from_keys([3,6,7])

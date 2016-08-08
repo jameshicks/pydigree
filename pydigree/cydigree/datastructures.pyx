@@ -693,6 +693,36 @@ cdef class IntTree(object):
 
         return node
 
+    cpdef delrange(self, uint32_t start, uint32_t end):
+        'Deletes keys where start <= key < stop'
+        cdef NodeStack delstack = NodeStack()
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode node = self.root
+        while (not s.empty()) or (node is not None):
+            if node is not None:
+                s.push(node)
+                node = node.left
+            else:
+                node = s.pop()
+                if start <= node.key < end:
+                    delstack.push(node)
+                elif node.key >= end:
+                    break 
+                node = node.right
+
+        delnode = delstack.pop()
+        print('stacked')
+        for delnode in delstack:
+            print('deleting {}'.format(delnode.key))
+            print(list(self.path_to_node(delnode.key)))
+            self.delete(delnode.key)
+            if delnode.key in self:
+                print('deletable')
+            else:
+                print('undeleteable')
+            print('done')
+            delnode = delstack.pop()
+
     cpdef uint32_t max(self):
         return self.max_node().key
 
