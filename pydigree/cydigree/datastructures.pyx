@@ -863,7 +863,10 @@ cdef class NodeStack(object):
         return popped.obj
 
     cpdef IntTreeNode peek(self):
-        return self.front.obj
+        if self.front:
+            return self.front.obj
+        else:
+            return None
 
     cpdef bint empty(self):
         return self.front is None
