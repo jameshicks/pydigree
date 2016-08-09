@@ -14,6 +14,7 @@ def test_NodeStack():
     assert list(x.key for x in s) == [1,2,3,4]
 
     emptystack = NodeStack()
+    assert emptystack.empty()
     assert emptystack.pop() is None
     assert emptystack.peek() is None
 
@@ -365,9 +366,9 @@ def test_del():
     tree.delete(100)
     assert list(tree.keys()) == [50,200]
 
-    # tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
-    # tree.delrange(10,40)
-    # assert list(tree.keys()) == [0,5,40,45,50]
+    tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
+    tree.delrange(10,40)
+    assert list(tree.keys()) == [0,5,40,45,50]
 
 def test_intersect():
     t1 = IntTree.from_keys([1, 3, 5, 7, 9])

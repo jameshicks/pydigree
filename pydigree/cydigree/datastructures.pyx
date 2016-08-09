@@ -648,11 +648,11 @@ cdef class IntTree(object):
 
         # The parent of the node to be deleted
         cdef IntTreeNode direct_ancestor = ancestors.peek()
-                
+
         replacement.children = node.children 
         replacement.parent = direct_ancestor
         replacement.update_height()
-
+        
         if node is self.root:
             self.root = replacement
         
@@ -698,6 +698,7 @@ cdef class IntTree(object):
         cdef NodeStack delstack = NodeStack()
         cdef NodeStack s = NodeStack()
         cdef IntTreeNode node = self.root
+
         while (not s.empty()) or (node is not None):
             if node is not None:
                 s.push(node)
@@ -710,18 +711,9 @@ cdef class IntTree(object):
                     break 
                 node = node.right
 
-        delnode = delstack.pop()
-        print('stacked')
         for delnode in delstack:
-            print('deleting {}'.format(delnode.key))
-            print(list(self.path_to_node(delnode.key)))
             self.delete(delnode.key)
-            if delnode.key in self:
-                print('deletable')
-            else:
-                print('undeleteable')
-            print('done')
-            delnode = delstack.pop()
+                     
 
     cpdef uint32_t max(self):
         return self.max_node().key
@@ -881,6 +873,15 @@ cdef class NodeStack(object):
         while item is not None:
             yield item
             item = self.pop()
+
+    def _to_list(self):
+        l = []
+        f = self.front
+        while f:
+            l.append(f.obj) 
+            f = f.following
+
+        return l
 
 
 cdef class NodeStackItem(object):
