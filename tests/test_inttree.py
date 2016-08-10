@@ -275,6 +275,12 @@ def test_retrieval():
     assert tree.find(10) == 'b'
     assert tree.find(5) == 'a'
 
+    keys = range(50)
+    a = IntTree.from_pairs(zip(keys, [chr(key) for key in keys]))
+
+    b = a.getrange(25, 35)
+    assert list(b.keys()) == [25, 26, 27, 28, 29, 30, 31, 32, 33, 34]
+
 def test_path():
     tree = IntTree.from_keys([69, 60, 22, 91, 19, 71, 96, 27, 84, 43])
     assert tree.root.key == 60

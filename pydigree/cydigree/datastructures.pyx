@@ -476,6 +476,25 @@ cdef class IntTree(object):
 
         for delnode in delstack:
             self.delete(delnode.key)
+
+    cpdef getrange(self, uint32_t start, uint32_t end):
+        cdef IntTree ntree = IntTree()
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode node = self.root
+
+        while (not s.empty()) or (node is not None):
+            if node is not None:
+                s.push(node)
+                node = node.left
+            else:
+                node = s.pop()
+                if start <= node.key < end:
+                    ntree.insert(node.key, node.value)
+                elif node.key >= end:
+                    break 
+                node = node.right
+
+        return ntree
                      
 
     cpdef uint32_t max(self):
