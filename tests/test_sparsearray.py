@@ -1,4 +1,4 @@
-from pydigree.cydigree.sparsearray import SparseArray
+from pydigree.cydigree.datastructures import SparseArray
 
 
 def test_setitem():
