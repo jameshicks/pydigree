@@ -102,23 +102,34 @@ def test_getitem():
 #     s[5] = 3
 #     assert s.tolist() == [1, 2, 1, 1, 1, 3, 1, 1]
 
-# def test_setslice():
-#     s = SparseArray(100, 0)
-#     s[1] = 2
-#     s[99] = 2
+def test_setslice():
+    s = SparseArray(100, 0)
+    s[1] = 2
+    s[99] = 2
 
-#     s[5:8] = 3
-#     assert len(s.container) == 5
-#     assert s.indices == [1, 5, 6, 7, 99]
-#     assert s.values == [2, 3, 3, 3, 2]
+    s[5:8] = 3
+    assert len(s.container) == 5
+    assert s.indices == [1, 5, 6, 7, 99]
+    assert s.values == [2, 3, 3, 3, 2]
 
-#     s = SparseArray(100, 0)
-#     t = SparseArray(100,0)
-#     t[5:10] = 1
-#     s[5:10] = t[5:10]
-#     assert len(t.container) == 5
-#     assert t.values == [1]*5
-#     assert t.indices == [5, 6, 7, 8, 9]
+    s = SparseArray(100, 0)
+    s[1] = 2
+    s[99] = 2
+
+    s[5:8] = [3,3,3]
+    assert len(s.container) == 5
+    assert s.indices == [1, 5, 6, 7, 99]
+    assert s.values == [2, 3, 3, 3, 2]
+
+
+
+    # s = SparseArray(100, 0)
+    # t = SparseArray(100,0)
+    # t[5:10] = 1
+    # s[5:10] = t[5:10]
+    # assert len(t.container) == 5
+    # assert t.values == [1]*5
+    # assert t.indices == [5, 6, 7, 8, 9]
 
 # def test_eq():
 #     s = SparseArray(5, 0)

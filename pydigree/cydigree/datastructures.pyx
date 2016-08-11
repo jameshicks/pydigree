@@ -1,5 +1,6 @@
 from collections import Sequence
 
+from libc.stdint cimport uint32_t, uint8_t, int8_t
 
 cdef class SparseArray:
     # I imagine at some point I'll have to rewrite this whole thing
@@ -36,26 +37,44 @@ cdef class SparseArray:
     def __getitem__(self, index):
         return self._get_single_item(index)
 
-    cdef _get_single_item(self, index):
+    cdef object _get_single_item(self, index):
         index = self.fix_index(index)
         return self.container.get(index, self.refcode)
 
 
     def __setitem__(self, index, object value):
-        self._set_single(self, index, value)
+        if isinstance(index, slice):
+            self._set_slice(index.start, index.stop, value)
+        else:
+            self._set_single(index, value)
 
-    def _set_single(self, index, object value):
+    cdef void _set_single(self, uint32_t index, object value):
         index = self.fix_index(index)
         if value != self.refcode:
             self.container.insert(index, value)
         else:
             self.container.delete(index)
 
+    cdef void _set_slice(self, uint32_t start, uint32_t stop, values):
+        cdef Py_ssize_t i, nvals 
+        if isinstance(values, Sequence):
+            nvals = len(values)
+            if stop - start != nvals:
+                raise IndexError('Value wrong shape for slice')
+
+        self.container.delrange(start, stop)
+        for i in range(start, stop):
+            if isinstance(values, Sequence):
+                ival = values[i - start]
+            else:
+                ival = values
+            if ival != self.refcode:
+                self.container.insert(i, ival) 
+
    
 ############
 ############
 
-from libc.stdint cimport uint32_t, uint8_t, int8_t
 
 cdef class IntTreeNode(object):
     'An IntTree node'
