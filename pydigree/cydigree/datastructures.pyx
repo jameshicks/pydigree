@@ -35,12 +35,23 @@ cdef class SparseArray:
             return self.size + index
 
     def __getitem__(self, index):
-        return self._get_single_item(index)
+        if isinstance(index, slice):
+            return self._get_slice(index)
+        else:
+            return self._get_single_item(index)
 
     cdef object _get_single_item(self, index):
         index = self.fix_index(index)
         return self.container.get(index, self.refcode)
 
+    cdef SparseArray _get_slice(self, index):
+        cdef uint32_t start = index.start
+        cdef uint32_t stop = index.stop 
+
+        cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
+        subarray.container = self.container.getrange(start, stop)
+
+        return subarray 
 
     def __setitem__(self, index, object value):
         if isinstance(index, slice):
@@ -57,7 +68,10 @@ cdef class SparseArray:
 
     cdef void _set_slice(self, uint32_t start, uint32_t stop, values):
         cdef Py_ssize_t i, nvals 
-        if isinstance(values, Sequence):
+
+        if isinstance(values, SparseArray):
+            self._set_slice_to_sparray(start, stop, values)
+        elif isinstance(values, Sequence):
             nvals = len(values)
             if stop - start != nvals:
                 raise IndexError('Value wrong shape for slice')
@@ -71,7 +85,14 @@ cdef class SparseArray:
             if ival != self.refcode:
                 self.container.insert(i, ival) 
 
-   
+    cdef void _set_slice_to_sparray(self, uint32_t start, uint32_t stop, SparseArray values):
+        if stop - start != values.size:
+            raise IndexError('Value wrong shape for slice')
+        
+        for node in values.container.traverse():
+            self.container.insert(node.key, node.value)
+
+
 ############
 ############
 
