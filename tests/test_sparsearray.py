@@ -53,26 +53,26 @@ def test_getslice():
 
     assert len(s2[4:20].container) == 2
 
-# def test_fancy_index_get():
-#     # Bool masks
-#     s = SparseArray(5,0)
-#     s[3] = 1
-#     s[(False, False, True, False, True)].tolist() == [1,0]
+def test_fancy_index_get():
+    # Bool masks
+    s = SparseArray(5,0)
+    s[3] = 1
+    s[(False, False, True, False, True)].tolist() == [1,0]
 
-#     try:
-#         s[(False, True)] 
-#         assert False
-#     except IndexError:
-#         # We wanted this error
-#         pass
+    try:
+        s[(False, True)] 
+        assert False
+    except IndexError:
+        # We wanted this error
+        pass
 
-#     # Bool masks
-#     s = SparseArray(10,0)
-#     mask = [False, False, False, True, False, True, False, False, False, False]
-#     s[mask] = [2,3]
-#     assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
-#     assert s[(3,5)].tolist() == [2,3]
-#     assert s[(5,3)].tolist() == [3,2]
+    # # Number masks
+    # s = SparseArray(10,0)
+    # mask = [False, False, False, True, False, True, False, False, False, False]
+    # s[mask] = [2,3]
+    # assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
+    # assert s[(3,5)].tolist() == [2,3]
+    # assert s[(5,3)].tolist() == [3,2]
 
 
 # def test_fancy_index_set():    
@@ -93,14 +93,14 @@ def test_getslice():
 #     s[mask] = 2
 #     assert s.tolist() == [0, 0, 0, 2, 0, 2, 0, 0, 0, 0]
 
-# def test_tolist():
-#     s = SparseArray(5, 0)
-#     assert s.tolist() == [0,0,0,0,0]
+def test_tolist():
+    s = SparseArray(5, 0)
+    assert s.tolist() == [0,0,0,0,0]
 
-#     s = SparseArray(8, 1)
-#     s[1] = 2
-#     s[5] = 3
-#     assert s.tolist() == [1, 2, 1, 1, 1, 3, 1, 1]
+    s = SparseArray(8, 1)
+    s[1] = 2
+    s[5] = 3
+    assert s.tolist() == [1, 2, 1, 1, 1, 3, 1, 1]
 
 def test_setslice():
     s = SparseArray(100, 0)

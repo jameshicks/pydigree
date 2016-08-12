@@ -37,6 +37,8 @@ cdef class SparseArray:
     def __getitem__(self, index):
         if isinstance(index, slice):
             return self._get_slice(index)
+        elif isinstance(index, Sequence) and type(index[0]) is bool:
+            return self._get_boolidx(index)
         else:
             return self._get_single_item(index)
 
@@ -51,7 +53,22 @@ cdef class SparseArray:
         cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
         subarray.container = self.container.getrange(start, stop)
 
-        return subarray 
+        return subarray
+
+    cdef _get_boolidx(self, index):
+        if len(index) != self.size:
+            raise IndexError('Bool indices not same size as array')
+        cdef uint32_t nvals = sum(index)
+        cdef uint32_t i = 0
+        cdef output = SparseArray(nvals, self.refcode)
+        cdef bint included
+        
+
+        for i in range(nvals):
+            included = index[i]
+            if included:
+                output[i] = self.container.get(i, self.refcode)
+        return output
 
     def __setitem__(self, index, object value):
         if isinstance(index, slice):
@@ -92,6 +109,12 @@ cdef class SparseArray:
         for node in values.container.traverse():
             self.container.insert(node.key, node.value)
 
+    def tolist(self):
+        cdef list output = [self.refcode] * self.size
+        for node in self.container.traverse():
+            output[node.key] = node.value
+
+        return output 
 
 ############
 ############
