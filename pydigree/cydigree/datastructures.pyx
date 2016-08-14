@@ -39,6 +39,8 @@ cdef class SparseArray:
             return self._get_slice(index)
         elif isinstance(index, Sequence) and type(index[0]) is bool:
             return self._get_boolidx(index)
+        elif isinstance(index, Sequence) and type(index[0]) is int:
+            return self._get_fancyidx(index)
         else:
             return self._get_single_item(index)
 
@@ -54,6 +56,15 @@ cdef class SparseArray:
         subarray.container = self.container.getrange(start, stop)
 
         return subarray
+
+    cdef _get_fancyidx(self, index):
+        cdef Py_ssize_t i = 0
+        cdef Py_ssize_t nvals = len(index)
+        cdef output = SparseArray(nvals, self.refcode)
+        for i in range(nvals):
+            output[i] = self[index[i]]
+
+        return output
 
     cdef _get_boolidx(self, index):
         if len(index) != self.size:

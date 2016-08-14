@@ -66,13 +66,14 @@ def test_fancy_index_get():
         # We wanted this error
         pass
 
-    # # Number masks
-    # s = SparseArray(10,0)
-    # mask = [False, False, False, True, False, True, False, False, False, False]
-    # s[mask] = [2,3]
-    # assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
-    # assert s[(3,5)].tolist() == [2,3]
-    # assert s[(5,3)].tolist() == [3,2]
+    # Number masks
+    s = SparseArray(10,0)
+    mask = [False, False, False, True, False, True, False, False, False, False]
+    s[3] = 2
+    s[5] = 3
+    assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
+    assert s[(3,5)].tolist() == [2,3]
+    assert s[(5,3)].tolist() == [3,2]
 
 
 # def test_fancy_index_set():    
