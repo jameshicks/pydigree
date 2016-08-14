@@ -34,6 +34,9 @@ cdef class SparseArray:
         else:
             return self.size + index
 
+    # Item Getting
+    #
+
     def __getitem__(self, index):
         if isinstance(index, slice):
             return self._get_slice(index)
@@ -80,6 +83,9 @@ cdef class SparseArray:
             if included:
                 output[i] = self.container.get(i, self.refcode)
         return output
+
+    # Item Setting
+    #
 
     def __setitem__(self, index, object value):
         if isinstance(index, slice):
@@ -132,6 +138,7 @@ cdef class SparseArray:
         cdef bint multivalue = isinstance(value, Sequence)
         cdef Py_ssize_t nidx = len(indices)
         cdef Py_ssize_t nval 
+        
         if multivalue:
             nval = len(value)
             if nidx != nval:
@@ -143,6 +150,10 @@ cdef class SparseArray:
                 self[indices[i]] = value[i] 
             else:
                 self[indices[i]] = value
+
+    # Misc
+    #
+
     def tolist(self):
         cdef list output = [self.refcode] * self.size
         for node in self.container.traverse():
