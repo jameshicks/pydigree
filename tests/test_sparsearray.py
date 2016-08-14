@@ -76,23 +76,23 @@ def test_fancy_index_get():
     assert s[(5,3)].tolist() == [3,2]
 
 
-# def test_fancy_index_set():    
-#     # Bool masks
-#     s = SparseArray(10,0)
-#     mask = [False, False, False, True, False, True, False, False, False, False]
-#     s[mask] = [2,3]
-#     assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
+def test_fancy_index_set():    
+    # Bool masks
+    s = SparseArray(10,0)
+    mask = [False, False, False, True, False, True, False, False, False, False]
+    s[mask] = [2,3]
+    assert s.tolist() == [0, 0, 0, 2, 0, 3, 0, 0, 0, 0]
     
-#     s[(3,5)] = [10, 10]
-#     assert s.tolist() == [0, 0, 0, 10, 0, 10, 0, 0, 0, 0]
+    s[(3,5)] = [10, 10]
+    assert s.tolist() == [0, 0, 0, 10, 0, 10, 0, 0, 0, 0]
 
-#     s[(5,3)] = [20, 20]
-#     assert s.tolist() == [0, 0, 0, 20, 0, 20, 0, 0, 0, 0]
+    s[(5,3)] = [20, 20]
+    assert s.tolist() == [0, 0, 0, 20, 0, 20, 0, 0, 0, 0]
 
-#     s = SparseArray(10,0)
-#     mask = [False, False, False, True, False, True, False, False, False, False]
-#     s[mask] = 2
-#     assert s.tolist() == [0, 0, 0, 2, 0, 2, 0, 0, 0, 0]
+    s = SparseArray(10,0)
+    mask = [False, False, False, True, False, True, False, False, False, False]
+    s[mask] = 2
+    assert s.tolist() == [0, 0, 0, 2, 0, 2, 0, 0, 0, 0]
 
 def test_tolist():
     s = SparseArray(5, 0)

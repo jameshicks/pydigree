@@ -84,6 +84,10 @@ cdef class SparseArray:
     def __setitem__(self, index, object value):
         if isinstance(index, slice):
             self._set_slice(index.start, index.stop, value)
+        elif isinstance(index, Sequence) and type(index[0]) is bool:
+            self._set_boolidx(index, value)
+        elif isinstance(index, Sequence) and type(index[0]) is int:
+            self._set_fancyidx(index, value)
         else:
             self._set_single(index, value)
 
@@ -120,6 +124,25 @@ cdef class SparseArray:
         for node in values.container.traverse():
             self.container.insert(node.key, node.value)
 
+    cdef void _set_boolidx(self, indices, values):
+        cdef list trueidxs = [i for i,x in enumerate(indices) if x]
+        self._set_fancyidx(trueidxs, values)
+
+    cdef void _set_fancyidx(self, indices, value):
+        cdef bint multivalue = isinstance(value, Sequence)
+        cdef Py_ssize_t nidx = len(indices)
+        cdef Py_ssize_t nval 
+        if multivalue:
+            nval = len(value)
+            if nidx != nval:
+                raise IndexError('Indices and values different length')
+
+        cdef Py_ssize_t i
+        for i in range(nidx):
+            if multivalue:
+                self[indices[i]] = value[i] 
+            else:
+                self[indices[i]] = value
     def tolist(self):
         cdef list output = [self.refcode] * self.size
         for node in self.container.traverse():
