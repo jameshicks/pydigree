@@ -234,8 +234,13 @@ cdef class SparseArray:
             return self._cmp_sequence(value, op)
         else:
             return self._cmp_single(value, op)
+    
     # Misc
     #
+
+    cpdef double sparsity(self):
+        'Returns the proportion of sparse sites in the array'
+        return 1 - <double>self.container.size() / self.size
 
     def tolist(self):
         cdef list output = [self.refcode] * self.size

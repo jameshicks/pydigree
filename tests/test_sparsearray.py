@@ -138,6 +138,16 @@ def test_cmp():
 
     assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
 
+def test_misc():
+    # Sparsity function
+    s = SparseArray(10, 0)
+    assert s.sparsity() == 1.0
+    s[0] = 1
+    assert s.sparsity() == 0.9
+    s[1] = 1
+    assert s.sparsity() == 0.8
+
+
 # def test_staticbuilted():
 #     s = SparseArray(100, 0)
 #     a = SparseArray.from_sequence([0, 1, 1, 0, 0, 1], 0)
