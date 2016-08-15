@@ -2,6 +2,27 @@ from collections import Sequence
 
 from libc.stdint cimport uint32_t, uint8_t, int8_t
 
+cdef inline bint compare(object a, object b, int op):
+    # <   0
+    # ==  2
+    # >   4
+    # <=  1
+    # !=  3
+    # >=  5
+
+    if op == 0:
+        return a < b
+    elif op == 2:
+        return a == b
+    elif op == 4:
+        return a > b
+    elif op == 1:
+        return a <= b
+    elif op == 3:
+        return a != b
+    elif op == 5:
+        return a >= b
+
 cdef class SparseArray:
     # I imagine at some point I'll have to rewrite this whole thing
     # as a red-black tree or something, but until then we'll just bsearch
@@ -109,6 +130,7 @@ cdef class SparseArray:
 
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
+        
         elif isinstance(values, Sequence):
             nvals = len(values)
             if stop - start != nvals:
@@ -151,6 +173,51 @@ cdef class SparseArray:
             else:
                 self[indices[i]] = value
 
+    # Comparison methods
+    #    
+    def _cmp_single(self, object value, int op):
+        cdef SparseArray output = SparseArray(self.size, compare(self.refcode, value, op))
+        cdef NodeStack s = self.container.to_stack()
+
+        cdef IntTreeNode node = s.pop()
+        while node:
+            output[node.key] = compare(node.value, value, op)
+            node = s.pop()
+
+        return output
+    
+    cdef SparseArray _cmp_sparray(self, other, op):
+        cdef NodeStack selfstack = self.container.to_stack()
+        cdef NodeStack otherstack = other.container.to_stack()
+
+        cdef IntTreeNode selfnode = selfstack.pop()
+        cdef IntTreeNode othernode = otherstack.pop()
+
+        cdef SparseArray output = SparseArray(self.size, self.refcode == other.refcode)
+        while selfnode is not None and othernode is not None:
+            
+            if othernode is None or selfnode.key < othernode.key:
+                output[selfnode.key] = compare(selfnode.value, other.refcode, op)
+                selfnode = selfstack.pop()
+            elif selfnode is None or selfnode.key > othernode.key:
+                output[othernode.key] = compare(self.refcode, othernode.value, op) 
+                othernode = otherstack.pop() 
+            else:
+                output[selfnode.key] = compare(selfnode.value, othernode.value, op)
+                selfnode = selfstack.pop()
+                othernode = otherstack.pop()
+
+        return output
+
+    def __richcmp__(self, value, op):
+        d = {0: '<', 2:'==', 4: '>', 1: '<=', 3:'!=', 5:'>5'}
+
+        if type(value) is SparseArray:
+            return self._cmp_sparray(self, value, op)
+        elif isinstance(value, Sequence):
+            raise NotImplementedError
+        else:
+            return self._cmp_single(value, op)
     # Misc
     #
 

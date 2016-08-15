@@ -116,7 +116,6 @@ def test_setslice():
     s = SparseArray(100, 0)
     s[1] = 2
     s[99] = 2
-
     s[5:8] = [3,3,3]
     assert len(s.container) == 5
     assert s.indices == [1, 5, 6, 7, 99]
@@ -130,11 +129,12 @@ def test_setslice():
     assert t.values == [1]*5
     assert t.indices == [5, 6, 7, 8, 9]
 
-# def test_eq():
-#     s = SparseArray(5, 0)
-#     s[(1,3)] = [1, 1]
-#     eqv = (s == 1)
-#     assert eqv.tolist() == [False, True, False, True, False]
+def test_cmp():
+    s = SparseArray(5, 0)
+    s[(1,3)] = [1, 1]
+    assert (s == 1).tolist() == [False, True, False, True, False]
+    assert (s > 0).tolist() == [False, True, False, True, False]
+    assert (s < 1).tolist() == [True, False, True, False, True]
 
 # def test_staticbuilted():
 #     s = SparseArray(100, 0)
