@@ -175,7 +175,7 @@ cdef class SparseArray:
 
     # Comparison methods
     #    
-    def _cmp_single(self, object value, int op):
+    cpdef _cmp_single(self, object value, int op):
         cdef SparseArray output = SparseArray(self.size, compare(self.refcode, value, op))
         cdef NodeStack s = self.container.to_stack()
 
@@ -185,8 +185,24 @@ cdef class SparseArray:
             node = s.pop()
 
         return output
-    
-    cdef SparseArray _cmp_sparray(self, other, op):
+
+    cpdef SparseArray _cmp_sequence(self, other, int op):
+        cdef SparseArray output = SparseArray(self.size, False)
+        cdef Py_ssize_t seqlen = len(other)
+        cdef Py_ssize_t i = 0
+        cdef NodeStack densesites = self.container.to_stack()
+        cdef IntTreeNode curdense = densesites.pop()
+        
+        for i in range(seqlen):
+            if curdense is not None and i == curdense.key:
+                output[i] = compare(curdense.value, other[i], op)
+                curdense = densesites.pop()
+            else:
+                output[i] = compare(self.refcode, other[i], op)
+
+        return output
+
+    cpdef SparseArray _cmp_sparray(self, SparseArray other, int op):
         cdef NodeStack selfstack = self.container.to_stack()
         cdef NodeStack otherstack = other.container.to_stack()
 
@@ -215,7 +231,7 @@ cdef class SparseArray:
         if type(value) is SparseArray:
             return self._cmp_sparray(self, value, op)
         elif isinstance(value, Sequence):
-            raise NotImplementedError
+            return self._cmp_sequence(value, op)
         else:
             return self._cmp_single(value, op)
     # Misc

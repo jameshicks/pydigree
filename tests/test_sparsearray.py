@@ -136,6 +136,8 @@ def test_cmp():
     assert (s > 0).tolist() == [False, True, False, True, False]
     assert (s < 1).tolist() == [True, False, True, False, True]
 
+    assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
+
 # def test_staticbuilted():
 #     s = SparseArray(100, 0)
 #     a = SparseArray.from_sequence([0, 1, 1, 0, 0, 1], 0)
