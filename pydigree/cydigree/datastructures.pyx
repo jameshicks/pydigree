@@ -235,9 +235,31 @@ cdef class SparseArray:
         else:
             return self._cmp_single(value, op)
     
+    # Logic functions
+    #
+    cpdef any(self):
+        if self.refcode:
+            return True
+        
+        for node in self.container.traverse():
+            if node.value:
+                return True
+        
+        return False
+
+    cpdef all(self):
+        if self.sparsity() > 0 and not self.refcode:
+            return False
+        
+        for node in self.container.traverse():
+            if not node.value:
+                return False
+        
+        return True
+
+
     # Misc
     #
-
     cpdef double sparsity(self):
         'Returns the proportion of sparse sites in the array'
         return 1 - <double>self.container.size() / self.size

@@ -138,6 +138,19 @@ def test_cmp():
 
     assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
 
+def test_logic():
+    s = SparseArray(5,0)
+    assert not s.all()
+    assert not s.any()
+
+    s[0] = 1
+    assert not s.all()
+    assert s.any()
+
+    s[0:5] = 1
+    assert s.all()
+    assert s.any()
+    
 def test_misc():
     # Sparsity function
     s = SparseArray(10, 0)
