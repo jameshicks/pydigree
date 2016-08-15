@@ -150,7 +150,11 @@ def test_logic():
     s[0:5] = 1
     assert s.all()
     assert s.any()
-    
+
+    s = SparseArray(5, False)
+    s[(1,3)] = True
+    assert s.logical_not().tolist() == [True, False, True, False, True]
+
 def test_misc():
     # Sparsity function
     s = SparseArray(10, 0)

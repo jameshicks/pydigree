@@ -237,7 +237,7 @@ cdef class SparseArray:
     
     # Logic functions
     #
-    cpdef any(self):
+    cpdef bint any(self):
         if self.refcode:
             return True
         
@@ -247,7 +247,7 @@ cdef class SparseArray:
         
         return False
 
-    cpdef all(self):
+    cpdef bint all(self):
         if self.sparsity() > 0 and not self.refcode:
             return False
         
@@ -257,6 +257,15 @@ cdef class SparseArray:
         
         return True
 
+    cpdef SparseArray logical_not(self):
+        cdef SparseArray output = SparseArray(self.size, not self.refcode)
+        cdef NodeStack s = self.container.to_stack()
+        cdef IntTreeNode node = s.pop()
+
+        while node:
+            output[node.key] = not node.value
+            node = s.pop()
+        return output
 
     # Misc
     #
