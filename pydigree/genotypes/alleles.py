@@ -16,22 +16,6 @@ class Alleles(np.ndarray, AlleleContainer):
             return
         self.template = getattr(obj, 'template', None)
 
-    def __lt__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __gt__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __le__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __ge__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
     @property
     def missingcode(self):
         return 0 if np.issubdtype(self.dtype, np.integer) else ''

@@ -13,3 +13,19 @@ class AlleleContainer(object):
 
     def __eq__(self, other):
         raise NotImplementedError
+
+    def __lt__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __gt__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __le__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')
+
+    def __ge__(self, other):
+        raise NotMeaningfulError(
+            'Value comparisions not meaningful for genotypes')

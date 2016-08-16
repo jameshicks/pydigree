@@ -31,22 +31,6 @@ class SparseAlleles(AlleleContainer):
         self.missingindices = self._array2missing(data,
                                                   self.missingcode)
 
-    def __lt__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __gt__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __le__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
-    def __ge__(self, other):
-        raise NotMeaningfulError(
-            'Value comparisions not meaningful for genotypes')
-
     def __getitem__(self, key):
         if isinstance(key, int):
             try:
