@@ -226,8 +226,6 @@ cdef class SparseArray:
         return output
 
     def __richcmp__(self, value, op):
-        d = {0: '<', 2:'==', 4: '>', 1: '<=', 3:'!=', 5:'>5'}
-
         if type(value) is SparseArray:
             return self._cmp_sparray(self, value, op)
         elif isinstance(value, Sequence):
