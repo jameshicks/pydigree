@@ -265,6 +265,21 @@ cdef class SparseArray:
             node = s.pop()
         return output
 
+    # Builders
+    @staticmethod
+    def from_dense(dense, refcode):
+        cdef Py_ssize_t i = 0
+        cdef Py_ssize_t n = len(dense)
+        cdef object x
+        
+        cdef SparseArray output = SparseArray(n, refcode)
+
+        for i in range(n):
+            x = dense[i]
+            if x != refcode:
+                output[i] = x
+
+        return output
     # Misc
     #
     cpdef double sparsity(self):

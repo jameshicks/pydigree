@@ -165,10 +165,9 @@ def test_misc():
     assert s.sparsity() == 0.8
 
 
-# def test_staticbuilted():
-#     s = SparseArray(100, 0)
-#     a = SparseArray.from_sequence([0, 1, 1, 0, 0, 1], 0)
-#     assert type(a) is SparseArray
-#     assert a.indices == [1, 2, 5]
-#     assert a.values == [1, 1, 1]
+def test_staticbuilted():
+    a = SparseArray.from_dense([0, 1, 1, 0, 0, 1], 0)
+    assert type(a) is SparseArray
+    assert a.tolist() == [0, 1, 1, 0, 0, 1]
+    assert a.size == 6
     
