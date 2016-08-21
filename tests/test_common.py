@@ -3,7 +3,7 @@ from nose.tools import assert_raises
 from pydigree.common import product, cumsum, flatten, invert_dict, merge_dicts
 from pydigree.common import count, grouper, log_base_change
 from pydigree.common import runs, runs_gte, interleave, is_sorted
-from pydigree.cyfuncs import runs_gte_uint8
+from pydigree.cydigree.cyfuncs import runs_gte_uint8
 
 from math import log, log10, e
 import numpy as np
