@@ -33,6 +33,12 @@ def table(seq):
     keys = set(seq)
     return dict([(k, seq.count(k)) for k in keys])
 
+def mode(seq):
+    if not seq:
+        raise IndexError('Sequence is empty')
+    tab = table(seq)
+    return sorted(tab.items(), key=lambda x: x[1], reverse=True)[0][0]
+
 def random_choice(iterable):
     ''' Randomly chooses an item from an iterable '''
     itersize = len(iterable)
