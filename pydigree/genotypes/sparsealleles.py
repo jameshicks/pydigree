@@ -1,11 +1,12 @@
+from collections import Sequence
+
 import numpy as np
 
-
-from pydigree.datastructures import SortedPairContainer
+from pydigree.cydigree.datastructures import SparseArray
+from pydigree.exceptions import NotMeaningfulError
 from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.exceptions import NotMeaningfulError
-from pydigree.cydigree.cyfuncs import fastfirstitem
-
+from pydigree.common import mode
 
 class SparseAlleles(AlleleContainer):
 
@@ -15,46 +16,52 @@ class SparseAlleles(AlleleContainer):
     genotypes from sequence data (e.g. VCF files)
     '''
 
-    def __init__(self, data, refcode=None, template=None):
+    def __init__(self, data=None, refcode=None, missingcode='.', template=None):
         self.template = template
 
-        data = np.array(data)
-        self.dtype = data.dtype
-        self.size = data.shape[0]
-        if refcode is not None:
-            self.refcode = refcode
+        if refcode is None:
+            if data is None:
+                raise IndexError
+            else:
+                refcode = mode(data)
+
+        self.refcode = refcode
+
+        if isinstance(refcode, str):
+            self.dtype = np.dtype("S")
+        elif isinstance(refcode, np.int):
+            self.dtype = np.int
         else:
-            self.refcode = 0 if np.issubdtype(self.dtype, np.integer) else '0'
-        self.non_refalleles = self._array2nonref(data,
-                                                 self.refcode,
-                                                 self.missingcode)
-        self.missingindices = self._array2missing(data,
-                                                  self.missingcode)
+            raise IndexError
+
+        if data is None:
+            if template is None:
+                raise ValueError('No template')
+            self.container = SparseArray(len(data), refcode) 
+            return 
+
+        if type(data) is SparseArray:
+            raise NotImplementedError
+        
+        else:    
+            if not isinstance(data, np.ndarray):
+                data = np.array(data)
+            try:
+                missingidx = np.where(data == missingcode)[0]
+            except FutureWarning:
+                assert 0
+            # assert 0
+            data[missingidx] = refcode
+            self.container = SparseArray.from_dense(data, refcode)
+            self.missingindices = set(missingidx)
+
+        self.size = len(self.container)
 
     def __getitem__(self, key):
-        if isinstance(key, int):
-            try:
-                return self.non_refalleles[key]
-            except KeyError:
-                return self.refcode
-        elif isinstance(key, slice):
-            return
+        return self.container[key]
 
-    @staticmethod
-    def _array2nonref(data, refcode, missingcode):
-        '''
-        Returns a dict of the form index: value where the data is 
-        different than a reference value
-        '''
-        idxes = np.where(np.logical_and(data != refcode,
-                                        data != missingcode))[0]
-        nonref_values = data[idxes]
-        return SortedPairContainer(zip(idxes, nonref_values))
-
-    @staticmethod
-    def _array2missing(data, missingcode):
-        ''' Returns a list of indices where there are missingvalues '''
-        return list(np.where(data == missingcode)[0])
+    def __setitem__(self, key, value):
+        self.container[key] = value
 
     @property
     def missingcode(self):
@@ -64,90 +71,36 @@ class SparseAlleles(AlleleContainer):
     def missing(self):
         " Returns a numpy array indicating which markers have missing data "
         base = np.zeros(self.size, dtype=np.bool_)
-        base[self.missingindices] = 1
+        base[list(self.missingindices)] = 1
         return base
 
     def __eq__(self, other):
-        if isinstance(other, SparseAlleles):
-            return self.__speq__(other)
-        elif isinstance(other, Alleles):
-            return (self.todense() == other)
-        elif np.issubdtype(type(other), self.dtype):
-            if self.template is None:
-                raise ValueError(
-                    'Trying to compare values to sparse without reference')
-
-            eq = np.array(self.template.reference, dtype=self.dtype) == other
-            neq_altsites = [k for k, v in self.non_refalleles if k != other]
-            eq_altsites = [k for k, v in self.non_refalleles if k == other]
-            eq[neq_altsites] = False
-            eq[eq_altsites] = True
-            return eq
+        if type(other) is SparseArray:
+            return self.container == other.container
         else:
-            raise ValueError(
-                'Uncomparable types: {} and {}'.format(self.dtype,
-                                                       type(other)))
-
-    def __speq__(self, other):
-        if self.size != other.size:
-            raise ValueError('Trying to compare different-sized chromosomes')
-
-        # SparseAlleles saves differences from a reference,
-        # so all reference sites are equal, and we mark everything True
-        # to start, and go through and set any differences to False
-        base = np.ones(self.size, dtype=np.bool_)
-
-        nonref_a = set(self.non_refalleles.items)
-        nonref_b = set(other.non_refalleles.items)
-
-        # Get the alleles that are in nonref_a or nonref_b but not both
-        neq_alleles = (nonref_a ^ nonref_b)
-        neq_sites = fastfirstitem(neq_alleles)
-
-        base[neq_sites] = 0
-
-        return base
+            return self.container == other
 
     def __ne__(self, other):
-        return np.logical_not(self == other)
+        if type(other) is SparseArray:
+            return self.container != other.container
+        else:
+            return self.container != other
 
     def nmark(self):
         '''
         Return the number of markers (both reference and non-reference)
         represented by the SparseAlleles object
         '''
-        return self.size
+        return self.container.size
 
     def todense(self):
-        ''' 
-        Returns a non-sparse Alleles equivalent to a SparseAlleles object.
-        '''
-        if np.issubdtype(self.dtype, np.integer):
-            arr = np.zeros(self.size, dtype=np.uint8).astype(self.dtype)
-            arr = arr + self.refcode
-        else:
-            arr = np.array([self.refcode] * self.size, dtype=self.dtype)
-
-        arr[self.non_refalleles.indices] = self.non_refalleles.values
-
-        arr[self.missing] = self.missingcode
-
-        return Alleles(arr, template=self.template)
+        raise NotImplementedError
 
     def empty_like(self):
-        if not np.issubdtype(self.dtype, np.int):
-            raise ValueError
-        raw = np.zeros(self.nmark(), dtype=self.dtype) + self.refcode
-        return SparseAlleles(raw, refcode=self.refcode, template=self.template)
+        output = SparseAlleles(template=self.template,
+                               missingcode=self.missingcode,
+                               refcode=self.refcode)
+        return output
 
     def copy_span(self, template, copy_start, copy_stop):
-        if not isinstance(template, SparseAlleles):
-            raise TypeError('invalid container')
-
-        nr = self.non_refalleles
-        before = self.non_refalleles[0:copy_start]
-        after = self.non_refalleles[copy_stop:]
-        middle = template.non_refalleles[copy_start:copy_stop]
-
-
-        self.non_refalleles.container = before + middle + after
+        raise NotImplementedError

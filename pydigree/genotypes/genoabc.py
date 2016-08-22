@@ -1,3 +1,5 @@
+from pydigree.exceptions import NotMeaningfulError
+
 class AlleleContainer(object):
 
     " A base class for the interface *Alleles object must implement"
@@ -29,3 +31,6 @@ class AlleleContainer(object):
     def __ge__(self, other):
         raise NotMeaningfulError(
             'Value comparisions not meaningful for genotypes')
+
+    def __delitem__(self, key):
+    	raise NotMeaningfulError('Allele arrays are fixed size')

@@ -47,8 +47,8 @@ def test_alleles():
 
 
 def test_sparsealleles():
-    a = SparseAlleles(['1', '2', '3', ''])
-    b = SparseAlleles(['1', '3', '2', ''])
+    a = SparseAlleles(['1', '2', '3', ''], missingcode='')
+    b = SparseAlleles(['1', '3', '2', ''], missingcode='')
 
     assert a.nmark() == b.nmark() == 4
     assert (a.missing == np.array([False, False, False, True])).all()
@@ -76,37 +76,18 @@ def test_sparsealleles_meaninglesscomparisions():
     assert_raises(NotMeaningfulError, lambda x, y: x >= y, a, b)
     assert_raises(NotMeaningfulError, lambda x, y: x <= y, a, b)
 
-
-@raises(ValueError)
-def test_sparse_wrongtypecomparsion():
-    a = SparseAlleles(['1', '2', '3', ''])
-    a == 3
-
-
-@raises(ValueError)
-def test_sparse_wrongsizecomparision():
-    a = SparseAlleles(['1', '2', '3', ''])
-    b = SparseAlleles(['1', '3'])
-    a == b
-
-
-@raises(ValueError)
-def test_sparse_norefscalarcomparison():
-    a = SparseAlleles(['1', '2', '3', ''])
-    a == '3'
-
 def test_sparseeq():
     a = SparseAlleles([1,2,3,4])
     b = SparseAlleles([1,3,3,4])
 
     obs = (a == b)
     expected = np.array([True, False, True, True]) 
-    assert np.all(obs == expected)
+    assert obs.tolist() == expected.tolist()
 
 def test_sparsealleles_emptylike():
     a = SparseAlleles([1,2,3,4])
     e = a.empty_like()
-    assert e.non_refalleles.container == []
+    assert not e.non_refalleles.container.any()
 
 def test_sparsealleles_copyspan():
     a = SparseAlleles(np.array([0,0,0,0,0,0,0], dtype=np.int)+1, refcode=1)
@@ -115,20 +96,6 @@ def test_sparsealleles_copyspan():
     a.copy_span(b, 2, 6)
     assert all(a.todense() == np.array([0,0,1,1,1,1,0]) + 1)
 
-def test_array2missing():
-    missingcode = 0
-    vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
-    assert all(SparseAlleles._array2missing(vals, missingcode) == np.array([0, 2, 3, 5]))
-
-
-def test_array2nonref():
-    from pydigree.datastructures import SortedPairContainer
-    refcode = 0
-    missingcode = 0 
-    vals = np.array([0, 1, 0, 0, 1, 0, 2], dtype=np.uint)
-    o = SparseAlleles._array2nonref(vals, refcode, missingcode)
-    assert type(o) is SortedPairContainer
-    assert o.container == [(1, 1), (4, 1), (6, 2)]
 
 #############
 # InheritanceSpan
