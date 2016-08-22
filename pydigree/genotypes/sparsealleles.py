@@ -94,7 +94,9 @@ class SparseAlleles(AlleleContainer):
         return self.container.size
 
     def todense(self):
-        raise NotImplementedError
+        dense = Alleles(self.container.tolist(), template=self.template)
+        dense[list(self.missingindices)] = dense.missingcode
+        return dense
 
     def empty_like(self):
         output = SparseAlleles(template=self.template,
@@ -103,4 +105,7 @@ class SparseAlleles(AlleleContainer):
         return output
 
     def copy_span(self, template, copy_start, copy_stop):
-        raise NotImplementedError
+        if isinstance(template, SparseAlleles):
+            self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
+        else:
+            self.container = template[copy_start:copy_stop]

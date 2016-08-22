@@ -58,13 +58,6 @@ def test_sparsealleles():
     assert (a.todense() == ['1', '2', '3', '']).all()
     assert isinstance(a.todense(), Alleles)
 
-    # Test equality between chromosome equality
-    eq = (a == b)
-    assert (eq == np.array([True, False, False, True])).all()
-    assert ((a == b.todense()) == np.array([True, False, False, True])).all()
-    assert np.all((a != b) == np.logical_not(eq))
-
-
 def test_sparsealleles_meaninglesscomparisions():
     # Comparsions like >, <, >=, <= aren't meaningful for genotypes
     a = SparseAlleles(['1', '2', '3', ''])
