@@ -581,11 +581,17 @@ cdef class IntTree(object):
             self.root = new_root
 
 
-    cpdef void delete(self, uint32_t key):
+    cpdef void delete(self, uint32_t key, bint silent = True):
         if self.root is None:
             raise KeyError('Tree is empty')
 
-        ancestors = self.path_to_root(key)
+        try:
+            ancestors = self.path_to_root(key)
+        except KeyError:
+            if silent:
+                return
+            else:
+                raise
         node = ancestors.pop()
 
 
