@@ -75,13 +75,13 @@ class SparseAlleles(AlleleContainer):
         return base
 
     def __eq__(self, other):
-        if type(other) is SparseArray:
+        if type(other) is SparseAlleles:
             return self.container == other.container
         else:
             return self.container == other
 
     def __ne__(self, other):
-        if type(other) is SparseArray:
+        if type(other) is SparseAlleles:
             return self.container != other.container
         else:
             return self.container != other
