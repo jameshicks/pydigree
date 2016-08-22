@@ -123,7 +123,8 @@ cdef class SparseArray:
         if value != self.refcode:
             self.container.insert(index, value)
         else:
-            self.container.delete(index)
+            if not self.container.empty():
+                self.container.delete(index)
 
     cdef void _set_slice(self, uint32_t start, uint32_t stop, values):
         cdef Py_ssize_t i, nvals 
@@ -131,14 +132,14 @@ cdef class SparseArray:
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
         
-        elif isinstance(values, Sequence):
+        elif isinstance(values, Sequence) and not isinstance(values, str):
             nvals = len(values)
             if stop - start != nvals:
                 raise IndexError('Value wrong shape for slice')
 
         self.container.delrange(start, stop)
         for i in range(start, stop):
-            if isinstance(values, Sequence):
+            if isinstance(values, Sequence) and not isinstance(values, str):
                 ival = values[i - start]
             else:
                 ival = values
@@ -157,7 +158,7 @@ cdef class SparseArray:
         self._set_fancyidx(trueidxs, values)
 
     cdef void _set_fancyidx(self, indices, value):
-        cdef bint multivalue = isinstance(value, Sequence)
+        cdef bint multivalue = isinstance(value, Sequence) and not isinstance(value, str)
         cdef Py_ssize_t nidx = len(indices)
         cdef Py_ssize_t nval 
         
@@ -203,6 +204,9 @@ cdef class SparseArray:
         return output
 
     cpdef SparseArray _cmp_sparray(self, SparseArray other, int op):
+        if self.size != other.size:
+            raise IndexError('Cannot compare arrays of differing size')
+
         cdef NodeStack selfstack = self.container.to_stack()
         cdef NodeStack otherstack = other.container.to_stack()
 
@@ -227,8 +231,8 @@ cdef class SparseArray:
 
     def __richcmp__(self, value, op):
         if type(value) is SparseArray:
-            return self._cmp_sparray(self, value, op)
-        elif isinstance(value, Sequence):
+            return self._cmp_sparray(value, op)
+        elif isinstance(value, Sequence) and not isinstance(value, str):
             return self._cmp_sequence(value, op)
         else:
             return self._cmp_single(value, op)
@@ -373,10 +377,13 @@ cdef class IntTree(object):
         return False
 
     def __nonzero__(self):
-        return self.root is not None
+        return not self.empty()
 
     def __len__(self):
         return self.size()
+
+    cpdef bint empty(self):
+        return self.root is None
 
     def traverse(self, reverse=False):
         if not self.root:
@@ -501,7 +508,7 @@ cdef class IntTree(object):
                 cur_node = cur_node.left
             elif key == cur_node.key:
                 return s
-        raise KeyError('Node not found'.format(key))
+        raise KeyError('Node not found {}'.format(key))
 
     cpdef NodeStack path_to_node(self, uint32_t key):
         s = self.path_to_root(key)
