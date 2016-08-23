@@ -90,8 +90,13 @@ class ChromosomeTemplate(object):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
 
-    def empty_chromosome(self, dtype=np.uint8):
-        return Alleles(np.zeros(self.nmark(), dtype=dtype))
+    def empty_chromosome(self, dtype=np.uint8, sparse=False):
+        if sparse:
+            refcode = 0 if np.issubdtype(dtype, np.integer) else '0'
+            
+            return SparseAlleles(size=self.nmark(), dtype=dtype, template=self)
+        else:
+            return Alleles(np.zeros(self.nmark(), dtype=dtype), template=self)
 
     def closest_marker(self, position, map_type='physical'):
         "Returns the index of the closest marker to a position"

@@ -87,14 +87,14 @@ class Individual(object):
         else:
             return self.population.chromosomes
 
-    def _init_genotypes(self, blankchroms=True, dtype=None):
+    def _init_genotypes(self, blankchroms=True, dtype=None, sparse=True):
         """ 
         Initializes genotypes so that all genotypes are missing if blankchroms 
         is true, otherwise, just sets what would be the chromosome to None
         """
         if blankchroms:
-            self.genotypes = [(chrom.empty_chromosome(dtype=dtype),
-                               chrom.empty_chromosome(dtype=dtype))
+            self.genotypes = [(chrom.empty_chromosome(dtype=dtype, sparse=sparse),
+                               chrom.empty_chromosome(dtype=dtype, sparse=sparse))
                               for chrom in self.chromosomes]
         else:
             self.genotypes = [[None, None] for chrom in self.chromosomes]

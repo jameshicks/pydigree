@@ -16,7 +16,7 @@ class SparseAlleles(AlleleContainer):
     genotypes from sequence data (e.g. VCF files)
     '''
 
-    def __init__(self, data=None, refcode=None, missingcode='.', size=None, template=None):
+    def __init__(self, data=None, refcode=None, missingcode='.', size=None, template=None, dtype=None):
         self.template = template
 
         if refcode is None:
@@ -27,7 +27,9 @@ class SparseAlleles(AlleleContainer):
 
         self.refcode = refcode
 
-        if isinstance(refcode, str):
+        if dtype is not None:
+            self.dtype = dtype
+        elif isinstance(refcode, str):
             self.dtype = np.dtype("S")
         elif isinstance(refcode, np.int):
             self.dtype = np.int
