@@ -8,10 +8,13 @@ from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open
 from pydigree.io.base import genotypes_from_sequential_alleles
+from pydigree.cydigree.datastructures import SparseArray
 
 
 class VCFRecord(object):
+
     ''' A class for parsing lines in VCF files '''
+
     def __init__(self, line):
         chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip(
         ).split(None, 9)
@@ -26,37 +29,26 @@ class VCFRecord(object):
         self.format = format
         self.data = data.split()
 
-    def genotypes(self, minqual=20, mindepth=8):
+    def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
         format = self.format.split(':')
 
-        # Get the indices of the fields we're looking for
-        dpidx = format.index('DP')
-        gqidx = format.index('GQ')
-        gtidx = format.index('GT')
-
         def get_gt(gtfield):
             gtfield = gtfield.split(':')
+            return gtfield[gtidx]
 
-            dp = float(gtfield[dpidx])
-            gq = float(gtfield[gqidx])
+        gts = [get_gt(x) for x in self.data]
+        gts = [vcf_allele_parser(gt) for gt in gts]
 
-            if float(gq) < minqual or float(dp) < mindepth:
-                # If it doesn't meet our criteria, mark it missing
-                return './.'
-            else:
-                return gtfield[gtidx]
-
-        return [get_gt(x) for x in self.data]
-
+        return SparseArray.from_dense(gts, ('0','0'))
+        
     def getitems(self, item):
         format = self.format.split(':')
         idx = format.index(item)
         return [x.split(':')[idx] for x in self.data]
 
 
-def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
-             ind_minqual=20, ind_mindepth=9, geno_missrate=0):
+def read_vcf(filename, require_pass=False, sparse=True):
     '''
     Reads a VCF file and returns a Population object with the
     individuals represented in the file
@@ -75,53 +67,48 @@ def read_vcf(filename, minqual=20, require_pass=False, sparse=True,
                 ind_ids = line.strip().split()[9:]
                 inds = [Individual(pop, ind_id) for ind_id in ind_ids]
                 for ind in inds:
-                    # Initialize new genotypes with a string datatype
-                    ind._init_genotypes(dtype='S')
                     pop.register_individual(ind)
+
                 continue
 
             else:
                 record = VCFRecord(line)
 
-                if record.qual < minqual:
-                    continue
                 if require_pass and not record.filter_passed:
                     continue
 
-                genorow = record.genotypes(
-                    minqual=ind_minqual, mindepth=ind_mindepth)
-
-                if geno_missrate:
-                    missrate = count('./.', genorow) / float(len(genorow))
-                    if missrate > geno_missrate:
-                        continue
-
                 if record.chrom != last_chrom:
-                    if last_chrom is not None:
-                        pop.add_chromosome(chromobj)
-                    chromobj = ChromosomeTemplate(label=record.chrom)
+                    if last_chromid is not None:
+                        pop.add_chromosome(chrom_obj)
+                    chromobj = ChromosomeTemplate(label=record.chromid)
 
-                chromobj.add_genotype(
-                    None, None, bp=record.pos, label=record.label,
-                    reference=record.ref, alternates=record.alt)
-                genotypes.extend(genorow)
+                genorow = record.genotypes()
+                genotypes.append(genorow)
 
-            last_chrom = record.chrom
+                chromobj.add_genotype(None, None, position=record.pos,
+                                      label=record.label)
 
-        pop.add_chromosome(chromobj)  # Add the last chromosome object
+                last_chrom = record.chrom
+        pop.add_chromosome(chromobj)
 
-    # Get them in the shape we need (inds in columns and SNPs and rows), then
-    # transpose so we have inds in rows and SNPs in columns
-    genotypes = np.array(genotypes)
-    genotypes = genotypes.reshape((-1, len(inds))).T
+    for ind in inds:
+        # Initialize new genotypes with a string datatype
+        ind._init_genotypes(dtype='S', sparse=True)
 
-    for ind, row in zip(inds, genotypes):
-        row = [vcf_allele_parser(x) for x in row]
-        row = chain.from_iterable(row)
-        row = list(row)
-        ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes, row,
-                                                          missing_code='.', sparse=sparse)
-
+    # Now actually sift through markers and assign them to individuals
+    final_indices = []
+    for chromidx, chromobj  in enumerate(pop.chromosomes):
+        indices = zip([chromidx]*chromobj.nmark(), range(chromobj.nmark()))
+        final_indices.extend(indices)
+    raw_indices = range(len(genotypes))
+    
+    for raw, final in zip(raw_indices, final_indices):
+        chromidx, markidx = final
+        row = genotypes[raw]
+        for indidx, gt in row.items():
+            a,b = gt
+            inds[indidx].genotypes[chromidx][markidx][0] = a
+            inds[indidx].genotypes[chromidx][markidx][1] = b
     return pop
 
 
@@ -130,4 +117,3 @@ def vcf_allele_parser(genotype):
         return genotype[0], genotype[2]
     else:
         return tuple(genotype.split('/' if '/' in genotype else '|'))
-
