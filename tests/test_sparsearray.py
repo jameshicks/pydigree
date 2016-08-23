@@ -168,6 +168,12 @@ def test_misc():
     s[1] = 1
     assert s.sparsity() == 0.8
 
+    # items() generator
+    s = SparseArray(10, 0)
+    s[5] = 1
+    s[2] = 4
+    assert list(s.items()) == [(2,4), (5,1)]
+
 
 def test_staticbuilted():
     a = SparseArray.from_dense([0, 1, 1, 0, 0, 1], 0)

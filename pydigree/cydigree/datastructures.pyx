@@ -300,7 +300,11 @@ cdef class SparseArray:
         for node in self.container.traverse():
             output[node.key] = node.value
 
-        return output 
+        return output
+
+    def items(self):
+        for node in self.container.traverse():
+            yield node.key, node.value
 
 ############
 ############
