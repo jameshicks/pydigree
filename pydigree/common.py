@@ -34,7 +34,7 @@ def table(seq):
     return dict([(k, seq.count(k)) for k in keys])
 
 def mode(seq):
-    if not seq:
+    if not len(seq):
         raise IndexError('Sequence is empty')
     tab = table(seq)
     return sorted(tab.items(), key=lambda x: x[1], reverse=True)[0][0]
