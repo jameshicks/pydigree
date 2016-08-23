@@ -80,7 +80,7 @@ def test_sparseeq():
 def test_sparsealleles_emptylike():
     a = SparseAlleles([1,2,3,4])
     e = a.empty_like()
-    assert not e.non_refalleles.container.any()
+    assert (e.container == e.refcode).all()
 
 def test_sparsealleles_copyspan():
     a = SparseAlleles(np.array([0,0,0,0,0,0,0], dtype=np.int)+1, refcode=1)

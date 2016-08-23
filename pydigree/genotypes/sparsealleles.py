@@ -16,7 +16,7 @@ class SparseAlleles(AlleleContainer):
     genotypes from sequence data (e.g. VCF files)
     '''
 
-    def __init__(self, data=None, refcode=None, missingcode='.', template=None):
+    def __init__(self, data=None, refcode=None, missingcode='.', size=None, template=None):
         self.template = template
 
         if refcode is None:
@@ -35,9 +35,11 @@ class SparseAlleles(AlleleContainer):
             raise IndexError
 
         if data is None:
-            if template is None:
-                raise ValueError('No template')
-            self.container = SparseArray(len(data), refcode) 
+            if template is None and size is None:
+                raise ValueError('No template or size')
+            elif template is not None and size is None:
+                size = self.template.nmark()
+            self.container = SparseArray(size, refcode) 
             return 
 
         if type(data) is SparseArray:
@@ -101,7 +103,7 @@ class SparseAlleles(AlleleContainer):
     def empty_like(self):
         output = SparseAlleles(template=self.template,
                                missingcode=self.missingcode,
-                               refcode=self.refcode)
+                               refcode=self.refcode, size=self.nmark())
         return output
 
     def copy_span(self, template, copy_start, copy_stop):
