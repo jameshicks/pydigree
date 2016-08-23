@@ -78,7 +78,11 @@ cdef class SparseArray:
 
         cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
         subarray.container = self.container.getrange(start, stop)
-
+        cdef NodeStack ns = subarray.container.to_stack()
+        cdef IntTreeNode node = ns.pop()
+        while node:
+            node.key = node.key - start 
+            node = ns.pop()
         return subarray
 
     cdef _get_fancyidx(self, index):
@@ -131,6 +135,7 @@ cdef class SparseArray:
 
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
+            return
         
         elif isinstance(values, Sequence) and not isinstance(values, str):
             nvals = len(values)
@@ -151,7 +156,7 @@ cdef class SparseArray:
             raise IndexError('Value wrong shape for slice')
         
         for node in values.container.traverse():
-            self.container.insert(node.key, node.value)
+            self.container.insert(node.key + start, node.value)
 
     cdef void _set_boolidx(self, indices, values):
         cdef list trueidxs = [i for i,x in enumerate(indices) if x]

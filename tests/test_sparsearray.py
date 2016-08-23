@@ -44,7 +44,7 @@ def test_getslice():
     s[10] = 40
 
     assert len(s[4:20].container) == 2
-
+    assert list(s[4:20].container.keys()) == [1, 6]
     s2 = SparseArray(100, 0)
     s2[1] = 2
     s2[99] = 2
@@ -128,6 +128,10 @@ def test_setslice():
     assert len(t.container) == 5
     assert t.values == [1]*5
     assert t.indices == [5, 6, 7, 8, 9]
+
+    s = SparseArray(10, 0)
+    s[2:5] = SparseArray.from_dense([1]*10, 0)[2:5]
+    assert s.tolist() == [0,0,1,1,1,0,0,0,0,0]
 
 def test_cmp():
     s = SparseArray(5, 0)
