@@ -111,6 +111,8 @@ class SparseAlleles(AlleleContainer):
     def copy_span(self, template, copy_start, copy_stop):
         if isinstance(template, SparseAlleles):
             self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
+            self.missingindices = {x for x in self.missingindices if not (copy_start <= x < copy_stop)}
+            self.missingindices |= {x for x in other.missingindices if copy_start <= x < copy_stop}
         else:
             self.container = template[copy_start:copy_stop]
 
