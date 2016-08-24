@@ -32,6 +32,7 @@ class VCFRecord(object):
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
         format = self.format.split(':')
+        gtidx = format.index('GT')
 
         def get_gt(gtfield):
             gtfield = gtfield.split(':')
@@ -78,14 +79,14 @@ def read_vcf(filename, require_pass=False, sparse=True):
                     continue
 
                 if record.chrom != last_chrom:
-                    if last_chromid is not None:
-                        pop.add_chromosome(chrom_obj)
-                    chromobj = ChromosomeTemplate(label=record.chromid)
+                    if last_chrom is not None:
+                        pop.add_chromosome(chromobj)
+                    chromobj = ChromosomeTemplate(label=record.chrom)
 
                 genorow = record.genotypes()
                 genotypes.append(genorow)
 
-                chromobj.add_genotype(None, None, position=record.pos,
+                chromobj.add_genotype(None, None, bp=record.pos,
                                       label=record.label)
 
                 last_chrom = record.chrom
@@ -100,6 +101,7 @@ def read_vcf(filename, require_pass=False, sparse=True):
     for chromidx, chromobj  in enumerate(pop.chromosomes):
         indices = zip([chromidx]*chromobj.nmark(), range(chromobj.nmark()))
         final_indices.extend(indices)
+    
     raw_indices = range(len(genotypes))
     
     for raw, final in zip(raw_indices, final_indices):
@@ -107,8 +109,8 @@ def read_vcf(filename, require_pass=False, sparse=True):
         row = genotypes[raw]
         for indidx, gt in row.items():
             a,b = gt
-            inds[indidx].genotypes[chromidx][markidx][0] = a
-            inds[indidx].genotypes[chromidx][markidx][1] = b
+            inds[indidx].genotypes[chromidx][0][markidx] = a
+            inds[indidx].genotypes[chromidx][1][markidx] = b
     return pop
 
 

@@ -21,7 +21,7 @@ class SparseAlleles(AlleleContainer):
 
         if refcode is None:
             if data is None:
-                raise IndexError
+                raise IndexError('No refcode or dense data')
             else:
                 refcode = mode(data)
 
@@ -34,7 +34,7 @@ class SparseAlleles(AlleleContainer):
         elif isinstance(refcode, np.int):
             self.dtype = np.int
         else:
-            raise IndexError
+            raise IndexError('No dtype for container')
 
         if data is None:
             if template is None and size is None:
@@ -50,10 +50,9 @@ class SparseAlleles(AlleleContainer):
         else:    
             if not isinstance(data, np.ndarray):
                 data = np.array(data)
-            try:
-                missingidx = np.where(data == missingcode)[0]
-            except FutureWarning:
-                assert 0
+            
+            missingidx = np.where(data == missingcode)[0]
+            
             # assert 0
             data[missingidx] = refcode
             self.container = SparseArray.from_dense(data, refcode)
@@ -113,3 +112,10 @@ class SparseAlleles(AlleleContainer):
             self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
         else:
             self.container = template[copy_start:copy_stop]
+
+    @staticmethod
+    def empty(reference=None template=None, missingcode=''):
+        out = SparseArray(size, template=template, missingcode=missingcode)
+        out.missingindices = set()
+
+        return out 

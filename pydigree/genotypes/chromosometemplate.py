@@ -90,11 +90,11 @@ class ChromosomeTemplate(object):
         """ Manually change an allele frequency """
         self.frequencies[position] = frequency
 
-    def empty_chromosome(self, dtype=np.uint8, sparse=False):
+    def empty_chromosome(self, dtype=np.uint8, sparse=False, refcode=None):
         if sparse:
             refcode = 0 if np.issubdtype(dtype, np.integer) else '0'
             
-            return SparseAlleles(size=self.nmark(), dtype=dtype, template=self)
+            return SparseAlleles(size=self.nmark(), dtype=dtype, template=self, refcode=refcode)
         else:
             return Alleles(np.zeros(self.nmark(), dtype=dtype), template=self)
 
