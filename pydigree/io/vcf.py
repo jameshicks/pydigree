@@ -111,6 +111,7 @@ def read_vcf(filename, require_pass=False, sparse=True):
             a,b = gt
             inds[indidx].genotypes[chromidx][0][markidx] = a
             inds[indidx].genotypes[chromidx][1][markidx] = b
+    
     return pop
 
 

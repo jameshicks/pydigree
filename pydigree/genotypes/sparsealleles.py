@@ -42,6 +42,7 @@ class SparseAlleles(AlleleContainer):
             elif template is not None and size is None:
                 size = self.template.nmark()
             self.container = SparseArray(size, refcode) 
+            self.missingindices = set()
             return 
 
         if type(data) is SparseArray:
@@ -114,7 +115,7 @@ class SparseAlleles(AlleleContainer):
             self.container = template[copy_start:copy_stop]
 
     @staticmethod
-    def empty(reference=None template=None, missingcode=''):
+    def empty(reference=None, template=None, missingcode=''):
         out = SparseArray(size, template=template, missingcode=missingcode)
         out.missingindices = set()
 
