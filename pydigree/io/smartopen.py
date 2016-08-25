@@ -1,6 +1,6 @@
 import gzip
 import bz2
-
+import lzma
 
 def smartopen(filename, mode='r'):
     """
@@ -16,5 +16,7 @@ def smartopen(filename, mode='r'):
         return gzip.open(filename, mode, compresslevel=5)
     elif filename.endswith('.bz2'):
         return bz2.BZ2File(filename, mode)
+    elif filename.endswith('.xz') or filename.endswith('.lzma'):
+    	return lzma.open(filename, mode)
     else:
         return open(filename, mode)

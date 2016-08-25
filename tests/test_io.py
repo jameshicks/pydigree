@@ -86,3 +86,15 @@ def test_smartopen():
         d = f.readlines()
         assert all(type(x) is str for x in d)
         assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
+
+    # xz
+    with smartopen(os.path.join(datadir, 'test.xz')) as f:
+        d = f.readlines()
+        assert all(type(x) is str for x in d)
+        assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
+
+    # lzma
+    with smartopen(os.path.join(datadir, 'test.lzma')) as f:
+        d = f.readlines()
+        assert all(type(x) is str for x in d)
+        assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
