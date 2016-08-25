@@ -65,5 +65,24 @@ def test_plink():
     assert (peds['1','1'].genotypes[0][0].missing == [False, False]).all()
     assert (peds['1','1'].genotypes[1][0].missing == [False, True]).all()
 
+def test_smartopen():
+    from pydigree.io.smartopen import smartopen 
+    datadir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'compression')
 
+    # Plain text 
+    with smartopen(os.path.join(datadir, 'test')) as f:
+        d = f.readlines()
+        assert all(type(x) is str for x in d)
+        assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
 
+    # Gzip  
+    with smartopen(os.path.join(datadir, 'test.gz')) as f:
+        d = f.readlines()
+        assert all(type(x) is str for x in d)
+        assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
+
+    # bz2
+    with smartopen(os.path.join(datadir, 'test.gz')) as f:
+        d = f.readlines()
+        assert all(type(x) is str for x in d)
+        assert [x.strip() for x in d] == ['genetics', 'pydigree', 'dna']
