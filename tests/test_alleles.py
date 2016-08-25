@@ -47,16 +47,20 @@ def test_alleles():
 
 
 def test_sparsealleles():
-    a = SparseAlleles(['1', '2', '3', ''], missingcode='')
-    b = SparseAlleles(['1', '3', '2', ''], missingcode='')
+    a = SparseAlleles(['1', '2', '3', ''], missingcode='', refcode='1')
+    b = SparseAlleles(['1', '3', '2', ''], missingcode='', refcode='1')
 
     assert a.nmark() == b.nmark() == 4
     assert (a.missing == np.array([False, False, False, True])).all()
     assert (a.missing == b.missing).all()
 
     # Test todense
-    assert (a.todense() == ['1', '2', '3', '']).all()
+    assert (a.todense() == ['1', '2', '3', '',]).all()
     assert isinstance(a.todense(), Alleles)
+
+    a = SparseAlleles(['0','0','1','0','','1'], refcode='0', missingcode='')
+    a[0] = a.missingcode
+    assert list(a.missing) == [True, False, False, False, True, False] 
 
 def test_sparsealleles_meaninglesscomparisions():
     # Comparsions like >, <, >=, <= aren't meaningful for genotypes

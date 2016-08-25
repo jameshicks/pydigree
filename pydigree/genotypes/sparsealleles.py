@@ -42,7 +42,6 @@ class SparseAlleles(AlleleContainer):
             elif template is not None and size is None:
                 size = self.template.nmark()
             self.container = SparseArray(size, refcode) 
-            self.missingindices = set()
             return 
 
         if type(data) is SparseArray:
@@ -52,12 +51,8 @@ class SparseAlleles(AlleleContainer):
             if not isinstance(data, np.ndarray):
                 data = np.array(data)
             
-            missingidx = np.where(data == missingcode)[0]
-            
-            # assert 0
-            data[missingidx] = refcode
             self.container = SparseArray.from_dense(data, refcode)
-            self.missingindices = set(missingidx)
+
 
         self.size = len(self.container)
 
@@ -74,8 +69,9 @@ class SparseAlleles(AlleleContainer):
     @property
     def missing(self):
         " Returns a numpy array indicating which markers have missing data "
+        missingindices = [i for i,v in self.container.items() if v == self.missingcode]
         base = np.zeros(self.size, dtype=np.bool_)
-        base[list(self.missingindices)] = 1
+        base[missingindices] = 1
         return base
 
     def __eq__(self, other):
@@ -95,11 +91,10 @@ class SparseAlleles(AlleleContainer):
         Return the number of markers (both reference and non-reference)
         represented by the SparseAlleles object
         '''
-        return self.container.size
+        return self.size
 
     def todense(self):
         dense = Alleles(self.container.tolist(), template=self.template)
-        dense[list(self.missingindices)] = dense.missingcode
         return dense
 
     def empty_like(self):
@@ -111,14 +106,11 @@ class SparseAlleles(AlleleContainer):
     def copy_span(self, template, copy_start, copy_stop):
         if isinstance(template, SparseAlleles):
             self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
-            self.missingindices = {x for x in self.missingindices if not (copy_start <= x < copy_stop)}
-            self.missingindices |= {x for x in other.missingindices if copy_start <= x < copy_stop}
         else:
             self.container = template[copy_start:copy_stop]
 
     @staticmethod
     def empty(reference=None, template=None, missingcode=''):
-        out = SparseArray(size, template=template, missingcode=missingcode)
-        out.missingindices = set()
+        out = SparseAlleles(size, template=template, missingcode=missingcode)
 
         return out 
