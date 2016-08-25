@@ -26,6 +26,14 @@ class VCFRecord(object):
         self.qual = float(qual)
         self.filter_passed = filter_passed == 'PASS'
         self.info = info
+        
+        infokv = [x.split('=') for x in info.split(';')]
+        for flag in infokv:
+            if len(flag) == 1:
+                flag.append(True)
+
+        self.info = dict(infokv)
+
         self.format = format
         self.data = data.split()
 
@@ -49,7 +57,7 @@ class VCFRecord(object):
         return [x.split(':')[idx] for x in self.data]
 
 
-def read_vcf(filename, require_pass=False, sparse=True):
+def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
     '''
     Reads a VCF file and returns a Population object with the
     individuals represented in the file
@@ -83,10 +91,19 @@ def read_vcf(filename, require_pass=False, sparse=True):
                         pop.add_chromosome(chromobj)
                     chromobj = ChromosomeTemplate(label=record.chrom)
 
+
+                if freq_info is not None and freq_info in record.info:
+                    freq = record.info[freq_info]
+                    if ',' in freq:
+                        freq = freq.split(',')[0]
+                    freq = float(freq)
+                else:
+                    freq = 0
+
                 genorow = record.genotypes()
                 genotypes.append(genorow)
 
-                chromobj.add_genotype(None, None, bp=record.pos,
+                chromobj.add_genotype(frequency=freq, bp=record.pos,
                                       label=record.label)
 
                 last_chrom = record.chrom

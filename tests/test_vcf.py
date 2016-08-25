@@ -1,3 +1,4 @@
+import numpy as np
 import os
 from pydigree.io.vcf import read_vcf, vcf_allele_parser
 
@@ -23,6 +24,11 @@ def test_vcf():
     # Test for FILTER == PASS
     # pop = read_vcf(testvcf)
     # assert pop.chromosomes[1].nmark() == 6
+
+    pop = read_vcf(testvcf, freq_info='AF')
+    assert list(pop.chromosomes[0].frequencies) == [0.5]
+    diff = (pop.chromosomes[1].frequencies - np.array([0.5, 0.17, 0.333, 0, 0, 0, 0]) )
+    assert (diff < 0.001).all()
 
 def test_vcf_alleleparser():
     assert vcf_allele_parser('./.') == ('.', '.')
