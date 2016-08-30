@@ -1,6 +1,7 @@
 import numpy as np
 import os
-from pydigree.io.vcf import read_vcf, vcf_allele_parser
+from pydigree.io.vcf import read_vcf
+from pydigree.cydigree.vcfparse import vcf_allele_parser
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 TESTDATA_DIR = os.path.join(testdir, 'test_data', 'vcf')
@@ -30,11 +31,9 @@ def test_vcf():
     diff = (pop.chromosomes[1].frequencies - np.array([0.5, 0.17, 0.333, 0, 0, 0, 0]) )
     assert (diff < 0.001).all()
 
-def test_vcf_alleleparser():
-    assert vcf_allele_parser('./.') == ('.', '.')
-    assert vcf_allele_parser('1/1') == ('1', '1')
-    assert vcf_allele_parser('2/1') == ('2', '1')
-    assert vcf_allele_parser('1|2') == ('1', '2')
-    assert vcf_allele_parser('10/1') == ('10', '1')
-    assert vcf_allele_parser('1|10') == ('1', '10')
-    assert vcf_allele_parser('10/10') == ('10','10')
+def test_vcf_allele_parser():
+    a = "0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,."
+    expected = np.array([0,0,1,0,1,1], dtype=np.int) 
+    observed = vcf_allele_parser(a, 0, 6)
+    assert all(observed.tolist() == expected)
+
