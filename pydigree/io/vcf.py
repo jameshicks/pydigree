@@ -9,7 +9,7 @@ from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open
 from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.cydigree.datastructures import SparseArray
-
+from pydigree.cydigree.vcfparse import vcf_allele_parser
 
 class VCFRecord(object):
 
@@ -35,21 +35,17 @@ class VCFRecord(object):
         self.info = dict(infokv)
 
         self.format = format
-        self.data = data.split()
+        self.data = data
 
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
         format = self.format.split(':')
         gtidx = format.index('GT')
 
-        def get_gt(gtfield):
-            gtfield = gtfield.split(':')
-            return gtfield[gtidx]
+        ninds = self.data.count(' ') + self.data.count('\t') + 1
+        alleles = vcf_allele_parser(self.data, gtidx, ninds*2)
 
-        gts = [get_gt(x) for x in self.data]
-        gts = [vcf_allele_parser(gt) for gt in gts]
-
-        return SparseArray.from_dense(gts, ('0','0'))
+        return alleles
         
     def getitems(self, item):
         format = self.format.split(':')
@@ -124,16 +120,11 @@ def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
     for raw, final in zip(raw_indices, final_indices):
         chromidx, markidx = final
         row = genotypes[raw]
-        for indidx, gt in row.items():
-            a,b = gt
-            inds[indidx].genotypes[chromidx][0][markidx] = a
-            inds[indidx].genotypes[chromidx][1][markidx] = b
+        for alleleidx, allele in row.items():
+            indidx, hapidx = divmod(alleleidx, 2)
+            inds[indidx].genotypes[chromidx][hapidx][markidx] = allele
     
     return pop
 
 
-def vcf_allele_parser(genotype):
-    if len(genotype) == 3:
-        return genotype[0], genotype[2]
-    else:
-        return tuple(genotype.split('/' if '/' in genotype else '|'))
+

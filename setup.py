@@ -44,6 +44,12 @@ dsext = Extension('pydigree.cydigree.datastructures',
                   extra_compile_args=['-Wno-unused-function'],
                   define_macros=macros)
 
+vcfext = Extension('pydigree.cydigree.vcfparse',
+                  sources=['pydigree/cydigree/vcfparse.pyx'],
+                  include_dirs=[numpy.get_include()],
+                  extra_compile_args=['-Wno-unused-function'],
+                  define_macros=macros)
+
 with open('LICENSE.txt') as f:
     license = f.read()
 
@@ -55,7 +61,7 @@ setup(
     url='https://github.com/jameshicks/pydigree',
     license=license,
     packages=['pydigree'],
-    ext_modules=cythonize([cyext, dsext]),
+    ext_modules=cythonize([cyext, dsext, vcfext]),
     requires=['numpy', 'scipy', 'pandas', 'cython'],
     classifers=['Programming Language :: Python :: 3 :: Only',
                 'Programming Language :: Cython',
