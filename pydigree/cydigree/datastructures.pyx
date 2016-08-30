@@ -1,6 +1,7 @@
 from collections import Sequence
-
 from libc.stdint cimport uint32_t, uint8_t, int8_t
+
+import numpy as np
 
 cdef inline bint compare(object a, object b, int op):
     # <   0
@@ -289,6 +290,26 @@ cdef class SparseArray:
                 output[i] = x
 
         return output
+
+    @staticmethod
+    def from_numpy(dense, int8_t refcode):
+        if not type(dense) is np.ndarray:
+            raise ValueError("Dense data is not numpy array")
+            
+        dense8 = dense.astype(np.int8)
+        cdef int8_t [:] denseview = dense8
+
+        cdef int i = 0
+        cdef int size = dense8.shape[0]
+
+        cdef SparseArray output = SparseArray(size, refcode)
+
+        for i in range(size):
+            if denseview[i] != refcode:
+                output[i] = denseview[i]
+
+        return output
+
     # Misc
     #
     cpdef double sparsity(self):

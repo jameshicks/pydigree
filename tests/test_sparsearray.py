@@ -1,3 +1,4 @@
+import numpy as np
 from pydigree.cydigree.datastructures import SparseArray
 
 
@@ -175,9 +176,13 @@ def test_misc():
     assert list(s.items()) == [(2,4), (5,1)]
 
 
-def test_staticbuilted():
+def test_staticbuilders():
     a = SparseArray.from_dense([0, 1, 1, 0, 0, 1], 0)
     assert type(a) is SparseArray
     assert a.tolist() == [0, 1, 1, 0, 0, 1]
     assert a.size == 6
     
+    npa = np.array([0, 1, 1, 0, 0, 1], dtype=np.int8)
+    assert type(a) is SparseArray
+    assert a.tolist() == [0, 1, 1, 0, 0, 1]
+    assert a.size == 6
