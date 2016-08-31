@@ -11,5 +11,5 @@ import sys
 
 ped = pydigree.io.read_ped(sys.argv[1])
 
-for pedigree in sorted(ped,key=lambda x: x.label):
+for pedigree in sorted(ped.pedigrees ,key=lambda x: x.label):
     print(pedigree.label, pedigree.bit_size())

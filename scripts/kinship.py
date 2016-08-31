@@ -12,15 +12,17 @@ args = parser.parse_args()
 
 ped = pydigree.io.read_ped(args.file)
 
-for pedigree in ped:
+for pedigree in ped.pedigrees:
     lab = pedigree.label
-    ids = sorted([x.label for x in pedigree])
+    ids = sorted([x.label for x in pedigree.individuals])
+    
     # itertools combinations with replacement isn't available in 2.6
     # So we'll do this as a two step process
     # 1) Pairwise kinship coefs
     for x, y in itertools.combinations(ids, 2):
         k = pedigree.kinship(x, y)
         print(lab, x, y, k)
+    
     # 2) Inbreeding coefs.
     for x in ids:
         print(lab, x, x, pedigree.inbreeding(x))
