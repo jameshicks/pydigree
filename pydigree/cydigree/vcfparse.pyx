@@ -1,5 +1,6 @@
-from libc.string cimport strsep, strdup, strcmp
+from libc.string cimport strsep, strdup, strcmp, strlen
 from libc.stdlib cimport atoi, free
+from libc.stdint cimport int8_t
 
 cimport cython
 
@@ -36,16 +37,26 @@ def vcf_allele_parser(datastr, int desired, int nallele):
                 geno_tok = strsep(&token, subdelim)
                 subtokidx += 1
 
-
-            if (strcmp(geno_tok, "./.") == 0) or (strcmp(geno_tok, ".|.") == 0):
+            if (strcmp(geno_tok, "0/0") == 0) or (strcmp(geno_tok, "0|0") == 0):
+                # Most common scenario
+                alleleidx += 2
+            
+            elif (strcmp(geno_tok, "./.") == 0) or (strcmp(geno_tok, ".|.") == 0):
                 # Missing data
                 outp.set_item(alleleidx, -1)
                 outp.set_item(alleleidx + 1,-1)
                 alleleidx += 2 
 
-            elif (strcmp(geno_tok, "0/0") == 0) or (strcmp(geno_tok, "0|0") == 0):
-                # Most common scenario
-                alleleidx += 2
+            elif strlen(geno_tok) == 3:
+                allele = <int8_t>geno_tok[0] - 48 # '0' is ascii/utf8 48
+                if allele != 0:
+                    outp.set_item(alleleidx, allele)
+                alleleidx += 1
+
+                allele = <int8_t>geno_tok[2] - 48
+                if allele != 0:
+                    outp.set_item(alleleidx, allele)
+                alleleidx += 1 
 
             else:
                 # Allele 1
