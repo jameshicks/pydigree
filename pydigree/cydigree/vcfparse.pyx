@@ -3,8 +3,7 @@ from libc.stdlib cimport atoi, free
 from libc.stdint cimport int8_t
 
 cimport cython
-
-from pydigree.cydigree.datastructures import SparseArray
+cimport pydigree.cydigree.datastructures as datastructures
 
 def vcf_allele_parser(datastr, int desired, int nallele):
     if not datastr:
@@ -12,7 +11,7 @@ def vcf_allele_parser(datastr, int desired, int nallele):
     databytes = datastr.encode('utf8')
     cdef char* data = databytes
 
-    outp = SparseArray(nallele, 0)
+    cdef datastructures.SparseArray outp = datastructures.SparseArray(nallele, 0)
     cdef char* datadup = strdup(data)
 
     cdef char* delim = " \t"

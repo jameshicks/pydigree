@@ -25,13 +25,6 @@ cdef inline bint compare(object a, object b, int op):
         return a >= b
 
 cdef class SparseArray:
-    # I imagine at some point I'll have to rewrite this whole thing
-    # as a red-black tree or something, but until then we'll just bsearch
-    # a sorted list
-
-    cdef readonly IntTree container
-    cdef readonly int8_t refcode
-    cdef readonly uint32_t size
 
     def __init__(self, uint32_t size, refcode=None, initial=None):
         self.container = IntTree()
@@ -333,10 +326,6 @@ cdef class SparseArray:
 
 cdef class IntTreeNode(object):
     'An IntTree node'
-    cdef readonly uint32_t key
-    cdef public int8_t value
-    cdef uint8_t height
-    cdef public IntTreeNode left, right, parent
 
     def __init__(self, uint32_t key, int8_t value=0):
         self.key = key
@@ -374,7 +363,6 @@ cdef class IntTreeNode(object):
         return -1 <= self.balance() <= 1
 
 cdef class IntTree(object):
-    cdef readonly IntTreeNode root
     def __init__(self):
         self.root = None
 
@@ -897,7 +885,6 @@ cpdef IntTreeNode rotate_double_right(IntTreeNode root):
 
 cdef class NodeStack(object):
     'A first-in last-out datastructure for IntTree Nodes'
-    cdef public NodeStackItem front
     def __init__(self, starts=None):
         self.front = None
         if starts:
@@ -950,9 +937,6 @@ cdef class NodeStack(object):
 
 
 cdef class NodeStackItem(object):
-    cdef NodeStackItem following
-    cdef IntTreeNode obj
-
     def __init__(self, IntTreeNode obj, following=None):
         self.obj = obj
         self.following = following
