@@ -46,7 +46,6 @@ dsext = Extension('pydigree.cydigree.datastructures',
 
 vcfext = Extension('pydigree.cydigree.vcfparse',
                   sources=['pydigree/cydigree/vcfparse.pyx'],
-                  include_dirs=[numpy.get_include()],
                   extra_compile_args=['-Wno-unused-function'],
                   define_macros=macros)
 

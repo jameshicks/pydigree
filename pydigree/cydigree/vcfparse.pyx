@@ -1,7 +1,6 @@
 from libc.string cimport strsep, strdup, strcmp
 from libc.stdlib cimport atoi, free
-import numpy as np
-cimport numpy as np
+
 cimport cython
 
 from pydigree.cydigree.datastructures import SparseArray
