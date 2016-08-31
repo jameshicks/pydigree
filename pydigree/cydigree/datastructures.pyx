@@ -956,3 +956,10 @@ cdef class NodeStackItem(object):
     def __init__(self, IntTreeNode obj, following=None):
         self.obj = obj
         self.following = following
+
+def print_sizes():
+    print('IntTreeNode: {}'.format(sizeof(IntTreeNode)))
+    print('IntTree: {}'.format(sizeof(IntTree)))
+    print('SparseArray: {}'.format(sizeof(SparseArray)))
+    print('NodeStackItem: {}'.format(sizeof(NodeStackItem)))
+    print('NodeStack: {}'.format(sizeof(NodeStack)))
