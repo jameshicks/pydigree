@@ -540,7 +540,7 @@ cdef class IntTree(object):
             self.root = new_node
             return
 
-        cur_node = self.root
+        cdef IntTreeNode cur_node = self.root
         
         while True:
             if new_node.key > cur_node.key:
@@ -563,7 +563,7 @@ cdef class IntTree(object):
                 # We don't need to rebalance if the key was already in the tree
                 return 
 
-        parent = new_node
+        cdef IntTreeNode parent = new_node
 
         while parent:
             self.rebalance_node(parent)
