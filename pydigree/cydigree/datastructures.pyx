@@ -31,9 +31,9 @@ cdef class SparseArray:
 
     cdef readonly IntTree container
     cdef readonly object refcode
-    cdef readonly Py_ssize_t size
+    cdef readonly uint32_t size
 
-    def __init__(self, size, refcode=None, initial=None):
+    def __init__(self, uint32_t size, refcode=None, initial=None):
         self.container = IntTree()
         self.refcode = refcode
         self.size = size
@@ -50,7 +50,7 @@ cdef class SparseArray:
         def __get__(self):
             return [x.key for x in self.container.traverse()]
 
-    cdef inline Py_ssize_t fix_index(self, Py_ssize_t index): 
+    cdef inline uint32_t fix_index(self, uint32_t index): 
         if index >= 0:
             return index 
         else:
@@ -69,7 +69,7 @@ cdef class SparseArray:
         else:
             return self._get_single_item(index)
 
-    cdef object _get_single_item(self, index):
+    cdef object _get_single_item(self, uint32_t index):
         index = self.fix_index(index)
         return self.container.get(index, self.refcode)
 
@@ -87,8 +87,8 @@ cdef class SparseArray:
         return subarray
 
     cdef _get_fancyidx(self, index):
-        cdef Py_ssize_t i = 0
-        cdef Py_ssize_t nvals = len(index)
+        cdef uint32_t i = 0
+        cdef uint32_t nvals = len(index)
         cdef output = SparseArray(nvals, self.refcode)
         for i in range(nvals):
             output[i] = self[index[i]]
@@ -132,7 +132,7 @@ cdef class SparseArray:
                 self.container.delete(index)
 
     cdef void _set_slice(self, uint32_t start, uint32_t stop, values):
-        cdef Py_ssize_t i, nvals 
+        cdef uint32_t i, nvals 
 
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
@@ -165,15 +165,15 @@ cdef class SparseArray:
 
     cdef void _set_fancyidx(self, indices, value):
         cdef bint multivalue = isinstance(value, Sequence) and not isinstance(value, str)
-        cdef Py_ssize_t nidx = len(indices)
-        cdef Py_ssize_t nval 
+        cdef uint32_t nidx = len(indices)
+        cdef uint32_t nval 
         
         if multivalue:
             nval = len(value)
             if nidx != nval:
                 raise IndexError('Indices and values different length')
 
-        cdef Py_ssize_t i
+        cdef uint32_t i
         for i in range(nidx):
             if multivalue:
                 self[indices[i]] = value[i] 
@@ -195,8 +195,8 @@ cdef class SparseArray:
 
     cpdef SparseArray _cmp_sequence(self, other, int op):
         cdef SparseArray output = SparseArray(self.size, False)
-        cdef Py_ssize_t seqlen = len(other)
-        cdef Py_ssize_t i = 0
+        cdef uint32_t seqlen = len(other)
+        cdef uint32_t i = 0
         cdef NodeStack densesites = self.container.to_stack()
         cdef IntTreeNode curdense = densesites.pop()
         
@@ -278,8 +278,8 @@ cdef class SparseArray:
     # Builders
     @staticmethod
     def from_dense(dense, refcode):
-        cdef Py_ssize_t i = 0
-        cdef Py_ssize_t n = len(dense)
+        cdef uint32_t i = 0
+        cdef uint32_t n = len(dense)
         cdef object x
         
         cdef SparseArray output = SparseArray(n, refcode)
