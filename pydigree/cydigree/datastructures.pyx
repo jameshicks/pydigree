@@ -123,7 +123,7 @@ cdef class SparseArray:
         else:
             self._set_single(index, value)
 
-    cdef void _set_single(self, uint32_t index, object value):
+    cdef void _set_single(self, uint32_t index, int8_t value):
         index = self.fix_index(index)
         if value != self.refcode:
             self.container.insert(index, value)
@@ -334,11 +334,11 @@ cdef class SparseArray:
 cdef class IntTreeNode(object):
     'An IntTree node'
     cdef readonly uint32_t key
-    cdef public object value
+    cdef public int8_t value
     cdef uint8_t height
     cdef public IntTreeNode left, right, parent
 
-    def __init__(self, uint32_t key, value=None):
+    def __init__(self, uint32_t key, int8_t value=0):
         self.key = key
         self.value = value
         self.height = 0
@@ -483,7 +483,7 @@ cdef class IntTree(object):
     def keys(self):
         yield from (node.key for node in self.traverse())
 
-    cpdef object get(self, uint32_t key, default=None):
+    cpdef int8_t get(self, uint32_t key, int8_t default=0):
         if not self.root:
             return default
 
@@ -498,7 +498,7 @@ cdef class IntTree(object):
 
         return default
 
-    cpdef object find(self, uint32_t key):
+    cpdef int8_t find(self, uint32_t key):
         if not self.root:
             raise KeyError('Node not found')
 
@@ -545,7 +545,7 @@ cdef class IntTree(object):
         s.reverse()
         return s
 
-    cpdef void insert(self, uint32_t key, object value=None):
+    cpdef void insert(self, uint32_t key, int8_t value=0):
         cdef IntTreeNode new_node = IntTreeNode(key, value)
 
         if self.root is None:
@@ -611,7 +611,7 @@ cdef class IntTree(object):
             self.root = new_root
 
 
-    cpdef void delete(self, uint32_t key, bint silent = True):
+    cpdef void delete(self, uint32_t key, bint silent=True):
         if self.root is None:
             raise KeyError('Tree is empty')
 

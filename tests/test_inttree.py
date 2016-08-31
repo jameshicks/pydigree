@@ -267,16 +267,16 @@ def test_insertion():
     assert tree.root.left.right.key == 7
 
 def test_retrieval():
-    tree = IntTree.from_pairs(zip([5,10,15,20], ['a', 'b', 'c', 'd']))
-    assert tree.get(10) == 'b'
-    assert tree.get(5) == 'a'
+    tree = IntTree.from_pairs(zip([5,10,15,20], [1,2,3,4]))
+    assert tree.get(10) == 2
+    assert tree.get(5) == 1
     assert tree.get(100, -1) == -1
 
-    assert tree.find(10) == 'b'
-    assert tree.find(5) == 'a'
+    assert tree.find(10) == 2
+    assert tree.find(5) == 1
 
     keys = range(50)
-    a = IntTree.from_pairs(zip(keys, [chr(key) for key in keys]))
+    a = IntTree.from_pairs(zip(keys, keys))
 
     b = a.getrange(25, 35)
     assert list(b.keys()) == [25, 26, 27, 28, 29, 30, 31, 32, 33, 34]

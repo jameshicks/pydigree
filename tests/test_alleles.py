@@ -47,25 +47,25 @@ def test_alleles():
 
 
 def test_sparsealleles():
-    a = SparseAlleles(['1', '2', '3', ''], missingcode='', refcode='1')
-    b = SparseAlleles(['1', '3', '2', ''], missingcode='', refcode='1')
+    a = SparseAlleles([1,2,3,-1], missingcode=-1, refcode=1)
+    b = SparseAlleles([1,3,2,-1], missingcode=-1, refcode=1)
 
     assert a.nmark() == b.nmark() == 4
     assert (a.missing == np.array([False, False, False, True])).all()
     assert (a.missing == b.missing).all()
 
     # Test todense
-    assert (a.todense() == ['1', '2', '3', '',]).all()
+    assert (a.todense() == [1, 2, 3, -1]).all()
     assert isinstance(a.todense(), Alleles)
 
-    a = SparseAlleles(['0','0','1','0','','1'], refcode='0', missingcode='')
+    a = SparseAlleles([0,0,1, 0,-1, 1], refcode='0', missingcode=-1)
     a[0] = a.missingcode
     assert list(a.missing) == [True, False, False, False, True, False] 
 
 def test_sparsealleles_meaninglesscomparisions():
     # Comparsions like >, <, >=, <= aren't meaningful for genotypes
-    a = SparseAlleles(['1', '2', '3', ''])
-    b = SparseAlleles(['1', '3', '2', ''])
+    a = SparseAlleles([1,2,3,-1])
+    b = SparseAlleles([1,3,2,-1])
 
     # Can't test an expression so we make a throwaway function to test
     assert_raises(NotMeaningfulError, lambda x, y: x < y, a, b)

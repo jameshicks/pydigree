@@ -9,14 +9,17 @@ from pydigree.exceptions import NotMeaningfulError
 from pydigree.common import mode
 
 class SparseAlleles(AlleleContainer):
-
     '''
     An object representing a set of haploid genotypes efficiently by 
     storing allele differences from a reference. Useful for manipulating
     genotypes from sequence data (e.g. VCF files)
+
+    In the interest of conserving memory for sequencing data, all alleles must
+    be represented by a signed 8-bit integer (i.e. between -128 and 127). 
+    Negative values are interpreted as missing.
     '''
 
-    def __init__(self, data=None, refcode=None, missingcode='.', size=None, template=None, dtype=None):
+    def __init__(self, data=None, refcode=0, missingcode=-1, size=None, template=None):
         self.template = template
 
         if refcode is None:
@@ -26,15 +29,6 @@ class SparseAlleles(AlleleContainer):
                 refcode = mode(data)
 
         self.refcode = refcode
-
-        if dtype is not None:
-            self.dtype = dtype
-        elif isinstance(refcode, str):
-            self.dtype = np.dtype("S")
-        elif isinstance(refcode, np.int):
-            self.dtype = np.int
-        else:
-            raise IndexError('No dtype for container')
 
         if data is None:
             if template is None and size is None:
@@ -64,7 +58,7 @@ class SparseAlleles(AlleleContainer):
 
     @property
     def missingcode(self):
-        return 0 if np.issubdtype(self.dtype, np.integer) else ''
+        return -1
 
     @property
     def missing(self):
