@@ -1,4 +1,4 @@
-from libc.string cimport strsep, strdup, strcmp, strlen
+from libc.string cimport strsep, strcmp, strlen
 from libc.stdlib cimport atoi, free
 from libc.stdint cimport int8_t
 
@@ -12,7 +12,6 @@ def vcf_allele_parser(datastr, int desired, int nallele):
     cdef char* data = databytes
 
     cdef datastructures.SparseArray outp = datastructures.SparseArray(nallele, 0)
-    cdef char* datadup = strdup(data)
 
     cdef char* delim = " \t"
     cdef char* subdelim = ':'
@@ -25,7 +24,7 @@ def vcf_allele_parser(datastr, int desired, int nallele):
     cdef int alleleidx = 0
     cdef int subtokidx = 0
     
-    cdef char* token = strsep(&datadup, delim)
+    cdef char* token = strsep(&data, delim)
     while token:
         subtokidx = 0
         
@@ -76,7 +75,6 @@ def vcf_allele_parser(datastr, int desired, int nallele):
 
                 alleleidx += 1
         
-        token = strsep(&datadup, delim)
+        token = strsep(&data, delim)
 
-    free(datadup)
     return outp
