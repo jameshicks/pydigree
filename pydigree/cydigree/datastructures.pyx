@@ -30,7 +30,7 @@ cdef class SparseArray:
     # a sorted list
 
     cdef readonly IntTree container
-    cdef readonly object refcode
+    cdef readonly int8_t refcode
     cdef readonly uint32_t size
 
     def __init__(self, uint32_t size, refcode=None, initial=None):
