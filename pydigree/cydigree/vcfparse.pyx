@@ -40,8 +40,8 @@ def vcf_allele_parser(datastr, int desired, int nallele):
 
             if (strcmp(geno_tok, "./.") == 0) or (strcmp(geno_tok, ".|.") == 0):
                 # Missing data
-                outp[alleleidx] = -1
-                outp[alleleidx+1] = -1
+                outp.set_item(alleleidx, -1)
+                outp.set_item(alleleidx + 1,-1)
                 alleleidx += 2 
 
             elif (strcmp(geno_tok, "0/0") == 0) or (strcmp(geno_tok, "0|0") == 0):
@@ -54,7 +54,7 @@ def vcf_allele_parser(datastr, int desired, int nallele):
                 allele = atoi(allele_tok)
                 
                 if allele != 0:
-                    outp[alleleidx] = allele
+                    outp.set_item(alleleidx, allele)
 
                 alleleidx += 1
 
@@ -63,7 +63,7 @@ def vcf_allele_parser(datastr, int desired, int nallele):
                 allele = atoi(allele_tok)
 
                 if allele != 0:
-                    outp[alleleidx] = allele
+                    outp.set_item(alleleidx, allele)
 
                 alleleidx += 1
         

@@ -123,7 +123,7 @@ cdef class SparseArray:
         else:
             self.set_item(index, value)
 
-    cdef void set_item(self, uint32_t index, int8_t value):
+    cpdef void set_item(self, uint32_t index, int8_t value):
         index = self.fix_index(index)
         if value != self.refcode:
             self.container.insert(index, value)
