@@ -22,12 +22,6 @@ class SparseAlleles(AlleleContainer):
     def __init__(self, data=None, refcode=0, missingcode=-1, size=None, template=None):
         self.template = template
 
-        if refcode is None:
-            if data is None:
-                raise IndexError('No refcode or dense data')
-            else:
-                refcode = mode(data)
-
         self.refcode = refcode
 
         if data is None:

@@ -14,8 +14,8 @@ def test_vcf():
     assert len(pop.chromosomes) == 2
 
     # Test individual with good genotypes
-    assert (pop['NA00001'].genotypes[1][0].todense() == ['0', '0', '1', '0', '0', '0', '1']).all()
-    assert (pop['NA00001'].genotypes[1][1].todense() == ['0', '0', '2', '0', '1', '1', '1']).all()
+    assert (pop['NA00001'].genotypes[1][0].todense() == np.array([0, 0, 1, 0, 0, 0, 1])).all()
+    assert (pop['NA00001'].genotypes[1][1].todense() == np.array([0, 0, 2, 0, 1, 1, 1])).all()
     # assert not pop['NA00001'].genotypes[1][0].missing.all()
 
     # Test individual with bad genotypes.
