@@ -541,10 +541,14 @@ cdef class IntTree(object):
             return
 
         cdef IntTreeNode cur_node = self.root
+        cdef NodeStack stack = NodeStack()
+        stack.push(cur_node)
         
         while True:
             if new_node.key > cur_node.key:
+                stack.push(cur_node)
                 if cur_node.right is not None:
+                    stack.push(cur_node)
                     cur_node = cur_node.right
                 else:
                     cur_node.right = new_node
@@ -552,6 +556,7 @@ cdef class IntTree(object):
                     break
 
             elif new_node.key < cur_node.key:
+                stack.push(cur_node)
                 if cur_node.left is not None:
                     cur_node = cur_node.left
                 else:
@@ -563,11 +568,12 @@ cdef class IntTree(object):
                 # We don't need to rebalance if the key was already in the tree
                 return 
 
-        cdef IntTreeNode parent = new_node
+        stack.push(new_node)
+        cdef IntTreeNode ancestor = stack.pop()
 
-        while parent:
-            self.rebalance_node(parent)
-            parent = parent.parent
+        while ancestor:
+            self.rebalance_node(ancestor)
+            ancestor = stack.pop()
 
     cdef rebalance_node(self, IntTreeNode node):
         node.update_height()
