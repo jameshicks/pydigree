@@ -5,13 +5,22 @@ from libc.stdint cimport int8_t
 cimport cython
 cimport pydigree.cydigree.datastructures as datastructures
 
-def vcf_allele_parser(datastr, int desired, int nallele):
+def vcf_allele_parser(datastr, int desired):
     if not datastr:
         return None
     databytes = datastr.encode('utf8')
     cdef char* data = databytes
 
-    cdef datastructures.SparseArray outp = datastructures.SparseArray(nallele, 0)
+    cdef int ntok = 0
+    cdef int stridx = 0
+
+    while data[stridx] != '\0':
+        if data[stridx] == ' ' or data[stridx] == '\t':
+            ntok += 1
+        stridx += 1
+    ntok += 1 # Plus one more token
+
+    cdef datastructures.SparseArray outp = datastructures.SparseArray(ntok * 2, 0)
 
     cdef char* delim = " \t"
     cdef char* subdelim = ':'

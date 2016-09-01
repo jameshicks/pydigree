@@ -12,9 +12,7 @@ from pydigree.cydigree.datastructures import SparseArray
 from pydigree.cydigree.vcfparse import vcf_allele_parser
 
 class VCFRecord(object):
-
     ''' A class for parsing lines in VCF files '''
-
     def __init__(self, line):
         chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip(
         ).split(None, 9)
@@ -42,8 +40,7 @@ class VCFRecord(object):
         format = self.format.split(':')
         gtidx = format.index('GT')
 
-        ninds = self.data.count(' ') + self.data.count('\t') + 1
-        alleles = vcf_allele_parser(self.data, gtidx, ninds*2)
+        alleles = vcf_allele_parser(self.data, gtidx)
 
         return alleles
         
