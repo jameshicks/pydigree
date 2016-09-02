@@ -1,4 +1,4 @@
-from libc.stdint cimport uint32_t, int8_t, uint8_t
+from libc.stdint cimport uint32_t, int32_t, int8_t, uint8_t
 
 cdef inline bint compare(object a, object b, int op)
 
@@ -6,7 +6,7 @@ cdef class SparseArray:
     cdef readonly IntTree container
     cdef readonly int8_t refcode
     cdef readonly uint32_t size
-    cdef inline uint32_t fix_index(self, uint32_t index)
+    cdef inline uint32_t fix_index(self, int32_t index)
     cdef object _get_single_item(self, uint32_t index)
     cdef SparseArray _get_slice(self, index)
     cdef _get_fancyidx(self, index)

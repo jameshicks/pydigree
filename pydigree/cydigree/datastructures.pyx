@@ -43,7 +43,7 @@ cdef class SparseArray:
         def __get__(self):
             return [x.key for x in self.container.traverse()]
 
-    cdef inline uint32_t fix_index(self, uint32_t index): 
+    cdef inline uint32_t fix_index(self, int32_t index): 
         if index >= 0:
             return index 
         else:
