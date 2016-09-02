@@ -58,7 +58,7 @@ def test_sparsealleles():
     assert (a.todense() == [1, 2, 3, -1]).all()
     assert isinstance(a.todense(), Alleles)
 
-    a = SparseAlleles([0,0,1, 0,-1, 1], refcode='0', missingcode=-1)
+    a = SparseAlleles([0,0,1, 0,-1, 1], refcode=0, missingcode=-1)
     a[0] = a.missingcode
     assert list(a.missing) == [True, False, False, False, True, False] 
 

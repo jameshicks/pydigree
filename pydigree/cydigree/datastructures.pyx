@@ -26,7 +26,7 @@ cdef inline bint compare(object a, object b, int op):
 
 cdef class SparseArray:
 
-    def __init__(self, uint32_t size, refcode=None, initial=None):
+    def __init__(self, uint32_t size, int8_t refcode):
         self.container = IntTree()
         self.refcode = refcode
         self.size = size
