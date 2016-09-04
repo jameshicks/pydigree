@@ -22,19 +22,20 @@ class VCFRecord(object):
         self.ref = ref
         self.alt = alt.split(',')
         self.qual = float(qual)
-        self.filter_passed = filter_passed == 'PASS'
-        self.info = info
-        
+        self.filter_passed = (filter_passed == 'PASS')
+
+        self.format = format
+        self.data = data
+
+    @property
+    def info(self):
         infokv = [x.split('=') for x in info.split(';')]
         for flag in infokv:
             if len(flag) == 1:
                 flag.append(True)
 
-        self.info = dict(infokv)
-
-        self.format = format
-        self.data = data
-
+        return dict(infokv)
+    
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
         format = self.format.split(':')
