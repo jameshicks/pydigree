@@ -10,7 +10,7 @@ def smartopen(filename, mode='r'):
 	not strings. Unless 'b' (binary) is specified in the mode, we add 't' (text)
 	to the mode to force iteration as strings, operating consistently 
     """
-    if 't' not in mode:
+    if 't' not in mode and 'b' not in mode:
     	mode = mode + 't'
     if filename.endswith('.gz'):
         return gzip.open(filename, mode, compresslevel=5)
