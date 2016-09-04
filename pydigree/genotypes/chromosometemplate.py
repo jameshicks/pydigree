@@ -32,7 +32,7 @@ class ChromosomeTemplate(object):
         # A list of integers that doesnt do anything. Just for decoration
         self.physical_map = []
         # A list of floats representing minor allele frequencies
-        self.frequencies = np.array([])
+        self.frequencies = []
         # List of marker names
         self.labels = []
         # Reference Alleles
@@ -80,7 +80,7 @@ class ChromosomeTemplate(object):
         except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
         self.genetic_map.append(map_position)
-        self.frequencies = np.append(self.frequencies, frequency)
+        self.frequencies.append(frequency)
         self.physical_map.append(bp)
         self.labels.append(label)
         self.reference.append(reference)
