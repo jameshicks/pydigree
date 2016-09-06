@@ -31,10 +31,6 @@ cdef class IntTreeNode(object):
     cdef public int8_t value
     cdef uint8_t height
     cdef public IntTreeNode left, right, parent
-    cpdef bint is_leaf(self)
-    cdef update_height(self)
-    cpdef int8_t balance(self)
-    cpdef bint is_balanced(self)
 
 cdef class IntTree(object):
     cdef readonly IntTreeNode root
@@ -61,6 +57,9 @@ cdef class IntTree(object):
     cpdef sparsekey max(self)
     cpdef IntTree intersection(self, IntTree other)
     cpdef IntTree union(self, IntTree other)
+
+cpdef int8_t node_balance(IntTreeNode node)
+cpdef void update_node_height(IntTreeNode node)
 
 cpdef void rotate_right(IntTreeNode root)
 cpdef void rotate_left(IntTreeNode root)

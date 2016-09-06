@@ -338,14 +338,6 @@ cdef class IntTreeNode(object):
     def __repr__(self):
         return 'IntTreeNode({})'.format(self.key)
 
-    cpdef bint is_leaf(self):
-        return self.left is None and self.right is None
-
-    cdef update_height(self):
-        lheight = self.left.height if self.left is not None else 0
-        rheight = self.right.height if self.right is not None else 0
-        self.height = max(lheight, rheight) + 1
-
     @property
     def children(self):
         return self.left, self.right
@@ -353,14 +345,6 @@ cdef class IntTreeNode(object):
     @children.setter
     def children(self, value):
         self.left, self.right = value
-
-    cpdef int8_t balance(self):
-        cdef uint8_t lefth = (self.left.height) if self.left is not None else 0
-        cdef uint8_t righth = (self.right.height) if self.right is not None else 0
-        return righth - lefth
-
-    cpdef bint is_balanced(self):
-        return -1 <= self.balance() <= 1
 
 cdef class IntTree(object):
     def __init__(self):
@@ -570,13 +554,15 @@ cdef class IntTree(object):
             parent = parent.parent
 
     cdef rebalance_node(self, IntTreeNode node):
-        node.update_height()
+        update_node_height(node)
 
-        if node.is_balanced():
+        cdef int8_t balance = node_balance(node)
+        
+        if -1 <= balance <= 1:
             return
 
-        if node.balance() > 1:
-            if node.right is not None and node.right.balance() < 0:
+        elif balance > 1:
+            if node.right is not None and node_balance(node.right) < 0:
                 new_root = node.right.left
                 rotate_double_left(node)
 
@@ -584,8 +570,8 @@ cdef class IntTree(object):
                 new_root = node.right
                 rotate_left(node)
 
-        elif node.balance() < -1:
-            if node.left is not None and node.left.balance() > 0:
+        elif balance < -1:
+            if node.left is not None and node_balance(node.left) > 0:
                 new_root = node.left.right
                 rotate_double_right(node)
 
@@ -613,7 +599,7 @@ cdef class IntTree(object):
         node = ancestors.pop()
 
 
-        if node.is_leaf():
+        if node.right is None and node.left is None:
             self.delleaf(node, ancestors)
         elif node.right is None:
             self.del1childl(node, ancestors)
@@ -639,7 +625,8 @@ cdef class IntTree(object):
     cdef void del1childl(self, IntTreeNode node, NodeStack ancestors):
         if self.root is node:
             self.root = node.left
-            node.left.update_height()
+            update_node_height(node.left)
+
             return
 
         cdef IntTreeNode ancestor = ancestors.peek()
@@ -656,7 +643,7 @@ cdef class IntTree(object):
     cdef void del1childr(self, IntTreeNode node, NodeStack ancestors):
         if self.root is node:
             self.root = node.right
-            node.right.update_height()
+            update_node_height(node.right)
         
         cdef IntTreeNode ancestor = ancestors.peek()
         cdef IntTreeNode child = node.right    
@@ -685,7 +672,7 @@ cdef class IntTree(object):
 
         replacement.children = node.children 
         replacement.parent = direct_ancestor
-        replacement.update_height()
+        update_node_height(replacement)
 
         if node is self.root:
             self.root = replacement
@@ -821,7 +808,16 @@ cdef class IntTree(object):
         return ntree
 
 # Node manipulation functions
+cpdef int8_t node_balance(IntTreeNode node):
+    cdef uint8_t lefth = (node.left.height) if node.left is not None else 0
+    cdef uint8_t righth = (node.right.height) if node.right is not None else 0
+    cdef int8_t balance = righth - lefth
+    return balance
 
+cpdef void update_node_height(IntTreeNode node):
+        lheight = node.left.height if node.left is not None else 0
+        rheight = node.right.height if node.right is not None else 0
+        node.height = max(lheight, rheight) + 1
 
 cpdef void rotate_right(IntTreeNode root):
     pivot = root.left
@@ -840,8 +836,8 @@ cpdef void rotate_right(IntTreeNode root):
     elif pivot.parent.right is root:
         pivot.parent.right = pivot
 
-    root.update_height()
-    pivot.update_height()
+    update_node_height(root)
+    update_node_height(pivot)
 
 
 cpdef void rotate_left(IntTreeNode root):
@@ -864,8 +860,8 @@ cpdef void rotate_left(IntTreeNode root):
         pivot.parent.right = pivot
     else:
         raise KeyError
-    root.update_height()
-    pivot.update_height()
+    update_node_height(root)
+    update_node_height(pivot)
 
 
 cpdef void rotate_double_left(IntTreeNode root):
