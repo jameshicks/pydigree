@@ -26,7 +26,7 @@ cdef inline bint compare(object a, object b, int op):
 
 cdef class SparseArray:
 
-    def __init__(self, uint32_t size, refcode=None, initial=None):
+    def __init__(self, sparsekey size, refcode=None, initial=None):
         self.container = IntTree()
         self.refcode = refcode
         self.size = size
@@ -43,7 +43,7 @@ cdef class SparseArray:
         def __get__(self):
             return [x.key for x in self.container.traverse()]
 
-    cdef inline uint32_t fix_index(self, uint32_t index): 
+    cdef inline sparsekey fix_index(self, sparsekey index): 
         if index >= 0:
             return index 
         else:
@@ -62,13 +62,13 @@ cdef class SparseArray:
         else:
             return self._get_single_item(index)
 
-    cdef object _get_single_item(self, uint32_t index):
+    cdef object _get_single_item(self, sparsekey index):
         index = self.fix_index(index)
         return self.container.get(index, self.refcode)
 
     cdef SparseArray _get_slice(self, index):
-        cdef uint32_t start = index.start
-        cdef uint32_t stop = index.stop 
+        cdef sparsekey start = index.start
+        cdef sparsekey stop = index.stop 
 
         cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
         subarray.container = self.container.getrange(start, stop)
@@ -80,8 +80,8 @@ cdef class SparseArray:
         return subarray
 
     cdef _get_fancyidx(self, index):
-        cdef uint32_t i = 0
-        cdef uint32_t nvals = len(index)
+        cdef sparsekey i = 0
+        cdef sparsekey nvals = len(index)
         cdef output = SparseArray(nvals, self.refcode)
         for i in range(nvals):
             output[i] = self[index[i]]
@@ -91,8 +91,8 @@ cdef class SparseArray:
     cdef _get_boolidx(self, index):
         if len(index) != self.size:
             raise IndexError('Bool indices not same size as array')
-        cdef uint32_t nvals = sum(index)
-        cdef uint32_t i = 0
+        cdef sparsekey nvals = sum(index)
+        cdef sparsekey i = 0
         cdef output = SparseArray(nvals, self.refcode)
         cdef bint included
         
@@ -116,7 +116,7 @@ cdef class SparseArray:
         else:
             self.set_item(index, value)
 
-    cpdef void set_item(self, uint32_t index, int8_t value):
+    cpdef void set_item(self, sparsekey index, int8_t value):
         index = self.fix_index(index)
         if value != self.refcode:
             self.container.insert(index, value)
@@ -124,8 +124,8 @@ cdef class SparseArray:
             if not self.container.empty():
                 self.container.delete(index)
 
-    cdef void _set_slice(self, uint32_t start, uint32_t stop, values):
-        cdef uint32_t i, nvals 
+    cdef void _set_slice(self, sparsekey start, sparsekey stop, values):
+        cdef sparsekey i, nvals 
 
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
@@ -145,7 +145,7 @@ cdef class SparseArray:
             if ival != self.refcode:
                 self.container.insert(i, ival) 
 
-    cdef void _set_slice_to_sparray(self, uint32_t start, uint32_t stop, SparseArray values):
+    cdef void _set_slice_to_sparray(self, sparsekey start, sparsekey stop, SparseArray values):
         if stop - start != values.size:
             raise IndexError('Value wrong shape for slice')
         
@@ -158,15 +158,15 @@ cdef class SparseArray:
 
     cdef void _set_fancyidx(self, indices, value):
         cdef bint multivalue = isinstance(value, Sequence) and not isinstance(value, str)
-        cdef uint32_t nidx = len(indices)
-        cdef uint32_t nval 
+        cdef sparsekey nidx = len(indices)
+        cdef sparsekey nval 
         
         if multivalue:
             nval = len(value)
             if nidx != nval:
                 raise IndexError('Indices and values different length')
 
-        cdef uint32_t i
+        cdef sparsekey i
         for i in range(nidx):
             if multivalue:
                 self[indices[i]] = value[i] 
@@ -188,8 +188,8 @@ cdef class SparseArray:
 
     cpdef SparseArray _cmp_sequence(self, other, int op):
         cdef SparseArray output = SparseArray(self.size, False)
-        cdef uint32_t seqlen = len(other)
-        cdef uint32_t i = 0
+        cdef sparsekey seqlen = len(other)
+        cdef sparsekey i = 0
         cdef NodeStack densesites = self.container.to_stack()
         cdef IntTreeNode curdense = densesites.pop()
         
@@ -271,8 +271,8 @@ cdef class SparseArray:
     # Builders
     @staticmethod
     def from_dense(dense, refcode):
-        cdef uint32_t i = 0
-        cdef uint32_t n = len(dense)
+        cdef sparsekey i = 0
+        cdef sparsekey n = len(dense)
         cdef object x
         
         cdef SparseArray output = SparseArray(n, refcode)
@@ -327,7 +327,7 @@ cdef class SparseArray:
 cdef class IntTreeNode(object):
     'An IntTree node'
 
-    def __init__(self, uint32_t key, int8_t value=0):
+    def __init__(self, sparsekey key, int8_t value=0):
         self.key = key
         self.value = value
         self.height = 0
@@ -382,7 +382,7 @@ cdef class IntTree(object):
 
         return tree
 
-    def __contains__(self, uint32_t key):
+    def __contains__(self, sparsekey key):
         node = self.root
         while node:
             if key > node.key:
@@ -451,11 +451,11 @@ cdef class IntTree(object):
                 node = node.left
         return out
 
-    cpdef uint32_t size(self):
+    cpdef sparsekey size(self):
         if self.root is None: 
             return 0
         cdef NodeStack s = NodeStack()
-        cdef uint32_t tot = 0
+        cdef sparsekey tot = 0
         cdef IntTreeNode node = self.root
 
         while (not s.empty()) or (node is not None):
@@ -471,7 +471,7 @@ cdef class IntTree(object):
     def keys(self):
         yield from (node.key for node in self.traverse())
 
-    cpdef int8_t get(self, uint32_t key, int8_t default=0):
+    cpdef int8_t get(self, sparsekey key, int8_t default=0):
         if not self.root:
             return default
 
@@ -486,7 +486,7 @@ cdef class IntTree(object):
 
         return default
 
-    cpdef int8_t find(self, uint32_t key):
+    cpdef int8_t find(self, sparsekey key):
         if not self.root:
             raise KeyError('Node not found')
 
@@ -502,7 +502,7 @@ cdef class IntTree(object):
         raise KeyError('Node not found')
 
 
-    cpdef IntTreeNode find_node(self, uint32_t key):
+    cpdef IntTreeNode find_node(self, sparsekey key):
         cdef IntTreeNode node = self.root
         while node is not None:
 
@@ -515,7 +515,7 @@ cdef class IntTree(object):
                 node = node.right
         raise KeyError('Key not found: {}'.format(key))
 
-    cpdef NodeStack path_to_root(self, uint32_t key):
+    cpdef NodeStack path_to_root(self, sparsekey key):
         s = NodeStack()
         cur_node = self.root
         while cur_node:
@@ -528,12 +528,12 @@ cdef class IntTree(object):
                 return s
         raise KeyError('Node not found {}'.format(key))
 
-    cpdef NodeStack path_to_node(self, uint32_t key):
+    cpdef NodeStack path_to_node(self, sparsekey key):
         s = self.path_to_root(key)
         s.reverse()
         return s
 
-    cpdef void insert(self, uint32_t key, int8_t value=0):
+    cpdef void insert(self, sparsekey key, int8_t value=0):
         cdef IntTreeNode new_node = IntTreeNode(key, value)
 
         if self.root is None:
@@ -599,7 +599,7 @@ cdef class IntTree(object):
             self.root = new_root
 
 
-    cpdef void delete(self, uint32_t key, bint silent=True):
+    cpdef void delete(self, sparsekey key, bint silent=True):
         if self.root is None:
             raise KeyError('Tree is empty')
 
@@ -711,7 +711,7 @@ cdef class IntTree(object):
 
         return node
 
-    cpdef uint32_t min(self):
+    cpdef sparsekey min(self):
         return self.min_node().key
 
     cpdef IntTreeNode max_node(self, start=None):
@@ -727,7 +727,7 @@ cdef class IntTree(object):
 
         return node
 
-    cpdef delrange(self, uint32_t start, uint32_t end):
+    cpdef delrange(self, sparsekey start, sparsekey end):
         'Deletes keys where start <= key < stop'
         cdef NodeStack delstack = NodeStack()
         cdef NodeStack s = NodeStack()
@@ -748,7 +748,7 @@ cdef class IntTree(object):
         for delnode in delstack:
             self.delete(delnode.key)
 
-    cpdef getrange(self, uint32_t start, uint32_t end):
+    cpdef getrange(self, sparsekey start, sparsekey end):
         cdef IntTree ntree = IntTree()
         cdef NodeStack s = NodeStack()
         cdef IntTreeNode node = self.root
@@ -768,7 +768,7 @@ cdef class IntTree(object):
         return ntree
                      
 
-    cpdef uint32_t max(self):
+    cpdef sparsekey max(self):
         return self.max_node().key
 
     cpdef IntTree intersection(self, IntTree other):
