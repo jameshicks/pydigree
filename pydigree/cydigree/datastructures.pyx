@@ -1,5 +1,6 @@
 from collections import Sequence
 from libc.stdint cimport uint32_t, uint8_t, int8_t
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 import numpy as np
 
@@ -323,6 +324,32 @@ cdef class SparseArray:
 ############
 ############
 
+cdef struct IntTreeNode2:
+    IntTreeNode2* left 
+    IntTreeNode2* right
+    IntTreeNode2* parent
+    sparsekey key
+    int8_t value 
+    int8_t height
+
+cdef IntTreeNode2* new_node(sparsekey key, int8_t value):
+    cdef IntTreeNode2* node = <IntTreeNode2*>PyMem_Malloc(sizeof(IntTreeNode2))
+    if not node:
+        raise MemoryError("Couldnt alloc memory for node")
+
+    node.key = key
+    node.value = value
+    node.left = NULL
+    node.right = NULL
+    node.height = 0
+
+    return node
+
+cdef void del_node(IntTreeNode2* node):
+    PyMem_Free(node)
+
+############
+############
 
 cdef class IntTreeNode(object):
     'An IntTree node'
