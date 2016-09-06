@@ -87,3 +87,19 @@ def vcf_allele_parser(datastr, int desired):
         token = strsep(&data, delim)
 
     return outp
+
+@cython.boundscheck(False)
+def assign_genorow(datastructures.SparseArray row, inds, int chromidx, int markidx):
+    cdef datastructures.NodeStack s = row.container.to_stack()
+    cdef datastructures.SparseArray spchrom
+    cdef int hapidx, indidx
+
+    cdef datastructures.IntTreeNode denseval = s.pop()
+    while denseval:
+        indidx = denseval.key // 2
+        hapidx = denseval.key % 2
+
+        spchrom = inds[indidx].genotypes[chromidx][hapidx].container
+        spchrom.set_item(markidx, denseval.value)
+
+        denseval = s.pop()

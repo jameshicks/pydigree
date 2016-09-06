@@ -1,15 +1,9 @@
-from itertools import chain
-
-import numpy as np
-
-from pydigree.common import count
 from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open
-from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.cydigree.datastructures import SparseArray
-from pydigree.cydigree.vcfparse import vcf_allele_parser
+from pydigree.cydigree.vcfparse import vcf_allele_parser, assign_genorow
 
 class VCFRecord(object):
     ''' A class for parsing lines in VCF files '''
@@ -23,13 +17,13 @@ class VCFRecord(object):
         self.alt = alt.split(',')
         self.qual = float(qual)
         self.filter_passed = (filter_passed == 'PASS')
-
+        self._info = info
         self.format = format
         self.data = data
 
     @property
     def info(self):
-        infokv = [x.split('=') for x in info.split(';')]
+        infokv = [x.split('=') for x in self._info.split(';')]
         for flag in infokv:
             if len(flag) == 1:
                 flag.append(True)
@@ -61,6 +55,7 @@ def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
 
         last_chrom = None
         genotypes = []
+
         for i, line in enumerate(f):
 
             if line.startswith('##'):
@@ -97,30 +92,29 @@ def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
                 genorow = record.genotypes()
                 genotypes.append(genorow)
 
-                chromobj.add_genotype(frequency=freq, bp=record.pos,
-                                      label=record.label)
+                chromobj.add_genotype(bp=record.pos,
+                                      label=record.label,
+                                      frequency=freq)
 
                 last_chrom = record.chrom
         pop.add_chromosome(chromobj)
 
     for ind in inds:
-        # Initialize new genotypes with a string datatype
-        ind._init_genotypes(dtype='S', sparse=True)
+        # Initialize new genotypes
+        ind._init_genotypes(sparse=True)
 
     # Now actually sift through markers and assign them to individuals
     final_indices = []
     for chromidx, chromobj  in enumerate(pop.chromosomes):
         indices = zip([chromidx]*chromobj.nmark(), range(chromobj.nmark()))
         final_indices.extend(indices)
-    
+
     raw_indices = range(len(genotypes))
-    
+
     for raw, final in zip(raw_indices, final_indices):
         chromidx, markidx = final
         row = genotypes[raw]
-        for alleleidx, allele in row.items():
-            indidx, hapidx = divmod(alleleidx, 2)
-            inds[indidx].genotypes[chromidx][hapidx][markidx] = allele
+        assign_genorow(row, inds, chromidx, markidx)
     
     return pop
 
