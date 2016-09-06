@@ -115,6 +115,9 @@ def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
         chromidx, markidx = final
         row = genotypes[raw]
         assign_genorow(row, inds, chromidx, markidx)
+
+        # Kill the row so we don't end up with the whole dataset in memory twice
+        genotypes[raw] = None
     
     return pop
 
