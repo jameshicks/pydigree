@@ -62,10 +62,10 @@ cdef class IntTree(object):
     cpdef IntTree intersection(self, IntTree other)
     cpdef IntTree union(self, IntTree other)
 
-cpdef IntTreeNode rotate_right(IntTreeNode root)
-cpdef IntTreeNode rotate_left(IntTreeNode root)
-cpdef IntTreeNode rotate_double_left(IntTreeNode root)
-cpdef IntTreeNode rotate_double_right(IntTreeNode root)
+cpdef void rotate_right(IntTreeNode root)
+cpdef void rotate_left(IntTreeNode root)
+cpdef void rotate_double_left(IntTreeNode root)
+cpdef void rotate_double_right(IntTreeNode root)
 
 cdef class NodeStack(object):
     cdef public NodeStackItem front

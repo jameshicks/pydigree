@@ -823,7 +823,7 @@ cdef class IntTree(object):
 # Node manipulation functions
 
 
-cpdef IntTreeNode rotate_right(IntTreeNode root):
+cpdef void rotate_right(IntTreeNode root):
     pivot = root.left
     root.left = pivot.right
     if root.left is not None:
@@ -844,7 +844,7 @@ cpdef IntTreeNode rotate_right(IntTreeNode root):
     pivot.update_height()
 
 
-cpdef IntTreeNode rotate_left(IntTreeNode root):
+cpdef void rotate_left(IntTreeNode root):
 
     pivot = root.right
     root.right = pivot.left
@@ -868,12 +868,12 @@ cpdef IntTreeNode rotate_left(IntTreeNode root):
     pivot.update_height()
 
 
-cpdef IntTreeNode rotate_double_left(IntTreeNode root):
+cpdef void rotate_double_left(IntTreeNode root):
     rotate_right(root.right)
     rotate_left(root)
 
 
-cpdef IntTreeNode rotate_double_right(IntTreeNode root):
+cpdef void rotate_double_right(IntTreeNode root):
     rotate_left(root.left)
     rotate_right(root)
 
