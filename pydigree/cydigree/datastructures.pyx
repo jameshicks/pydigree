@@ -389,8 +389,9 @@ cdef class IntTree(object):
             yield from self._traverse()
 
     def _traverse(self):
-        s = NodeStack()
-        node = self.root
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode node = self.root
+        
         while (not s.empty()) or (node is not None):
             if node is not None:
                 s.push(node)
@@ -401,8 +402,8 @@ cdef class IntTree(object):
                 node = node.right
 
     def _traverse_reverse(self):
-        s = NodeStack()
-        node = self.root
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode node = self.root
         while (not s.empty()) or (node is not None):
             if node is not None:
                 s.push(node)
