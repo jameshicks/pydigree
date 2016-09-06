@@ -338,14 +338,6 @@ cdef class IntTreeNode(object):
     def __repr__(self):
         return 'IntTreeNode({})'.format(self.key)
 
-    @property
-    def children(self):
-        return self.left, self.right
-
-    @children.setter
-    def children(self, value):
-        self.left, self.right = value
-
 cdef class IntTree(object):
     def __init__(self):
         self.root = None
@@ -670,7 +662,7 @@ cdef class IntTree(object):
         # The parent of the node to be deleted
         cdef IntTreeNode direct_ancestor = ancestors.peek()
 
-        replacement.children = node.children 
+        replacement.left, replacement.right = node.left, node.right 
         replacement.parent = direct_ancestor
         update_node_height(replacement)
 

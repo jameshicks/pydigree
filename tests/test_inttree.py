@@ -2,6 +2,7 @@ from nose.tools import assert_raises
 from pydigree.cydigree.datastructures import IntTreeNode, IntTree, NodeStack
 from pydigree.cydigree.datastructures import rotate_right, rotate_left
 from pydigree.cydigree.datastructures import rotate_double_left, rotate_double_right
+from pydigree.cydigree.datastructures import node_balance
 
 def test_NodeStack():
     s = NodeStack([IntTreeNode(x) for x in (1,2,3,4)])
@@ -45,8 +46,8 @@ def test_right_rotation():
     assert b.parent is None
     assert b.left is a
     assert b.right is c
-    assert a.is_leaf()
-    assert c.is_leaf() 
+    assert a.right is None and a.left is None
+    assert c.right is None and c.left is None 
 
     ######
     a = IntTreeNode(1)
@@ -78,10 +79,10 @@ def test_right_rotation():
     #    b   d
     #   /
     #  a 
-    assert c.children == (b,d)
+    assert (c.left, c.right) == (b,d)
     assert b.left is a
     assert b.right is None
-    assert a.is_leaf()
+    assert a.right is None and a.left is None
     assert d.parent is c and b.parent is c
     assert c.parent is None
     ####
@@ -115,9 +116,12 @@ def test_right_rotation():
     assert three.parent is None
     assert four.parent is five
     assert seven.parent is five
-    assert three.children == (two, five)
-    assert five.children == (four, seven)
-    assert two.is_leaf() and four.is_leaf() and seven.is_leaf()
+    assert (three.left, three.right) == (two, five)
+    assert (five.left, five.right) == (four, seven)
+    
+    assert two.right is None and two.left is None 
+    assert four.right is None and four.left is None 
+    assert seven.right is None and seven.left is None
 
 def test_left_rotation():
     a = IntTreeNode(1)
@@ -148,8 +152,9 @@ def test_left_rotation():
     assert b.parent is None
     assert b.left is a
     assert b.right is c
-    assert a.is_leaf()
-    assert c.is_leaf() 
+    
+    assert a.right is None and a.left is None
+    assert c.right is None and c.left is None 
 
     ####
     # Before
@@ -164,8 +169,8 @@ def test_left_rotation():
     five = IntTreeNode(5)
     seven = IntTreeNode(7)
 
-    three.children = two, five
-    five.children = four, seven
+    three.left, three.right = two, five
+    five.left, five.right = four, seven
     four.parent, seven.parent = five, five
     two.parent, five.parent = three, three
 
@@ -177,12 +182,14 @@ def test_left_rotation():
     #   3   7
     #  / \
     # 2   4
-    assert five.children == (three, seven)
+    assert (five.left, five.right) == (three, seven)
     assert three.parent is five and seven.parent is five 
-    assert three.children == (two, four)
+    assert (three.left, three.right) == (two, four)
     assert two.parent is three and four.parent is three
     assert five.parent is None
-    assert two.is_leaf() and four.is_leaf() and seven.is_leaf()
+    assert two.right is None and two.left is None 
+    assert four.right is None and four.left is None
+    assert seven.right is None and seven.left is None
 
 def test_rotate_doubleleft():
     #BEFORE
@@ -211,7 +218,7 @@ def test_rotate_doubleleft():
     #
 
     assert a.parent is c.parent is b
-    assert b.children == (a,c)
+    assert (b.left, b.right) == (a,c)
     assert b.parent is z
     assert z.right is b
 
@@ -241,7 +248,7 @@ def test_rotate_doubleright():
     #
 
     assert a.parent is c.parent is b
-    assert b.children == (a,c)
+    assert (b.left, b.right) == (a,c)
     assert b.parent is None
 
 def test_insertion():
@@ -322,12 +329,16 @@ def test_del():
     assert tree.size() == 5
     assert tree.root.key == 10
     assert tree.root.left.key, tree.root.right.key == (5,25)
-    assert tree.root.right.is_leaf()
+
+    # Is tree.root.right a leaf?
+    assert tree.root.right.right is None and tree.root.right.left is None
 
     tree.delete(8)
     assert tree.root.key == 10
     assert tree.root.left.key, tree.root.right.key == (5,25)
-    assert tree.root.right.is_leaf()
+    
+    # Is tree.root.right a leaf?
+    assert tree.root.right.right is None and tree.root.right.left is None
     assert tree.root.left.left.key == 3
     assert tree.root.left.right is None
     assert 8 not in {x.key for x in tree.traverse()}
@@ -417,7 +428,7 @@ def test_selfbalancing():
 
 
     for node in tree.traverse():
-        assert node.is_balanced() 
+        assert -1 <= node_balance(node) <= 1 
 
     assert tree.find_node(31).key == 31
     assert tree.find_node(6973).key == 6973
@@ -428,7 +439,7 @@ def test_selfbalancing():
     for k in [5409, 3875, 1315, 5418, 1323, 1838, 7103, 6082, 963, 6084]:
         tree.delete(k)
         for x in tree.traverse():
-            assert x.is_balanced()
+            assert -1 <= node_balance(x) <= 1
 
 def test_special():
     # __contains__
