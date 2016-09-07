@@ -387,12 +387,15 @@ def test_del():
     tree.delrange(10,40)
     assert list(tree.keys()) == [0,5,40,45,50]
 
+    tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
+    assert tree.size() == 10
+    tree.clear()
+    assert tree.size() == 0
+
 def test_intersect():
     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
     t2 = IntTree.from_keys([3,6,7])
-    # assert 0
     t_intersect = t1.intersection(t2)
-    # assert 0
     assert [x.key for x in t_intersect.traverse()] == [3,7]
 
 def test_union():

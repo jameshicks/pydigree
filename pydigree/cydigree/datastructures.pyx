@@ -406,6 +406,14 @@ cdef class IntTree(object):
     cpdef bint empty(self):
         return self.root is None
 
+    cpdef void clear(self):
+        'Removes all nodes from tree'
+        if not self.root:
+            return 
+        deltree(self.root)
+        self.root = None
+
+
     def traverse(self, reverse=False):
         if not self.root:
             return
@@ -838,6 +846,26 @@ cpdef void update_node_height(IntTreeNode node):
         lheight = node.left.height if node.left is not None else 0
         rheight = node.right.height if node.right is not None else 0
         node.height = max(lheight, rheight) + 1
+
+
+cpdef void deltree(IntTreeNode node):
+    """
+    Recursively deletes all nodes in tree a node's subtree. Faster than 
+    deleting each node individually because it does not have to rebalance the 
+    tree after each deletion.
+    """ 
+    if not node:
+        return
+
+    # Traverse in post-order removing nodes
+    # TODO: rewrite in iterative style
+    deltree(node.left)
+    deltree(node.right)
+
+    # del_node(node)
+    node.left = None
+    node.right = None
+
 
 cpdef void rotate_right(IntTreeNode root):
     pivot = root.left

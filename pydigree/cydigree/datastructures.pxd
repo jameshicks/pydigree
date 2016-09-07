@@ -35,6 +35,7 @@ cdef class IntTreeNode(object):
 cdef class IntTree(object):
     cdef readonly IntTreeNode root
     cpdef bint empty(self)
+    cpdef void clear(self)
     cpdef NodeStack to_stack(self)
     cpdef sparsekey size(self)
     cpdef int8_t get(self, sparsekey key, int8_t default=*)
@@ -60,6 +61,8 @@ cdef class IntTree(object):
 
 cpdef int8_t node_balance(IntTreeNode node)
 cpdef void update_node_height(IntTreeNode node)
+
+cpdef void deltree(IntTreeNode start)
 
 cpdef void rotate_right(IntTreeNode root)
 cpdef void rotate_left(IntTreeNode root)
