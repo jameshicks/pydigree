@@ -1,277 +1,5 @@
 from nose.tools import assert_raises
-from pydigree.cydigree.datastructures import IntTreeNode, IntTree, NodeStack
-from pydigree.cydigree.datastructures import rotate_right, rotate_left
-from pydigree.cydigree.datastructures import rotate_double_left, rotate_double_right
-from pydigree.cydigree.datastructures import node_balance
-
-def test_NodeStack():
-    s = NodeStack([IntTreeNode(x) for x in (1,2,3,4)])
-    assert bool(s)
-    assert not bool(NodeStack())
-    assert list(x.key for x in s) == [4,3,2,1]
-
-    s = NodeStack([IntTreeNode(x) for x in (1,2,3,4)])
-    s.reverse()
-    assert list(x.key for x in s) == [1,2,3,4]
-
-    emptystack = NodeStack()
-    assert emptystack.empty()
-    assert emptystack.pop() is None
-    assert emptystack.peek() is None
-
-def test_right_rotation():
-    a = IntTreeNode(1)
-    b = IntTreeNode(2)
-    c = IntTreeNode(3)
-
-    c.left = b
-    b.left = a
-    b.parent = c
-    a.parent = b
-
-    # BEFORE:
-    #      c
-    #     /
-    #    b
-    #   /
-    #  a
-    rotate_right(c)
-
-    # AFTER:
-    #     b
-    #    / \
-    #   a   c
-    assert a.parent is b
-    assert c.parent is b
-    assert b.parent is None
-    assert b.left is a
-    assert b.right is c
-    assert a.right is None and a.left is None
-    assert c.right is None and c.left is None 
-
-    ######
-    a = IntTreeNode(1)
-    b = IntTreeNode(2)
-    c = IntTreeNode(3)
-    d = IntTreeNode(4)
-
-    d.left = c
-    c.left = b
-    b.left = a
-    c.parent = d
-    b.parent = c
-    a.parent = b
-
-    # BEFORE:
-    #        d
-    #       /
-    #      c
-    #     /
-    #    b
-    #   /
-    #  a
-
-    rotate_right(d)
-
-    # AFTER:
-    #      c
-    #     / \
-    #    b   d
-    #   /
-    #  a 
-    assert (c.left, c.right) == (b,d)
-    assert b.left is a
-    assert b.right is None
-    assert a.right is None and a.left is None
-    assert d.parent is c and b.parent is c
-    assert c.parent is None
-    ####
-    # Before
-    #
-    #     5
-    #    / \
-    #   3   7
-    #  / \
-    # 2   4 
-    two = IntTreeNode(2)
-    three = IntTreeNode(3)
-    four = IntTreeNode(4)
-    five = IntTreeNode(5)
-    seven = IntTreeNode(7)
-
-    two.parent, three.left = three, two
-    four.parent, three.right = three, four
-    three.parent, five.left = five, three
-    seven.parent, five.right = five, seven
-
-    rotate_right(five)
-    # After
-    #    3
-    #   / \
-    #  2   5
-    #     / \
-    #    4   7
-    assert five.parent is three
-    assert two.parent is three
-    assert three.parent is None
-    assert four.parent is five
-    assert seven.parent is five
-    assert (three.left, three.right) == (two, five)
-    assert (five.left, five.right) == (four, seven)
-    
-    assert two.right is None and two.left is None 
-    assert four.right is None and four.left is None 
-    assert seven.right is None and seven.left is None
-
-def test_left_rotation():
-    a = IntTreeNode(1)
-    b = IntTreeNode(2)
-    c = IntTreeNode(3)
-    d = IntTreeNode(4)
-
-    a.right = b
-    b.right = c
-    c.parent = b
-    b.parent = a
-
-
-    # BEFORE:
-    # a
-    #  \
-    #   b 
-    #    \
-    #     c
-    rotate_left(a)
-
-    # AFTER:
-    #     b
-    #    / \
-    #   a   c
-    assert a.parent is b
-    assert c.parent is b
-    assert b.parent is None
-    assert b.left is a
-    assert b.right is c
-    
-    assert a.right is None and a.left is None
-    assert c.right is None and c.left is None 
-
-    ####
-    # Before
-    #    3
-    #   / \
-    #  2   5
-    #     / \
-    #    4   7 
-    two = IntTreeNode(2)
-    three = IntTreeNode(3)
-    four = IntTreeNode(4)
-    five = IntTreeNode(5)
-    seven = IntTreeNode(7)
-
-    three.left, three.right = two, five
-    five.left, five.right = four, seven
-    four.parent, seven.parent = five, five
-    two.parent, five.parent = three, three
-
-    rotate_left(three)
-    # After
-    #
-    #     5
-    #    / \
-    #   3   7
-    #  / \
-    # 2   4
-    assert (five.left, five.right) == (three, seven)
-    assert three.parent is five and seven.parent is five 
-    assert (three.left, three.right) == (two, four)
-    assert two.parent is three and four.parent is three
-    assert five.parent is None
-    assert two.right is None and two.left is None 
-    assert four.right is None and four.left is None
-    assert seven.right is None and seven.left is None
-
-def test_rotate_doubleleft():
-    #BEFORE
-    #  a
-    #   \
-    #    c
-    #   /
-    #  b
-    a = IntTreeNode(1)
-    b = IntTreeNode(2)
-    c = IntTreeNode(3)
-    z = IntTreeNode(0)
-
-    a.parent = z
-    z.right = a
-    a.right = c
-    c.left = b
-    b.parent = c
-    c.parent = a
-
-    rotate_double_left(a)
-    # AFTER
-    #   b
-    #  / \
-    # a   c
-    #
-
-    assert a.parent is c.parent is b
-    assert (b.left, b.right) == (a,c)
-    assert b.parent is z
-    assert z.right is b
-
-
-def test_rotate_doubleright():
-    # BEFORE
-    #   c
-    #  /
-    # a
-    #  \
-    #   b
-
-    a = IntTreeNode(1)
-    b = IntTreeNode(2)
-    c = IntTreeNode(3)
-
-    a.parent = c
-    b.parent = a
-    c.left = a
-    a.right = b
-
-    rotate_double_right(c)
-    # AFTER
-    #   b
-    #  / \
-    # a   c
-    #
-
-    assert a.parent is c.parent is b
-    assert (b.left, b.right) == (a,c)
-    assert b.parent is None
-
-def test_insertion():
-    tree = IntTree()
-    tree.insert(10)
-    assert tree.root.key == 10
-
-    tree.insert(5)
-    assert tree.root.left.key == 5
-
-    tree.insert(8)
-
-    assert tree.root.key == 8 
-    assert tree.root.left.key == 5
-    assert tree.root.right.key == 10
-
-    tree.insert(7)
-    assert tree.root.left.right.key == 7
-
-    tree.insert(6)
-    assert tree.root.left.key == 6
-    assert tree.root.left.left.key == 5
-    assert tree.root.left.right.key == 7
+from pydigree.cydigree.datastructures import IntTree
 
 def test_retrieval():
     tree = IntTree.from_pairs(zip([5,10,15,20], [1,2,3,4]))
@@ -288,122 +16,111 @@ def test_retrieval():
     b = a.getrange(25, 35)
     assert list(b.keys()) == [25, 26, 27, 28, 29, 30, 31, 32, 33, 34]
 
-def test_path():
-    tree = IntTree.from_keys([69, 60, 22, 91, 19, 71, 96, 27, 84, 43])
-    assert tree.root.key == 60
 
-    expected = [84,91,71,60]
-    observed = [x.key for x in tree.path_to_root(84)]
-    assert observed == expected
-
-    expected = expected[::-1]
-    observed = [x.key for x in tree.path_to_node(84)]
-    assert observed == expected
-
-def test_traverse():
-    keys = [10, 5, 3, 18, 2]
-    tree = IntTree.from_keys([10, 5, 3, 18, 2])
-    assert [x.key for x in tree.traverse()] == list(sorted(keys))
-    assert [x.key for x in tree.traverse(reverse=True)] == list(sorted(keys, reverse=True))
-    assert [x.key for x in tree.to_stack()] == list(sorted(keys)) 
+# def test_traverse():
+#     keys = [10, 5, 3, 18, 2]
+#     tree = IntTree.from_keys([10, 5, 3, 18, 2])
+#     assert [x.key for x in tree.traverse()] == list(sorted(keys))
+#     assert [x.key for x in tree.traverse(reverse=True)] == list(sorted(keys, reverse=True))
+#     assert [x.key for x in tree.to_stack()] == list(sorted(keys)) 
 
 
-def test_minmax():
-    tree = IntTree()
+# def test_minmax():
+#     tree = IntTree()
 
-    rvals = [10, 5, 3, 18, 2, 100, 4123, 4393014, 49310]
-    for i, rval in enumerate(rvals):
-        tree.insert(rval)
+#     rvals = [10, 5, 3, 18, 2, 100, 4123, 4393014, 49310]
+#     for i, rval in enumerate(rvals):
+#         tree.insert(rval)
 
-    assert tree.min() == 2
-    assert tree.max() == 4393014
+#     assert tree.min() == 2
+#     assert tree.max() == 4393014
 
-    emtree = IntTree()
+#     emtree = IntTree()
 
-def test_del():
-    rvals = [48, 23, 74, 3, 44, 64, 98, 41, 56, 91]
+# def test_del():
+#     rvals = [48, 23, 74, 3, 44, 64, 98, 41, 56, 91]
 
 
-    # Delete leaf
-    tree = IntTree.from_keys([10,5,25,3,8])
-    assert tree.size() == 5
-    assert tree.root.key == 10
-    assert tree.root.left.key, tree.root.right.key == (5,25)
+#     # Delete leaf
+#     tree = IntTree.from_keys([10,5,25,3,8])
+#     assert tree.size() == 5
+#     assert tree.root.key == 10
+#     assert tree.root.left.key, tree.root.right.key == (5,25)
 
-    # Is tree.root.right a leaf?
-    assert tree.root.right.right is None and tree.root.right.left is None
+#     # Is tree.root.right a leaf?
+#     assert tree.root.right.right is None and tree.root.right.left is None
 
-    tree.delete(8)
-    assert tree.root.key == 10
-    assert tree.root.left.key, tree.root.right.key == (5,25)
+#     tree.delete(8)
+#     assert tree.root.key == 10
+#     assert tree.root.left.key, tree.root.right.key == (5,25)
     
-    # Is tree.root.right a leaf?
-    assert tree.root.right.right is None and tree.root.right.left is None
-    assert tree.root.left.left.key == 3
-    assert tree.root.left.right is None
-    assert 8 not in {x.key for x in tree.traverse()}
+#     # Is tree.root.right a leaf?
+#     assert tree.root.right.right is None and tree.root.right.left is None
+#     assert tree.root.left.left.key == 3
+#     assert tree.root.left.right is None
+#     assert 8 not in {x.key for x in tree.traverse()}
 
-    # Delete node with one child
-    tree = IntTree.from_keys(rvals)
-    tree.delete(64)
-    assert tree.root.right.left.key == 56
+#     # Delete node with one child
+#     tree = IntTree.from_keys(rvals)
+#     tree.delete(64)
+#     assert tree.root.right.left.key == 56
 
-    # Symmetric one child case (we need to add another node)
-    tree = IntTree.from_keys(rvals)
-    tree.insert(45)
-    tree.delete(45)
-    assert tree.root.left.right.right is None
+#     # Symmetric one child case (we need to add another node)
+#     tree = IntTree.from_keys(rvals)
+#     tree.insert(45)
+#     tree.delete(45)
+#     assert tree.root.left.right.right is None
 
-    # Delete two nodes 
-    tree = IntTree.from_keys([10, 5, 25, 3, 8])
-    assert tree.root.key == 10
-    assert tree.root.left.key == 5
-    assert tree.root.right.key == 25
-    assert tree.root.left.left.key == 3
+#     # Delete two nodes 
+#     tree = IntTree.from_keys([10, 5, 25, 3, 8])
+#     assert tree.root.key == 10
+#     assert tree.root.left.key == 5
+#     assert tree.root.right.key == 25
+#     assert tree.root.left.left.key == 3
 
-    tree.delete(5)
-    assert tree.root.key == 10
-    assert tree.root.left.key == 3
-    #
-    # TODO: test this correctly (nose.assert_raises doesnt work here)
-    # try:
-    #     tree.delete(900)
-    #     assert False
-    # except KeyError:
-    #     pass
+#     tree.delete(5)
+#     assert tree.root.key == 10
+#     assert tree.root.left.key == 3
+#     #
+#     # TODO: test this correctly (nose.assert_raises doesnt work here)
+#     # try:
+#     #     tree.delete(900)
+#     #     assert False
+#     # except KeyError:
+#     #     pass
 
-    # emtree = IntTree()
-    # try:
-    #     emtree.delete(1)
-    #     assert False
-    # except KeyError:
-    #     pass
+#     # emtree = IntTree()
+#     # try:
+#     #     emtree.delete(1)
+#     #     assert False
+#     # except KeyError:
+#     #     pass
 
-    tree = IntTree.from_keys([100, 50, 200])
-    tree.delete(100)
-    assert list(tree.keys()) == [50,200]
+#     tree = IntTree.from_keys([100, 50, 200])
+#     tree.delete(100)
+#     assert list(tree.keys()) == [50,200]
 
-    tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
-    tree.delrange(10,40)
-    assert list(tree.keys()) == [0,5,40,45,50]
+#     tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
+#     tree.delrange(10,40)
+#     assert list(tree.keys()) == [0,5,40,45,50]
 
-    tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
-    assert tree.size() == 10
-    tree.clear()
-    assert tree.size() == 0
+#     tree = IntTree.from_keys([0, 5, 10, 15, 25, 30, 35, 40, 45, 50])
+#     assert tree.size() == 10
+#     tree.clear()
+#     assert tree.size() == 0
 
-def test_intersect():
-    t1 = IntTree.from_keys([1, 3, 5, 7, 9])
-    t2 = IntTree.from_keys([3,6,7])
-    t_intersect = t1.intersection(t2)
-    assert [x.key for x in t_intersect.traverse()] == [3,7]
+# def test_intersect():
+#     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
+#     t2 = IntTree.from_keys([3,6,7])
+#     t_intersect = t1.intersection(t2)
+#     assert [x.key for x in t_intersect.traverse()] == [3,7]
 
-def test_union():
-    t1 = IntTree.from_keys([1, 3, 5, 7, 9])
-    t2 = IntTree.from_keys([3,6,7])
+# def test_union():
+#     t1 = IntTree.from_keys([1, 3, 5, 7, 9])
+#     t2 = IntTree.from_keys([3,6,7])
 
-    t_union = t1.union(t2)
-    assert [x.key for x in t_union.traverse()] == [1,3,5,6,7,9] 
+#     t_union = t1.union(t2)
+#     assert [x.key for x in t_union.traverse()] == [1,3,5,6,7,9] 
 
 def test_selfbalancing():
     tree = IntTree()
@@ -429,39 +146,32 @@ def test_selfbalancing():
     for i, rval in enumerate(rvals):
         tree.insert(rval)
 
-
-    for node in tree.traverse():
-        assert -1 <= node_balance(node) <= 1 
-
-    assert tree.find_node(31).key == 31
-    assert tree.find_node(6973).key == 6973
-    assert tree.find_node(9015).key == 9015
-    assert tree.size() == len(rvals)
-    # print(tree.size())
-
+    assert tree.verify() 
+    print('Verified after insertion')
     for k in [5409, 3875, 1315, 5418, 1323, 1838, 7103, 6082, 963, 6084]:
+        print('TEST DELETING {}'.format(k))
         tree.delete(k)
-        for x in tree.traverse():
-            assert -1 <= node_balance(x) <= 1
+        assert tree.verify()
+        print('VERIFIED')
+    print('SELFBALANCING')
+# def test_special():
+#     # __contains__
+#     tree = IntTree.from_keys([10, 5, 8, 3, 20])
+#     assert 20 in tree
+#     assert 10 in tree
+#     assert 15 not in tree
+#     assert 1000 not in tree
 
-def test_special():
-    # __contains__
-    tree = IntTree.from_keys([10, 5, 8, 3, 20])
-    assert 20 in tree
-    assert 10 in tree
-    assert 15 not in tree
-    assert 1000 not in tree
+#     emtree = IntTree()
+#     assert 1 not in emtree
 
-    emtree = IntTree()
-    assert 1 not in emtree
+#     # # __nonzero__
+#     # if not tree:
+#     #     assert False
 
-    # # __nonzero__
-    # if not tree:
-    #     assert False
+#     # if emtree:
+#     #     assert False
 
-    # if emtree:
-    #     assert False
-
-    # __len__
-    assert len(emtree) == 0
-    assert len(tree) == 5
+#     # __len__
+#     assert len(emtree) == 0
+#     assert len(tree) == 5
