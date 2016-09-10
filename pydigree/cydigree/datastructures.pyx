@@ -27,7 +27,7 @@ cdef inline bint compare(object a, object b, int op):
 
 cdef class SparseArray:
 
-    def __init__(self, sparsekey size, refcode=None, initial=None):
+    def __init__(self, sparse_key size, refcode=None, initial=None):
         self.container = IntTree()
         self.refcode = refcode
         self.size = size
@@ -44,7 +44,7 @@ cdef class SparseArray:
         def __get__(self):
             return list(self.container.keys())
 
-    cdef inline sparsekey fix_index(self, sparsekey index): 
+    cdef inline sparse_key fix_index(self, sparse_key index): 
         if index >= 0:
             return index 
         else:
@@ -63,13 +63,13 @@ cdef class SparseArray:
         else:
             return self._get_single_item(index)
 
-    cdef object _get_single_item(self, sparsekey index):
+    cdef object _get_single_item(self, sparse_key index):
         index = self.fix_index(index)
         return self.container.get(index, self.refcode)
 
     cdef SparseArray _get_slice(self, index):
-        cdef sparsekey start = index.start
-        cdef sparsekey stop = index.stop 
+        cdef sparse_key start = index.start
+        cdef sparse_key stop = index.stop 
 
         cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
         subarray.container = self.container.getrange(start, stop)
@@ -81,8 +81,8 @@ cdef class SparseArray:
         return subarray
 
     cdef _get_fancyidx(self, index):
-        cdef sparsekey i = 0
-        cdef sparsekey nvals = len(index)
+        cdef sparse_key i = 0
+        cdef sparse_key nvals = len(index)
         cdef output = SparseArray(nvals, self.refcode)
         for i in range(nvals):
             output[i] = self[index[i]]
@@ -92,8 +92,8 @@ cdef class SparseArray:
     cdef _get_boolidx(self, index):
         if len(index) != self.size:
             raise IndexError('Bool indices not same size as array')
-        cdef sparsekey nvals = sum(index)
-        cdef sparsekey i = 0
+        cdef sparse_key nvals = sum(index)
+        cdef sparse_key i = 0
         cdef output = SparseArray(nvals, self.refcode)
         cdef bint included
         
@@ -117,7 +117,7 @@ cdef class SparseArray:
         else:
             self.set_item(index, value)
 
-    cpdef void set_item(self, sparsekey index, int8_t value):
+    cpdef void set_item(self, sparse_key index, sparse_val value):
         index = self.fix_index(index)
         if value != self.refcode:
             self.container.insert(index, value)
@@ -125,8 +125,8 @@ cdef class SparseArray:
             if not self.container.empty():
                 self.container.delete(index)
 
-    cdef void _set_slice(self, sparsekey start, sparsekey stop, values):
-        cdef sparsekey i, nvals 
+    cdef void _set_slice(self, sparse_key start, sparse_key stop, values):
+        cdef sparse_key i, nvals 
 
         if isinstance(values, SparseArray):
             self._set_slice_to_sparray(start, stop, values)
@@ -146,7 +146,7 @@ cdef class SparseArray:
             if ival != self.refcode:
                 self.container.insert(i, ival) 
 
-    cdef void _set_slice_to_sparray(self, sparsekey start, sparsekey stop, SparseArray values):
+    cdef void _set_slice_to_sparray(self, sparse_key start, sparse_key stop, SparseArray values):
         if stop - start != values.size:
             raise IndexError('Value wrong shape for slice')
         
@@ -160,15 +160,15 @@ cdef class SparseArray:
 
     cdef void _set_fancyidx(self, indices, value):
         cdef bint multivalue = isinstance(value, Sequence) and not isinstance(value, str)
-        cdef sparsekey nidx = len(indices)
-        cdef sparsekey nval 
+        cdef sparse_key nidx = len(indices)
+        cdef sparse_key nval 
         
         if multivalue:
             nval = len(value)
             if nidx != nval:
                 raise IndexError('Indices and values different length')
 
-        cdef sparsekey i
+        cdef sparse_key i
         for i in range(nidx):
             if multivalue:
                 self[indices[i]] = value[i] 
@@ -190,8 +190,8 @@ cdef class SparseArray:
 
     cpdef SparseArray _cmp_sequence(self, other, int op):
         cdef SparseArray output = SparseArray(self.size, False)
-        cdef sparsekey seqlen = len(other)
-        cdef sparsekey i = 0
+        cdef sparse_key seqlen = len(other)
+        cdef sparse_key i = 0
         cdef NodeStack densesites = self.container.to_stack()
         cdef IntTreeNode* curdense = densesites.pop()
         
@@ -273,8 +273,8 @@ cdef class SparseArray:
     # Builders
     @staticmethod
     def from_dense(dense, refcode):
-        cdef sparsekey i = 0
-        cdef sparsekey n = len(dense)
+        cdef sparse_key i = 0
+        cdef sparse_key n = len(dense)
         cdef object x
         
         cdef SparseArray output = SparseArray(n, refcode)
@@ -327,7 +327,7 @@ cdef class SparseArray:
 ############
 ############
 
-cdef IntTreeNode* new_node(sparsekey key, int8_t value):
+cdef IntTreeNode* new_node(sparse_key key, sparse_val value):
     cdef IntTreeNode* node = <IntTreeNode*>PyMem_Malloc(sizeof(IntTreeNode))
     if not node:
         raise MemoryError("Couldnt alloc memory for node")
@@ -370,7 +370,7 @@ cdef class IntTree(object):
 
         return tree
 
-    def __contains__(self, sparsekey key):
+    def __contains__(self, sparse_key key):
         node = self.root
         while node:
             if key > node.key:
@@ -470,12 +470,12 @@ cdef class IntTree(object):
                 node = node.left
         return out
 
-    cpdef sparsekey size(self):
+    cpdef sparse_key size(self):
         if self.empty(): 
             return 0
 
         cdef NodeStack s = NodeStack()
-        cdef sparsekey tot = 0
+        cdef sparse_key tot = 0
         cdef IntTreeNode* node = self.root
 
         while (not s.empty()) or (node != NULL):
@@ -488,7 +488,7 @@ cdef class IntTree(object):
                 node = node.left
         return tot
 
-    cpdef int8_t get(self, sparsekey key, int8_t default=0):
+    cpdef sparse_val get(self, sparse_key key, sparse_val default=0):
         if self.empty():
             return default
 
@@ -503,7 +503,7 @@ cdef class IntTree(object):
 
         return default
 
-    cpdef int8_t find(self, sparsekey key):
+    cpdef sparse_val find(self, sparse_key key):
         if self.empty():
             raise KeyError('Node not found')
 
@@ -518,7 +518,7 @@ cdef class IntTree(object):
 
         raise KeyError('Node not found')
 
-    cdef NodeStack path_to_root(self, sparsekey key):
+    cdef NodeStack path_to_root(self, sparse_key key):
         cdef NodeStack s = NodeStack()
         cdef IntTreeNode* cur_node = self.root
         while cur_node:
@@ -531,7 +531,7 @@ cdef class IntTree(object):
                 return s
         raise KeyError('Node not found {}'.format(key))
 
-    cdef NodeStack path_to_node(self, sparsekey key):
+    cdef NodeStack path_to_node(self, sparse_key key):
         cdef NodeStack s = self.path_to_root(key)
         
         # Gotta reverse it
@@ -542,7 +542,7 @@ cdef class IntTree(object):
             val = s.pop() 
         return s2
 
-    cpdef void insert(self, sparsekey key, int8_t value=0):
+    cpdef void insert(self, sparse_key key, sparse_val value=0):
         cdef IntTreeNode* inserted = new_node(key, value)
         if self.empty():
             self.root = inserted
@@ -610,7 +610,7 @@ cdef class IntTree(object):
             self.root = new_root
 
 
-    cpdef void delete(self, sparsekey key, bint silent=True):
+    cpdef void delete(self, sparse_key key, bint silent=True):
         if self.empty():
             raise KeyError('Tree is empty')
 
@@ -709,8 +709,8 @@ cdef class IntTree(object):
             replacement = replacement.right
 
 
-        cdef sparsekey key = replacement.key
-        cdef int8_t value = replacement.value
+        cdef sparse_key key = replacement.key
+        cdef sparse_val value = replacement.value
 
         self.delete(key)
 
@@ -718,7 +718,7 @@ cdef class IntTree(object):
         node.value = value
 
 
-    cpdef void delrange(self, sparsekey start, sparsekey end):
+    cpdef void delrange(self, sparse_key start, sparse_key end):
         'Deletes keys where start <= key < stop'
         cdef NodeStack delstack = NodeStack()
         cdef NodeStack s = NodeStack()
@@ -742,7 +742,7 @@ cdef class IntTree(object):
             delnode = delstack.pop()
 
 
-    cpdef IntTree getrange(self, sparsekey start, sparsekey end):
+    cpdef IntTree getrange(self, sparse_key start, sparse_key end):
         cdef IntTree ntree = IntTree()
         cdef NodeStack s = NodeStack()
         cdef IntTreeNode* node = self.root
