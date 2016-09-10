@@ -37,12 +37,12 @@ cdef class SparseArray:
 
     property values:
         def __get__(self):
-            return [x.value for x in self.container.traverse()]
+            return list(self.container.values())
 
 
     property indices:
         def __get__(self):
-            return [x.key for x in self.container.traverse()]
+            return list(self.container.keys())
 
     cdef inline sparsekey fix_index(self, sparsekey index): 
         if index >= 0:
@@ -74,7 +74,7 @@ cdef class SparseArray:
         cdef SparseArray subarray = SparseArray(stop - start, self.refcode)
         subarray.container = self.container.getrange(start, stop)
         cdef NodeStack ns = subarray.container.to_stack()
-        cdef IntTreeNode node = ns.pop()
+        cdef IntTreeNode* node = ns.pop()
         while node:
             node.key = node.key - start 
             node = ns.pop()
@@ -150,8 +150,9 @@ cdef class SparseArray:
         if stop - start != values.size:
             raise IndexError('Value wrong shape for slice')
         
-        for node in values.container.traverse():
-            self.container.insert(node.key + start, node.value)
+        # TODO: Make efficient instead of using python traversal
+        for k, v in values.items():
+            self.container.insert(k + start, v)
 
     cdef void _set_boolidx(self, indices, values):
         cdef list trueidxs = [i for i,x in enumerate(indices) if x]
@@ -180,7 +181,7 @@ cdef class SparseArray:
         cdef SparseArray output = SparseArray(self.size, compare(self.refcode, value, op))
         cdef NodeStack s = self.container.to_stack()
 
-        cdef IntTreeNode node = s.pop()
+        cdef IntTreeNode* node = s.pop()
         while node:
             output[node.key] = compare(node.value, value, op)
             node = s.pop()
@@ -192,10 +193,10 @@ cdef class SparseArray:
         cdef sparsekey seqlen = len(other)
         cdef sparsekey i = 0
         cdef NodeStack densesites = self.container.to_stack()
-        cdef IntTreeNode curdense = densesites.pop()
+        cdef IntTreeNode* curdense = densesites.pop()
         
         for i in range(seqlen):
-            if curdense is not None and i == curdense.key:
+            if curdense != NULL and i == curdense.key:
                 output[i] = compare(curdense.value, other[i], op)
                 curdense = densesites.pop()
             else:
@@ -210,16 +211,16 @@ cdef class SparseArray:
         cdef NodeStack selfstack = self.container.to_stack()
         cdef NodeStack otherstack = other.container.to_stack()
 
-        cdef IntTreeNode selfnode = selfstack.pop()
-        cdef IntTreeNode othernode = otherstack.pop()
+        cdef IntTreeNode* selfnode = selfstack.pop()
+        cdef IntTreeNode* othernode = otherstack.pop()
 
         cdef SparseArray output = SparseArray(self.size, self.refcode == other.refcode)
-        while selfnode is not None and othernode is not None:
+        while selfnode != NULL and othernode != NULL:
             
-            if othernode is None or selfnode.key < othernode.key:
+            if othernode == NULL or selfnode.key < othernode.key:
                 output[selfnode.key] = compare(selfnode.value, other.refcode, op)
                 selfnode = selfstack.pop()
-            elif selfnode is None or selfnode.key > othernode.key:
+            elif selfnode == NULL or selfnode.key > othernode.key:
                 output[othernode.key] = compare(self.refcode, othernode.value, op) 
                 othernode = otherstack.pop() 
             else:
@@ -243,8 +244,8 @@ cdef class SparseArray:
         if self.refcode:
             return True
         
-        for node in self.container.traverse():
-            if node.value:
+        for value in self.container.values():
+            if value:
                 return True
         
         return False
@@ -253,8 +254,8 @@ cdef class SparseArray:
         if self.sparsity() > 0 and not self.refcode:
             return False
         
-        for node in self.container.traverse():
-            if not node.value:
+        for value in self.container.values():
+            if not value:
                 return False
         
         return True
@@ -262,7 +263,7 @@ cdef class SparseArray:
     cpdef SparseArray logical_not(self):
         cdef SparseArray output = SparseArray(self.size, not self.refcode)
         cdef NodeStack s = self.container.to_stack()
-        cdef IntTreeNode node = s.pop()
+        cdef IntTreeNode* node = s.pop()
 
         while node:
             output[node.key] = not node.value
@@ -312,28 +313,22 @@ cdef class SparseArray:
 
     def tolist(self):
         cdef list output = [self.refcode] * self.size
-        for node in self.container.traverse():
-            output[node.key] = node.value
+        # TODO: Make efficient instead of using python traversal
+        for k, v in zip(self.container.keys(), self.container.values()):
+            output[k] = v
 
         return output
 
     def items(self):
-        for node in self.container.traverse():
-            yield node.key, node.value
+        # TODO: Make efficient instead of using python traversal
+        for k, v in zip(self.container.keys(), self.container.values()):
+            yield k,v
 
 ############
 ############
 
-cdef struct IntTreeNode2:
-    IntTreeNode2* left 
-    IntTreeNode2* right
-    IntTreeNode2* parent
-    sparsekey key
-    int8_t value 
-    int8_t height
-
-cdef IntTreeNode2* new_node(sparsekey key, int8_t value):
-    cdef IntTreeNode2* node = <IntTreeNode2*>PyMem_Malloc(sizeof(IntTreeNode2))
+cdef IntTreeNode* new_node(sparsekey key, int8_t value):
+    cdef IntTreeNode* node = <IntTreeNode*>PyMem_Malloc(sizeof(IntTreeNode))
     if not node:
         raise MemoryError("Couldnt alloc memory for node")
 
@@ -341,33 +336,23 @@ cdef IntTreeNode2* new_node(sparsekey key, int8_t value):
     node.value = value
     node.left = NULL
     node.right = NULL
+    node.parent = NULL
     node.height = 0
 
     return node
 
-cdef void del_node(IntTreeNode2* node):
+cdef void del_node(IntTreeNode* node):
     PyMem_Free(node)
 
 ############
 ############
 
-cdef class IntTreeNode(object):
-    'An IntTree node'
-
-    def __init__(self, sparsekey key, int8_t value=0):
-        self.key = key
-        self.value = value
-        self.height = 0
-        self.left = None
-        self.right = None
-        self.parent = None
-
-    def __repr__(self):
-        return 'IntTreeNode({})'.format(self.key)
-
 cdef class IntTree(object):
     def __init__(self):
-        self.root = None
+        self.root = NULL
+
+    def __dealloc__(self):
+        self.clear()
 
     @staticmethod
     def from_keys(keys):
@@ -403,58 +388,80 @@ cdef class IntTree(object):
     def __len__(self):
         return self.size()
 
+    cpdef bint verify(self):
+        if self.empty():
+            return True
+
+        return node_verify(self.root)
+
     cpdef bint empty(self):
-        return self.root is None
+        return self.root == NULL
 
     cpdef void clear(self):
         'Removes all nodes from tree'
         if not self.root:
             return 
         deltree(self.root)
-        self.root = None
+        self.root = NULL
 
-
-    def traverse(self, reverse=False):
-        if not self.root:
+    def traverse(self):
+        if self.empty():
             return
 
-        if reverse:
-            yield from self._traverse_reverse()
-        else:
-            yield from self._traverse()
-
-    def _traverse(self):
         cdef NodeStack s = NodeStack()
-        cdef IntTreeNode node = self.root
+        cdef IntTreeNode* node = self.root
         
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
                 s.push(node)
                 node = node.left
             else:
                 node = s.pop()
-                yield node 
+                yield node.key 
                 node = node.right
 
-    def _traverse_reverse(self):
+    def keys(self):
+        if self.empty():
+              return
+
         cdef NodeStack s = NodeStack()
-        cdef IntTreeNode node = self.root
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        cdef IntTreeNode* node = self.root
+        
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
                 s.push(node)
-                node = node.right
+                node = node.left
             else:
                 node = s.pop()
-                yield node 
+                yield node.key 
+                node = node.right
+
+    def values(self):
+        if self.empty():
+            return
+
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode* node = self.root
+        
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
+                s.push(node)
                 node = node.left
+            else:
+                node = s.pop()
+                yield node.value 
+                node = node.right
 
     cpdef NodeStack to_stack(self):
         cdef NodeStack s = NodeStack()
         cdef NodeStack out = NodeStack()
-        cdef IntTreeNode node = self.root
+        cdef IntTreeNode* node = self.root
 
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        if not node:
+            return s
+
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
                 s.push(node)
                 node = node.right
             else:
@@ -464,14 +471,15 @@ cdef class IntTree(object):
         return out
 
     cpdef sparsekey size(self):
-        if self.root is None: 
+        if self.empty(): 
             return 0
+
         cdef NodeStack s = NodeStack()
         cdef sparsekey tot = 0
-        cdef IntTreeNode node = self.root
+        cdef IntTreeNode* node = self.root
 
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
                 s.push(node)
                 node = node.right
             else:
@@ -480,15 +488,12 @@ cdef class IntTree(object):
                 node = node.left
         return tot
 
-    def keys(self):
-        yield from (node.key for node in self.traverse())
-
     cpdef int8_t get(self, sparsekey key, int8_t default=0):
-        if not self.root:
+        if self.empty():
             return default
 
-        cdef IntTreeNode node = self.root
-        while node is not None:
+        cdef IntTreeNode* node = self.root
+        while node != NULL:
             if key > node.key:
                 node = node.right
             elif key < node.key:
@@ -499,11 +504,11 @@ cdef class IntTree(object):
         return default
 
     cpdef int8_t find(self, sparsekey key):
-        if not self.root:
+        if self.empty():
             raise KeyError('Node not found')
 
-        cdef IntTreeNode node = self.root
-        while node is not None:
+        cdef IntTreeNode* node = self.root
+        while node:
             if key > node.key:
                 node = node.right
             elif key < node.key:
@@ -513,23 +518,9 @@ cdef class IntTree(object):
 
         raise KeyError('Node not found')
 
-
-    cpdef IntTreeNode find_node(self, sparsekey key):
-        cdef IntTreeNode node = self.root
-        while node is not None:
-
-            if node.key == key:
-                return node
-
-            elif key < node.key:
-                node = node.left
-            elif key > node.key:
-                node = node.right
-        raise KeyError('Key not found: {}'.format(key))
-
-    cpdef NodeStack path_to_root(self, sparsekey key):
-        s = NodeStack()
-        cur_node = self.root
+    cdef NodeStack path_to_root(self, sparsekey key):
+        cdef NodeStack s = NodeStack()
+        cdef IntTreeNode* cur_node = self.root
         while cur_node:
             s.push(cur_node)
             if key > cur_node.key:
@@ -540,48 +531,54 @@ cdef class IntTree(object):
                 return s
         raise KeyError('Node not found {}'.format(key))
 
-    cpdef NodeStack path_to_node(self, sparsekey key):
-        s = self.path_to_root(key)
-        s.reverse()
-        return s
+    cdef NodeStack path_to_node(self, sparsekey key):
+        cdef NodeStack s = self.path_to_root(key)
+        
+        # Gotta reverse it
+        cdef NodeStack s2 = NodeStack()
+        cdef IntTreeNode* val = s.pop()
+        while val:
+            s2.push(val)
+            val = s.pop() 
+        return s2
 
     cpdef void insert(self, sparsekey key, int8_t value=0):
-        cdef IntTreeNode new_node = IntTreeNode(key, value)
-
-        if self.root is None:
-            self.root = new_node
+        cdef IntTreeNode* inserted = new_node(key, value)
+        if self.empty():
+            self.root = inserted
             return
 
-        cdef IntTreeNode cur_node = self.root
+        cdef IntTreeNode* cur_node = self.root
         
         while True:
-            if new_node.key > cur_node.key:
-                if cur_node.right is not None:
+            
+            if inserted.key > cur_node.key:
+                if cur_node.right != NULL:
                     cur_node = cur_node.right
                 else:
-                    cur_node.right = new_node
-                    new_node.parent = cur_node
+                    cur_node.right = inserted
+                    inserted.parent = cur_node
                     break
 
-            elif new_node.key < cur_node.key:
-                if cur_node.left is not None:
+            elif inserted.key < cur_node.key:
+                if cur_node.left != NULL:
                     cur_node = cur_node.left
                 else:
-                    cur_node.left = new_node
-                    new_node.parent = cur_node
+                    cur_node.left = inserted
+                    inserted.parent = cur_node
                     break
             else:
                 cur_node.value = value
                 # We don't need to rebalance if the key was already in the tree
+                del_node(inserted)
                 return 
 
-        cdef IntTreeNode parent = new_node
-
+        cdef IntTreeNode* parent = inserted
         while parent:
             self.rebalance_node(parent)
             parent = parent.parent
 
-    cdef rebalance_node(self, IntTreeNode node):
+    cdef void rebalance_node(self, IntTreeNode* node):
         update_node_height(node)
 
         cdef int8_t balance = node_balance(node)
@@ -590,7 +587,7 @@ cdef class IntTree(object):
             return
 
         elif balance > 1:
-            if node.right is not None and node_balance(node.right) < 0:
+            if node.right != NULL and node_balance(node.right) < 0:
                 new_root = node.right.left
                 rotate_double_left(node)
 
@@ -599,7 +596,7 @@ cdef class IntTree(object):
                 rotate_left(node)
 
         elif balance < -1:
-            if node.left is not None and node_balance(node.left) > 0:
+            if node.left != NULL and node_balance(node.left) > 0:
                 new_root = node.left.right
                 rotate_double_right(node)
 
@@ -614,7 +611,7 @@ cdef class IntTree(object):
 
 
     cpdef void delete(self, sparsekey key, bint silent=True):
-        if self.root is None:
+        if self.empty():
             raise KeyError('Tree is empty')
 
         try:
@@ -624,132 +621,111 @@ cdef class IntTree(object):
                 return
             else:
                 raise
-        node = ancestors.pop()
-
-
-        if node.right is None and node.left is None:
+        cdef IntTreeNode* node = ancestors.pop()
+        
+        if node.right == NULL and node.left == NULL:
             self.delleaf(node, ancestors)
-        elif node.right is None:
+        elif node.right == NULL:
             self.del1childl(node, ancestors)
-        elif node.left is None:
+        elif node.left == NULL:
             self.del1childr(node, ancestors)
         else:
             self.del2child(node, ancestors)
+        
 
-    cdef void delleaf(self, IntTreeNode node, NodeStack ancestors):
-        cdef IntTreeNode ancestor = ancestors.peek()
+
+    cdef void delleaf(self, IntTreeNode* node, NodeStack ancestors):
+
         if node is self.root:
-            self.root = None
+
+            del_node(self.root)
+            self.root = NULL
             return
+        
+        cdef IntTreeNode* ancestor = ancestors.pop()
 
-        elif node.key > ancestor.key:
-            ancestor.right = None
+        if node.key > ancestor.key:
+            ancestor.right = NULL
         else: 
-            ancestor.left = None
-
-        for ancestor in ancestors:
+            ancestor.left = NULL
+        
+        
+        while ancestor:
             self.rebalance_node(ancestor)
 
-    cdef void del1childl(self, IntTreeNode node, NodeStack ancestors):
-        if self.root is node:
+            ancestor = ancestors.pop()
+
+        del_node(node)
+
+
+    cdef void del1childl(self, IntTreeNode* node, NodeStack ancestors):
+        if self.root == node:
             self.root = node.left
             update_node_height(node.left)
-
+            del_node(node)
             return
 
-        cdef IntTreeNode ancestor = ancestors.peek()
-        cdef IntTreeNode child = node.left
+        cdef IntTreeNode* ancestor = ancestors.pop()        
+
+        cdef IntTreeNode* child = node.left
+
         child.parent = ancestor
         if child.key > ancestor.key:
             ancestor.right = child
         else:
             ancestor.left = child
 
-        for ancestor in ancestors:
+        while ancestor:
             self.rebalance_node(ancestor)
+            ancestor = ancestors.pop()
 
-    cdef void del1childr(self, IntTreeNode node, NodeStack ancestors):
-        if self.root is node:
+        del_node(node)
+    
+    cdef void del1childr(self, IntTreeNode* node, NodeStack ancestors):
+        if self.root == node:
             self.root = node.right
             update_node_height(node.right)
-        
-        cdef IntTreeNode ancestor = ancestors.peek()
-        cdef IntTreeNode child = node.right    
+            del_node(node)
+            return 
+
+        cdef IntTreeNode* ancestor = ancestors.peek()
+        cdef IntTreeNode* child = node.right    
         child.parent = ancestor
         if child.key > ancestor.key:
             ancestor.right = child
         else:
             ancestor.left = child
 
-        for ancestor in ancestors:
+        while ancestor:
             self.rebalance_node(ancestor)
+            ancestor = ancestors.pop()
 
-    cdef void del2child(self, IntTreeNode node, NodeStack ancestors):
-        # Find a replacement for the node to be deleted
-        cdef IntTreeNode replacement = node.left
+        del_node(node)
+
+    cdef void del2child(self, IntTreeNode* node, NodeStack ancestors):
+
+        cdef IntTreeNode* replacement = node.left
         while replacement.right:
             replacement = replacement.right
 
-        path_to_replacement = self.path_to_root(replacement.key)
-        path_to_replacement.pop() # Remove replacement from stack
 
-        self.delete(replacement.key)
+        cdef sparsekey key = replacement.key
+        cdef int8_t value = replacement.value
 
-        # The parent of the node to be deleted
-        cdef IntTreeNode direct_ancestor = ancestors.peek()
+        self.delete(key)
 
-        replacement.left, replacement.right = node.left, node.right 
-        replacement.parent = direct_ancestor
-        update_node_height(replacement)
+        node.key = key
+        node.value = value
 
-        if node is self.root:
-            self.root = replacement
-        
-        elif replacement.key > direct_ancestor.key:
-            direct_ancestor.right = replacement
-        else:
-            direct_ancestor.left = replacement
 
-        for ancestor in path_to_replacement:
-            self.rebalance_node(ancestor)
-
-    cpdef IntTreeNode min_node(self, start=None):
-        if not self.root:
-            raise KeyError('Tree empty!')
-        if not start:
-            node = self.root
-        else:
-            node = start
-
-        while node.left is not None:
-            node = node.left
-
-        return node
-
-    cpdef sparsekey min(self):
-        return self.min_node().key
-
-    cpdef IntTreeNode max_node(self, start=None):
-        if not self.root:
-            raise KeyError('Tree empty!')
-        if not start:
-            node = self.root
-        else:
-            node = start
-
-        while node.right is not None:
-            node = node.right
-
-        return node
-
-    cpdef delrange(self, sparsekey start, sparsekey end):
+    cpdef void delrange(self, sparsekey start, sparsekey end):
         'Deletes keys where start <= key < stop'
         cdef NodeStack delstack = NodeStack()
         cdef NodeStack s = NodeStack()
-        cdef IntTreeNode node = self.root
+        cdef IntTreeNode* node = self.root
 
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
                 s.push(node)
                 node = node.left
             else:
@@ -760,16 +736,19 @@ cdef class IntTree(object):
                     break 
                 node = node.right
 
-        for delnode in delstack:
+        cdef IntTreeNode* delnode = delstack.pop() 
+        while delnode:
             self.delete(delnode.key)
+            delnode = delstack.pop()
 
-    cpdef getrange(self, sparsekey start, sparsekey end):
+
+    cpdef IntTree getrange(self, sparsekey start, sparsekey end):
         cdef IntTree ntree = IntTree()
         cdef NodeStack s = NodeStack()
-        cdef IntTreeNode node = self.root
+        cdef IntTreeNode* node = self.root
 
-        while (not s.empty()) or (node is not None):
-            if node is not None:
+        while (not s.empty()) or (node != NULL):
+            if node:
                 s.push(node)
                 node = node.left
             else:
@@ -781,19 +760,17 @@ cdef class IntTree(object):
                 node = node.right
 
         return ntree
-                     
-
-    cpdef sparsekey max(self):
-        return self.max_node().key
 
     cpdef IntTree intersection(self, IntTree other):
         cdef NodeStack t1 = self.to_stack()
         cdef NodeStack t2 = other.to_stack()
 
-        a, b = t1.pop(), t2.pop()
+        cdef IntTreeNode* a = t1.pop()
+        cdef IntTreeNode* b = t2.pop()
 
         cdef IntTree ntree = IntTree()
-        while a is not None and b is not None:
+        
+        while a != NULL and b != NULL:
             if a.key == b.key:
                 ntree.insert(a.key)
                 a, b = t1.pop(), t2.pop()
@@ -808,16 +785,17 @@ cdef class IntTree(object):
         cdef NodeStack t1 = self.to_stack()
         cdef NodeStack t2 = other.to_stack()
 
-        a, b = t1.pop(), t2.pop()
+        cdef IntTreeNode* a = t1.pop()
+        cdef IntTreeNode* b = t2.pop()
 
-        ntree = IntTree()
+        cdef IntTree ntree = IntTree()
 
-        while a is not None or b is not None:
-            if a is None:
+        while a != NULL or b != NULL:
+            if a == NULL:
                 ntree.insert(b.key)
                 b = t2.pop()
 
-            elif b is None:
+            elif b == NULL:
                 ntree.insert(a.key)
                 a = t1.pop()
 
@@ -836,25 +814,37 @@ cdef class IntTree(object):
         return ntree
 
 # Node manipulation functions
-cpdef int8_t node_balance(IntTreeNode node):
-    cdef uint8_t lefth = (node.left.height) if node.left is not None else 0
-    cdef uint8_t righth = (node.right.height) if node.right is not None else 0
+cdef bint node_verify(IntTreeNode* node):
+    if not -1 <= node_balance(node) <= 1:
+        return False
+    if node.left != NULL and not (node.key > node.left.key):
+        return False
+    if node.right != NULL and not (node.key < node.right.key):
+        return False
+
+    cdef bint l = node_verify(node.left) if node.left else True 
+    cdef bint r = node_verify(node.right) if node.right else True
+    return l and r
+
+cdef int8_t node_balance(IntTreeNode* node):
+    cdef uint8_t lefth = (node.left.height) if node.left != NULL else 0
+    cdef uint8_t righth = (node.right.height) if node.right != NULL else 0
     cdef int8_t balance = righth - lefth
     return balance
 
-cpdef void update_node_height(IntTreeNode node):
-        lheight = node.left.height if node.left is not None else 0
-        rheight = node.right.height if node.right is not None else 0
+cdef void update_node_height(IntTreeNode* node):
+        lheight = node.left.height if node.left != NULL else 0
+        rheight = node.right.height if node.right != NULL else 0
         node.height = max(lheight, rheight) + 1
 
 
-cpdef void deltree(IntTreeNode node):
+cdef void deltree(IntTreeNode* node):
     """
     Recursively deletes all nodes in tree a node's subtree. Faster than 
     deleting each node individually because it does not have to rebalance the 
     tree after each deletion.
     """ 
-    if not node:
+    if node == NULL:
         return
 
     # Traverse in post-order removing nodes
@@ -862,62 +852,62 @@ cpdef void deltree(IntTreeNode node):
     deltree(node.left)
     deltree(node.right)
 
-    # del_node(node)
-    node.left = None
-    node.right = None
+    node.left = NULL
+    node.right = NULL
+    del_node(node)
 
-
-cpdef void rotate_right(IntTreeNode root):
-    pivot = root.left
+cdef void rotate_right(IntTreeNode* root):
+    cdef IntTreeNode* pivot = root.left
     root.left = pivot.right
-    if root.left is not None:
+    if root.left != NULL:
         root.left.parent = root
 
     pivot.right = root
     pivot.parent = root.parent
     root.parent = pivot
 
-    if pivot.parent is None:
+    if pivot.parent == NULL:
         pass
-    elif pivot.parent.left is root:
+    elif pivot.parent.left == root:
         pivot.parent.left = pivot
-    elif pivot.parent.right is root:
+    elif pivot.parent.right == root:
         pivot.parent.right = pivot
 
     update_node_height(root)
     update_node_height(pivot)
 
 
-cpdef void rotate_left(IntTreeNode root):
+cdef void rotate_left(IntTreeNode* root):
 
-    pivot = root.right
+    cdef IntTreeNode* pivot = root.right
     root.right = pivot.left
 
-    if root.right is not None:
+    if root.right != NULL:
         root.right.parent = root
 
     pivot.left = root
     pivot.parent = root.parent
     root.parent = pivot
 
-    if pivot.parent is None:
+    if pivot.parent == NULL:
         pass
-    elif pivot.parent.left is root:
+    elif pivot.parent.left == root:
         pivot.parent.left = pivot
-    elif pivot.parent.right is root:
+    elif pivot.parent.right == root:
         pivot.parent.right = pivot
     else:
         raise KeyError
+  
     update_node_height(root)
     update_node_height(pivot)
 
 
-cpdef void rotate_double_left(IntTreeNode root):
+cdef void rotate_double_left(IntTreeNode* root):
     rotate_right(root.right)
     rotate_left(root)
 
 
-cpdef void rotate_double_right(IntTreeNode root):
+cdef void rotate_double_right(IntTreeNode* root):
     rotate_left(root.left)
     rotate_right(root)
 
@@ -926,64 +916,38 @@ cpdef void rotate_double_right(IntTreeNode root):
 #########
 
 
+cdef class NodeStack:
+    def __cinit__(self):
+        self.front = NULL
 
-cdef class NodeStack(object):
-    'A first-in last-out datastructure for IntTree Nodes'
-    def __init__(self, starts=None):
-        self.front = None
-        if starts:
-            for val in starts:
-                self.push(val)
-
-    def __bool__(self):
-        return self.front is not None
-
-    cpdef void push(self, IntTreeNode val):
-        cdef NodeStackItem item = NodeStackItem(val, following=self.front)
+    cdef void push(self, IntTreeNode* node):
+        cdef NodeStackItem* item = <NodeStackItem*>PyMem_Malloc(sizeof(NodeStackItem))
+        
+        item.node = node
+        item.following = self.front
+        
         self.front = item
 
-    cpdef IntTreeNode pop(self):
-        popped = self.front
-        if popped is None:
-            return None
-
-        self.front = popped.following
-        return popped.obj
-
-    cpdef IntTreeNode peek(self):
+    cdef IntTreeNode* peek(self):
         if self.front:
-            return self.front.obj
+            return self.front.node
         else:
-            return None
+            return NULL
 
-    cpdef bint empty(self):
-        return self.front is None
+    cdef IntTreeNode* pop(self):
+        if not self.front:
+            return NULL
+        
+        item = self.front 
+        self.front = item.following
+        
+        cdef IntTreeNode* node = item.node
+        PyMem_Free(item)
+        return node 
 
-    cpdef void reverse(self):
-        l = list(self)
-        for x in l:
-            self.push(x)
+    cdef bint empty(self):
+        return self.front == NULL
 
-    def __iter__(self):
-        item = self.pop()
-        while item is not None:
-            yield item
-            item = self.pop()
-
-    def _to_list(self):
-        l = []
-        f = self.front
-        while f:
-            l.append(f.obj) 
-            f = f.following
-
-        return l
-
-
-cdef class NodeStackItem(object):
-    def __init__(self, IntTreeNode obj, following=None):
-        self.obj = obj
-        self.following = following
 
 def print_sizes():
     print('IntTreeNode: {}'.format(sizeof(IntTreeNode)))

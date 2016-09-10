@@ -94,7 +94,7 @@ def assign_genorow(datastructures.SparseArray row, inds, int chromidx, int marki
     cdef datastructures.SparseArray spchrom
     cdef int hapidx, indidx
 
-    cdef datastructures.IntTreeNode denseval = s.pop()
+    cdef datastructures.IntTreeNode* denseval = s.pop()
     while denseval:
         indidx = denseval.key // 2
         hapidx = denseval.key % 2

@@ -26,57 +26,56 @@ cdef class SparseArray:
     cpdef SparseArray logical_not(self)
     cpdef double sparsity(self)
 
-cdef class IntTreeNode(object):
-    cdef readonly sparsekey key
-    cdef public int8_t value
-    cdef uint8_t height
-    cdef public IntTreeNode left, right, parent
+cdef struct IntTreeNode:
+    IntTreeNode* left 
+    IntTreeNode* right
+    IntTreeNode* parent
+    sparsekey key
+    int8_t value 
+    int8_t height
 
 cdef class IntTree(object):
-    cdef readonly IntTreeNode root
+    cdef IntTreeNode* root
     cpdef bint empty(self)
+    cpdef bint verify(self)
     cpdef void clear(self)
     cpdef NodeStack to_stack(self)
     cpdef sparsekey size(self)
     cpdef int8_t get(self, sparsekey key, int8_t default=*)
     cpdef int8_t find(self, sparsekey key)
-    cpdef IntTreeNode find_node(self, sparsekey key)
-    cpdef NodeStack path_to_root(self, sparsekey key)
-    cpdef NodeStack path_to_node(self, sparsekey key)
+    cdef NodeStack path_to_root(self, sparsekey key)
+    cdef NodeStack path_to_node(self, sparsekey key)
     cpdef void insert(self, sparsekey key, int8_t value=*)
-    cdef rebalance_node(self, IntTreeNode node)
+    cdef void rebalance_node(self, IntTreeNode* node)
     cpdef void delete(self, sparsekey key, bint silent=*)
-    cdef void delleaf(self, IntTreeNode node, NodeStack ancestors)
-    cdef void del1childl(self, IntTreeNode node, NodeStack ancestors)
-    cdef void del1childr(self, IntTreeNode node, NodeStack ancestors)
-    cdef void del2child(self, IntTreeNode node, NodeStack ancestors)
-    cpdef IntTreeNode min_node(self, start=*)
-    cpdef sparsekey min(self)
-    cpdef IntTreeNode max_node(self, start=*)
-    cpdef delrange(self, sparsekey start, sparsekey end)
-    cpdef getrange(self, sparsekey start, sparsekey end)
-    cpdef sparsekey max(self)
+    cdef void delleaf(self, IntTreeNode* node, NodeStack ancestors)
+    cdef void del1childl(self, IntTreeNode* node, NodeStack ancestors)
+    cdef void del1childr(self, IntTreeNode* node, NodeStack ancestors)
+    cdef void del2child(self, IntTreeNode* node, NodeStack ancestors)
+    cpdef void delrange(self, sparsekey start, sparsekey end)
+    cpdef IntTree getrange(self, sparsekey start, sparsekey end)
     cpdef IntTree intersection(self, IntTree other)
     cpdef IntTree union(self, IntTree other)
 
-cpdef int8_t node_balance(IntTreeNode node)
-cpdef void update_node_height(IntTreeNode node)
+cdef bint node_verify(IntTreeNode* node)
+cdef int8_t node_balance(IntTreeNode* node)
+cdef void update_node_height(IntTreeNode* node)
 
-cpdef void deltree(IntTreeNode start)
+cdef void deltree(IntTreeNode* start)
 
-cpdef void rotate_right(IntTreeNode root)
-cpdef void rotate_left(IntTreeNode root)
-cpdef void rotate_double_left(IntTreeNode root)
-cpdef void rotate_double_right(IntTreeNode root)
+cdef void rotate_right(IntTreeNode* root)
+cdef void rotate_left(IntTreeNode* root)
+cdef void rotate_double_left(IntTreeNode* root)
+cdef void rotate_double_right(IntTreeNode* root)
+
+cdef struct NodeStackItem:
+    IntTreeNode* node
+    NodeStackItem* following
 
 cdef class NodeStack(object):
-    cdef public NodeStackItem front
-    cpdef void push(self, IntTreeNode val)
-    cpdef IntTreeNode pop(self)
-    cpdef IntTreeNode peek(self)
-    cpdef bint empty(self)
-    cpdef void reverse(self)
+    cdef NodeStackItem* front
+    cdef void push(self, IntTreeNode* node)
+    cdef IntTreeNode* peek(self)
+    cdef IntTreeNode* pop(self)
+    cdef bint empty(self)
 
-cdef class NodeStackItem(object):
-    cdef NodeStackItem following
-    cdef IntTreeNode obj
