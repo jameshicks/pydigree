@@ -65,6 +65,7 @@ def test_selfbalancing():
         print('Inserted {}'.format(rval))
 
     assert tree.verify() 
+    assert list(tree.keys()) == sorted(rvals)
     print('Verified after insertions')
 
     delvals = rvals[:]
