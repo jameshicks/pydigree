@@ -1,8 +1,11 @@
 from collections import Sequence
 from libc.stdint cimport uint32_t, uint8_t, int8_t
+from libc.stdio cimport printf
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 import numpy as np
+
+DEF MAX_HEIGHT=30
 
 cdef inline bint compare(object a, object b, int op):
     # <   0
@@ -549,11 +552,15 @@ cdef class IntTree(object):
             return
 
         cdef IntTreeNode* cur_node = self.root
-        
+        cdef IntTreeNode* stack[MAX_HEIGHT]
+        cdef uint8_t depth = 0
+
         while True:
-            
             if inserted.key > cur_node.key:
                 if cur_node.right != NULL:
+                    stack[depth] = cur_node
+                    depth += 1 
+
                     cur_node = cur_node.right
                 else:
                     cur_node.right = inserted
@@ -562,6 +569,9 @@ cdef class IntTree(object):
 
             elif inserted.key < cur_node.key:
                 if cur_node.left != NULL:
+                    stack[depth] = cur_node
+                    depth += 1 
+
                     cur_node = cur_node.left
                 else:
                     cur_node.left = inserted
@@ -573,10 +583,12 @@ cdef class IntTree(object):
                 del_node(inserted)
                 return 
 
-        cdef IntTreeNode* parent = inserted
-        while parent:
-            self.rebalance_node(parent)
-            parent = parent.parent
+        stack[depth] = inserted
+        cdef IntTreeNode* ancestor = inserted
+        while depth:
+            depth -= 1
+            ancestor = stack[depth]
+            self.rebalance_node(ancestor)
 
     cdef void rebalance_node(self, IntTreeNode* node):
         update_node_height(node)
@@ -611,103 +623,80 @@ cdef class IntTree(object):
 
 
     cpdef void delete(self, sparse_key key, bint silent=True):
-        if self.empty():
-            raise KeyError('Tree is empty')
+        cdef IntTreeNode* stack[MAX_HEIGHT]
+        cdef uint8_t depth = 0
 
-        try:
-            ancestors = self.path_to_root(key)
-        except KeyError:
-            if silent:
-                return
+        cdef IntTreeNode* node = self.root
+        while node:
+
+            if key > node.key:
+                stack[depth] = node
+                depth += 1
+                node = node.right
+            
+            elif key < node.key:
+                stack[depth] = node
+                depth += 1
+                node = node.left
             else:
-                raise
-        cdef IntTreeNode* node = ancestors.pop()
-        
-        if node.right == NULL and node.left == NULL:
-            self.delleaf(node, ancestors)
-        elif node.right == NULL:
-            self.del1childl(node, ancestors)
-        elif node.left == NULL:
-            self.del1childr(node, ancestors)
+                stack[depth] = node
+                break
         else:
-            self.del2child(node, ancestors)
+            if not silent:
+                raise KeyError('Node not found') 
         
+        cdef IntTreeNode* parent = stack[depth - 1] if depth > 0 else NULL
 
+        if node.right == NULL and node.left == NULL: # LEAF 
+            if not parent:
+                self.root = NULL
+            elif node.key > parent.key:
+                parent.right = NULL
+            else:
+                parent.left = NULL
 
-    cdef void delleaf(self, IntTreeNode* node, NodeStack ancestors):
+            del_node(node)
 
-        if node is self.root:
+        elif node.right == NULL: # 1 Child on left
+            if not parent: # node is the root
+                self.root = node.left
+                node.left.parent = NULL
+            elif node.key > parent.key:
+                parent.right = node.left
+            else:
+                parent.left = node.left
+                node.left.parent = parent
 
-            del_node(self.root)
-            self.root = NULL
+            del_node(node)
+
+        elif node.left == NULL: # 1 Child on right
+            if not parent:
+                self.root = node.right
+                node.right.parent = NULL
+            elif node.key > parent.key: 
+                parent.right = node.right
+            else:
+                parent.left = node.right
+                node.right.parent = parent
+
+ 
+            del_node(node)
+
+        else:
+            self.del2child(node)
             return
         
-        cdef IntTreeNode* ancestor = ancestors.pop()
+        cdef IntTreeNode* ancestor
+        while depth:
+            depth -= 1
+            ancestor = stack[depth]
+            self.rebalance_node(ancestor) 
 
-        if node.key > ancestor.key:
-            ancestor.right = NULL
-        else: 
-            ancestor.left = NULL
-        
-        
-        while ancestor:
-            self.rebalance_node(ancestor)
-
-            ancestor = ancestors.pop()
-
-        del_node(node)
-
-
-    cdef void del1childl(self, IntTreeNode* node, NodeStack ancestors):
-        if self.root == node:
-            self.root = node.left
-            update_node_height(node.left)
-            del_node(node)
-            return
-
-        cdef IntTreeNode* ancestor = ancestors.pop()        
-
-        cdef IntTreeNode* child = node.left
-
-        child.parent = ancestor
-        if child.key > ancestor.key:
-            ancestor.right = child
-        else:
-            ancestor.left = child
-
-        while ancestor:
-            self.rebalance_node(ancestor)
-            ancestor = ancestors.pop()
-
-        del_node(node)
-    
-    cdef void del1childr(self, IntTreeNode* node, NodeStack ancestors):
-        if self.root == node:
-            self.root = node.right
-            update_node_height(node.right)
-            del_node(node)
-            return 
-
-        cdef IntTreeNode* ancestor = ancestors.peek()
-        cdef IntTreeNode* child = node.right    
-        child.parent = ancestor
-        if child.key > ancestor.key:
-            ancestor.right = child
-        else:
-            ancestor.left = child
-
-        while ancestor:
-            self.rebalance_node(ancestor)
-            ancestor = ancestors.pop()
-
-        del_node(node)
-
-    cdef void del2child(self, IntTreeNode* node, NodeStack ancestors):
+    cdef void del2child(self, IntTreeNode* node):
 
         cdef IntTreeNode* replacement = node.left
         while replacement.right:
             replacement = replacement.right
-
 
         cdef sparse_key key = replacement.key
         cdef sparse_val value = replacement.value
