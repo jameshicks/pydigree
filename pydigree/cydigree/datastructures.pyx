@@ -521,30 +521,6 @@ cdef class IntTree(object):
 
         raise KeyError('Node not found')
 
-    cdef NodeStack path_to_root(self, sparse_key key):
-        cdef NodeStack s = NodeStack()
-        cdef IntTreeNode* cur_node = self.root
-        while cur_node:
-            s.push(cur_node)
-            if key > cur_node.key:
-                cur_node = cur_node.right
-            elif key < cur_node.key:
-                cur_node = cur_node.left
-            elif key == cur_node.key:
-                return s
-        raise KeyError('Node not found {}'.format(key))
-
-    cdef NodeStack path_to_node(self, sparse_key key):
-        cdef NodeStack s = self.path_to_root(key)
-        
-        # Gotta reverse it
-        cdef NodeStack s2 = NodeStack()
-        cdef IntTreeNode* val = s.pop()
-        while val:
-            s2.push(val)
-            val = s.pop() 
-        return s2
-
     cpdef void insert(self, sparse_key key, sparse_val value=0):
         cdef IntTreeNode* inserted = new_node(key, value)
         if self.empty():

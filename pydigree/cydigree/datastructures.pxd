@@ -44,8 +44,6 @@ cdef class IntTree(object):
     cpdef sparse_key size(self)
     cpdef sparse_val get(self, sparse_key key, sparse_val default=*)
     cpdef sparse_val find(self, sparse_key key)
-    cdef NodeStack path_to_root(self, sparse_key key)
-    cdef NodeStack path_to_node(self, sparse_key key)
     cpdef void insert(self, sparse_key key, sparse_val value=*)
     cdef void rebalance_node(self, IntTreeNode* node)
     cpdef void delete(self, sparse_key key, bint silent=*)
