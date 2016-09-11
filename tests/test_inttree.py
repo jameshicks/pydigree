@@ -62,8 +62,10 @@ def test_selfbalancing():
 
     for i, rval in enumerate(rvals):
         tree.insert(rval)
+        print('Inserted {}'.format(rval))
 
     assert tree.verify() 
+    print('Verified after insertions')
 
     delvals = rvals[:]
     random.shuffle(delvals)
@@ -71,6 +73,7 @@ def test_selfbalancing():
     for k in delvals:
         tree.delete(k)
         assert tree.verify()
+        print('Verified after deletion')
 
 def test_special():
     # __contains__
