@@ -3,7 +3,7 @@ from libc.stdint cimport uint32_t, int8_t, uint8_t
 ctypedef uint32_t sparse_key
 ctypedef int8_t sparse_val 
 
-cdef inline bint compare(object a, object b, int op)
+cdef inline bint sparse_val_compare(sparse_val a, sparse_val b, int op)
 
 cdef class SparseArray:
     cdef readonly IntTree container

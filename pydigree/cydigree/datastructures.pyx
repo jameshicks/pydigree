@@ -7,7 +7,7 @@ import numpy as np
 
 DEF MAX_HEIGHT=30
 
-cdef inline bint compare(object a, object b, int op):
+cdef inline bint sparse_val_compare(sparse_val a, sparse_val b, int op):
     # <   0
     # ==  2
     # >   4
@@ -100,7 +100,6 @@ cdef class SparseArray:
         cdef output = SparseArray(nvals, self.refcode)
         cdef bint included
         
-
         for i in range(nvals):
             included = index[i]
             if included:
@@ -143,9 +142,10 @@ cdef class SparseArray:
         self.container.delrange(start, stop)
         for i in range(start, stop):
             if isinstance(values, Sequence) and not isinstance(values, str):
-                ival = values[i - start]
+                ival = <sparse_val>values[i - start]
             else:
-                ival = values
+                ival = <sparse_val>values
+            
             if ival != self.refcode:
                 self.container.insert(i, ival) 
 
@@ -174,19 +174,19 @@ cdef class SparseArray:
         cdef sparse_key i
         for i in range(nidx):
             if multivalue:
-                self[indices[i]] = value[i] 
+                self[<sparse_key>indices[i]] = <sparse_val>value[i] 
             else:
-                self[indices[i]] = value
+                self[<sparse_key>indices[i]] = <sparse_val>value
 
     # Comparison methods
     #    
     cpdef _cmp_single(self, object value, int op):
-        cdef SparseArray output = SparseArray(self.size, compare(self.refcode, value, op))
+        cdef SparseArray output = SparseArray(self.size, sparse_val_compare(self.refcode, value, op))
         cdef NodeStack s = self.container.to_stack()
 
         cdef IntTreeNode* node = s.pop()
         while node:
-            output[node.key] = compare(node.value, value, op)
+            output.set_item(node.key, sparse_val_compare(node.value, value, op))
             node = s.pop()
 
         return output
@@ -200,16 +200,16 @@ cdef class SparseArray:
         
         for i in range(seqlen):
             if curdense != NULL and i == curdense.key:
-                output[i] = compare(curdense.value, other[i], op)
+                output.set_item(i,  sparse_val_compare(curdense.value, other[i], op))
                 curdense = densesites.pop()
             else:
-                output[i] = compare(self.refcode, other[i], op)
+                output.set_item(i,  sparse_val_compare(self.refcode, other[i], op))
 
         return output
 
     cpdef SparseArray _cmp_sparray(self, SparseArray other, int op):
         if self.size != other.size:
-            raise IndexError('Cannot compare arrays of differing size')
+            raise IndexError('Cannot sparse_val_compare arrays of differing size')
 
         cdef NodeStack selfstack = self.container.to_stack()
         cdef NodeStack otherstack = other.container.to_stack()
@@ -221,13 +221,13 @@ cdef class SparseArray:
         while selfnode != NULL and othernode != NULL:
             
             if othernode == NULL or selfnode.key < othernode.key:
-                output[selfnode.key] = compare(selfnode.value, other.refcode, op)
+                output.set_item(selfnode.key, sparse_val_compare(selfnode.value, other.refcode, op))
                 selfnode = selfstack.pop()
             elif selfnode == NULL or selfnode.key > othernode.key:
-                output[othernode.key] = compare(self.refcode, othernode.value, op) 
+                output.set_item(othernode.key, sparse_val_compare(self.refcode, othernode.value, op)) 
                 othernode = otherstack.pop() 
             else:
-                output[selfnode.key] = compare(selfnode.value, othernode.value, op)
+                output.set_item(selfnode.key, sparse_val_compare(selfnode.value, othernode.value, op))
                 selfnode = selfstack.pop()
                 othernode = otherstack.pop()
 
@@ -247,6 +247,7 @@ cdef class SparseArray:
         if self.refcode:
             return True
         
+        cdef sparse_val value
         for value in self.container.values():
             if value:
                 return True
@@ -257,6 +258,7 @@ cdef class SparseArray:
         if self.sparsity() > 0 and not self.refcode:
             return False
         
+        cdef sparse_val value
         for value in self.container.values():
             if not value:
                 return False
@@ -269,7 +271,7 @@ cdef class SparseArray:
         cdef IntTreeNode* node = s.pop()
 
         while node:
-            output[node.key] = not node.value
+            output.set_item(node.key, not node.value)
             node = s.pop()
         return output
 
@@ -304,7 +306,7 @@ cdef class SparseArray:
 
         for i in range(size):
             if denseview[i] != refcode:
-                output[i] = denseview[i]
+                output.set_item(i, denseview[i])
 
         return output
 
