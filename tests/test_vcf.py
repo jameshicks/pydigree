@@ -33,7 +33,7 @@ def test_vcf():
 
 def test_vcf_allele_parser():
     a = "0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,."
-    expected = np.array([0,0,1,0,1,1], dtype=np.int) 
+    expected = list(reversed([(2,1), (4,1), (5, 1)])) # stacks are FILO
     observed = vcf_allele_parser(a, 0)
-    assert all(observed.tolist() == expected)
+    assert observed.tolist() == expected
 
