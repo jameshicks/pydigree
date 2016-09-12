@@ -45,7 +45,7 @@ cdef class IntTree(object):
     cpdef sparse_val get(self, sparse_key key, sparse_val default=*)
     cpdef sparse_val find(self, sparse_key key)
     cpdef void insert(self, sparse_key key, sparse_val value=*)
-    cdef void rebalance_node(self, IntTreeNode* node)
+    cdef void rebalance_node(self, IntTreeNode* node, IntTreeNode* parent)
     cpdef void delete(self, sparse_key key, bint silent=*)
     cdef void del2child(self, IntTreeNode* node)
     cpdef void delrange(self, sparse_key start, sparse_key end)
@@ -59,10 +59,10 @@ cdef void update_node_height(IntTreeNode* node)
 
 cdef void deltree(IntTreeNode* start)
 
-cdef void rotate_right(IntTreeNode* root)
-cdef void rotate_left(IntTreeNode* root)
-cdef void rotate_double_left(IntTreeNode* root)
-cdef void rotate_double_right(IntTreeNode* root)
+cdef void rotate_right(IntTreeNode* root, IntTreeNode* parent)
+cdef void rotate_left(IntTreeNode* root, IntTreeNode* parent)
+cdef void rotate_double_left(IntTreeNode* root, IntTreeNode* parent)
+cdef void rotate_double_right(IntTreeNode* root, IntTreeNode* parent)
 
 cdef struct NodeStackItem:
     IntTreeNode* node

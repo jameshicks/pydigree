@@ -341,7 +341,6 @@ cdef IntTreeNode* new_node(sparse_key key, sparse_val value):
     node.value = value
     node.left = NULL
     node.right = NULL
-    node.parent = NULL
     node.height = 0
 
     return node
@@ -542,7 +541,6 @@ cdef class IntTree(object):
                     cur_node = cur_node.right
                 else:
                     cur_node.right = inserted
-                    inserted.parent = cur_node
                     break
 
             elif inserted.key < cur_node.key:
@@ -553,7 +551,6 @@ cdef class IntTree(object):
                     cur_node = cur_node.left
                 else:
                     cur_node.left = inserted
-                    inserted.parent = cur_node
                     break
             else:
                 cur_node.value = value
@@ -563,12 +560,14 @@ cdef class IntTree(object):
 
         stack[depth] = inserted
         cdef IntTreeNode* ancestor = inserted
+        cdef IntTreeNode* ancestor_ancestor = NULL
         while depth:
             depth -= 1
             ancestor = stack[depth]
-            self.rebalance_node(ancestor)
+            ancestor_ancestor = stack[depth-1] if depth > 0 else NULL
+            self.rebalance_node(ancestor, ancestor_ancestor)
 
-    cdef void rebalance_node(self, IntTreeNode* node):
+    cdef void rebalance_node(self, IntTreeNode* node, IntTreeNode* parent):
         update_node_height(node)
 
         cdef int8_t balance = node_balance(node)
@@ -579,20 +578,20 @@ cdef class IntTree(object):
         elif balance > 1:
             if node.right != NULL and node_balance(node.right) < 0:
                 new_root = node.right.left
-                rotate_double_left(node)
+                rotate_double_left(node, parent)
 
             else:
                 new_root = node.right
-                rotate_left(node)
+                rotate_left(node, parent)
 
         elif balance < -1:
             if node.left != NULL and node_balance(node.left) > 0:
                 new_root = node.left.right
-                rotate_double_right(node)
+                rotate_double_right(node, parent)
 
             else:
                 new_root = node.left
-                rotate_right(node)
+                rotate_right(node, parent)
 
         else:
             pass
@@ -638,24 +637,20 @@ cdef class IntTree(object):
         elif node.right == NULL: # 1 Child on left
             if not parent: # node is the root
                 self.root = node.left
-                node.left.parent = NULL
             elif node.key > parent.key:
                 parent.right = node.left
             else:
                 parent.left = node.left
-                node.left.parent = parent
 
             del_node(node)
 
         elif node.left == NULL: # 1 Child on right
             if not parent:
                 self.root = node.right
-                node.right.parent = NULL
             elif node.key > parent.key: 
                 parent.right = node.right
             else:
                 parent.left = node.right
-                node.right.parent = parent
 
  
             del_node(node)
@@ -665,10 +660,12 @@ cdef class IntTree(object):
             return
         
         cdef IntTreeNode* ancestor
+        cdef IntTreeNode* ancestor_ancestor
         while depth:
             depth -= 1
             ancestor = stack[depth]
-            self.rebalance_node(ancestor) 
+            ancestor_ancestor = stack[depth-1] if depth > 0 else NULL
+            self.rebalance_node(ancestor, ancestor_ancestor) 
 
     cdef void del2child(self, IntTreeNode* node):
 
@@ -823,60 +820,49 @@ cdef void deltree(IntTreeNode* node):
     node.right = NULL
     del_node(node)
 
-cdef void rotate_right(IntTreeNode* root):
+cdef void rotate_right(IntTreeNode* root, IntTreeNode* parent):
     cdef IntTreeNode* pivot = root.left
     root.left = pivot.right
-    if root.left != NULL:
-        root.left.parent = root
-
     pivot.right = root
-    pivot.parent = root.parent
-    root.parent = pivot
-
-    if pivot.parent == NULL:
-        pass
-    elif pivot.parent.left == root:
-        pivot.parent.left = pivot
-    elif pivot.parent.right == root:
-        pivot.parent.right = pivot
 
     update_node_height(root)
     update_node_height(pivot)
 
+    if not parent:
+        return
+    elif parent.key > root.key:
+        parent.left = pivot
+    else:
+        parent.right = pivot
 
-cdef void rotate_left(IntTreeNode* root):
+    update_node_height(parent)
 
+cdef void rotate_left(IntTreeNode* root, IntTreeNode* parent):
     cdef IntTreeNode* pivot = root.right
     root.right = pivot.left
+    pivot.left = root 
 
-    if root.right != NULL:
-        root.right.parent = root
-
-    pivot.left = root
-    pivot.parent = root.parent
-    root.parent = pivot
-
-    if pivot.parent == NULL:
-        pass
-    elif pivot.parent.left == root:
-        pivot.parent.left = pivot
-    elif pivot.parent.right == root:
-        pivot.parent.right = pivot
-    else:
-        raise KeyError
-  
     update_node_height(root)
     update_node_height(pivot)
 
+    if not parent:
+        return
+    elif parent.key > root.key:
+        parent.left = pivot
+    else:
+        parent.right = pivot
 
-cdef void rotate_double_left(IntTreeNode* root):
-    rotate_right(root.right)
-    rotate_left(root)
+    update_node_height(parent)
 
 
-cdef void rotate_double_right(IntTreeNode* root):
-    rotate_left(root.left)
-    rotate_right(root)
+cdef void rotate_double_left(IntTreeNode* root, IntTreeNode* parent):
+    rotate_right(root.right, root)
+    rotate_left(root, parent)
+
+
+cdef void rotate_double_right(IntTreeNode* root, IntTreeNode* parent):
+    rotate_left(root.left, root)
+    rotate_right(root, parent)
 
 
 
