@@ -16,6 +16,14 @@ cdef class VariantStack(object):
     def __cinit__(self):
         self.front = NULL
 
+    def __dealloc__(self):
+        cdef VariantCall* item = self.front
+        cdef VariantCall* nextitem
+        while item:
+            nextitem = item.following
+            PyMem_Free(item)
+            item = nextitem
+
     cdef void push(self, uint32_t alleleidx, int8_t allele):
         cdef VariantCall* var = <VariantCall*>PyMem_Malloc(sizeof(VariantCall))
         var.alleleidx = alleleidx
