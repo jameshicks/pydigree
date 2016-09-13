@@ -44,17 +44,9 @@ cdef class VariantStack(object):
 def vcf_allele_parser(datastr, int desired):
     if not datastr:
         return None
+
     databytes = datastr.encode('utf8')
     cdef char* data = databytes
-
-    cdef int ntok = 0
-    cdef int stridx = 0
-
-    while data[stridx] != '\0':
-        if data[stridx] == ' ' or data[stridx] == '\t':
-            ntok += 1
-        stridx += 1
-    ntok += 1 # Plus one more token
 
     cdef VariantStack outstack = VariantStack()
 
