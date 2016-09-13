@@ -64,36 +64,37 @@ def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
                 for ind in inds:
                     pop.register_individual(ind)
 
+                break
+        
+        for i, line in enumerate(f):
+            record = VCFRecord(line)
+
+            if require_pass and not record.filter_passed:
                 continue
 
+            if record.chrom != last_chrom:
+                if last_chrom is not None:
+                    pop.add_chromosome(chromobj)
+                chromobj = ChromosomeTemplate(label=record.chrom)
+
+
+            if freq_info is not None and freq_info in record.info:
+                freq = record.info[freq_info]
+                if ',' in freq:
+                    freq = freq.split(',')[0]
+                freq = float(freq)
             else:
-                record = VCFRecord(line)
+                freq = 0
 
-                if require_pass and not record.filter_passed:
-                    continue
+            genorow = record.genotypes()
+            genotypes.append(genorow)
 
-                if record.chrom != last_chrom:
-                    if last_chrom is not None:
-                        pop.add_chromosome(chromobj)
-                    chromobj = ChromosomeTemplate(label=record.chrom)
+            chromobj.add_genotype(bp=record.pos,
+                                  label=record.label,
+                                  frequency=freq)
 
+            last_chrom = record.chrom
 
-                if freq_info is not None and freq_info in record.info:
-                    freq = record.info[freq_info]
-                    if ',' in freq:
-                        freq = freq.split(',')[0]
-                    freq = float(freq)
-                else:
-                    freq = 0
-
-                genorow = record.genotypes()
-                genotypes.append(genorow)
-
-                chromobj.add_genotype(bp=record.pos,
-                                      label=record.label,
-                                      frequency=freq)
-
-                last_chrom = record.chrom
         pop.add_chromosome(chromobj)
 
     for ind in inds:
