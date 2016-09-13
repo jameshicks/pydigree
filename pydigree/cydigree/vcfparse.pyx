@@ -80,24 +80,18 @@ def vcf_allele_parser(datastr, int desired):
                 geno_tok = strsep(&token, subdelim)
                 subtokidx += 1
 
-            if (strcmp(geno_tok, "0/0") == 0) or (strcmp(geno_tok, "0|0") == 0):
-                # Most common scenario
-                alleleidx += 2
-            
-            elif (strcmp(geno_tok, "./.") == 0) or (strcmp(geno_tok, ".|.") == 0):
-                # Missing data
-                outstack.push(alleleidx, -1)
-                outstack.push(alleleidx + 1,-1)
-                alleleidx += 2 
-
-            elif strlen(geno_tok) == 3:
+            if strlen(geno_tok) == 3:
                 allele = <int8_t>geno_tok[0] - 48 # '0' is ascii/utf8 48
-                if allele != 0:
+                if allele < 0:
+                    outstack.push(alleleidx, -1)
+                elif allele != 0:
                     outstack.push(alleleidx, allele)
                 alleleidx += 1
 
                 allele = <int8_t>geno_tok[2] - 48
-                if allele != 0:
+                if allele < 0:
+                    outstack.push(alleleidx, -1)
+                elif allele != 0:
                     outstack.push(alleleidx, allele)
                 alleleidx += 1 
 
