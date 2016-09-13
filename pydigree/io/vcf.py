@@ -32,10 +32,7 @@ class VCFRecord(object):
     
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
-        format = self.format.split(':')
-        gtidx = format.index('GT')
-
-        alleles = vcf_allele_parser(self.data, gtidx)
+        alleles = vcf_allele_parser(self.data, self.format)
 
         return alleles
         

@@ -49,12 +49,30 @@ cdef class VariantStack(object):
 
         return outp
 
-def vcf_allele_parser(datastr, int desired):
+def vcf_allele_parser(datastr, formatstr):
     if not datastr:
         return None
 
+    cdef int desired = 0
+    cdef int tokidx = 0
+    formatbytes = formatstr.encode('utf8')
+    cdef char* formatdata = formatbytes
+    cdef char* formattok = strsep(&formatdata, ':')
+    while formattok :
+        if strcmp(formattok, 'GT') == 0:
+            desired = tokidx
+            break
+        else:
+            formattok = strsep(&formatdata, ':')
+            tokidx += 1
+    else:
+        raise ValueError("Can't find genotype field")
+
+
     databytes = datastr.encode('utf8')
     cdef char* data = databytes
+
+
 
     cdef VariantStack outstack = VariantStack()
 
