@@ -72,8 +72,6 @@ def vcf_allele_parser(datastr, formatstr):
     databytes = datastr.encode('utf8')
     cdef char* data = databytes
 
-
-
     cdef VariantStack outstack = VariantStack()
 
     cdef char* delim = " \t"
@@ -99,17 +97,19 @@ def vcf_allele_parser(datastr, formatstr):
 
         if strlen(geno_tok) == 3:
             allele = <int8_t>geno_tok[0] - 48 # '0' is ascii/utf8 48
-            if allele < 0:
-                outstack.push(alleleidx, -1)
-            elif allele != 0:
+            if allele > 0:
                 outstack.push(alleleidx, allele)
+            elif allele < 0:
+                outstack.push(alleleidx, -1)
+
             alleleidx += 1
 
             allele = <int8_t>geno_tok[2] - 48
-            if allele < 0:
-                outstack.push(alleleidx, -1)
-            elif allele != 0:
+            
+            if allele > 0:
                 outstack.push(alleleidx, allele)
+            elif allele < 0:
+                outstack.push(alleleidx, -1)
             alleleidx += 1 
 
         else:
