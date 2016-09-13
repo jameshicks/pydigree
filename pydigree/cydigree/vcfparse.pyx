@@ -91,46 +91,45 @@ def vcf_allele_parser(datastr, formatstr):
     while token:
         subtokidx = 0
         
-        if token[0]:
+        geno_tok = strsep(&token, subdelim)
+        while subtokidx < desired:
+            # Fast-forward to the genotype token
             geno_tok = strsep(&token, subdelim)
-            while subtokidx < desired:
-                # Fast-forward to the genotype token
-                geno_tok = strsep(&token, subdelim)
-                subtokidx += 1
+            subtokidx += 1
 
-            if strlen(geno_tok) == 3:
-                allele = <int8_t>geno_tok[0] - 48 # '0' is ascii/utf8 48
-                if allele < 0:
-                    outstack.push(alleleidx, -1)
-                elif allele != 0:
-                    outstack.push(alleleidx, allele)
-                alleleidx += 1
+        if strlen(geno_tok) == 3:
+            allele = <int8_t>geno_tok[0] - 48 # '0' is ascii/utf8 48
+            if allele < 0:
+                outstack.push(alleleidx, -1)
+            elif allele != 0:
+                outstack.push(alleleidx, allele)
+            alleleidx += 1
 
-                allele = <int8_t>geno_tok[2] - 48
-                if allele < 0:
-                    outstack.push(alleleidx, -1)
-                elif allele != 0:
-                    outstack.push(alleleidx, allele)
-                alleleidx += 1 
+            allele = <int8_t>geno_tok[2] - 48
+            if allele < 0:
+                outstack.push(alleleidx, -1)
+            elif allele != 0:
+                outstack.push(alleleidx, allele)
+            alleleidx += 1 
 
-            else:
-                # Allele 1
-                allele_tok = strsep(&geno_tok, alleledelim)
-                allele = atoi(allele_tok)
-                
-                if allele != 0:
-                    outstack.push(alleleidx, allele)
+        else:
+            # Allele 1
+            allele_tok = strsep(&geno_tok, alleledelim)
+            allele = atoi(allele_tok)
+            
+            if allele != 0:
+                outstack.push(alleleidx, allele)
 
-                alleleidx += 1
+            alleleidx += 1
 
-                # Allele 2
-                allele_tok = strsep(&geno_tok, alleledelim)
-                allele = atoi(allele_tok)
+            # Allele 2
+            allele_tok = strsep(&geno_tok, alleledelim)
+            allele = atoi(allele_tok)
 
-                if allele != 0:
-                    outstack.push(alleleidx, allele)
+            if allele != 0:
+                outstack.push(alleleidx, allele)
 
-                alleleidx += 1
+            alleleidx += 1
         
         token = strsep(&data, delim)
 
