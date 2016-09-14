@@ -42,7 +42,7 @@ class VCFRecord(object):
         return [x.split(':')[idx] for x in self.data]
 
 
-def read_vcf(filename, require_pass=False, sparse=True, freq_info=None):
+def read_vcf(filename, require_pass=False, freq_info=None):
     '''
     Reads a VCF file and returns a Population object with the
     individuals represented in the file
