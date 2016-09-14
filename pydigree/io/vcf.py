@@ -29,7 +29,7 @@ class VCFRecord(object):
                 flag.append(True)
 
         return dict(infokv)
-    
+    # @profile
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
         alleles = vcf_allele_parser(self.data, self.format)
@@ -42,11 +42,18 @@ class VCFRecord(object):
         return [x.split(':')[idx] for x in self.data]
 
 
-def read_vcf(filename, require_pass=False, freq_info=None):
+def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
     '''
     Reads a VCF file and returns a Population object with the
     individuals represented in the file
     '''
+    if not info_filters:
+        info_filters = []
+
+    for filter in info_filters:
+        if not callable(filter):
+            raise ValueError('Filter not callable')
+
     with open(filename) as f:
         pop = Population()
 
@@ -68,6 +75,9 @@ def read_vcf(filename, require_pass=False, freq_info=None):
         
         for i, line in enumerate(f):
             record = VCFRecord(line)
+
+            if info_filters and not all(filter(record) for filter in info_filters):
+                continue
 
             if require_pass and not record.filter_passed:
                 continue
