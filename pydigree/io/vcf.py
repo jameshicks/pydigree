@@ -48,7 +48,7 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
     individuals represented in the file
     '''
     if not info_filters:
-        info_filters = []
+        filters = []
 
     for filter in info_filters:
         if not callable(filter):
