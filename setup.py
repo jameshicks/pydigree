@@ -44,6 +44,11 @@ dsext = Extension('pydigree.cydigree.datastructures',
                   extra_compile_args=['-Wno-unused-function'],
                   define_macros=macros)
 
+vtext = Extension('pydigree.cydigree.varianttree',
+                  sources=['pydigree/cydigree/varianttree.pyx'],
+                  extra_compile_args=['-Wno-unused-function'],
+                  define_macros=macros)
+
 vcfext = Extension('pydigree.cydigree.vcfparse',
                   sources=['pydigree/cydigree/vcfparse.pyx'],
                   extra_compile_args=['-Wno-unused-function'],
@@ -60,7 +65,7 @@ setup(
     url='https://github.com/jameshicks/pydigree',
     license=license,
     packages=['pydigree'],
-    ext_modules=cythonize([cyext, dsext, vcfext]),
+    ext_modules=cythonize([cyext, dsext, vtext, vcfext]),
     requires=['numpy', 'scipy', 'pandas', 'cython'],
     classifers=['Programming Language :: Python :: 3 :: Only',
                 'Programming Language :: Cython',
