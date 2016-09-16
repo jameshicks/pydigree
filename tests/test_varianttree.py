@@ -31,3 +31,9 @@ def test_basics():
 	assert vt.get_item(11) == 0
 	assert list(vt.keys()) == [10,100]
 	assert list(vt.values()) == [1,1]
+
+	vt.clear_item(100)
+	assert vt.node_count() == 1
+
+	vt.clear_item(10)
+	assert vt.node_count() == 0

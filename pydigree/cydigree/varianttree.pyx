@@ -1,4 +1,5 @@
 from libc.stdio cimport printf
+from libc.string cimport memcpy
 from libc.stdint cimport uint32_t, uint8_t, int8_t
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
@@ -219,7 +220,73 @@ cdef class VariantTree:
 
     
     cdef void _delnode(self, variantkey major_key):
-        pass
+        cdef VariantTreeNode* stack[MAX_DEPTH]
+        cdef int depth = 0
+
+        cdef VariantTreeNode* node = self.root
+
+        while node:
+            stack[depth] = node
+            depth += 1
+            if node.key > major_key:
+                node = node.left
+            elif node.key < major_key:
+                node = node.right
+            else:
+                break
+        else:
+            return
+        
+        depth -= 1 
+        
+        cdef VariantTreeNode* par = stack[depth-1] if depth else NULL 
+        
+        if node.left and node.right: # 2 children
+            self._del2child(node)
+            return
+        
+        elif node.left: # Only 1 child, left
+            if not par:
+                self.root = node.left
+            elif node.key > par.key:
+                par.left = node.left
+            else:
+                par.right = node.left
+
+        elif node.right: # Only 1 child, right
+            if not par:
+                self.root = node.right
+            elif node.key > par.key:
+                par.left = node.right
+            else:
+                par.right = node.right
+        
+        else: # Leaf node
+            if not par:
+                self.root = NULL
+            elif node.key > par.key:
+                par.right = NULL
+            else:
+                par.left = NULL 
+
+        delete_node(node)
+
+        while depth:
+            depth -= 1
+            node = stack[depth]
+            par = stack[depth-1] if depth else NULL
+            self.rebalance_node(node, par) 
+
+    cdef void _del2child(self, VariantTreeNode* node):
+        cdef VariantTreeNode* sucessor = node.right
+        while sucessor:
+            sucessor = sucessor.left
+
+        cdef uint32_t tmpkey = sucessor.key
+        memcpy(&node.values, &sucessor.values, BINSIZE*sizeof(int8_t))
+
+        self._delnode(sucessor.key)
+        node.key = tmpkey
 
     #cdef getrange(self):
     #    pass
