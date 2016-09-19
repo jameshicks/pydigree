@@ -52,6 +52,9 @@ cdef class VariantTree:
 
         return node_verify(self.root)
 
+    cpdef int _binsize(self):
+        return BINSIZE
+
     cpdef keys(self):
 
         cdef int minor_key
