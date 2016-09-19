@@ -52,6 +52,9 @@ cdef class VariantTree:
 
         return node_verify(self.root)
 
+    cpdef int _binsize(self):
+        return BINSIZE
+
     cpdef keys(self):
 
         cdef int minor_key
@@ -288,11 +291,43 @@ cdef class VariantTree:
         self._delnode(sucessor.key)
         node.key = tmpkey
 
-    #cdef getrange(self):
-    #    pass
+    cpdef VariantTree getrange(self, uint32_t start, uint32_t stop):
+        cdef uint32_t start_major_key = start // BINSIZE
+        cdef uint32_t stop_major_key = stop // BINSIZE
 
-    #cdef delrange(self):
-    #    pass
+        cdef uint32_t start_minor_key = start % BINSIZE
+        cdef uint32_t stop_minor_key = stop % BINSIZE
+
+        cdef NodeStack s = NodeStack()
+        cdef VariantTreeNode* node = self.root
+
+        cdef uint32_t localstart, localstop, minor_key, fullidx
+
+        cdef VariantTree outp = VariantTree()
+
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
+                s.push(node)
+                node = node.left
+            else:
+                node = s.pop()
+                if start_major_key <= node.key <= stop_major_key:
+                    localstart = start_minor_key if node.key == start_major_key else 0
+                    localstop = stop_minor_key if node.key == stop_minor_key else BINSIZE
+
+                    for minor_key in range(localstart, localstop):
+                        fullidx = node.key * BINSIZE  + minor_key
+                        outp.set_item(fullidx, node.values[minor_key])
+                
+                elif node.key > stop_major_key:
+                    break
+
+                node = node.right
+
+        return outp
+
+    cpdef void clearrange(self, uint32_t start, uint32_t stop):
+        pass
 
     #cdef setrange(self):
     #    pass
