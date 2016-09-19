@@ -37,3 +37,15 @@ def test_basics():
 
 	vt.clear_item(10)
 	assert vt.node_count() == 0
+
+
+def test_ranges():
+	testvals = [(1,1), (100,1), (25, 5), (50, 5), (75, 5)]
+
+	vt = VariantTree()
+	for k,v in testvals: 
+		vt.set_item(k,v)
+
+	g = vt.getrange(10,90)
+	assert g.keys() == [25, 50, 75]
+	assert g.values() == [5,5,5]
