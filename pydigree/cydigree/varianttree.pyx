@@ -9,8 +9,7 @@ DEF MAX_DEPTH = 32
 ctypedef  uint32_t variantkey
 
 cdef struct VariantTreeNode:
-    VariantTreeNode* left
-    VariantTreeNode* right
+    VariantTreeNode* link[2]
     uint32_t key
     uint8_t height
     int8_t values[BINSIZE]
@@ -20,8 +19,8 @@ cdef VariantTreeNode* new_node(uint32_t major_key, int8_t refcode):
     if not node:
         printf("Cant allocate memory for node\n")
     node.key = major_key
-    node.left = NULL
-    node.right = NULL
+    node.link[0] = NULL
+    node.link[1] = NULL
     node.height = 0
 
     cdef int i
@@ -66,13 +65,13 @@ cdef class VariantTree:
         while (not s.empty()) or (node != NULL):
             if node != NULL:
                 s.push(node)
-                node = node.left
+                node = node.link[0]
             else:
                 node = s.pop()
                 for minor_key in range(BINSIZE):
                     if node.values[minor_key] != self.refcode:
                         outp.append(node.key * BINSIZE  + minor_key)
-                node = node.right
+                node = node.link[1]
 
         return outp
 
@@ -87,13 +86,13 @@ cdef class VariantTree:
         while (not s.empty()) or (node != NULL):
             if node != NULL:
                 s.push(node)
-                node = node.left
+                node = node.link[0]
             else:
                 node = s.pop()
                 for minor_key in range(BINSIZE):
                     if node.values[minor_key] != self.refcode:
                         outp.append(node.values[minor_key])
-                node = node.right
+                node = node.link[1]
 
         return outp
 
@@ -106,13 +105,11 @@ cdef class VariantTree:
 
         cdef VariantTreeNode* node = self.root
         while node:
-
-            if node.key > major_key:
-                node = node.left
-            elif node.key < major_key:
-                node = node.right
-            else:
+            if node.key == major_key:
                 return node.values[minor_key]
+            else:
+                node = node.link[node.key < major_key]
+            
         return self.refcode
 
     cpdef void set_item(self, variantkey key, int8_t value):
@@ -138,22 +135,20 @@ cdef class VariantTree:
             stack[depth] = cur_node
             depth += 1
 
-            if cur_node.key < major_key:
-                cur_node = cur_node.right
-            elif cur_node.key > major_key:
-                cur_node = cur_node.left
-            else:
+            if cur_node.key == major_key:
                 cur_node.values[minor_key] = value
                 return
+            else:
+                cur_node = cur_node.link[cur_node.key < major_key]
 
         cur_node = stack[depth-1]
         tbi = new_node(major_key, self.refcode)
         tbi.values[minor_key] = value
         
         if major_key > cur_node.key:
-            cur_node.right = tbi
+            cur_node.link[1] = tbi
         else:
-            cur_node.left = tbi
+            cur_node.link[0] = tbi
 
 
         cdef VariantTreeNode* node
@@ -170,12 +165,12 @@ cdef class VariantTree:
         
         cdef VariantTreeNode* cur_node = self.root
         while cur_node:
-            if cur_node.key > major_key:
-                cur_node = cur_node.left
-            elif cur_node.key < major_key:
-                cur_node = cur_node.right
-            else:
+
+            if cur_node.key == major_key:
                 break
+            else:
+                cur_node = cur_node.link[cur_node.key < major_key]
+
         else:
             return
 
@@ -198,21 +193,21 @@ cdef class VariantTree:
             return
 
         elif balance > 1:
-            if node.right != NULL and node_balance(node.right) < 0:
-                new_root = node.right.left
+            if node.link[1] != NULL and node_balance(node.link[1]) < 0:
+                new_root = node.link[1].link[0]
                 rotate_double_left(node, parent)
 
             else:
-                new_root = node.right
+                new_root = node.link[1]
                 rotate_left(node, parent)
 
         elif balance < -1:
-            if node.left != NULL and node_balance(node.left) > 0:
-                new_root = node.left.right
+            if node.link[0] != NULL and node_balance(node.link[0]) > 0:
+                new_root = node.link[0].link[1]
                 rotate_double_right(node, parent)
 
             else:
-                new_root = node.left
+                new_root = node.link[0]
                 rotate_right(node, parent)
 
         else:
@@ -231,46 +226,30 @@ cdef class VariantTree:
         while node:
             stack[depth] = node
             depth += 1
-            if node.key > major_key:
-                node = node.left
-            elif node.key < major_key:
-                node = node.right
-            else:
+
+            if node.key == major_key:
                 break
+            else:
+                node = node.link[node.key < major_key]
+
         else:
             return
         
         depth -= 1 
         
-        cdef VariantTreeNode* par = stack[depth-1] if depth else NULL 
+        cdef VariantTreeNode* par = stack[depth-1] if depth else NULL
+        cdef VariantTreeNode* target 
         
-        if node.left and node.right: # 2 children
+        if node.link[0] and node.link[1]: # 2 children
             self._del2child(node)
             return
         
-        elif node.left: # Only 1 child, left
-            if not par:
-                self.root = node.left
-            elif node.key > par.key:
-                par.left = node.left
-            else:
-                par.right = node.left
-
-        elif node.right: # Only 1 child, right
-            if not par:
-                self.root = node.right
-            elif node.key > par.key:
-                par.left = node.right
-            else:
-                par.right = node.right
-        
-        else: # Leaf node
-            if not par:
-                self.root = NULL
-            elif node.key > par.key:
-                par.right = NULL
-            else:
-                par.left = NULL 
+        target = NULL if node_is_leaf(node) else node.link[node.link[0] == NULL]
+   
+        if not par: # Node is root
+            self.root = target
+        else:
+            par.link[par.key < node.key] = target 
 
         delete_node(node)
 
@@ -281,9 +260,9 @@ cdef class VariantTree:
             self.rebalance_node(node, par) 
 
     cdef void _del2child(self, VariantTreeNode* node):
-        cdef VariantTreeNode* sucessor = node.right
+        cdef VariantTreeNode* sucessor = node.link[1]
         while sucessor:
-            sucessor = sucessor.left
+            sucessor = sucessor.link[0]
 
         cdef uint32_t tmpkey = sucessor.key
         memcpy(&node.values, &sucessor.values, BINSIZE*sizeof(int8_t))
@@ -308,7 +287,7 @@ cdef class VariantTree:
         while (not s.empty()) or (node != NULL):
             if node != NULL:
                 s.push(node)
-                node = node.left
+                node = node.link[0]
             else:
                 node = s.pop()
                 if start_major_key <= node.key <= stop_major_key:
@@ -322,7 +301,7 @@ cdef class VariantTree:
                 elif node.key > stop_major_key:
                     break
 
-                node = node.right
+                node = node.link[1]
 
         return outp
 
@@ -339,33 +318,36 @@ cdef class VariantTree:
     #    pass
 
 # Node manipulation functions
+cdef bint node_is_leaf(VariantTreeNode* node):
+    return node.link[0] == NULL and node.link[1] == NULL
+
 cdef bint node_verify(VariantTreeNode* node):
     if not -1 <= node_balance(node) <= 1:
         return False
-    if node.left != NULL and not (node.key > node.left.key):
+    if node.link[0] != NULL and not (node.key > node.link[0].key):
         return False
-    if node.right != NULL and not (node.key < node.right.key):
+    if node.link[1] != NULL and not (node.key < node.link[1].key):
         return False
 
-    cdef bint l = node_verify(node.left) if node.left else True 
-    cdef bint r = node_verify(node.right) if node.right else True
+    cdef bint l = node_verify(node.link[0]) if node.link[0] else True 
+    cdef bint r = node_verify(node.link[1]) if node.link[1] else True
     return l and r
 
 cdef int8_t node_balance(VariantTreeNode* node):
-    cdef uint8_t lefth = (node.left.height) if node.left != NULL else 0
-    cdef uint8_t righth = (node.right.height) if node.right != NULL else 0
+    cdef uint8_t lefth = (node.link[0].height) if node.link[0] != NULL else 0
+    cdef uint8_t righth = (node.link[1].height) if node.link[1] != NULL else 0
     cdef int8_t balance = righth - lefth
     return balance
 
 cdef void update_node_height(VariantTreeNode* node):
-        lheight = node.left.height if node.left != NULL else 0
-        rheight = node.right.height if node.right != NULL else 0
+        lheight = node.link[0].height if node.link[0] != NULL else 0
+        rheight = node.link[1].height if node.link[1] != NULL else 0
         node.height = max(lheight, rheight) + 1
 
 cdef uint32_t treesize(VariantTreeNode* node):
     if node == NULL:
         return 0
-    return 1 + treesize(node.left) + treesize(node.right)
+    return 1 + treesize(node.link[0]) + treesize(node.link[1])
 
 
 cdef void deltree(VariantTreeNode* node):
@@ -379,17 +361,17 @@ cdef void deltree(VariantTreeNode* node):
 
     # Traverse in post-order removing nodes
     # TODO: rewrite in iterative style
-    deltree(node.left)
-    deltree(node.right)
+    deltree(node.link[0])
+    deltree(node.link[1])
 
-    node.left = NULL
-    node.right = NULL
+    node.link[0] = NULL
+    node.link[1] = NULL
     delete_node(node)
 
 cdef void rotate_right(VariantTreeNode* root, VariantTreeNode* parent):
-    cdef VariantTreeNode* pivot = root.left
-    root.left = pivot.right
-    pivot.right = root
+    cdef VariantTreeNode* pivot = root.link[0]
+    root.link[0] = pivot.link[1]
+    pivot.link[1] = root
 
     update_node_height(root)
     update_node_height(pivot)
@@ -397,16 +379,16 @@ cdef void rotate_right(VariantTreeNode* root, VariantTreeNode* parent):
     if not parent:
         return
     elif parent.key > root.key:
-        parent.left = pivot
+        parent.link[0] = pivot
     else:
-        parent.right = pivot
+        parent.link[1] = pivot
 
     update_node_height(parent)
 
 cdef void rotate_left(VariantTreeNode* root, VariantTreeNode* parent):
-    cdef VariantTreeNode* pivot = root.right
-    root.right = pivot.left
-    pivot.left = root 
+    cdef VariantTreeNode* pivot = root.link[1]
+    root.link[1] = pivot.link[0]
+    pivot.link[0] = root 
 
     update_node_height(root)
     update_node_height(pivot)
@@ -414,20 +396,20 @@ cdef void rotate_left(VariantTreeNode* root, VariantTreeNode* parent):
     if not parent:
         return
     elif parent.key > root.key:
-        parent.left = pivot
+        parent.link[0] = pivot
     else:
-        parent.right = pivot
+        parent.link[1] = pivot
 
     update_node_height(parent)
 
 
 cdef void rotate_double_left(VariantTreeNode* root, VariantTreeNode* parent):
-    rotate_right(root.right, root)
+    rotate_right(root.link[1], root)
     rotate_left(root, parent)
 
 
 cdef void rotate_double_right(VariantTreeNode* root, VariantTreeNode* parent):
-    rotate_left(root.left, root)
+    rotate_left(root.link[0], root)
     rotate_right(root, parent)
 
 ###
