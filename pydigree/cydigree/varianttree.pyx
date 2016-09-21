@@ -262,6 +262,8 @@ cdef class VariantTree:
     cdef void _del2child(self, VariantTreeNode* node):
         cdef VariantTreeNode* sucessor = node.link[1]
         while sucessor:
+            if not sucessor.link[0]:
+                break
             sucessor = sucessor.link[0]
 
         cdef uint32_t tmpkey = sucessor.key
