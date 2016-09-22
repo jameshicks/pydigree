@@ -38,6 +38,24 @@ def test_basics():
 	vt.clear_item(10)
 	assert vt.node_count() == 0
 
+def test_selfbalancing():
+	size = 200000
+	import random
+	random.seed(1)
+	randvals = [random.randint(1, 10000000) for x in range(size)]
+
+	vt = VariantTree()
+	for i,x in enumerate(randvals):
+		vt.set_item(x,1)
+		if i % 100 == 0:
+			assert vt.verify()
+
+	random.shuffle(randvals)
+
+	for i,x in enumerate(randvals):
+		vt.clear_item(x)
+		if i % 1000 == 0:
+			assert vt.verify()
 
 def test_ranges():
 	testvals = [(1,1), (100,1), (25, 5), (50, 5), (75, 5)]
