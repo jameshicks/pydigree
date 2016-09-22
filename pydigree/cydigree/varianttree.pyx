@@ -241,7 +241,7 @@ cdef class VariantTree:
         cdef VariantTreeNode* target 
         
         if node.link[0] and node.link[1]: # 2 children
-            self._del2child(node)
+            self._del2child(node, par)
             return
         
         target = NULL if node_is_leaf(node) else node.link[node.link[0] == NULL]
@@ -259,18 +259,62 @@ cdef class VariantTree:
             par = stack[depth-1] if depth else NULL
             self.rebalance_node(node, par) 
 
-    cdef void _del2child(self, VariantTreeNode* node):
-        cdef VariantTreeNode* sucessor = node.link[1]
-        while sucessor:
-            if not sucessor.link[0]:
+    cdef void _del2child(self, VariantTreeNode* node, VariantTreeNode* par):
+        # Find successor (smallest in the right subtree)
+        cdef VariantTreeNode* successor = node.link[1]
+        while successor:
+            if not successor.link[0]:
                 break
-            sucessor = sucessor.link[0]
+            successor = successor.link[0]
 
-        cdef uint32_t tmpkey = sucessor.key
-        memcpy(&node.values, &sucessor.values, BINSIZE*sizeof(int8_t))
+        # Get the path to the successor from the root
+        cdef VariantTreeNode* path[MAX_DEPTH]
+        cdef int depth = 0
+        cdef VariantTreeNode* cur_node = self.root
+        while cur_node:
+            path[depth] = cur_node
+            depth += 1
 
-        self._delnode(sucessor.key)
-        node.key = tmpkey
+            if cur_node == successor:
+                depth -= 1
+                break
+            else:
+                cur_node = cur_node.link[cur_node.key < successor.key]
+
+        # Remove the successor node
+        cdef VariantTreeNode* successor_par = path[depth-1]
+
+        cdef VariantTreeNode* target 
+        if node_is_leaf(successor):
+            target = NULL
+        else:
+            target = successor.link[successor.link[0] == NULL] 
+
+        successor_par.link[successor_par.key < successor.key] = target
+
+        # Place the successor where the node was
+        successor.link[0] = node.link[0]
+        successor.link[1] = node.link[1]
+        if par == NULL:
+            self.root = successor
+        else:
+            par.link[par.key < node.key] = successor
+
+        cdef int i = 0
+        for i in range(depth):
+            if path[i] == node:
+                path[i] = successor
+                break
+
+        # Rebalance nodes all the way back up tree
+        cdef VariantTreeNode* cur_node_par
+        while depth:
+            depth -= 1
+            cur_node = path[depth]
+            cur_node_par = path[depth-1] if depth else NULL
+            self.rebalance_node(cur_node, cur_node_par)
+
+        delete_node(node)
 
     cpdef VariantTree getrange(self, uint32_t start, uint32_t stop):
         cdef uint32_t start_major_key = start // BINSIZE
