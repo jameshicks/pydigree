@@ -45,6 +45,23 @@ cdef class VariantTree:
     cpdef bint empty(self):
         return self.root == NULL
 
+    def __contains__(self, variantkey key):
+        'Returns true if a variant is in the tree'
+        cdef uint32_t major_key = key // BINSIZE
+        cdef uint32_t minor_key = key % BINSIZE
+
+        if self.empty():
+            return False
+
+        cdef VariantTreeNode* node = self.root
+        while node:
+            if node.key == major_key:
+                return node.values[minor_key] != self.refcode
+            else:
+                node = node.link[node.key < major_key]
+
+        return False
+        
     cpdef bint verify(self):
         if self.empty():
             return True
