@@ -70,7 +70,7 @@ def make_incidence_matrix(individuals, effect_name):
 
 class RandomEffect(object):
     __slots__ = ['label', 'variance_component',
-                 'incidence_matrix', 'covariance_matrix', 'levels']
+                 'incidence_matrix', 'covariance_matrix', 'levels', 'V_i']
 
     def __init__(self, individuals, label, variance=None,
                  incidence_matrix=None, covariance_matrix=None, levels=None):
@@ -110,6 +110,8 @@ class RandomEffect(object):
                 raise ValueError('Number of levels not correct')
             self.levels = levels
 
+        self.V_i = self.Z * self.G * self.Z.T
+
     def __repr__(self):
         return 'Random Effect: {}'.format(self.label)
 
@@ -132,11 +134,6 @@ class RandomEffect(object):
     def G(self):
         "Convenience property for returning the covariance_matrix"
         return self.covariance_matrix
-
-    @property
-    def V_i(self):
-        return self.Z * self.G * self.Z.T
-
 
 class MixedModel(object):
 
