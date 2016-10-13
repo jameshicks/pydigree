@@ -247,7 +247,7 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
 
         llik = likelihood.loglikelihood()
 
-        if (np.abs((new_vcs - vcs) / vcs.sum()) < tol).all():
+        if (np.abs(new_vcs - vcs) < tol).all():
             break
 
         vcs = new_vcs
