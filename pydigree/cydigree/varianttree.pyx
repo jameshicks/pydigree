@@ -333,7 +333,7 @@ cdef class VariantTree:
 
         delete_node(node)
 
-    cpdef VariantTree getrange(self, uint32_t start, uint32_t stop):
+    cpdef VariantTree get_range(self, uint32_t start, uint32_t stop):
         cdef uint32_t start_major_key = start // BINSIZE
         cdef uint32_t stop_major_key = stop // BINSIZE
 
@@ -368,7 +368,7 @@ cdef class VariantTree:
 
         return outp
 
-    cpdef void clearrange(self, uint32_t start, uint32_t stop):
+    cpdef void clear_range(self, uint32_t start, uint32_t stop):
         cdef uint32_t start_major_key = start // BINSIZE
         cdef uint32_t stop_major_key = stop // BINSIZE
 
@@ -389,7 +389,7 @@ cdef class VariantTree:
                 node = node.link[0]
             else:
                 node = s.pop()
-                
+
                 if node.key < start_major_key:
                     pass
                 elif node.key > stop_major_key:

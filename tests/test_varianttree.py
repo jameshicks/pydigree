@@ -94,11 +94,11 @@ def test_ranges():
     for k,v in testvals: 
         vt.set_item(k,v)
 
-    g = vt.getrange(10,90)
+    g = vt.get_range(10,90)
     assert g.keys() == [25, 50, 75]
     assert g.values() == [5,5,5]
 
-    vt.clearrange(20,70)
+    vt.clear_range(20,70)
     assert vt.keys() == [1,75,100]
     assert vt.values() == [1,5,1]
     assert vt.node_count() == 3
