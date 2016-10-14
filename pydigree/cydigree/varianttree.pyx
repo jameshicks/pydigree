@@ -369,7 +369,53 @@ cdef class VariantTree:
         return outp
 
     cpdef void clearrange(self, uint32_t start, uint32_t stop):
-        pass
+        cdef uint32_t start_major_key = start // BINSIZE
+        cdef uint32_t stop_major_key = stop // BINSIZE
+
+        cdef uint32_t start_minor_key = start % BINSIZE
+        cdef uint32_t stop_minor_key = stop % BINSIZE
+
+        cdef NodeStack s = NodeStack()
+        cdef VariantTreeNode* node = self.root
+
+        cdef uint32_t localstart, localstop, minor_key, fullidx
+
+        cdef NodeStack delstack = NodeStack()
+
+
+        while (not s.empty()) or (node != NULL):
+            if node != NULL:
+                s.push(node)
+                node = node.link[0]
+            else:
+                node = s.pop()
+                
+                if node.key < start_major_key:
+                    pass
+                elif node.key > stop_major_key:
+                    break
+                elif start_major_key < node.key < stop_major_key:
+                    delstack.push(node)
+                else:
+                    localstart = start_minor_key if node.key == start_major_key else 0
+                    localstop = stop_minor_key if node.key == stop_major_key else BINSIZE
+
+                    for minor_key in range(localstart, localstop):
+                        node.values[minor_key] = self.refcode
+
+                    # Delte the node if it's empty
+                    for minor_key in range(0, BINSIZE):
+                        if node.values[minor_key] != self.refcode:
+                            break
+                    else:
+                        delstack.push(node)
+
+                node = node.link[1]
+
+        cdef VariantTreeNode* delnode = delstack.pop() 
+        while delnode:
+            self._delnode(delnode.key)
+            delnode = delstack.pop()
 
     #cdef setrange(self):
     #    pass
