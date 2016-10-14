@@ -47,9 +47,9 @@ tests/cover
 *.lprof
 
 ####### Cython ignores
-cyfuncs.c
-cyfuncs.html
-sparsearray.c
+pydigree/cydigree/*.c
+pydigree/cydigree/*.html
+
 ####### C ignores
 
 # Object files
