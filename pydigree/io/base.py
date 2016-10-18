@@ -189,8 +189,7 @@ def write_phenotypes(pedigrees, filename, predicate=None,
             ofile.write(row + '\n')
 
 
-def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0',
-                                      sparse=False):
+def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
     '''
     Takes a series of alleles and turns them into genotypes.
 
@@ -206,11 +205,10 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0',
     chromosomes: A list of ChromosomeTemplate objects corresponding to the 
     genotypes
     data: The alleles to be turned into genotypes
-    sparse: Return SparseAlleless instead of non-sparse
 
     Returns: A list of 2-tuples of Alleles objects
     '''
-    Chromobj = SparseAlleles if sparse else Alleles
+    Chromobj = Alleles
 
     genotypes = []
 
