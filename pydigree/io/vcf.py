@@ -84,6 +84,7 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
 
             if record.chrom != last_chrom:
                 if last_chrom is not None:
+                    chromobj.finalize()
                     pop.add_chromosome(chromobj)
                 chromobj = ChromosomeTemplate(label=record.chrom)
 
@@ -105,6 +106,7 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
 
             last_chrom = record.chrom
 
+        chromobj.finalize()
         pop.add_chromosome(chromobj)
 
     for ind in inds:

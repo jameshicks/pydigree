@@ -2,6 +2,7 @@ import numpy as np
 import os
 from pydigree.io.vcf import read_vcf
 from pydigree.cydigree.vcfparse import vcf_allele_parser
+import numpy as np
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 TESTDATA_DIR = os.path.join(testdir, 'test_data', 'vcf')
@@ -28,6 +29,7 @@ def test_vcf():
 
     pop = read_vcf(testvcf, freq_info='AF')
     assert list(pop.chromosomes[0].frequencies) == [0.5]
+    assert all([isinstance(c.frequencies, np.ndarray) for c in pop.chromosomes])
     diff = (pop.chromosomes[1].frequencies - np.array([0.5, 0.17, 0.333, 0, 0, 0, 0]) )
     assert (diff < 0.001).all()
 

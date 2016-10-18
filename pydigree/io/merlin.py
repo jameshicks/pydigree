@@ -130,12 +130,16 @@ def read_map(filename, only=None):
             pos = float(pos)
 
             if chrom != lastchrom:
+                if lastchrom:
+                    c.finalize()
                 c = ChromosomeTemplate(label=chrom)
                 chromosomes.append(c)
                 lastchrom = chrom
 
             c.add_genotype(map_position=pos, label=marker)
 
+        for chrom in chromosomes:
+            chrom.finalize()
         return chromosomes
 
 

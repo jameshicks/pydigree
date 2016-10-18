@@ -49,6 +49,7 @@ def read_map(mapfile):
                 # or we've just started. If we haven't just started, We'll
                 # close up the old one
                 if i > 0:
+                    chromosome.finalize()
                     chroms.append(chromosome)
                 # Make the next chromosome
                 chromosome = ChromosomeTemplate(label=chr)
@@ -56,6 +57,7 @@ def read_map(mapfile):
                 raise FileFormatError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos
+    chromosome.finalize()
     chroms.append(chromosome)
     return chroms
 
