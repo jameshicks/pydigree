@@ -97,6 +97,11 @@ class SparseAlleles(AlleleContainer):
         else:
             self.container = template[copy_start:copy_stop]
 
+    def copy(self):
+        outp = self.empty_like()
+        outp.container = self.container.copy()
+        return outp
+
     @staticmethod
     def empty(reference=None, template=None, missingcode=''):
         out = SparseAlleles(size, template=template, missingcode=missingcode)

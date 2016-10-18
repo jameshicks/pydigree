@@ -38,6 +38,12 @@ cdef class SparseArray:
     def __len__(self):
         return self.size
 
+    def copy(self):
+        cdef SparseArray output = SparseArray.from_items(self.items(), 
+                                                         self.size, 
+                                                         self.refcode)
+        return output
+
     property values:
         def __get__(self):
             return list(self.container.values())
@@ -307,6 +313,14 @@ cdef class SparseArray:
         for i in range(size):
             if denseview[i] != refcode:
                 output.set_item(i, denseview[i])
+
+        return output
+
+    @staticmethod
+    def from_items(items, size, refcode):
+        cdef SparseArray output = SparseArray(size, refcode)
+        for k,v in items:
+            output.set_item(k, v)
 
         return output
 

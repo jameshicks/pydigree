@@ -186,3 +186,8 @@ def test_staticbuilders():
     assert type(a) is SparseArray
     assert a.tolist() == [0, 1, 1, 0, 0, 1]
     assert a.size == 6
+
+    a = SparseArray.from_items([(0,1), (2,1), (4,1)], 5, 0)
+    assert type(a) is SparseArray
+    assert a.tolist() == [1,0,1,0,1]
+    assert a.size == 5
