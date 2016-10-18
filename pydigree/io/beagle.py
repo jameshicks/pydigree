@@ -125,7 +125,9 @@ def read_beagle(genofile, markerfile):
     Returns: a Population object
     '''
     pop = Population()
-    pop.chromosomes.append(read_beagle_markerfile(markerfile))
+    chrom = read_beagle_markerfile(markerfile)
+    chrom.finalize()
+    pop.chromosomes.append(chrom)
 
     read_beagle_genotypefile(genofile, pop)
 

@@ -49,6 +49,7 @@ def read_map(mapfile):
                 # or we've just started. If we haven't just started, We'll
                 # close up the old one
                 if i > 0:
+                    chromosome.finalize()
                     chroms.append(chromosome)
                 # Make the next chromosome
                 chromosome = ChromosomeTemplate(label=chr)

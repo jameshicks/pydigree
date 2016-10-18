@@ -25,6 +25,7 @@ class ChromosomeTemplate(object):
     """
 
     def __init__(self, label=None):
+        self.final = False
         # Chromosome name
         self.label = label
         # A list of floats that represent the position of the marker in cM
@@ -75,13 +76,15 @@ class ChromosomeTemplate(object):
 
     def add_genotype(self, frequency=None, map_position=None, label=None,
                      bp=None, reference=None, alternates=None):
+        if self.final:
+            raise ValueError('Chromosome already finalized')
         try:
             frequency = float(frequency) if frequency is not None else -1
         except TypeError:
             raise ValueError('Invalid value for frequency %s' % frequency)
-        self.genetic_map.append(map_position)
-        self.frequencies.append(frequency)
-        self.physical_map.append(bp)
+        self.genetic_map.append(map_position if map_position else 0)
+        self.frequencies.append(frequency if frequency else 0)
+        self.physical_map.append(bp if bp else 0)
         self.labels.append(label)
         self.reference.append(reference)
         self.alternates.append(alternates)
@@ -123,6 +126,12 @@ class ChromosomeTemplate(object):
             return right_idx
         else:
             return left_idx
+
+    def finalize(self):
+        self.final = True
+        self.frequencies = np.array(self.frequencies)
+        self.physical_map = np.array(self.physical_map, dtype=np.uint)
+        self.genetic_map = np.array(self.genetic_map)
 
     def linkageequilibrium_chromosome(self, sparse=False):
         """ Returns a randomly generated chromosome """
