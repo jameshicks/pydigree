@@ -79,7 +79,7 @@ class SparseAlleles(AlleleContainer):
         Return the number of markers (both reference and non-reference)
         represented by the SparseAlleles object
         '''
-        return self.size
+        return self.container.size
 
     def todense(self):
         dense = Alleles(self.container.tolist(), template=self.template)
