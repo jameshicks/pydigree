@@ -73,13 +73,13 @@ def test_sparsealleles_meaninglesscomparisions():
     assert_raises(NotMeaningfulError, lambda x, y: x >= y, a, b)
     assert_raises(NotMeaningfulError, lambda x, y: x <= y, a, b)
 
-def test_sparseeq():
-    a = SparseAlleles([1,2,3,4])
-    b = SparseAlleles([1,3,3,4])
+# def test_sparseeq():
+#     a = SparseAlleles([1,2,3,4])
+#     b = SparseAlleles([1,3,3,4])
 
-    obs = (a == b)
-    expected = np.array([True, False, True, True]) 
-    assert obs.tolist() == expected.tolist()
+#     obs = (a == b)
+#     expected = np.array([True, False, True, True]) 
+#     assert obs.tolist() == expected.tolist()
 
 def test_sparsealleles_emptylike():
     a = SparseAlleles([1,2,3,4])
@@ -87,13 +87,15 @@ def test_sparsealleles_emptylike():
     assert (e.container == e.refcode).all()
 
 def test_sparsealleles_copyspan():
-    a = SparseAlleles(np.array([0,0,0,0,0,0,0], dtype=np.int)+1, refcode=1)
-    b = SparseAlleles(np.array([1,1,1,1,1,1,1], dtype=np.int)+1, refcode=1)
+    a = SparseAlleles(np.array([1,1,1,1,1,1,1], dtype=np.int), refcode=1)
+    b = SparseAlleles(np.array([2,2,2,2,2,2,2], dtype=np.int), refcode=1)
 
     a.copy_span(b, 2, 6)
-    assert all(a.todense() == np.array([0,0,1,1,1,1,0]) + 1)
+    assert all(a.todense() == np.array([1,1,2,2,2,2,1]))
 
-
+    c = SparseAlleles(np.array([1,1,1,1,1,1,1], dtype=np.int), refcode=1)
+    a.copy_span(c, 2, 6)
+    assert all(a.todense() == np.array([1,1,1,1,1,1,1]))
 #############
 # InheritanceSpan
 #############

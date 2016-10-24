@@ -53,6 +53,12 @@ cdef class SparseArray:
         def __get__(self):
             return list(self.container.keys())
 
+    def keys(self):
+        return list(self.container.keys())
+
+    def values(self):
+        return list(self.container.values())
+
     cdef inline sparse_key fix_index(self, sparse_key index): 
         if index >= 0:
             return index 
@@ -159,6 +165,10 @@ cdef class SparseArray:
         if stop - start != values.size:
             raise IndexError('Value wrong shape for slice')
         
+        toclear = [idx for idx in self.keys() if start <= idx <= stop]
+        for idx in toclear:
+            self.container.delete(idx)
+
         # TODO: Make efficient instead of using python traversal
         for k, v in values.items():
             self.container.insert(k + start, v)

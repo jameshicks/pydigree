@@ -134,6 +134,12 @@ def test_setslice():
     s[2:5] = SparseArray.from_dense([1]*10, 0)[2:5]
     assert s.tolist() == [0,0,1,1,1,0,0,0,0,0]
 
+    s = SparseArray(100,0)
+    t = SparseArray(100,0)
+    t[20:50] = 1
+    s[20:50] = t[20:50]
+    assert all(sv == 1 for sv in s[20:50].tolist())
+
 def test_cmp():
     s = SparseArray(5, 0)
     s[(1,3)] = [1, 1]
