@@ -16,18 +16,18 @@ def test_setitem():
 
     # Add sometihng in between
     s[15] = 2
-    assert s.indices == [5, 10, 15, 20]
-    assert s.values == [1, 1, 2, 1]
+    assert s.keys() == [5, 10, 15, 20]
+    assert s.values() == [1, 1, 2, 1]
 
     s[15] = 0
 
-    assert s.indices == [5, 10, 20]
-    assert s.values == [1, 1, 1]
+    assert s.keys() == [5, 10, 20]
+    assert s.values() == [1, 1, 1]
 
     s[20] = 2
 
-    assert s.indices == [5, 10, 20]
-    assert s.values == [1, 1, 2]
+    assert s.keys() == [5, 10, 20]
+    assert s.values() == [1, 1, 2]
 
 def test_getitem():
     s = SparseArray(100,0)
@@ -111,24 +111,24 @@ def test_setslice():
 
     s[5:8] = 3
     assert len(s.container) == 5
-    assert s.indices == [1, 5, 6, 7, 99]
-    assert s.values == [2, 3, 3, 3, 2]
+    assert s.keys() == [1, 5, 6, 7, 99]
+    assert s.values() == [2, 3, 3, 3, 2]
 
     s = SparseArray(100, 0)
     s[1] = 2
     s[99] = 2
     s[5:8] = [3,3,3]
     assert len(s.container) == 5
-    assert s.indices == [1, 5, 6, 7, 99]
-    assert s.values == [2, 3, 3, 3, 2]
+    assert s.keys() == [1, 5, 6, 7, 99]
+    assert s.values() == [2, 3, 3, 3, 2]
 
     s = SparseArray(100, 0)
     t = SparseArray(100,0)
     t[5:10] = 1
     s[5:10] = t[5:10]
     assert len(t.container) == 5
-    assert t.values == [1]*5
-    assert t.indices == [5, 6, 7, 8, 9]
+    assert t.values() == [1]*5
+    assert t.keys() == [5, 6, 7, 8, 9]
 
     s = SparseArray(10, 0)
     s[2:5] = SparseArray.from_dense([1]*10, 0)[2:5]

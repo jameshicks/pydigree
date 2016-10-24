@@ -50,6 +50,12 @@ class SparseAlleles(AlleleContainer):
     def __setitem__(self, key, value):
         self.container[key] = value
 
+    def keys(self):
+        return self.container.keys()
+    
+    def values(self):
+        return self.container.values()
+
     @property
     def missingcode(self):
         return -1
