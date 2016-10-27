@@ -130,7 +130,7 @@ class ChromosomeTemplate(object):
     def finalize(self):
         self.final = True
         self.frequencies = np.array(self.frequencies)
-        self.physical_map = np.array(self.physical_map, dtype=np.uint)
+        self.physical_map = np.array(self.physical_map, dtype=np.int)
         self.genetic_map = np.array(self.genetic_map)
 
     def linkageequilibrium_chromosome(self, sparse=False):
