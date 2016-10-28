@@ -141,7 +141,7 @@ class ChromosomeTemplate(object):
         r = np.array(r < self.frequencies, dtype=np.int8) + 1
 
         if sparse:
-            return SparseAlleles(r, refcode=1, template=self)
+            return SparseAlleles(r-1, refcode=0, template=self)
         else:
             return Alleles(r, template=self)
 
