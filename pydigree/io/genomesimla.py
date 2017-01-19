@@ -5,11 +5,10 @@ def read_gs_chromosome_template(templatef):
     """
     Reads a genomeSIMLA format chromosome template file
     
-    Arguments
-    ------
-    templatef: The filename of the template file
+    :param templatef: The filename of the template file
+    :type templatef: string
 
-    Returns: A ChromosomeTemplate object corresponding to the file
+    :rtype: A ChromosomeTemplate object corresponding to the file
     """
     with open(templatef) as f:
         label = f.readline().strip()  # The label and

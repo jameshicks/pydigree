@@ -174,7 +174,7 @@ def fraternity(ind1, ind2):
     """
     The coefficient of fraternity is the probability that both alleles in
     a pair of individuals are IBD.
-    This is equal to: k(x_m,y_m) * k(x_f,y_f) + k(x_m,y_f) + k(x_f,y_m),
+    This is equal to: k(x_m,y_m) * k(x_f,y_f) + k(x_m,y_f) * k(x_f,y_m),
     where x_m represents the mother of x, etc. and k(x,y) represents the
     Malecot kinship between x and y.
 

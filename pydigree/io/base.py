@@ -19,25 +19,37 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
              onlyinds=None):
     """
     Reads a plink format pedigree file, ie:
+    
+    ::    
         familyid indid father mother sex whatever whatever whatever
+    
     into a pydigree pedigree object, with optional population to
     assign to pedigree members. If you don't provide a population
     you can't simulate genotypes!
 
-    Arguments
-    -----
-    filename: The file to be read
-    population: The population to assign individuals to
-    delimiter: a string defining the field separator, default: any whitespace
-    affected_labels: The labels that determine affection status.
-    population_handler: a function to set up the population 
-    data_handler: a function to turn the data into useful individual information
-    connect_inds: build references between individuals. Requires all
-        individuals be present in the file
-    onlyinds: a list of individuals to be processed, allows skipping parts
-        of a file
 
-    Returns: An object of class PedigreeCollection
+    :param filename: The file to be read
+    :param population: The population to assign individuals to
+    :param delimiter: a string defining the field separator, default: any whitespace
+    :param affected_labels: The labels that determine affection status.
+    :param population_handler: a function to set up the population 
+    :param data_handler: a function to turn the data into useful individual information
+    :param connect_inds: build references between individuals. Requires all
+        individuals be present in the file
+    :param onlyinds: only include data for specified individuals 
+
+    :type filename: string
+    :type population: Population
+    :type delimiter: string
+    :type affected_labels: dict (str -> value)
+    :type data_handler: callable
+    :type connect_inds: bool
+    :type onlyinds: iterable 
+
+
+
+    :returns: individuals contained in the pedigree file 
+    :rtype: PedigreeCollection
     """
     sex_codes = {'1': 0, '2': 1, 'M': 0, 'F': 1, '0': None, '-9': None}
     if not affected_labels:
@@ -126,13 +138,15 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
     famid,ind,phen,phen,phen,phen etc etc
 
     Arguments
-    ------
-    Pedigrees:   An object of class PedigreeCollection
-    csvfile:     the filename of the file containing phenotypes.
-    delimiter:   the field delimiter for the file
-    missingcode: the code for missing values
+    :param pedigrees:   data to update
+    :param csvfile:     the filename of the file containing phenotypes.
+    :param delimiter:   the field delimiter for the file
+    :param missingcode: the code for missing values
+    :type pedigrees: PedigreeCollection
+    :type csvfile: string
+    :type missingcode: string
 
-    Returns: Nothing
+    :rtype: void
     """
     with open(csvfile) as f:
         header = f.readline().strip().split(delimiter)
@@ -153,7 +167,16 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
 
 
 def write_pedigree(pedigrees, filename, missingcode='X', delim=' '):
-    ''' Writes pedigree to a LINKAGE formatted pedigree file '''
+    ''' 
+    Writes pedigree to a LINKAGE formatted pedigree file 
+
+    :param pedigrees: Data to write
+    :param filename: filename to write to
+    :param missingcode: code to use for missing values
+    :param delim: output field separator 
+
+    :rtype: void
+    '''
     sorting_key = lambda x: (x.population.label, x.depth, x.label)
     with open(filename, 'w') as f:
         for ind in sorted(pedigrees.individuals, key=sorting_key):
@@ -168,7 +191,17 @@ def write_pedigree(pedigrees, filename, missingcode='X', delim=' '):
 
 def write_phenotypes(pedigrees, filename, predicate=None,
                      missingcode='X', delim=','):
-    "Writes phenotypes to a CSV (or other delimited) file"
+    """
+    Writes phenotypes to a CSV (or other field delimited) file
+    
+    :param pedigrees: Data to write
+    :param filename: filename to write to
+    :param missingcode: code to use for missing values
+    :param delim: output field separator 
+
+    :type missingcode: string
+    :type delim: string
+    """
     inds = pedigrees.individuals
 
     if isinstance(predicate, Callable):
@@ -200,13 +233,14 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
 
     These are returned in the a list in the form [(chroma, chromb), (chroma, chromb)...]
 
-    Arguments
-    ------
-    chromosomes: A list of ChromosomeTemplate objects corresponding to the 
-    genotypes
-    data: The alleles to be turned into genotypes
 
-    Returns: A list of 2-tuples of Alleles objects
+    :param chromosomes: genotype data
+    :param data: The alleles to be turned into genotypes
+    :param missing_code: value representing a missing allele
+
+    :type chromosomes: list of ChromosomeTemplate
+    :type missing_code: string
+    :returns: A list of 2-tuples of Alleles objects
     '''
     Chromobj = Alleles
 

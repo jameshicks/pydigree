@@ -1,0 +1,1631 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pydigree package &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pydigree-package">
+<h1>pydigree package<a class="headerlink" href="#pydigree-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.cydigree.html">pydigree.cydigree package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#module-pydigree.cydigree.cyfuncs">pydigree.cydigree.cyfuncs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#module-pydigree.cydigree.datastructures">pydigree.cydigree.datastructures module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#module-pydigree.cydigree.varianttree">pydigree.cydigree.varianttree module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#module-pydigree.cydigree.vcfparse">pydigree.cydigree.vcfparse module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.cydigree.html#module-pydigree.cydigree">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.datastructures.html">pydigree.datastructures package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.datastructures.html#module-pydigree.datastructures">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.genotypes.html">pydigree.genotypes package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes.alleles">pydigree.genotypes.alleles module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes.chromosometemplate">pydigree.genotypes.chromosometemplate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes.genoabc">pydigree.genotypes.genoabc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes.labelledalleles">pydigree.genotypes.labelledalleles module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes.sparsealleles">pydigree.genotypes.sparsealleles module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.genotypes.html#module-pydigree.genotypes">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.io.html">pydigree.io package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.base">pydigree.io.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.beagle">pydigree.io.beagle module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.genomesimla">pydigree.io.genomesimla module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.kinship">pydigree.io.kinship module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.merlin">pydigree.io.merlin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.plink">pydigree.io.plink module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.sgs">pydigree.io.sgs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.smartopen">pydigree.io.smartopen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io.vcf">pydigree.io.vcf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.io.html#module-pydigree.io">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.sgs.html">pydigree.sgs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.sgs.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.sgs.html#module-pydigree.sgs.sgs">pydigree.sgs.sgs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.sgs.html#module-pydigree.sgs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.simulation.html">pydigree.simulation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation.architecture">pydigree.simulation.architecture module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation.chromosomepool">pydigree.simulation.chromosomepool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation.constrained_mendelian">pydigree.simulation.constrained_mendelian module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation.naivegenedrop">pydigree.simulation.naivegenedrop module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation.simulation">pydigree.simulation.simulation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.simulation.html#module-pydigree.simulation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.stats.html">pydigree.stats package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pydigree.stats.mixedmodel.html">pydigree.stats.mixedmodel package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.likelihood">pydigree.stats.mixedmodel.likelihood module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.maximization">pydigree.stats.mixedmodel.maximization module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.mixedmodel">pydigree.stats.mixedmodel.mixedmodel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.mixin">pydigree.stats.mixedmodel.mixin module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#module-pydigree.stats.mathfuncs">pydigree.stats.mathfuncs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#module-pydigree.stats.stattests">pydigree.stats.stattests module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#module-pydigree.stats.variancecomponents">pydigree.stats.variancecomponents module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.html#module-pydigree.stats">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pydigree.common">
+<span id="pydigree-common-module"></span><h2>pydigree.common module<a class="headerlink" href="#module-pydigree.common" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.common.count">
+<code class="descclassname">pydigree.common.</code><code class="descname">count</code><span class="sig-paren">(</span><em>val</em>, <em>iterable</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Counts how many times a value (val) occurs in an iterable, excluding <cite>None</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>val</strong> &#8211; The value to be counted</li>
+<li><strong>iterable</strong> (<em>iterable</em>) &#8211; values to be counted over</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the count of values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.cumsum">
+<code class="descclassname">pydigree.common.</code><code class="descname">cumsum</code><span class="sig-paren">(</span><em>iter</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.cumsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cumulative sum:
+&gt;&gt;&gt; pydigree.cumsum([0,1,2,3,4])
+[0, 1, 3, 6, 10]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>iter</strong> &#8211; the iterable to be cumsum&#8217;ed</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: cumulative sums
+:rtype: integer</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.flatten">
+<code class="descclassname">pydigree.common.</code><code class="descname">flatten</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively flattens lists.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.grouper">
+<code class="descclassname">pydigree.common.</code><code class="descname">grouper</code><span class="sig-paren">(</span><em>iterable</em>, <em>n</em>, <em>fillvalue=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.grouper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collect data into fixed-length chunks or blocks
+:param iterable: values to evaluate
+:param n: size of the groups
+:param fillvalue: Value to pad the last group with if len(iterable) % n != 0</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">a generator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.invert_dict">
+<code class="descclassname">pydigree.common.</code><code class="descname">invert_dict</code><span class="sig-paren">(</span><em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.invert_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes the keys the values and the values the keys</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">No guarantee of dictionary structure if mappings are not unique</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> &#8211; dictionary to be inverted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.log_base_change">
+<code class="descclassname">pydigree.common.</code><code class="descname">log_base_change</code><span class="sig-paren">(</span><em>value</em>, <em>old</em>, <em>new</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.log_base_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the base of the logarithm used on <cite>value</cite> from <cite>old</cite> to <cite>new</cite></p>
+<p>Arguments: 
+value: the value to be converted
+old: old base (numeric)
+new: new base (numeric)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">log of value in new base</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.merge_dicts">
+<code class="descclassname">pydigree.common.</code><code class="descname">merge_dicts</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.merge_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges two dictionaries into one bigger one</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.mode">
+<code class="descclassname">pydigree.common.</code><code class="descname">mode</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the most common value in a sequence</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq</strong> &#8211; sequence of values to evaluate</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.product">
+<code class="descclassname">pydigree.common.</code><code class="descname">product</code><span class="sig-paren">(</span><em>iter</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduces an iterable by multiplication. Analogous to sum, but with
+multiplication instead of addition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">overall product</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numeric</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.random_choice">
+<code class="descclassname">pydigree.common.</code><code class="descname">random_choice</code><span class="sig-paren">(</span><em>iterable</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.random_choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly chooses an item from an iterable</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.common.table">
+<code class="descclassname">pydigree.common.</code><code class="descname">table</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.common.table" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each unique value in seq, runs count() on it. Returns a dictionary in
+the form of {value1: count, value2: count}.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq</strong> &#8211; Values to make a table of</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.exceptions">
+<span id="pydigree-exceptions-module"></span><h2>pydigree.exceptions module<a class="headerlink" href="#module-pydigree.exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="pydigree.exceptions.FileFormatError">
+<em class="property">exception </em><code class="descclassname">pydigree.exceptions.</code><code class="descname">FileFormatError</code><a class="headerlink" href="#pydigree.exceptions.FileFormatError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pydigree.exceptions.IterationError">
+<em class="property">exception </em><code class="descclassname">pydigree.exceptions.</code><code class="descname">IterationError</code><a class="headerlink" href="#pydigree.exceptions.IterationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pydigree.exceptions.NotMeaningfulError">
+<em class="property">exception </em><code class="descclassname">pydigree.exceptions.</code><code class="descname">NotMeaningfulError</code><a class="headerlink" href="#pydigree.exceptions.NotMeaningfulError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pydigree.exceptions.SimulationError">
+<em class="property">exception </em><code class="descclassname">pydigree.exceptions.</code><code class="descname">SimulationError</code><a class="headerlink" href="#pydigree.exceptions.SimulationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.ibs">
+<span id="pydigree-ibs-module"></span><h2>pydigree.ibs module<a class="headerlink" href="#module-pydigree.ibs" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.ibs.chromwide_ibs">
+<code class="descclassname">pydigree.ibs.</code><code class="descname">chromwide_ibs</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>missingval=64</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.ibs.chromwide_ibs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently evaluates IBS across a diploid set of chromosomes,
+sets IBS where one genotype is missing to missingval.</p>
+<p>Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS
+between missing values coded as missingval</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.ibs.get_ibs_states">
+<code class="descclassname">pydigree.ibs.</code><code class="descname">get_ibs_states</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em>, <em>chromosome_index</em>, <em>missingval=64</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.ibs.get_ibs_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently returns IBS states across an entire chromsome.</p>
+<p>Arguments: Two individuals, and the index of the chromosome to scan.</p>
+<p>Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS between
+missing values coded as missingval</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.individual">
+<span id="pydigree-individual-module"></span><h2>pydigree.individual module<a class="headerlink" href="#module-pydigree.individual" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.individual.Individual">
+<em class="property">class </em><code class="descclassname">pydigree.individual.</code><code class="descname">Individual</code><span class="sig-paren">(</span><em>population</em>, <em>label</em>, <em>father=None</em>, <em>mother=None</em>, <em>sex=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An object for working with the phenotypes and genotypes of an individual
+in a genetic study or simulation</p>
+<dl class="method">
+<dt id="pydigree.individual.Individual.ancestors">
+<code class="descname">ancestors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.ancestors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively searches for ancestors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A collection of all the ancestors of the individual</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">set of Individuals</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.individual.Individual.chromosomes">
+<code class="descname">chromosomes</code><a class="headerlink" href="#pydigree.individual.Individual.chromosomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the individuals ChromosomeTemplate objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.clear_genotypes">
+<code class="descname">clear_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.clear_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes genotypes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.clear_phenotypes">
+<code class="descname">clear_phenotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.clear_phenotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes phenotypes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.constrained_gamete">
+<code class="descname">constrained_gamete</code><span class="sig-paren">(</span><em>constraints</em>, <em>attempts=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.constrained_gamete" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.delabel_genotypes">
+<code class="descname">delabel_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.delabel_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>When an individual has label genotypes, replaces the labels with 
+the ancestral allele corresponding to the label</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.delete_phenotype">
+<code class="descname">delete_phenotype</code><span class="sig-paren">(</span><em>trait</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.delete_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a phenotype from the phenotype dictionary</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.individual.Individual.depth">
+<code class="descname">depth</code><a class="headerlink" href="#pydigree.individual.Individual.depth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the depth of an individual in a genealogy, a rough measure of
+what generation in the pedigree the individual is. Defined as:
+depth = 0 if individual is a founder, else the maximum of the
+depth of each parent</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Indiviual depth</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">integer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.descendants">
+<code class="descname">descendants</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.descendants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively searches for descendants.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A collection of all the descendants of the individual</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">set of Individuals</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.individual.Individual.fertilize">
+<em class="property">static </em><code class="descname">fertilize</code><span class="sig-paren">(</span><em>father</em>, <em>mother</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.fertilize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines a set of half-genotypes (from method gamete) to a full
+set of genotypes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.individual.Individual.full_label">
+<code class="descname">full_label</code><a class="headerlink" href="#pydigree.individual.Individual.full_label" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the population label and individual label</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">2-tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.gamete">
+<code class="descname">gamete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.gamete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides a set of half-genotypes to use with method fertilize</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a collection of AlleleContainers</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.genotype_as_phenotype">
+<code class="descname">genotype_as_phenotype</code><span class="sig-paren">(</span><em>locus</em>, <em>minor_allele</em>, <em>label</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.genotype_as_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a phenotype record representing the additive effect of a minor 
+allele at the specified locus. That is, the phenotype created is the 
+number of copies of the minor allele at the locus.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>locus</strong> &#8211; the site to count minor alleles</li>
+<li><strong>minor_allele</strong> &#8211; the allele to count</li>
+<li><strong>label</strong> &#8211; The name of the phenotype to be added</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.get_constrained_genotypes">
+<code class="descname">get_constrained_genotypes</code><span class="sig-paren">(</span><em>constraints</em>, <em>linkeq=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.get_constrained_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets genotypes from parents (or population if the individual is a
+founder) subject to constraints. Used by the simulation objects
+in pydigree.simulation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.get_genotype">
+<code class="descname">get_genotype</code><span class="sig-paren">(</span><em>loc</em>, <em>checkhasgeno=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.get_genotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns alleles at a position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Genotype tuple</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.get_genotypes">
+<code class="descname">get_genotypes</code><span class="sig-paren">(</span><em>linkeq=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.get_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve genotypes from a chromosome pool if present, or else a
+chromosome generated under linkage equilibrium</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>linkeq</strong> (<em>bool</em>) &#8211; should the retrieved genotypes be under linkage equilibrium?</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Nothing</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.has_allele">
+<code class="descname">has_allele</code><span class="sig-paren">(</span><em>location</em>, <em>allele</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.has_allele" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if individual has the specified allele at location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.has_genotypes">
+<code class="descname">has_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.has_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests if individual has genotypes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">genotype available</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.has_phenotype">
+<code class="descname">has_phenotype</code><span class="sig-paren">(</span><em>phenotype</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.has_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.inbreeding">
+<code class="descname">inbreeding</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.inbreeding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the inbreeding coefficient (F) for the individual.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.is_founder">
+<code class="descname">is_founder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.is_founder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if individual is a founder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.is_marryin_founder">
+<code class="descname">is_marryin_founder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.is_marryin_founder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if an individual is a marry-in founder
+i.e.: the individual is a founder (depth: 0) and has a child with 
+depth &gt; 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.label_genotypes">
+<code class="descname">label_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.label_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives the individual label genotypes. When these genotypes are
+transmitted on to the next generation, you can see where each allele
+in the next generation came from. Useful for gene dropping simulations,
+probably not much else.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.matriline">
+<code class="descname">matriline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.matriline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a label by recursively searching for the individual&#8217;s mother&#8217;s
+mother&#8217;s mother&#8217;s etc. until it reachesa founder mother, in which case
+it returns that ancestor&#8217;s id.</p>
+<p>Useful reference:
+Courtenay et al. &#8216;Mitochondrial haplogroup X is associated with
+successful aging in the Amish.&#8217; Human Genetics (2012). 131(2):201-8.
+doi: 10.1007/s00439-011-1060-3. Epub 2011 Jul 13.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Label of the matriline founder</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.parents">
+<code class="descname">parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the individual&#8217;s father and mother in a 2-tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.patriline">
+<code class="descname">patriline</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.patriline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a label by recursively searching for the individual&#8217;s mother&#8217;s
+father&#8217;s father&#8217;s etc. until it reaches a founder father, in which case
+it returns that ancestor&#8217;s id.</p>
+<p>Analagous to individual.matriline.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Label of patriline founder</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.predict_phenotype">
+<code class="descname">predict_phenotype</code><span class="sig-paren">(</span><em>trait</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.predict_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts phenotypes from a given trait architecture and sets it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.predicted_phenotype">
+<code class="descname">predicted_phenotype</code><span class="sig-paren">(</span><em>trait</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.predicted_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.register_child">
+<code class="descname">register_child</code><span class="sig-paren">(</span><em>child</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.register_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child for this individual</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>child</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; child object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.register_with_parents">
+<code class="descname">register_with_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.register_with_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inform the parent Individuals that this is their child</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.remove_ancestry">
+<code class="descname">remove_ancestry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.remove_ancestry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes ancestry: makes a person a founder. Cannot be used on an
+individual in a pedigree, because the pedigree structure is
+already set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.set_genotype">
+<code class="descname">set_genotype</code><span class="sig-paren">(</span><em>location</em>, <em>genotype</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.set_genotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually set a genotype</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.siblings">
+<code class="descname">siblings</code><span class="sig-paren">(</span><em>include_halfsibs=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.siblings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns this individuals sibliings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>include_halfsibs</strong> (<em>bool</em>) &#8211; Include half-siblings</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A collection of the individual&#8217;s siblings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set of Individuals</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individual.Individual.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.Individual.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes another individual object, merges/updates phenotypes with the other
+individual object and REPLACES self&#8217;s genotypes with other&#8217;s</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the data to update with</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.individual.is_missing_genotype">
+<code class="descclassname">pydigree.individual.</code><code class="descname">is_missing_genotype</code><span class="sig-paren">(</span><em>g</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individual.is_missing_genotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.individualcontainer">
+<span id="pydigree-individualcontainer-module"></span><h2>pydigree.individualcontainer module<a class="headerlink" href="#module-pydigree.individualcontainer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.individualcontainer.IndividualContainer">
+<em class="property">class </em><code class="descclassname">pydigree.individualcontainer.</code><code class="descname">IndividualContainer</code><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.allele_frequency">
+<code class="descname">allele_frequency</code><span class="sig-paren">(</span><em>location</em>, <em>allele</em>, <em>constraint=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.allele_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the frequency (as a percentage) of an allele in this population</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>location</strong> &#8211; the locus to be evaluated</li>
+<li><strong>allele</strong> &#8211; the allele to be counted</li>
+<li><strong>constraint</strong> (<em>callable</em>) &#8211; Function that acts on an individual. If
+constraint(individual) can evaluate as True that person is included</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.allele_list">
+<code class="descname">allele_list</code><span class="sig-paren">(</span><em>location</em>, <em>constraint=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.allele_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of available alleles at a location in this population</p>
+<p>The argument constraint is a function that acts on an individual. If
+constraint(individual) can evaluate as True that person is included</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.alleles">
+<code class="descname">alleles</code><span class="sig-paren">(</span><em>location</em>, <em>constraint=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.alleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the set of available alleles at a locus in the population.</p>
+<p>The argument constraint is a function that acts on an individual. If
+constraint(individual) can evaluate as True that person is included</p>
+<p>Returns: a set of the available genotypes at a location</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.clear_genotypes">
+<code class="descname">clear_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.clear_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes all the genotypes for individuals</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.delete_phenotype">
+<code class="descname">delete_phenotype</code><span class="sig-paren">(</span><em>trait</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.delete_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.females">
+<code class="descname">females</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.females" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of females in population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.founders">
+<code class="descname">founders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.founders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of founders in population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.genotype_as_phenotype">
+<code class="descname">genotype_as_phenotype</code><span class="sig-paren">(</span><em>locus</em>, <em>minor_allele</em>, <em>label</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.genotype_as_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dispatches a genotype_as_phenotype to each individual in the pedigree.</p>
+<p>See docstring for Individual.genotype_as_phenotype for more
+details</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.genotype_missingness">
+<code class="descname">genotype_missingness</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.genotype_missingness" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the percentage of individuals in the population missing a
+genotype at location.</p>
+<p>Returns: A float</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.get_founder_genotypes">
+<code class="descname">get_founder_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.get_founder_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Have founder individuals request genotypes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.get_genotypes">
+<code class="descname">get_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.get_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Have individuals request genotypes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.major_allele">
+<code class="descname">major_allele</code><span class="sig-paren">(</span><em>location</em>, <em>constraint=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.major_allele" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the major (most common) allele in this population at a locus.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>location</strong> &#8211; the position to find the major allele at</li>
+<li><strong>constraint</strong> &#8211; a constraint (see population.alleles)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the major allele at a locus</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.males">
+<code class="descname">males</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.males" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of males in population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.nonfounders">
+<code class="descname">nonfounders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.nonfounders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of founders in population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.phenotype_dataframe">
+<code class="descname">phenotype_dataframe</code><span class="sig-paren">(</span><em>onlyphenotyped=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.phenotype_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pandas dataframe of the phenotypes available 
+for the individuals present in the collection.</p>
+<p>Arguments:
+onlyphenotyped: Only include individuals who have phenotypes</p>
+<p>Returns: A pandas dataframe</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.phenotypes">
+<code class="descname">phenotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.phenotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the available phenotypes for analysis</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.individualcontainer.IndividualContainer.predict_phenotype">
+<code class="descname">predict_phenotype</code><span class="sig-paren">(</span><em>trait</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.individualcontainer.IndividualContainer.predict_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shortcut function to call predict_phenotype(trait) for every individual
+in the population.</p>
+<p>Returns: nothing</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.paths">
+<span id="pydigree-paths-module"></span><h2>pydigree.paths module<a class="headerlink" href="#module-pydigree.paths" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.paths.common_ancestors">
+<code class="descclassname">pydigree.paths.</code><code class="descname">common_ancestors</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.common_ancestors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Common ancestors of ind1 and ind2.
+A quick set operation on Individual.ancestors()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the first individual</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the second individual</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Common ancestors</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">set</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.paths.fraternity">
+<code class="descclassname">pydigree.paths.</code><code class="descname">fraternity</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.fraternity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coefficient of fraternity is the probability that both alleles in
+a pair of individuals are IBD.
+This is equal to: k(x_m,y_m) * k(x_f,y_f) + k(x_m,y_f) * k(x_f,y_m),
+where x_m represents the mother of x, etc. and k(x,y) represents the
+Malecot kinship between x and y.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the first individual</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the second individual</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">coefficient of fraternity</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.paths.kinship">
+<code class="descclassname">pydigree.paths.</code><code class="descname">kinship</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.kinship" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Malecot kinship coefficient for ind1 and ind2, calculated
+by path counting. The kinship coefficient is the probability that a
+randomly selected pair of alleles (one from each individual) is IBD.</p>
+<p>This quantity is calculated by finding the common ancestors of ind1
+and ind2. For each ancestor, the paths between ind1 and ind2 are found.</p>
+<p>The kinship coefficient is calculated as the sum for every ancestor of
+the sum of ((1/2) ** N) * (1+ F) for each path, where N is the number of
+individuals in the path and F is the inbreeding coefficient for that
+ancestor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the first individual</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the second individual</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Malecot&#8217;s coefficient of coancestry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.paths.path_downward">
+<code class="descclassname">pydigree.paths.</code><code class="descname">path_downward</code><span class="sig-paren">(</span><em>start</em>, <em>end</em>, <em>path=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.path_downward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of paths (if they exist) from an ancestor (start)
+to a descentdant (end).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> &#8211; The individual at the start of the path</li>
+<li><strong>end</strong> &#8211; The individual to be found</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Path:</th><td class="field-body"><p class="first last">a path to append to</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: A list of individuals, in path order</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.paths.paths">
+<code class="descclassname">pydigree.paths.</code><code class="descname">paths</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all valid paths through the pedigree connecting
+individual 1 and individual 2. A valid path can only go through an
+individual once, or it&#8217;s not a valid path.</p>
+<p>This function consists of repeated calls to paths_through_ancestor
+for each common ancestor of ind1 and ind2</p>
+<p>For pedigrees, where typically many kinship coefficients must be
+calculated simulateously, kinships are calculated by this function.
+See notes on pedigree.kinship for more information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the first individual</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the second individual</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">identified paths</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of lists of Individuals</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.paths.paths_through_ancestor">
+<code class="descclassname">pydigree.paths.</code><code class="descname">paths_through_ancestor</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em>, <em>ancestor</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.paths.paths_through_ancestor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds all paths through a genealogy between ind1 and ind2
+that pass through a specific ancestor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the first endpoint</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the other endpoint</li>
+<li><strong>ancestor</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; the ancestor to pass through</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">identified paths</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of lists of Individuals</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.pedigree">
+<span id="pydigree-pedigree-module"></span><h2>pydigree.pedigree module<a class="headerlink" href="#module-pydigree.pedigree" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.pedigree.Pedigree">
+<em class="property">class </em><code class="descclassname">pydigree.pedigree.</code><code class="descname">Pedigree</code><span class="sig-paren">(</span><em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.population.Population" title="pydigree.population.Population"><code class="xref py py-class docutils literal"><span class="pre">pydigree.population.Population</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.additive_relationship_matrix">
+<code class="descname">additive_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.additive_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates an additive relationship matrix (the A matrix) for
+quantiatitive genetics.</p>
+<p>A_ij = 2 * kinship(i,j) if i != j.
+(See the notes on function &#8216;kinship&#8217;)
+A_ij = 1 + inbreeding(i) if i == j
+(inbreeding(i) is equivalent to kinship(i.father,i.mother))</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ids</strong> &#8211; IDs of pedigree members to include in the matrix</td>
+</tr>
+</tbody>
+</table>
+<p>Important: if not given, the rows/columns are all individuals in the
+pedigree, sorted by id. If you&#8217;re not sure about this, try
+sorted(x.label for x in ped) to see the ordering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">additive relationship matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.bit_size">
+<code class="descname">bit_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.bit_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the bit size of the pedigree. The bitsize is defined as 2*n-f
+where n is the number of nonfounders and f is the number of founders.
+This represents the number of bits it takes to represent the
+inheritance vector in the Lander-Green algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bit size</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#module-pydigree.pedigree" title="pydigree.pedigree">pedigree</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.dominance_relationship_matrix">
+<code class="descname">dominance_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.dominance_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the dominance genetic relationship matrix (the D matrix)
+for quantitative genetics.</p>
+<p>D_ij = fraternity(i,j) if i != j
+D_ij = 1 if i == j</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ids</strong> &#8211; IDs of pedigree members to include in the matrix</td>
+</tr>
+</tbody>
+</table>
+<p>Important: if not given, the rows/columns are all individuals in the
+pedigree, sorted by id. If you&#8217;re not sure about this, try
+sorted(x.label for x in ped) to see the ordering.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dominance relationship matrix</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">matrix</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.fraternity">
+<code class="descname">fraternity</code><span class="sig-paren">(</span><em>id1</em>, <em>id2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.fraternity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like Pedigree.kinship, this is a convenience function for getting
+fraternity coefficients for two pedigree memebers by their ID label.</p>
+<p>This is a wrapper for paths.fraternity</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id1</strong> &#8211; the label of a individual to be evaluated</li>
+<li><strong>id2</strong> &#8211; the label of a individual to be evaluated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">coefficient of fraternity</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.inbreeding">
+<code class="descname">inbreeding</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.inbreeding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like Pedigree.kinship, this is a convenience function for getting
+inbreeding coefficients for individuals in pedigrees by their id
+label. As inbreeding coefficients are the kinship coefficient of
+the parents, this function calls Pedigree.kinship to check for
+stored values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> &#8211; the label of the individual to be evaluated</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">inbreeding coefficient</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">a double</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.kinship">
+<code class="descname">kinship</code><span class="sig-paren">(</span><em>id1</em>, <em>id2</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.kinship" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Malecot coefficient of coancestry for two individuals in
+the pedigree. These are calculated recursively.
+For pedigree objects, results are stored to reduce the calculation
+time for kinship matrices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>id1</strong> &#8211; the label of a individual to be evaluated</li>
+<li><strong>id2</strong> &#8211; the label of a individual to be evaluated</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Malecot&#8217;s coefficient of coancestry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Reference:
+Lange. Mathematical and Statistical Methods for Genetic Analysis.
+1997. Springer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.ld">
+<code class="descname">ld</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.ld" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.mitochondrial_relationship_matrix">
+<code class="descname">mitochondrial_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.mitochondrial_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the mitochondrial relationship matrix.
+M_ij = 1 if matriline(i) == matriline(j)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ids</strong> &#8211; IDs of pedigree members to include in the matrix</td>
+</tr>
+</tbody>
+</table>
+<p>Important: if not given, the rows/columns are all individuals in the
+pedigree, sorted by id. If you&#8217;re not sure about this, try
+sorted(x.label for x in ped) to see the ordering.</p>
+<p>Returns: A numpy matrix</p>
+<p>Reference:
+Liu et al. &#8220;Association Testing of the Mitochondrial Genome Using
+Pedigree Data&#8221;. Genetic Epidemiology. (2013). 37,3:239-247</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigree.Pedigree.simulate_ibd_states">
+<code class="descname">simulate_ibd_states</code><span class="sig-paren">(</span><em>inds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigree.Pedigree.simulate_ibd_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulate IBD patterns by gene dropping: Everyone&#8217;s genotypes reflect
+the founder chromosome that they received the genotype from. You can
+then use the ibs function to determine IBD state. This effectively an
+infinite-alleles simulation.</p>
+<p>Returns: Nothing</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.pedigreecollection">
+<span id="pydigree-pedigreecollection-module"></span><h2>pydigree.pedigreecollection module<a class="headerlink" href="#module-pydigree.pedigreecollection" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.pedigreecollection.PedigreeCollection">
+<em class="property">class </em><code class="descclassname">pydigree.pedigreecollection.</code><code class="descname">PedigreeCollection</code><span class="sig-paren">(</span><em>peds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.individualcontainer.IndividualContainer" title="pydigree.individualcontainer.IndividualContainer"><code class="xref py py-class docutils literal"><span class="pre">pydigree.individualcontainer.IndividualContainer</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.add_chromosome">
+<code class="descname">add_chromosome</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.add_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.add_pedigree">
+<code class="descname">add_pedigree</code><span class="sig-paren">(</span><em>ped</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.add_pedigree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.additive_relationship_matrix">
+<code class="descname">additive_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.additive_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a block diagonal matrix of additive relationships
+for each pedigree.</p>
+<p>See notes on Pedigree.additive_relationship_matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.chromosomes">
+<code class="descname">chromosomes</code><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.chromosomes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.dominance_relationship_matrix">
+<code class="descname">dominance_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.dominance_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a block diagonal matrix of dominance relationships
+for each pedigree.</p>
+<p>See notes on Pedigree.dominance_relationship_matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.individuals">
+<code class="descname">individuals</code><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.individuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the individuals represented by all pedigrees, 
+sorted by pedigree label, id label</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.mitochondrial_relationship_matrix">
+<code class="descname">mitochondrial_relationship_matrix</code><span class="sig-paren">(</span><em>ids=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.mitochondrial_relationship_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a block diagonal matrix of mitochondrial relationships
+for each pedigree.</p>
+<p>See notes on Pedigree.mitochondrial_relationship_matrix</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.pedigrees">
+<code class="descname">pedigrees</code><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.pedigrees" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of the pedigree objects contained in the collection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.pedigreecollection.PedigreeCollection.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.pedigreecollection.PedigreeCollection.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.population">
+<span id="pydigree-population-module"></span><h2>pydigree.population module<a class="headerlink" href="#module-pydigree.population" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.population.Population">
+<em class="property">class </em><code class="descclassname">pydigree.population.</code><code class="descname">Population</code><span class="sig-paren">(</span><em>intial_pop_size=0</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.individualcontainer.IndividualContainer" title="pydigree.individualcontainer.IndividualContainer"><code class="xref py py-class docutils literal"><span class="pre">pydigree.individualcontainer.IndividualContainer</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.population.Population.add_chromosome">
+<code class="descname">add_chromosome</code><span class="sig-paren">(</span><em>chrom</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.add_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a chromosome to the population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.advance_generation">
+<code class="descname">advance_generation</code><span class="sig-paren">(</span><em>gensize</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.advance_generation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates a generation of random mating.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gensize</strong> (<em>numeric</em>) &#8211; The size of the new generation</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.chromosome_count">
+<code class="descname">chromosome_count</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.chromosome_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of chromosomes in this population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.founder_individual">
+<code class="descname">founder_individual</code><span class="sig-paren">(</span><em>register=True</em>, <em>sex=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.founder_individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new founder individual and adds to the population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.get_founder_genotypes">
+<code class="descname">get_founder_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.get_founder_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives genotypes to each founder in the population with chromosomes 
+from the chromosome pool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.get_genotypes">
+<code class="descname">get_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.get_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Causes each Individual object in the pedigree to request genotypes
+from its parents</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.get_linkage_equilibrium_genotypes">
+<code class="descname">get_linkage_equilibrium_genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.get_linkage_equilibrium_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of genotypes for an individual in linkage equilibrium</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.population.Population.individuals">
+<code class="descname">individuals</code><a class="headerlink" href="#pydigree.population.Population.individuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of individuals in the population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.ld">
+<code class="descname">ld</code><span class="sig-paren">(</span><em>locusa</em>, <em>locusb</em>, <em>allelea=None</em>, <em>alleleb=None</em>, <em>method='r2'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.ld" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.mate">
+<code class="descname">mate</code><span class="sig-paren">(</span><em>ind1</em>, <em>ind2</em>, <em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.mate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an individual as the child of two specificied individual
+objects and randomly chooses a sex.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ind1</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; The first parent</li>
+<li><strong>ind2</strong> (<a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual"><em>Individual</em></a>) &#8211; The second parent</li>
+<li><strong>id</strong> &#8211; ID label for the child</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An individual with ind1 and ind2 as parents</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pydigree.individual.Individual" title="pydigree.individual.Individual">Individual</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.register_individual">
+<code class="descname">register_individual</code><span class="sig-paren">(</span><em>ind</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.register_individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an individual to the population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.remove_ancestry">
+<code class="descname">remove_ancestry</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.remove_ancestry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes every individual in the population a founder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.remove_individual">
+<code class="descname">remove_individual</code><span class="sig-paren">(</span><em>ind</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.remove_individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an individual from the population</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of individuals in the population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.population.Population.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.Population.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges two datasets (i.e. performs Individual.update for each individual in the pedigree)</p>
+<p>Assumes unique individual IDs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#pydigree.population.Population" title="pydigree.population.Population"><em>Population</em></a>) &#8211; New data to merge in</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.population.exponential_growth">
+<code class="descclassname">pydigree.population.</code><code class="descname">exponential_growth</code><span class="sig-paren">(</span><em>p</em>, <em>r</em>, <em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.exponential_growth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models exponential growth over discrete generations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>numeric</em>) &#8211; initial population</li>
+<li><strong>r</strong> (<em>numeric</em>) &#8211; growth rate</li>
+<li><strong>t</strong> (<em>numeric</em>) &#8211; number of generations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">population size at time t</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numeric</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.population.is_missing_genotype">
+<code class="descclassname">pydigree.population.</code><code class="descname">is_missing_genotype</code><span class="sig-paren">(</span><em>g</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.is_missing_genotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.population.logistic_growth">
+<code class="descclassname">pydigree.population.</code><code class="descname">logistic_growth</code><span class="sig-paren">(</span><em>p</em>, <em>r</em>, <em>k</em>, <em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.population.logistic_growth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models logistic growth over discrete generations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> &#8211; initial population</li>
+<li><strong>r</strong> &#8211; growth rate</li>
+<li><strong>k</strong> &#8211; final population</li>
+<li><strong>t</strong> &#8211; number of generations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">population size at time t</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numeric</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.rand">
+<span id="pydigree-rand-module"></span><h2>pydigree.rand module<a class="headerlink" href="#module-pydigree.rand" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.rand.choice">
+<code class="descclassname">pydigree.rand.</code><code class="descname">choice</code><span class="sig-paren">(</span><em>iter</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.rand.choice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.rand.sample_with_replacement">
+<code class="descclassname">pydigree.rand.</code><code class="descname">sample_with_replacement</code><span class="sig-paren">(</span><em>seq</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.rand.sample_with_replacement" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.recombination">
+<span id="pydigree-recombination-module"></span><h2>pydigree.recombination module<a class="headerlink" href="#module-pydigree.recombination" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.recombination.recombine">
+<code class="descclassname">pydigree.recombination.</code><code class="descname">recombine</code><span class="sig-paren">(</span><em>chr1</em>, <em>chr2</em>, <em>map</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.recombination.recombine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes two chromatids and returns a simulated one by an exponential process</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.support">
+<span id="pydigree-support-module"></span><h2>pydigree.support module<a class="headerlink" href="#module-pydigree.support" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.support.set_seed">
+<code class="descclassname">pydigree.support.</code><code class="descname">set_seed</code><span class="sig-paren">(</span><em>seed</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.support.set_seed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pydigree">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pydigree" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pydigree package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pydigree.common">pydigree.common module</a></li>
+<li><a class="reference internal" href="#module-pydigree.exceptions">pydigree.exceptions module</a></li>
+<li><a class="reference internal" href="#module-pydigree.ibs">pydigree.ibs module</a></li>
+<li><a class="reference internal" href="#module-pydigree.individual">pydigree.individual module</a></li>
+<li><a class="reference internal" href="#module-pydigree.individualcontainer">pydigree.individualcontainer module</a></li>
+<li><a class="reference internal" href="#module-pydigree.paths">pydigree.paths module</a></li>
+<li><a class="reference internal" href="#module-pydigree.pedigree">pydigree.pedigree module</a></li>
+<li><a class="reference internal" href="#module-pydigree.pedigreecollection">pydigree.pedigreecollection module</a></li>
+<li><a class="reference internal" href="#module-pydigree.population">pydigree.population module</a></li>
+<li><a class="reference internal" href="#module-pydigree.rand">pydigree.rand module</a></li>
+<li><a class="reference internal" href="#module-pydigree.recombination">pydigree.recombination module</a></li>
+<li><a class="reference internal" href="#module-pydigree.support">pydigree.support module</a></li>
+<li><a class="reference internal" href="#module-pydigree">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pydigree.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/pydigree.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

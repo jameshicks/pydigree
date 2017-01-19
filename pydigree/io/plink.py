@@ -93,15 +93,21 @@ def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
     Write individual genotypes to a file in plink PED data format.
     Optionally outputs the genotype locations to the mapfile.
 
-    pedigrees: the pedigrees to be written
-    filename_prefix: The output ped file ('.ped' will be appended)
-    predicate: a callable that evaluates True when the individual 
+    :param pedigrees: the pedigrees to be written
+    :param filename_prefix: The output ped file ('.ped' will be appended)
+    :param predicate: a callable that evaluates True when the individual 
       should be outputted to the file
-    mapfile: True if the plink MAP file should be written
-    compression: Compress the data? Options are bz2 and gzip2,
+    :param mapfile: True if the plink MAP file should be written
+    :param compression: Compress the data? Options are bz2 and gzip,
       otherwise data will be written uncompressed
 
-    Returns: Nothing
+    :type pedigrees: IndividualContainer
+    :type filename_prefix: string
+    :type predicate: callable
+    :type mapfile: string
+    :type compression: 'gzip' or 'bz2'
+
+    :rtype: void
     '''
     pedfile = filename_prefix + '.ped'
     if compression in {'gzip', 'gz'}:

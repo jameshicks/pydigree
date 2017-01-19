@@ -1,0 +1,698 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pydigree.io package &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pydigree-io-package">
+<h1>pydigree.io package<a class="headerlink" href="#pydigree-io-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pydigree.io.base">
+<span id="pydigree-io-base-module"></span><h2>pydigree.io.base module<a class="headerlink" href="#module-pydigree.io.base" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.base.genotypes_from_sequential_alleles">
+<code class="descclassname">pydigree.io.base.</code><code class="descname">genotypes_from_sequential_alleles</code><span class="sig-paren">(</span><em>chromosomes</em>, <em>data</em>, <em>missing_code='0'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.base.genotypes_from_sequential_alleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a series of alleles and turns them into genotypes.</p>
+<p>For example: 
+The series &#8216;1 2 1 2 1 2&#8217; becomes 
+chrom1 = [1,1,1]
+chrom2 = [2,2,2]</p>
+<p>These are returned in the a list in the form [(chroma, chromb), (chroma, chromb)...]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chromosomes</strong> (<em>list of ChromosomeTemplate</em>) &#8211; genotype data</li>
+<li><strong>data</strong> &#8211; The alleles to be turned into genotypes</li>
+<li><strong>missing_code</strong> (<em>string</em>) &#8211; value representing a missing allele</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of 2-tuples of Alleles objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.base.read_ped">
+<code class="descclassname">pydigree.io.base.</code><code class="descname">read_ped</code><span class="sig-paren">(</span><em>filename</em>, <em>population=None</em>, <em>delimiter=None</em>, <em>affected_labels=None</em>, <em>population_handler=None</em>, <em>data_handler=None</em>, <em>connect_inds=True</em>, <em>onlyinds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.base.read_ped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a plink format pedigree file, ie:</p>
+<dl class="docutils">
+<dt>::    </dt>
+<dd>familyid indid father mother sex whatever whatever whatever</dd>
+</dl>
+<p>into a pydigree pedigree object, with optional population to
+assign to pedigree members. If you don&#8217;t provide a population
+you can&#8217;t simulate genotypes!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The file to be read</li>
+<li><strong>population</strong> (<a class="reference internal" href="pydigree.html#pydigree.population.Population" title="pydigree.population.Population"><em>Population</em></a>) &#8211; The population to assign individuals to</li>
+<li><strong>delimiter</strong> (<em>string</em>) &#8211; a string defining the field separator, default: any whitespace</li>
+<li><strong>affected_labels</strong> (<em>dict</em><em> (</em><em>str -&gt; value</em><em>)</em><em></em>) &#8211; The labels that determine affection status.</li>
+<li><strong>population_handler</strong> &#8211; a function to set up the population</li>
+<li><strong>data_handler</strong> (<em>callable</em>) &#8211; a function to turn the data into useful individual information</li>
+<li><strong>connect_inds</strong> (<em>bool</em>) &#8211; build references between individuals. Requires all
+individuals be present in the file</li>
+<li><strong>onlyinds</strong> (<em>iterable</em>) &#8211; only include data for specified individuals</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">individuals contained in the pedigree file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pydigree.html#pydigree.pedigreecollection.PedigreeCollection" title="pydigree.pedigreecollection.PedigreeCollection">PedigreeCollection</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.base.read_phenotypes">
+<code class="descclassname">pydigree.io.base.</code><code class="descname">read_phenotypes</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>csvfile</em>, <em>delimiter='</em>, <em>'</em>, <em>missingcode='X'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.base.read_phenotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a csv with header
+famid,ind,phen,phen,phen,phen etc etc</p>
+<p>Arguments
+:param pedigrees:   data to update
+:param csvfile:     the filename of the file containing phenotypes.
+:param delimiter:   the field delimiter for the file
+:param missingcode: the code for missing values
+:type pedigrees: PedigreeCollection
+:type csvfile: string
+:type missingcode: string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">void</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.base.write_pedigree">
+<code class="descclassname">pydigree.io.base.</code><code class="descname">write_pedigree</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>filename</em>, <em>missingcode='X'</em>, <em>delim=' '</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.base.write_pedigree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes pedigree to a LINKAGE formatted pedigree file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pedigrees</strong> &#8211; Data to write</li>
+<li><strong>filename</strong> &#8211; filename to write to</li>
+<li><strong>missingcode</strong> &#8211; code to use for missing values</li>
+<li><strong>delim</strong> &#8211; output field separator</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.base.write_phenotypes">
+<code class="descclassname">pydigree.io.base.</code><code class="descname">write_phenotypes</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>filename</em>, <em>predicate=None</em>, <em>missingcode='X'</em>, <em>delim='</em>, <em>'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.base.write_phenotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes phenotypes to a CSV (or other field delimited) file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pedigrees</strong> &#8211; Data to write</li>
+<li><strong>filename</strong> &#8211; filename to write to</li>
+<li><strong>missingcode</strong> (<em>string</em>) &#8211; code to use for missing values</li>
+<li><strong>delim</strong> (<em>string</em>) &#8211; output field separator</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.beagle">
+<span id="pydigree-io-beagle-module"></span><h2>pydigree.io.beagle module<a class="headerlink" href="#module-pydigree.io.beagle" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.io.beagle.BeagleGenotypeRecord">
+<em class="property">class </em><code class="descclassname">pydigree.io.beagle.</code><code class="descname">BeagleGenotypeRecord</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.BeagleGenotypeRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleGenotypeRecord.data">
+<code class="descname">data</code><a class="headerlink" href="#pydigree.io.beagle.BeagleGenotypeRecord.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleGenotypeRecord.identifier">
+<code class="descname">identifier</code><a class="headerlink" href="#pydigree.io.beagle.BeagleGenotypeRecord.identifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.io.beagle.BeagleGenotypeRecord.is_phenotype_record">
+<code class="descname">is_phenotype_record</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.BeagleGenotypeRecord.is_phenotype_record" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleGenotypeRecord.label">
+<code class="descname">label</code><a class="headerlink" href="#pydigree.io.beagle.BeagleGenotypeRecord.label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord">
+<em class="property">class </em><code class="descclassname">pydigree.io.beagle.</code><code class="descname">BeagleMarkerRecord</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord.alleles">
+<code class="descname">alleles</code><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord.alleles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord.alternates">
+<code class="descname">alternates</code><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord.alternates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord.label">
+<code class="descname">label</code><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord.label" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord.pos">
+<code class="descname">pos</code><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord.pos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.beagle.BeagleMarkerRecord.reference">
+<code class="descname">reference</code><a class="headerlink" href="#pydigree.io.beagle.BeagleMarkerRecord.reference" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.beagle.read_beagle">
+<code class="descclassname">pydigree.io.beagle.</code><code class="descname">read_beagle</code><span class="sig-paren">(</span><em>genofile</em>, <em>markerfile</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.read_beagle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads BEAGLE formatted genotype data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>genofile</strong> (<em>string</em>) &#8211; Filename  containing genotype information for individuals</li>
+<li><strong>markerfile</strong> (<em>string</em>) &#8211; Filename  containing marker location and allele information</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pydigree.html#pydigree.population.Population" title="pydigree.population.Population">Population</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.beagle.read_beagle_genotypefile">
+<code class="descclassname">pydigree.io.beagle.</code><code class="descname">read_beagle_genotypefile</code><span class="sig-paren">(</span><em>filename</em>, <em>pop</em>, <em>missingcode='0'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.read_beagle_genotypefile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads BEAGLE formatted genotype files</p>
+<p>Arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> &#8211; Filename of BEAGLE genotype file</li>
+<li><strong>pop</strong> &#8211; the population to add these individuals to</li>
+<li><strong>missingcode</strong> (<em>string</em>) &#8211; The value that indicates a missing genotype</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.beagle.read_beagle_markerfile">
+<code class="descclassname">pydigree.io.beagle.</code><code class="descname">read_beagle_markerfile</code><span class="sig-paren">(</span><em>filename</em>, <em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.beagle.read_beagle_markerfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads marker locations from a BEAGLE formatted file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; The file to be read</li>
+<li><strong>label</strong> &#8211; An optional label to give the chromosome, since the BEAGLE
+format does not require it</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="pydigree.genotypes.html#pydigree.genotypes.chromosometemplate.ChromosomeTemplate" title="pydigree.genotypes.chromosometemplate.ChromosomeTemplate">ChromosomeTemplate</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.genomesimla">
+<span id="pydigree-io-genomesimla-module"></span><h2>pydigree.io.genomesimla module<a class="headerlink" href="#module-pydigree.io.genomesimla" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.genomesimla.read_gs_chromosome_template">
+<code class="descclassname">pydigree.io.genomesimla.</code><code class="descname">read_gs_chromosome_template</code><span class="sig-paren">(</span><em>templatef</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.genomesimla.read_gs_chromosome_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a genomeSIMLA format chromosome template file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>templatef</strong> (<em>string</em>) &#8211; The filename of the template file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">A ChromosomeTemplate object corresponding to the file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.kinship">
+<span id="pydigree-io-kinship-module"></span><h2>pydigree.io.kinship module<a class="headerlink" href="#module-pydigree.io.kinship" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.kinship.read_kinship">
+<code class="descclassname">pydigree.io.kinship.</code><code class="descname">read_kinship</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.kinship.read_kinship" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a KinInbCoef formatted file of kinship and inbreeding coefficients</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) &#8211; the filename to be read</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: a dictionary in the format 
+{frozenset({(fam, ind_a), (fam, ind_b)}): kinship/inbreeding</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.merlin">
+<span id="pydigree-io-merlin-module"></span><h2>pydigree.io.merlin module<a class="headerlink" href="#module-pydigree.io.merlin" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.merlin.create_data_handler_func">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">create_data_handler_func</code><span class="sig-paren">(</span><em>chromosomes</em>, <em>phenotypes</em>, <em>phenotype_indices</em>, <em>genotypes</em>, <em>genotype_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.create_data_handler_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.create_pop_handler_func">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">create_pop_handler_func</code><span class="sig-paren">(</span><em>chromosomes</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.create_pop_handler_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.genotype_indices">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">genotype_indices</code><span class="sig-paren">(</span><em>types</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.genotype_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.phenotype_indices">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">phenotype_indices</code><span class="sig-paren">(</span><em>types</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.phenotype_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.read_dat">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">read_dat</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.read_dat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.read_map">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">read_map</code><span class="sig-paren">(</span><em>filename</em>, <em>only=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.read_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.read_merlin">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">read_merlin</code><span class="sig-paren">(</span><em>prefix=None</em>, <em>pedfile=None</em>, <em>datfile=None</em>, <em>mapfile=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.read_merlin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.merlin.write_phenotypes">
+<code class="descclassname">pydigree.io.merlin.</code><code class="descname">write_phenotypes</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>prefix</em>, <em>phenotypes=None</em>, <em>phenotype_types=None</em>, <em>predicate=None</em>, <em>skip_all_missing=True</em>, <em>missing_code='X'</em>, <em>trait=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.merlin.write_phenotypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.plink">
+<span id="pydigree-io-plink-module"></span><h2>pydigree.io.plink module<a class="headerlink" href="#module-pydigree.io.plink" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.plink.create_pop_handler_func">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">create_pop_handler_func</code><span class="sig-paren">(</span><em>mapfile</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.create_pop_handler_func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.plink_data_handler">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">plink_data_handler</code><span class="sig-paren">(</span><em>ind</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.plink_data_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to handle the data payload from a plink line</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.read_map">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">read_map</code><span class="sig-paren">(</span><em>mapfile</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.read_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a PLINK map file into a list of ChromosomeTemplate objects</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mapfile</strong> (<em>string</em>) &#8211; Path of the file to be read</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">a list of ChromosomeTemplate objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.read_plink">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">read_plink</code><span class="sig-paren">(</span><em>pedfile=None</em>, <em>mapfile=None</em>, <em>prefix=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.read_plink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a plink file by specifying pedfile and mapfile directly,
+or by using a prefix. Pass additional arguments to 
+pydigree.io.base.read_ped with kwargs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pedfile</strong> &#8211; a plink PED file to be read</li>
+<li><strong>mapfile</strong> &#8211; a plink MAP file to be read</li>
+<li><strong>prefix</strong> &#8211; sets mapfile to &#8216;prefix.map&#8217; and pedfile to &#8216;prefix.ped&#8217;</li>
+<li><strong>kwargs</strong> &#8211; additional arguments passed to read_ped</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: A PedigreeCollection object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.write_map">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">write_map</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>mapfile</em>, <em>output_chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.write_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes the genotype location data to a PLINK MAP file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pedigrees</strong> &#8211; the population containing the data to be written</li>
+<li><strong>mapfile</strong> &#8211; the name of the file to be output to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: Nothing</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.write_ped">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">write_ped</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>pedfile</em>, <em>delim=' '</em>, <em>predicate=None</em>, <em>output_chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.write_ped" title="Permalink to this definition">¶</a></dt>
+<dd><p>write_ped writes data in a plink-format PED file, and optionally a
+plink-format map file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pedigrees</strong> &#8211; An object of class PedigreeCollection containing what you
+want to output</li>
+<li><strong>pedfile</strong> &#8211; a string giving the name out the file to output to.</li>
+<li><strong>mapfile</strong> &#8211; the name of a mapfile to output, if you want to output one.
+an object that evaluates as False or None will skip the mapfile</li>
+<li><strong>genotypes</strong> &#8211; Should genotypes be output True/False</li>
+<li><strong>delim</strong> &#8211; Field seperator</li>
+<li><strong>predicate</strong> &#8211; Which inputs to include in the output file. If not 
+specified all are output. If the string is &#8216;affected&#8217;, only affected
+individuals are output. If the string is &#8216;phenotyped&#8217;, all individuals
+with phenotype information are output. Any other value of predicate
+must be a function to perform on the individual that evaluates to
+True/False for whether the individual should be output.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: Nothing</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.plink.write_plink">
+<code class="descclassname">pydigree.io.plink.</code><code class="descname">write_plink</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>filename_prefix</em>, <em>predicate=None</em>, <em>mapfile=False</em>, <em>compression=None</em>, <em>output_chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.plink.write_plink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write individual genotypes to a file in plink PED data format.
+Optionally outputs the genotype locations to the mapfile.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pedigrees</strong> (<a class="reference internal" href="pydigree.html#pydigree.individualcontainer.IndividualContainer" title="pydigree.individualcontainer.IndividualContainer"><em>IndividualContainer</em></a>) &#8211; the pedigrees to be written</li>
+<li><strong>filename_prefix</strong> (<em>string</em>) &#8211; The output ped file (&#8216;.ped&#8217; will be appended)</li>
+<li><strong>predicate</strong> (<em>callable</em>) &#8211; a callable that evaluates True when the individual 
+should be outputted to the file</li>
+<li><strong>mapfile</strong> (<em>string</em>) &#8211; True if the plink MAP file should be written</li>
+<li><strong>compression</strong> (<em>'gzip'</em><em> or </em><em>'bz2'</em>) &#8211; Compress the data? Options are bz2 and gzip,
+otherwise data will be written uncompressed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">void</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.sgs">
+<span id="pydigree-io-sgs-module"></span><h2>pydigree.io.sgs module<a class="headerlink" href="#module-pydigree.io.sgs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.io.sgs.GermlineRecord">
+<em class="property">class </em><code class="descclassname">pydigree.io.sgs.</code><code class="descname">GermlineRecord</code><span class="sig-paren">(</span><em>payload</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.sgs.GermlineRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A class for working with records in GERMLINE formatted files</p>
+<dl class="attribute">
+<dt id="pydigree.io.sgs.GermlineRecord.bp_locations">
+<code class="descname">bp_locations</code><a class="headerlink" href="#pydigree.io.sgs.GermlineRecord.bp_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.sgs.GermlineRecord.location">
+<code class="descname">location</code><a class="headerlink" href="#pydigree.io.sgs.GermlineRecord.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.sgs.GermlineRecord.pair">
+<code class="descname">pair</code><a class="headerlink" href="#pydigree.io.sgs.GermlineRecord.pair" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.sgs.read_germline">
+<code class="descclassname">pydigree.io.sgs.</code><code class="descname">read_germline</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.sgs.read_germline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a GERMLINE formatted SGS filename into an SGSAnalysis object</p>
+<p>GERMLINE files are text files with the format:</p>
+<blockquote>
+<div><ol class="arabic simple" start="0">
+<li>Family ID 1</li>
+<li>Individual ID 1</li>
+<li>Family ID 2</li>
+<li>Individual ID 2</li>
+<li>Chromosome</li>
+<li>Segment start (bp/cM)</li>
+<li>Segment end (bp/cM)</li>
+<li>Segment start (SNP)</li>
+<li>Segment end (SNP)</li>
+<li>Total SNPs in segment</li>
+<li>Length of segment</li>
+<li>Units for genetic length (cM or MB)</li>
+<li>Mismatching SNPs in segment</li>
+<li>1 if Individual 1 is homozygous in match; 0 otherwise</li>
+<li>1 if Individual 2 is homozygous in match; 0 otherwise</li>
+</ol>
+</div></blockquote>
+<p>This function only uses 0-6.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.sgs.write_sgs">
+<code class="descclassname">pydigree.io.sgs.</code><code class="descname">write_sgs</code><span class="sig-paren">(</span><em>data</em>, <em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.sgs.write_sgs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.smartopen">
+<span id="pydigree-io-smartopen-module"></span><h2>pydigree.io.smartopen module<a class="headerlink" href="#module-pydigree.io.smartopen" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.io.smartopen.smartopen">
+<code class="descclassname">pydigree.io.smartopen.</code><code class="descname">smartopen</code><span class="sig-paren">(</span><em>filename</em>, <em>mode='r'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.smartopen.smartopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seamlessly open compressed files. Use in place of regular open.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Python&#8217;s compression modules iterate over compressed files as bytes,
+not strings. Unless &#8216;b&#8217; (binary) is specified in the mode, we add &#8216;t&#8217; (text)
+to the mode to force iteration as strings, operating consistently</p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io.vcf">
+<span id="pydigree-io-vcf-module"></span><h2>pydigree.io.vcf module<a class="headerlink" href="#module-pydigree.io.vcf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.io.vcf.VCFRecord">
+<em class="property">class </em><code class="descclassname">pydigree.io.vcf.</code><code class="descname">VCFRecord</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.vcf.VCFRecord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A class for parsing lines in VCF files</p>
+<dl class="method">
+<dt id="pydigree.io.vcf.VCFRecord.genotypes">
+<code class="descname">genotypes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.vcf.VCFRecord.genotypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the genotypes from a VCF record</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.io.vcf.VCFRecord.getitems">
+<code class="descname">getitems</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.vcf.VCFRecord.getitems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.io.vcf.VCFRecord.info">
+<code class="descname">info</code><a class="headerlink" href="#pydigree.io.vcf.VCFRecord.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.io.vcf.read_vcf">
+<code class="descclassname">pydigree.io.vcf.</code><code class="descname">read_vcf</code><span class="sig-paren">(</span><em>filename</em>, <em>require_pass=False</em>, <em>freq_info=None</em>, <em>info_filters=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.io.vcf.read_vcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a VCF file and returns a Population object with the
+individuals represented in the file</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.io">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pydigree.io" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pydigree.io package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.base">pydigree.io.base module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.beagle">pydigree.io.beagle module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.genomesimla">pydigree.io.genomesimla module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.kinship">pydigree.io.kinship module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.merlin">pydigree.io.merlin module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.plink">pydigree.io.plink module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.sgs">pydigree.io.sgs module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.smartopen">pydigree.io.smartopen module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io.vcf">pydigree.io.vcf module</a></li>
+<li><a class="reference internal" href="#module-pydigree.io">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pydigree.io.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/pydigree.io.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

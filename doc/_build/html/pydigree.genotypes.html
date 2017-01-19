@@ -1,0 +1,445 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pydigree.genotypes package &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pydigree-genotypes-package">
+<h1>pydigree.genotypes package<a class="headerlink" href="#pydigree-genotypes-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pydigree.genotypes.alleles">
+<span id="pydigree-genotypes-alleles-module"></span><h2>pydigree.genotypes.alleles module<a class="headerlink" href="#module-pydigree.genotypes.alleles" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.genotypes.alleles.Alleles">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.alleles.</code><code class="descname">Alleles</code><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>, <a class="reference internal" href="#pydigree.genotypes.genoabc.AlleleContainer" title="pydigree.genotypes.genoabc.AlleleContainer"><code class="xref py py-class docutils literal"><span class="pre">pydigree.genotypes.genoabc.AlleleContainer</span></code></a></p>
+<p>A class for holding genotypes</p>
+<dl class="method">
+<dt id="pydigree.genotypes.alleles.Alleles.copy_span">
+<code class="descname">copy_span</code><span class="sig-paren">(</span><em>template</em>, <em>copy_start</em>, <em>copy_stop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles.copy_span" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.alleles.Alleles.empty_like">
+<code class="descname">empty_like</code><span class="sig-paren">(</span><em>blank=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles.empty_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an empty Alleles object like this one</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.alleles.Alleles.missing">
+<code class="descname">missing</code><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles.missing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array indicating which markers have missing data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.alleles.Alleles.missingcode">
+<code class="descname">missingcode</code><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles.missingcode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.alleles.Alleles.nmark">
+<code class="descname">nmark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.alleles.Alleles.nmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of markers represented by the
+Alleles object</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.genotypes.chromosometemplate">
+<span id="pydigree-genotypes-chromosometemplate-module"></span><h2>pydigree.genotypes.chromosometemplate module<a class="headerlink" href="#module-pydigree.genotypes.chromosometemplate" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.chromosometemplate.</code><code class="descname">ChromosomeTemplate</code><span class="sig-paren">(</span><em>label=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Chromsome is a class that keeps track of marker frequencies and distances.
+Not an actual chromosome with genotypes, which you would find under
+Individual.</p>
+<p>Markers are currently diallelic and frequencies are given for minor
+alleles. Marker frequencies must sum to 1. Major allele frequency
+is then f = 1 - f_minor.</p>
+<p>linkageequilibrium_chromosome generates chromsomes that are generated from
+simulating all markers with complete independence (linkage equilibrium).
+This is not typically what you want: you won&#8217;t find any LD for association
+etc. linkageequilibrium_chromosome is used for &#8216;seed&#8217; chromosomes when
+initializing a population pool or when simulating purely family-based
+studies for linkage analysis.</p>
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.add_genotype">
+<code class="descname">add_genotype</code><span class="sig-paren">(</span><em>frequency=None</em>, <em>map_position=None</em>, <em>label=None</em>, <em>bp=None</em>, <em>reference=None</em>, <em>alternates=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.add_genotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.closest_marker">
+<code class="descname">closest_marker</code><span class="sig-paren">(</span><em>position</em>, <em>map_type='physical'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.closest_marker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the closest marker to a position</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.empty_chromosome">
+<code class="descname">empty_chromosome</code><span class="sig-paren">(</span><em>dtype=&lt;class 'numpy.uint8'&gt;</em>, <em>sparse=False</em>, <em>refcode=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.empty_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.finalize">
+<code class="descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.finalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.from_genomesimla">
+<em class="property">static </em><code class="descname">from_genomesimla</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.from_genomesimla" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.linkageequilibrium_chromosome">
+<code class="descname">linkageequilibrium_chromosome</code><span class="sig-paren">(</span><em>sparse=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.linkageequilibrium_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a randomly generated chromosome</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.linkageequilibrium_chromosomes">
+<code class="descname">linkageequilibrium_chromosomes</code><span class="sig-paren">(</span><em>nchrom</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.linkageequilibrium_chromosomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array of many randomly generated chromosomes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.nmark">
+<code class="descname">nmark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.nmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of markers on the chromosome</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.outputlabel">
+<code class="descname">outputlabel</code><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.outputlabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The label outputted when written to disk</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.set_frequency">
+<code class="descname">set_frequency</code><span class="sig-paren">(</span><em>position</em>, <em>frequency</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.set_frequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manually change an allele frequency</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.chromosometemplate.ChromosomeTemplate.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.chromosometemplate.ChromosomeTemplate.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the size of the chromosome in centimorgans</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.genotypes.genoabc">
+<span id="pydigree-genotypes-genoabc-module"></span><h2>pydigree.genotypes.genoabc module<a class="headerlink" href="#module-pydigree.genotypes.genoabc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.genotypes.genoabc.AlleleContainer">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.genoabc.</code><code class="descname">AlleleContainer</code><a class="headerlink" href="#pydigree.genotypes.genoabc.AlleleContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A base class for the interface allele containers object must implement</p>
+<dl class="method">
+<dt id="pydigree.genotypes.genoabc.AlleleContainer.copy_span">
+<code class="descname">copy_span</code><span class="sig-paren">(</span><em>template</em>, <em>start</em>, <em>stop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.genoabc.AlleleContainer.copy_span" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.genoabc.AlleleContainer.dtype">
+<code class="descname">dtype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.genoabc.AlleleContainer.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.genoabc.AlleleContainer.empty_like">
+<code class="descname">empty_like</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.genoabc.AlleleContainer.empty_like" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.genotypes.labelledalleles">
+<span id="pydigree-genotypes-labelledalleles-module"></span><h2>pydigree.genotypes.labelledalleles module<a class="headerlink" href="#module-pydigree.genotypes.labelledalleles" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.genotypes.labelledalleles.AncestralAllele">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.labelledalleles.</code><code class="descname">AncestralAllele</code><span class="sig-paren">(</span><em>anc</em>, <em>hap</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.AncestralAllele" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.AncestralAllele.ancestor">
+<code class="descname">ancestor</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.AncestralAllele.ancestor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.AncestralAllele.haplotype">
+<code class="descname">haplotype</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.AncestralAllele.haplotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.labelledalleles.</code><code class="descname">InheritanceSpan</code><span class="sig-paren">(</span><em>ancestor</em>, <em>chromosomeidx</em>, <em>haplotype</em>, <em>start</em>, <em>stop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.ancestor">
+<code class="descname">ancestor</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.ancestor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.ancestral_allele">
+<code class="descname">ancestral_allele</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.ancestral_allele" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.ancestral_chromosome">
+<code class="descname">ancestral_chromosome</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.ancestral_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.chromosomeidx">
+<code class="descname">chromosomeidx</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.chromosomeidx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.contains">
+<code class="descname">contains</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the index specified falls within this span</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.haplotype">
+<code class="descname">haplotype</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.haplotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.interval">
+<code class="descname">interval</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.interval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.start">
+<code class="descname">start</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.stop">
+<code class="descname">stop</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.InheritanceSpan.to_tuple">
+<code class="descname">to_tuple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.InheritanceSpan.to_tuple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.labelledalleles.</code><code class="descname">LabelledAlleles</code><span class="sig-paren">(</span><em>spans=None</em>, <em>chromobj=None</em>, <em>nmark=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.genotypes.genoabc.AlleleContainer" title="pydigree.genotypes.genoabc.AlleleContainer"><code class="xref py py-class docutils literal"><span class="pre">pydigree.genotypes.genoabc.AlleleContainer</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.add_span">
+<code class="descname">add_span</code><span class="sig-paren">(</span><em>new_span</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.add_span" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.copy_span">
+<code class="descname">copy_span</code><span class="sig-paren">(</span><em>template</em>, <em>copy_start</em>, <em>copy_stop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.copy_span" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.delabel">
+<code class="descname">delabel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.delabel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.dtype">
+<code class="descname">dtype</code><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.empty_like">
+<code class="descname">empty_like</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.empty_like" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.genotypes.labelledalleles.LabelledAlleles.founder_chromosome">
+<em class="property">static </em><code class="descname">founder_chromosome</code><span class="sig-paren">(</span><em>ind</em>, <em>chromidx</em>, <em>hap</em>, <em>chromobj=None</em>, <em>nmark=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.labelledalleles.LabelledAlleles.founder_chromosome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.genotypes.sparsealleles">
+<span id="pydigree-genotypes-sparsealleles-module"></span><h2>pydigree.genotypes.sparsealleles module<a class="headerlink" href="#module-pydigree.genotypes.sparsealleles" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles">
+<em class="property">class </em><code class="descclassname">pydigree.genotypes.sparsealleles.</code><code class="descname">SparseAlleles</code><span class="sig-paren">(</span><em>data=None</em>, <em>refcode=0</em>, <em>missingcode=-1</em>, <em>size=None</em>, <em>template=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.genotypes.genoabc.AlleleContainer" title="pydigree.genotypes.genoabc.AlleleContainer"><code class="xref py py-class docutils literal"><span class="pre">pydigree.genotypes.genoabc.AlleleContainer</span></code></a></p>
+<p>An object representing a set of haploid genotypes efficiently by 
+storing allele differences from a reference. Useful for manipulating
+genotypes from sequence data (e.g. VCF files)</p>
+<p>In the interest of conserving memory for sequencing data, all alleles must
+be represented by a signed 8-bit integer (i.e. between -128 and 127). 
+Negative values are interpreted as missing.</p>
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.copy_span">
+<code class="descname">copy_span</code><span class="sig-paren">(</span><em>template</em>, <em>copy_start</em>, <em>copy_stop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.copy_span" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.empty">
+<em class="property">static </em><code class="descname">empty</code><span class="sig-paren">(</span><em>reference=None</em>, <em>template=None</em>, <em>missingcode=''</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.empty_like">
+<code class="descname">empty_like</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.empty_like" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.missing">
+<code class="descname">missing</code><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.missing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array indicating which markers have missing data</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.missingcode">
+<code class="descname">missingcode</code><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.missingcode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.nmark">
+<code class="descname">nmark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.nmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of markers (both reference and non-reference)
+represented by the SparseAlleles object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.todense">
+<code class="descname">todense</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.todense" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.genotypes.sparsealleles.SparseAlleles.values">
+<code class="descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.genotypes.sparsealleles.SparseAlleles.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.genotypes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pydigree.genotypes" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pydigree.genotypes package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes.alleles">pydigree.genotypes.alleles module</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes.chromosometemplate">pydigree.genotypes.chromosometemplate module</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes.genoabc">pydigree.genotypes.genoabc module</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes.labelledalleles">pydigree.genotypes.labelledalleles module</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes.sparsealleles">pydigree.genotypes.sparsealleles module</a></li>
+<li><a class="reference internal" href="#module-pydigree.genotypes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pydigree.genotypes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/pydigree.genotypes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

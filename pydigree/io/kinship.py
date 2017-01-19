@@ -5,10 +5,9 @@ def read_kinship(filename):
     '''
     Reads a KinInbCoef formatted file of kinship and inbreeding coefficients
 
-    Arguments
-    ------
-    filename: the filename to be read
-    
+    :param filename: the filename to be read
+    :type filename: string
+
     Returns: a dictionary in the format 
     {frozenset({(fam, ind_a), (fam, ind_b)}): kinship/inbreeding
     '''

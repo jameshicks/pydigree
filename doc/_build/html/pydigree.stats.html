@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pydigree.stats package &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pydigree-stats-package">
+<h1>pydigree.stats package<a class="headerlink" href="#pydigree-stats-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pydigree.stats.mixedmodel.html">pydigree.stats.mixedmodel package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.likelihood">pydigree.stats.mixedmodel.likelihood module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.maximization">pydigree.stats.mixedmodel.maximization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.mixedmodel">pydigree.stats.mixedmodel.mixedmodel module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel.mixin">pydigree.stats.mixedmodel.mixin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pydigree.stats.mixedmodel.html#module-pydigree.stats.mixedmodel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pydigree.stats.mathfuncs">
+<span id="pydigree-stats-mathfuncs-module"></span><h2>pydigree.stats.mathfuncs module<a class="headerlink" href="#module-pydigree.stats.mathfuncs" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.stats.mathfuncs.grid">
+<code class="descclassname">pydigree.stats.mathfuncs.</code><code class="descname">grid</code><span class="sig-paren">(</span><em>func</em>, <em>nargs</em>, <em>low</em>, <em>high</em>, <em>ntests=10</em>, <em>predicate=None</em>, <em>catch=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.mathfuncs.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates a function over a range of argument values.</p>
+<p>This can be time consuming, especially if the function to be evaluated is
+particularly intensive: for m tests over n arguments, the function will be 
+evaluated m**n times</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>func</strong> (<em>callable</em>) &#8211; The function to be grid searched</li>
+<li><strong>low</strong> &#8211; The lowest value to test</li>
+<li><strong>high</strong> &#8211; The highest value to test</li>
+<li><strong>ntests</strong> &#8211; Number of argument values to test between low and high</li>
+<li><strong>predicate</strong> (<em>callable</em>) &#8211; a function that returns True if the configuration of 
+arguments should be evaluated.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.stats.mathfuncs.is_positive_definite">
+<code class="descclassname">pydigree.stats.mathfuncs.</code><code class="descname">is_positive_definite</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.mathfuncs.is_positive_definite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates if a matrix is positive definite (all eigvals &gt; 0)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mat</strong> (<em>matrix</em>) &#8211; Matrix to test</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">positive-definiteness</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.stats.stattests">
+<span id="pydigree-stats-stattests-module"></span><h2>pydigree.stats.stattests module<a class="headerlink" href="#module-pydigree.stats.stattests" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pydigree.stats.stattests.LikelihoodRatioTest">
+<code class="descclassname">pydigree.stats.stattests.</code><code class="descname">LikelihoodRatioTest</code><span class="sig-paren">(</span><em>null_model</em>, <em>alt_model</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.stattests.LikelihoodRatioTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two nested models by likelihood ratio test</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Result of test</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">LikelhoodRatioTestResult</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.stats.stattests.LikelihoodRatioTestResult">
+<em class="property">class </em><code class="descclassname">pydigree.stats.stattests.</code><code class="descname">LikelihoodRatioTestResult</code><span class="sig-paren">(</span><em>statistic</em>, <em>df</em>, <em>distribution</em>, <em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.stattests.LikelihoodRatioTestResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="pydigree.stats.stattests.LikelihoodRatioTestResult.lod">
+<code class="descname">lod</code><a class="headerlink" href="#pydigree.stats.stattests.LikelihoodRatioTestResult.lod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.stats.stattests.LikelihoodRatioTestResult.pvalue">
+<code class="descname">pvalue</code><a class="headerlink" href="#pydigree.stats.stattests.LikelihoodRatioTestResult.pvalue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.stats.variancecomponents">
+<span id="pydigree-stats-variancecomponents-module"></span><h2>pydigree.stats.variancecomponents module<a class="headerlink" href="#module-pydigree.stats.variancecomponents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.stats.variancecomponents.VarianceComponentsLinkage">
+<em class="property">class </em><code class="descclassname">pydigree.stats.variancecomponents.</code><code class="descname">VarianceComponentsLinkage</code><span class="sig-paren">(</span><em>pedigrees</em>, <em>outcome=None</em>, <em>fixed_effects=None</em>, <em>ibd_matrix=None</em>, <em>null_model=None</em>, <em>joint=False</em>, <em>verbose=False</em>, <em>maximization='Average Information'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.variancecomponents.VarianceComponentsLinkage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit_alternative_model">
+<code class="descname">fit_alternative_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit_alternative_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit_null_model">
+<code class="descname">fit_null_model</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.variancecomponents.VarianceComponentsLinkage.fit_null_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.stats.variancecomponents.VarianceComponentsLinkageResult">
+<em class="property">class </em><code class="descclassname">pydigree.stats.variancecomponents.</code><code class="descname">VarianceComponentsLinkageResult</code><span class="sig-paren">(</span><em>null_llik=None</em>, <em>alt_llik=None</em>, <em>lod=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.stats.variancecomponents.VarianceComponentsLinkageResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.stats">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pydigree.stats" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pydigree.stats package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pydigree.stats.mathfuncs">pydigree.stats.mathfuncs module</a></li>
+<li><a class="reference internal" href="#module-pydigree.stats.stattests">pydigree.stats.stattests module</a></li>
+<li><a class="reference internal" href="#module-pydigree.stats.variancecomponents">pydigree.stats.variancecomponents module</a></li>
+<li><a class="reference internal" href="#module-pydigree.stats">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pydigree.stats.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/pydigree.stats.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

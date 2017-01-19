@@ -46,6 +46,9 @@ tests/cover
 # Profiles
 *.lprof
 
+# Sphinx documentation
+docs/_build/
+
 ####### Cython ignores
 pydigree/cydigree/*.c
 pydigree/cydigree/*.html

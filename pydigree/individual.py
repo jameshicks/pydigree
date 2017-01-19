@@ -326,6 +326,7 @@ class Individual(object):
         it returns that ancestor's id.
 
         Analagous to individual.matriline.
+        
         :returns: Label of patriline founder
         """
         if self.is_founder():
@@ -336,7 +337,7 @@ class Individual(object):
     @property
     def depth(self):
         """
-        Returns the depth of an individual in the pedigree, a rough measure of
+        Returns the depth of an individual in a genealogy, a rough measure of
         what generation in the pedigree the individual is. Defined as:
         depth = 0 if individual is a founder, else the maximum of the
         depth of each parent

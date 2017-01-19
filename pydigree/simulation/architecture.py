@@ -76,8 +76,6 @@ class Architecture(object):
     """
     Architecture is a static class that relates genotypes to phenotypes.
 
-    Main Effects
-    ------
     For main (i.e non-epistatic) effects, you supply a tuple of
     (chromosome, position) to indicate location. 
 
@@ -116,6 +114,12 @@ class Architecture(object):
                                                        len(self.effects))
 
     def set_liability_threshold(self, threshold):
+        """
+        Sets value above which an individual is considered affected
+
+        :param threshold: liability threshold
+        :type threshold: numeric
+        """
         if self.traittype != 'dichotomous':
             raise ValueError('Thresholds only for dichotomous traits')
         else:

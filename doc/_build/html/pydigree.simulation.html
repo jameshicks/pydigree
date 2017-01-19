@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pydigree.simulation package &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pydigree-simulation-package">
+<h1>pydigree.simulation package<a class="headerlink" href="#pydigree-simulation-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pydigree.simulation.architecture">
+<span id="pydigree-simulation-architecture-module"></span><h2>pydigree.simulation.architecture module<a class="headerlink" href="#module-pydigree.simulation.architecture" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.simulation.architecture.Architecture">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.architecture.</code><code class="descname">Architecture</code><span class="sig-paren">(</span><em>name</em>, <em>traittype</em>, <em>h2=1.0</em>, <em>mean=0</em>, <em>chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Architecture is a static class that relates genotypes to phenotypes.</p>
+<p>For main (i.e non-epistatic) effects, you supply a tuple of
+(chromosome, position) to indicate location.</p>
+<p>Then you would add the effect to the trait architecture with:
+t.add_effect(location, a, k)</p>
+<p>When h2 is specified, phenotypes have an appropriate amount of random
+normal noise added to them so that the heritability of the trait in a 
+population in Hardy-Weinberg equilibrium (infinitely large, randomly mating, 
+no migration/selection, etc) equals h2.</p>
+<p>The trait can be forced to have a mean at a desired location by computing 
+trait_mean = intercept + expected_genotypic_value. The genotypic value can
+be directly calculated from the specified effects, and the intercept is 
+automatically calculated by the formula.</p>
+<p>Predicted phenotypes for individual objects can be given 
+by t.predict_phenotype(individual)</p>
+<dl class="method">
+<dt id="pydigree.simulation.architecture.Architecture.add_dummy_polygene_chromosomes">
+<code class="descname">add_dummy_polygene_chromosomes</code><span class="sig-paren">(</span><em>population</em>, <em>nloc</em>, <em>mean=0</em>, <em>sd=1</em>, <em>polylabel='Polygenic'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.add_dummy_polygene_chromosomes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates many independently segregating chromosomes that 
+additively influence the trait.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>population</strong> &#8211; The population to add the chromosomes to</li>
+<li><strong>nloc</strong> (<em>integer</em>) &#8211; The number of dummy chromosomes to create</li>
+<li><strong>mean</strong> (<em>float</em>) &#8211; Mean locus additive effect</li>
+<li><strong>sd</strong> (<em>float</em>) &#8211; Standard deviation of locus additive effect</li>
+<li><strong>polylabel</strong> &#8211; Label to add give chromosome</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.architecture.Architecture.add_effect">
+<code class="descname">add_effect</code><span class="sig-paren">(</span><em>locus</em>, <em>a=0</em>, <em>k=0</em>, <em>effect=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.add_effect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a main effect</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>locus</strong> &#8211; a chromosome, index tuple</li>
+<li><strong>a</strong> &#8211; The additive effect of each minor allele</li>
+<li><strong>k</strong> &#8211; The dominance effect of at the locus, where k is the 
+deviation from additivity (default 0)</li>
+<li><strong>effect</strong> &#8211; a QuantitativeGeneticEffect object if a and k
+are not supplied</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.Architecture.additive_genetic_variance">
+<code class="descname">additive_genetic_variance</code><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.additive_genetic_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.Architecture.environmental_variance">
+<code class="descname">environmental_variance</code><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.environmental_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.Architecture.expected_genotypic_value">
+<code class="descname">expected_genotypic_value</code><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.expected_genotypic_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.simulation.architecture.Architecture.from_file">
+<em class="property">static </em><code class="descname">from_file</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.from_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.Architecture.intercept">
+<code class="descname">intercept</code><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.intercept" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.architecture.Architecture.predict_phenotype">
+<code class="descname">predict_phenotype</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.predict_phenotype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.architecture.Architecture.rescale">
+<code class="descname">rescale</code><span class="sig-paren">(</span><em>mean</em>, <em>sd</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rescale trait to have the distribution N(mean, sd). Modifies genotype
+effects so that they sum to the appropriate variance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.architecture.Architecture.set_liability_threshold">
+<code class="descname">set_liability_threshold</code><span class="sig-paren">(</span><em>threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.set_liability_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets value above which an individual is considered affected</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>threshold</strong> (<em>numeric</em>) &#8211; liability threshold</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.Architecture.total_variance">
+<code class="descname">total_variance</code><a class="headerlink" href="#pydigree.simulation.architecture.Architecture.total_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.architecture.</code><code class="descname">QuantitativeGeneticEffect</code><span class="sig-paren">(</span><em>locus</em>, <em>a</em>, <em>k=0</em>, <em>chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>QuantitativeGeneticEffect is a class for objects that relate loci to 
+phenotypes.</p>
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect.alpha">
+<code class="descname">alpha</code><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect.alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the average effect of allelic substitution for the locus</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect.expected_genotypic_value">
+<code class="descname">expected_genotypic_value</code><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect.expected_genotypic_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect.genotypic_value">
+<code class="descname">genotypic_value</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect.genotypic_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect.locus_additive_variance">
+<code class="descname">locus_additive_variance</code><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect.locus_additive_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pydigree.simulation.architecture.QuantitativeGeneticEffect.locus_dominance_variance">
+<code class="descname">locus_dominance_variance</code><a class="headerlink" href="#pydigree.simulation.architecture.QuantitativeGeneticEffect.locus_dominance_variance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.simulation.chromosomepool">
+<span id="pydigree-simulation-chromosomepool-module"></span><h2>pydigree.simulation.chromosomepool module<a class="headerlink" href="#module-pydigree.simulation.chromosomepool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.chromosomepool.</code><code class="descname">ChromosomePool</code><span class="sig-paren">(</span><em>population=None</em>, <em>chromosomes=None</em>, <em>size=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.chromosome">
+<code class="descname">chromosome</code><span class="sig-paren">(</span><em>chromindex</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.chromosome" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.evolve">
+<code class="descname">evolve</code><span class="sig-paren">(</span><em>growth_func</em>, <em>gens</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.evolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterates the pool according to a popuation growth model.</p>
+<dl class="docutils">
+<dt>growth_func: A function that takes a generation number as an argument</dt>
+<dd>and returns a generation size</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.fix">
+<code class="descname">fix</code><span class="sig-paren">(</span><em>loc</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.fix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets all alleles at loc to value</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.from_population">
+<em class="property">static </em><code class="descname">from_population</code><span class="sig-paren">(</span><em>pop</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.from_population" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.get_genotype_set">
+<code class="descname">get_genotype_set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.get_genotype_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gives a full set of genotypes drawn from the chromosome pool</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.initialize_pool">
+<code class="descname">initialize_pool</code><span class="sig-paren">(</span><em>size=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.initialize_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a pool of chromosomes for simulation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.iterate_pool">
+<code class="descname">iterate_pool</code><span class="sig-paren">(</span><em>gensize</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.iterate_pool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate pool simulates a generation of random mating
+between chromosomes instead of individuals. The pool of
+population chromosomes then contains chromosomes from the
+new generation.</p>
+<p>Arguements:
+gensize: The size of the next generation (rounded down to the integer)</p>
+<p>Returns: Nothing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.chromosomepool.ChromosomePool.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.ChromosomePool.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the size of the pool of available chromosomes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pydigree.simulation.chromosomepool.richards">
+<code class="descclassname">pydigree.simulation.chromosomepool.</code><code class="descname">richards</code><span class="sig-paren">(</span><em>A</em>, <em>C</em>, <em>M</em>, <em>B</em>, <em>T</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.chromosomepool.richards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a population growth model function</p>
+<p>A: Lower Asymptope
+C: Upper Asymptope
+M: Maximum growth time
+B: Growth Rate
+T: Maximum growth position</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.simulation.constrained_mendelian">
+<span id="pydigree-simulation-constrained-mendelian-module"></span><h2>pydigree.simulation.constrained_mendelian module<a class="headerlink" href="#module-pydigree.simulation.constrained_mendelian" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.simulation.constrained_mendelian.ConstrainedMendelianSimulation">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.constrained_mendelian.</code><code class="descname">ConstrainedMendelianSimulation</code><span class="sig-paren">(</span><em>template=None</em>, <em>label=None</em>, <em>replications=1000</em>, <em>only=None</em>, <em>linkeq=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.constrained_mendelian.ConstrainedMendelianSimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.simulation.simulation.Simulation" title="pydigree.simulation.simulation.Simulation"><code class="xref py py-class docutils literal"><span class="pre">pydigree.simulation.simulation.Simulation</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.simulation.constrained_mendelian.ConstrainedMendelianSimulation.replicate">
+<code class="descname">replicate</code><span class="sig-paren">(</span><em>writeibd=False</em>, <em>verbose=False</em>, <em>linkeq=True</em>, <em>replicatenumber=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.constrained_mendelian.ConstrainedMendelianSimulation.replicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.simulation.naivegenedrop">
+<span id="pydigree-simulation-naivegenedrop-module"></span><h2>pydigree.simulation.naivegenedrop module<a class="headerlink" href="#module-pydigree.simulation.naivegenedrop" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.simulation.naivegenedrop.NaiveGeneDroppingSimulation">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.naivegenedrop.</code><code class="descname">NaiveGeneDroppingSimulation</code><span class="sig-paren">(</span><em>template=None</em>, <em>replications=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.naivegenedrop.NaiveGeneDroppingSimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pydigree.simulation.simulation.Simulation" title="pydigree.simulation.simulation.Simulation"><code class="xref py py-class docutils literal"><span class="pre">pydigree.simulation.simulation.Simulation</span></code></a></p>
+<dl class="method">
+<dt id="pydigree.simulation.naivegenedrop.NaiveGeneDroppingSimulation.replicate">
+<code class="descname">replicate</code><span class="sig-paren">(</span><em>writeibd=False</em>, <em>verbose=None</em>, <em>replicatenumber=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.naivegenedrop.NaiveGeneDroppingSimulation.replicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.simulation.simulation">
+<span id="pydigree-simulation-simulation-module"></span><h2>pydigree.simulation.simulation module<a class="headerlink" href="#module-pydigree.simulation.simulation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pydigree.simulation.simulation.Simulation">
+<em class="property">class </em><code class="descclassname">pydigree.simulation.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>template=None</em>, <em>label=None</em>, <em>replications=1000</em>, <em>only=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.add_founder_genotype_hook">
+<code class="descname">add_founder_genotype_hook</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.add_founder_genotype_hook" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.add_genotype_constraint">
+<code class="descname">add_genotype_constraint</code><span class="sig-paren">(</span><em>ind</em>, <em>location</em>, <em>allele</em>, <em>chromatid</em>, <em>method='set'</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.add_genotype_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.add_ibd_constraint">
+<code class="descname">add_ibd_constraint</code><span class="sig-paren">(</span><em>ind</em>, <em>ancestor</em>, <em>location</em>, <em>anchap</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.add_ibd_constraint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.get_founder_genotypes">
+<code class="descname">get_founder_genotypes</code><span class="sig-paren">(</span><em>linkeq=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.get_founder_genotypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.predicted_trait_accuracy">
+<code class="descname">predicted_trait_accuracy</code><span class="sig-paren">(</span><em>ped</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.predicted_trait_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.read_constraints">
+<code class="descname">read_constraints</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.read_constraints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.replicate">
+<code class="descname">replicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.replicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>verbose=False</em>, <em>writeibd=False</em>, <em>output_predicate=None</em>, <em>compression=None</em>, <em>output_chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.run_founder_genotype_hooks">
+<code class="descname">run_founder_genotype_hooks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.run_founder_genotype_hooks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.set_trait">
+<code class="descname">set_trait</code><span class="sig-paren">(</span><em>architecture</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.set_trait" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pydigree.simulation.simulation.Simulation.write_data">
+<code class="descname">write_data</code><span class="sig-paren">(</span><em>replicatenumber</em>, <em>predicate=None</em>, <em>compression=None</em>, <em>output_chromosomes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pydigree.simulation.simulation.Simulation.write_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pydigree.simulation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pydigree.simulation" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pydigree.simulation package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation.architecture">pydigree.simulation.architecture module</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation.chromosomepool">pydigree.simulation.chromosomepool module</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation.constrained_mendelian">pydigree.simulation.constrained_mendelian module</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation.naivegenedrop">pydigree.simulation.naivegenedrop module</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation.simulation">pydigree.simulation.simulation module</a></li>
+<li><a class="reference internal" href="#module-pydigree.simulation">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pydigree.simulation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/pydigree.simulation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

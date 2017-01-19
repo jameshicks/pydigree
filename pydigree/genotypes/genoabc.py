@@ -2,7 +2,7 @@ from pydigree.exceptions import NotMeaningfulError
 
 class AlleleContainer(object):
 
-    " A base class for the interface *Alleles object must implement"
+    " A base class for the interface allele containers object must implement"
 
     def empty_like(self):
         raise NotImplementedError

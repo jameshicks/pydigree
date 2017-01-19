@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pedigrees, Relationships, and Genealogies &#8212; pydigree 0.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Forward-time Simulation" href="simulation.html" />
+    <link rel="prev" title="File I/O" href="io.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="pedigrees-relationships-and-genealogies">
+<h1>Pedigrees, Relationships, and Genealogies<a class="headerlink" href="#pedigrees-relationships-and-genealogies" title="Permalink to this headline">¶</a></h1>
+<p>In both pedigree datasets and forward-time simulations, pydigree stores genealogy data.
+This data is broadly useful, and pydigree provides functionality for navigating and interpreting them.</p>
+<div class="section" id="measures-of-relatedness">
+<h2>Measures of relatedness<a class="headerlink" href="#measures-of-relatedness" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="kinship">
+<h3>Kinship<a class="headerlink" href="#kinship" title="Permalink to this headline">¶</a></h3>
+<p>Malecot&#8217;s coefficient of coancestry (commonly called the kinship coefficient, <span class="math">\(\theta\)</span>) is a common measure of relatedness.
+There are two main ways calculating this.
+The first involves enumerating all paths between two individuals in the genealogy.
+The other involves the recursively calculating kinships through the genealogy, since each relationship is a function of the parents&#8217; relationship.</p>
+<p>When using pedigrees or other data where the number of pairwise relationships is relatively small, the recursive method will be more efficient since intermediate values can be cached.
+Caching also allows for fast computation of relationships for all individuals at once.
+This is the method implemented in the Population class.
+Conversely, when the genealogy is large or deep, such as in population simulations, recursive calculation is prohibitively expensive.
+The large number of pairs usually means that exhaustive calculation of pairwise relationships is not available (or desired).
+The path-based kinship calculations may be more efficient for selected pairs of individuals.
+These are implemented in <cite>pydigree.paths</cite>.</p>
+</div>
+<div class="section" id="fraternity">
+<h3>Fraternity<a class="headerlink" href="#fraternity" title="Permalink to this headline">¶</a></h3>
+<p>Fraternity coefficient (<span class="math">\(\Delta\)</span>) describes the probablity that both alleles in a pair of individuals are shared IBD.
+This is uniformly less likely than sharing only one pair of alleles IBD, and is smaller than the kinship coefficent.
+For two individuals, x and y, coefficient is defined as</p>
+<div class="math">
+\[\Delta_{x,y} = \phi(x_m,y_m) \phi(x_f,y_f) + \phi(x_m,y_f) \phi(x_f,y_m)\]</div>
+<p>where <span class="math">\(\phi(q,w)\)</span> is the kinship coefficent between individuals q and w, and <span class="math">\(a_b\)</span> is the father (b=f) or mother (b=m) of individual a.</p>
+<p>As with kinship coefficients, when working with pedigree data, the recursive implementations implemented in the pedigree objects are likely more efficient.</p>
+</div>
+<div class="section" id="inbreeding">
+<h3>Inbreeding<a class="headerlink" href="#inbreeding" title="Permalink to this headline">¶</a></h3>
+<p>Inbreeding coefficients (<span class="math">\(F\)</span>) represent the probability that two alleles within the same individual are IBD.
+This is a direct function of the relationship of the parents, and is calculated based on their kinship coefficent.</p>
+</div>
+<div class="section" id="relationship-covariance-matrices">
+<h3>Relationship Covariance Matrices<a class="headerlink" href="#relationship-covariance-matrices" title="Permalink to this headline">¶</a></h3>
+<p>Statistical models incorporating relationships between individuals require matrices of covariance measures, which are calculated from relationships.
+Pydigree provides matrices for additive and dominance covariance matrices.
+The additive relationship matrix (<span class="math">\(\mathbf{A}\)</span>) is a function of kinships and is defined as</p>
+<div class="math">
+\[\begin{split}\mathbf{A}_{i,j} =
+\begin{Bmatrix}
+2 \theta_{i,j} \mathrm{   if } i \neq j
+\\
+1 + F_i  \mathrm{   if } i = j
+\end{Bmatrix}\end{split}\]</div>
+<p>The dominance covariance matrix (<span class="math">\(\mathbf{D}\)</span>) is a function of fraternity:</p>
+<div class="math">
+\[\begin{split}\mathbf{D}_{i,j} =
+\begin{Bmatrix}
+\Delta_{i,j} \mathrm{   if } i \neq j
+\\
+1 \mathrm{   if } i = j
+\end{Bmatrix}\end{split}\]</div>
+</div>
+</div>
+<div class="section" id="paths-through-genealogies">
+<h2>Paths through Genealogies<a class="headerlink" href="#paths-through-genealogies" title="Permalink to this headline">¶</a></h2>
+<p>Valid inheritance paths through pedigrees have one major difference to general graph traversal: you can only change direction once.
+When one individual is not a descendant of the other, paths move &#8216;up&#8217; (backwards in time, to older generations) from one individual, then &#8216;down&#8217; (forwards in time, to newer generations).
+Otherwise, they only move in one direction.</p>
+<p>When general paths through genealogies are needed (for example, calculating allele transmission probabilities), pydigree provides useful functions in <a class="reference internal" href="pydigree.html#module-pydigree.paths" title="pydigree.paths"><code class="xref py py-mod docutils literal"><span class="pre">pydigree.paths</span></code></a>.
+<cite>paths.common_ancestors</cite> finds all shared ancestors between two individuals.
+<cite>paths.paths</cite> finds all paths between two individuals.
+<cite>paths.paths_through_ancestors</cite> will limit the returned paths to ones flowing through a specified common ancestor of two individuals.</p>
+<p>Two special pathing functions are also provided for special paths. <code class="xref py py-meth docutils literal"><span class="pre">pydigree.Individual.patriline()</span></code> and <code class="xref py py-meth docutils literal"><span class="pre">pydigree.Individual.matriline()</span></code> recursively search through maternal and paternal lineage to find the founder of the lineage.
+This is useful for models incorporating mtDNA or Y chromosome inheritance.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pedigrees, Relationships, and Genealogies</a><ul>
+<li><a class="reference internal" href="#measures-of-relatedness">Measures of relatedness</a><ul>
+<li><a class="reference internal" href="#kinship">Kinship</a></li>
+<li><a class="reference internal" href="#fraternity">Fraternity</a></li>
+<li><a class="reference internal" href="#inbreeding">Inbreeding</a></li>
+<li><a class="reference internal" href="#relationship-covariance-matrices">Relationship Covariance Matrices</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#paths-through-genealogies">Paths through Genealogies</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="io.html" title="previous chapter">File I/O</a></li>
+      <li>Next: <a href="simulation.html" title="next chapter">Forward-time Simulation</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/relationships.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, James Hicks.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/relationships.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
