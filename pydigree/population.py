@@ -147,7 +147,7 @@ class Population(IndividualContainer):
         child = Individual(self, id, ind1, ind2, np.random.choice([0, 1]))
         return child
 
-    def random_mating_generation(self, gensize):
+    def advance_generation(self, gensize):
         '''
         Simulates a generation of random mating.
 

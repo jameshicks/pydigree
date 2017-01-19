@@ -26,7 +26,7 @@ for x in range(popsize):
     pop.add_founder_individual()
 
 def gen(popsize):
-    pop.random_mating_generation(popsize)
+    pop.advance_generation(popsize)
     pop.get_genotypes()
     pop.remove_ancestry()
     return pop.allele_frequency((0,0),1)
