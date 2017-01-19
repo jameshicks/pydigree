@@ -27,9 +27,16 @@ def is_missing_genotype(g):
 def exponential_growth(p, r, t):
     """
     Models exponential growth over discrete generations.
-    p: initial population
-    r: growth rate
-    t: number of generations
+    
+    :param p: initial population
+    :param r: growth rate
+    :param t: number of generations
+    :type p: numeric
+    :type t: numeric
+    :type r: numeric
+
+    :returns: population size at time t
+    :rtype: numeric
     """
     return p * math.exp(r * t)
 
@@ -37,10 +44,14 @@ def exponential_growth(p, r, t):
 def logistic_growth(p, r, k, t):
     """
     Models logistic growth over discrete generations.
-    p: initial population
-    r: growth rate
-    k: final population
-    t: number of generations
+    
+    :param p: initial population
+    :param r: growth rate
+    :param k: final population
+    :param t: number of generations
+
+    :returns: population size at time t
+    :rtype: numeric
     """
     return (p * k) / (p + (k - p) * math.exp(-r * t))
 
@@ -102,6 +113,11 @@ class Population(IndividualContainer):
         Merges two datasets (i.e. performs Individual.update for each individual in the pedigree)
 
         Assumes unique individual IDs
+        
+        :param other: New data to merge in
+        :type other: Population
+        
+        :return: void
         '''
         self.chromosomes = other.chromosomes
         self.clear_genotypes()
@@ -143,6 +159,14 @@ class Population(IndividualContainer):
         """
         Creates an individual as the child of two specificied individual
         objects and randomly chooses a sex.
+
+        :param ind1: The first parent
+        :param ind2: The second parent
+        :type ind1: Individual
+        :type ind2: Individual
+        :param id: ID label for the child
+        :return: An individual with ind1 and ind2 as parents
+        :rtype: Individual
         """
         child = Individual(self, id, ind1, ind2, np.random.choice([0, 1]))
         return child
@@ -151,9 +175,8 @@ class Population(IndividualContainer):
         '''
         Simulates a generation of random mating.
 
-        Arguments
-        ----
-        gensize: The size of the new generation  
+        :param gensize: The size of the new generation  
+        :type gensize: numeric
         '''
 
         def rand_mate(pop, name=None):

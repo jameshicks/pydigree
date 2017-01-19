@@ -138,10 +138,13 @@ class IndividualContainer(object):
         """
         Returns the frequency (as a percentage) of an allele in this population
 
-        The argument constraint is a function that acts on an individual. If
-        constraint(individual) can evaluate as True that person is included
-
-        Returns: a float 
+        :param location: the locus to be evaluated
+        :param allele: the allele to be counted
+        :param constraint: Function that acts on an individual. If
+            constraint(individual) can evaluate as True that person is included
+        
+        :type constraint: callable
+        :rtype: float 
         """
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)
@@ -151,15 +154,13 @@ class IndividualContainer(object):
 
     def major_allele(self, location, constraint=None):
         """
-        Returns the major allele in this population at a locus.
+        Returns the major (most common) allele in this population at a locus.
 
-        Arguments
-        -----
-        location: the position to find the major allele at
-        constraint: a constraint (see population.alleles)
+        
+        :param location: the position to find the major allele at
+        :param constraint: a constraint (see population.alleles)
 
-        Returns: the major allele at a locus (type depends on how genotypes 
-                    are stored)
+        :returns: the major allele at a locus 
         """
         alleles = self.allele_list(location, constraint=constraint)
         freqtab = table(alleles)

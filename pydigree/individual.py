@@ -62,7 +62,12 @@ class Individual(object):
         return self.__str__()
 
     def register_child(self, child):
-        ''' Add a child for this individual '''
+        ''' 
+        Add a child for this individual
+
+        :param child: child object
+        :type child: Individual
+        '''
         self.children.append(child)
 
     def register_with_parents(self):
@@ -74,14 +79,19 @@ class Individual(object):
 
     @property
     def full_label(self):
-        ''' Returns a 2-tuple of pedigree label and individual label '''
+        ''' 
+        :return: the population label and individual label 
+        :rtype: 2-tuple
+        '''
         return (self.population.label, self.label)
 
     # Functions about genotypes
     #
     @property
     def chromosomes(self):
-        ''' Returns a list of the individuals ChromosomeTemplate objects '''
+        ''' 
+        Returns a list of the individuals ChromosomeTemplate objects 
+        '''
         if self.pedigree is not None:
             return self.pedigree.chromosomes
         else:
@@ -100,7 +110,12 @@ class Individual(object):
             self.genotypes = [[None, None] for chrom in self.chromosomes]
 
     def has_genotypes(self):
-        """ Returns True if an individual has genotypes """
+        """ 
+        Tests if individual has genotypes
+
+        :returns: genotype available
+        :rtype: bool 
+        """
         return self.genotypes is not None
 
     def __fail_on_observed_genos(self):
@@ -115,6 +130,12 @@ class Individual(object):
         """
         Retrieve genotypes from a chromosome pool if present, or else a
         chromosome generated under linkage equilibrium
+    
+        :param linkeq: should the retrieved genotypes be under linkage equilibrium?
+        :type linkeq: bool
+
+        :returns: Nothing
+
         """
         self.__fail_on_observed_genos()
         if not self.population.pool:
@@ -136,8 +157,10 @@ class Individual(object):
 
     def get_genotype(self, loc, checkhasgeno=True):
         """
-        Returns a tuple of alleles, in the format:
-        paternal allele, maternal allele
+        Returns alleles at a position.
+
+        :returns: Genotype tuple
+        :rtype: tuple
         """
         if checkhasgeno and not self.has_genotypes():
             raise ValueError('Individual has no genotypes!')
@@ -171,6 +194,9 @@ class Individual(object):
         '''
         Takes another individual object, merges/updates phenotypes with the other
         individual object and REPLACES self's genotypes with other's
+
+        :param other: the data to update with
+        :type other: Individual
         '''
         self.phenotypes.update(other.phenotypes)
         self.genotypes = other.genotypes
@@ -241,8 +267,8 @@ class Individual(object):
         """
         Recursively searches for ancestors.
 
-        Returns: A set object with Individual objects for all the ancestors
-        of this Individual object
+        :returns: A collection of all the ancestors of the individual
+        :rtype: set of Individuals
         """
         if self.is_founder():
             return set()
@@ -254,8 +280,8 @@ class Individual(object):
         """
         Recursively searches for descendants.
 
-        Returns: a set of individual objects for all the descendants
-        of this individual
+        :returns: A collection of all the descendants of the individual
+        :rtype: set of Individuals
         """
         return set(self.children + list(flatten([x.descendants()
                                                  for x in self.children])))
@@ -263,7 +289,12 @@ class Individual(object):
     def siblings(self, include_halfsibs=False):
         """
         Returns this individuals sibliings.
-        If include halfsibs is set, half sibs will also be included
+
+        :param include_halfsibs: Include half-siblings
+        :type include_halfsibs: bool
+        
+        :returns: A collection of the individual's siblings
+        :rtype: set of Individuals
         """
         if include_halfsibs:
             return set(self.father.children) | set(self.mother.children)
@@ -280,6 +311,8 @@ class Individual(object):
         Courtenay et al. 'Mitochondrial haplogroup X is associated with
         successful aging in the Amish.' Human Genetics (2012). 131(2):201-8.
         doi: 10.1007/s00439-011-1060-3. Epub 2011 Jul 13.
+
+        :returns: Label of the matriline founder
         """
         if self.is_founder():
             return self.label
@@ -293,6 +326,7 @@ class Individual(object):
         it returns that ancestor's id.
 
         Analagous to individual.matriline.
+        :returns: Label of patriline founder
         """
         if self.is_founder():
             return self.label
@@ -307,8 +341,8 @@ class Individual(object):
         depth = 0 if individual is a founder, else the maximum of the
         depth of each parent
 
-        Arguements: None
-        Returns: An integer
+        :returns: Indiviual depth
+        :rtype: integer
         """
         if self.is_founder():
             return 0
@@ -334,6 +368,7 @@ class Individual(object):
         """
         Returns the inbreeding coefficient (F) for the individual.
         """
+
         # Two edge cases where inbreedings must be 0
         if self.is_founder():
             return 0.0
@@ -349,7 +384,12 @@ class Individual(object):
     #
 
     def gamete(self):
-        """ Provides a set of half-genotypes to use with method fertilize """
+        """ 
+        Provides a set of half-genotypes to use with method fertilize
+        
+        :returns: a collection of AlleleContainers
+        :rtype: list
+        """
         if not self.genotypes:
             self.get_genotypes()
 
@@ -412,12 +452,11 @@ class Individual(object):
         allele at the specified locus. That is, the phenotype created is the 
         number of copies of the minor allele at the locus.
 
-        Arguments:
-        locus: the site to count minor alleles
-        minor_allele: the allele to count
-        label: The name of the phenotype to be added
+        :param locus: the site to count minor alleles
+        :param minor_allele: the allele to count
+        :param label: The name of the phenotype to be added
 
-        Returns: Nothing.
+        :returns: void
         """
         if not self.has_genotypes():
             self.phenotypes[label] = None
@@ -433,4 +472,10 @@ class Individual(object):
 
 
     def _phenotypes_to_series(self):
+        '''
+        Converts phenotype records to a pandas compatible structure
+
+        :returns: phenotype records
+        :rtype: `pd.Series`
+        '''
         return pd.Series(self.phenotypes)

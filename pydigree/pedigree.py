@@ -28,7 +28,8 @@ class Pedigree(Population):
         This represents the number of bits it takes to represent the
         inheritance vector in the Lander-Green algorithm.
 
-        Returns: an integer
+        :returns: bit size
+        :rtype: pedigree
         """
         t = table([x.is_founder() for x in self.individuals])
         return 2 * t[False] - t[True]
@@ -45,12 +46,12 @@ class Pedigree(Population):
         For pedigree objects, results are stored to reduce the calculation
         time for kinship matrices.
 
-        Arguements
-        -----
-        id1: the label of individual 1
-        id2: the label of individual 2
+        
+        :param id1: the label of a individual to be evaluated
+        :param id2: the label of a individual to be evaluated
 
-        Returns: a double
+        :returns: Malecot's coefficient of coancestry
+        :rtype: float
 
         Reference:
         Lange. Mathematical and Statistical Methods for Genetic Analysis.
@@ -94,7 +95,11 @@ class Pedigree(Population):
 
         This is a wrapper for paths.fraternity
 
-        Returns: a double
+        :param id1: the label of a individual to be evaluated
+        :param id2: the label of a individual to be evaluated
+
+        :returns: coefficient of fraternity
+        :rtype: float
         """
         pair = frozenset([id1, id2])
         if pair not in self.fratmat:
@@ -112,7 +117,10 @@ class Pedigree(Population):
         the parents, this function calls Pedigree.kinship to check for
         stored values.
 
-        Returns: a double
+        :param id: the label of the individual to be evaluated
+    
+        :returns: inbreeding coefficient
+        :rtype: a double
         """
         ind = self[id]
         if ind.is_founder():
@@ -131,15 +139,15 @@ class Pedigree(Population):
         A_ij = 1 + inbreeding(i) if i == j
         (inbreeding(i) is equivalent to kinship(i.father,i.mother))
 
-        Arguments
-        -----
-        ids: IDs of pedigree members to include in the matrix
+
+        :param ids: IDs of pedigree members to include in the matrix
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try
         sorted(x.label for x in ped) to see the ordering.
 
-        Returns: a numpy matrix
+        :returns: additive relationship matrix
+        :rtype: matrix
         """
         if not ids:
             ids = sorted(x.label for x in self.individuals)
@@ -165,15 +173,15 @@ class Pedigree(Population):
         D_ij = fraternity(i,j) if i != j
         D_ij = 1 if i == j
 
-        Arguments
-        -----
-        ids: IDs of pedigree members to include in the matrix
+
+        :param ids: IDs of pedigree members to include in the matrix
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try
         sorted(x.label for x in ped) to see the ordering.
 
-        Returns: A numpy matrix
+        :returns: dominance relationship matrix
+        :rtype: matrix
         """
         if not ids:
             ids = sorted(x.label for x in self.individuals)
@@ -196,29 +204,7 @@ class Pedigree(Population):
         Calculates the mitochondrial relationship matrix.
         M_ij = 1 if matriline(i) == matriline(j)
 
-        WARNING: These matrices can often be singular!
-        Consider the pedigree:
-               F---M
-                 |
-          ---------------
-          |      |      |
-          C1     C2     C3
-
-        There are only two matrilines in here. One belonging to whoever the
-        mother of the father is (not specified in this pedigree) and one
-        transmitted from the mother to all three children. The mitochondrial
-        relationship matrix would then look like this:
-
-
-            / 1 0 0 0 0 \
-            | 0 1 1 1 1 |  This matrix is obviously singlular and will not
-        M = | 0 1 1 1 1 |  be useful in variance component estimation.
-            | 0 1 1 1 1 |
-            \ 0 1 1 1 1 /
-
-        Arguments
-        -----
-        ids: IDs of pedigree members to include in the matrix
+        :param ids: IDs of pedigree members to include in the matrix
 
         Important: if not given, the rows/columns are all individuals in the
         pedigree, sorted by id. If you're not sure about this, try

@@ -5,7 +5,15 @@ from numpy.linalg import LinAlgError
 from scipy.optimize import approx_fprime
 
 def is_positive_definite(mat):
-    "Returns true if a matrix is positive definite (all eigvals > 0)"
+    """ 
+    Evaluates if a matrix is positive definite (all eigvals > 0) 
+
+    :param mat: Matrix to test
+    :type mat: matrix
+
+    :returns: positive-definiteness
+    :rtype: bool
+    """
     return all(np.linalg.eigvals(mat) > 0)
 
 
@@ -17,12 +25,15 @@ def grid(func, nargs, low, high, ntests=10, predicate=None, catch=None):
     particularly intensive: for m tests over n arguments, the function will be 
     evaluated m**n times
 
-    func: The function to be grid searched
-    low: The lowest value to test
-    high: The highest value to test
-    ntests: Number of argument values to test between low and high
-    predicate: a function that returns True if the configuration of 
-               arguments should be evaluated.
+    :param func: The function to be grid searched
+    :param low: The lowest value to test
+    :param high: The highest value to test
+    :param ntests: Number of argument values to test between low and high
+    :param predicate: a function that returns True if the configuration of 
+                      arguments should be evaluated.
+    
+    :type func: callable
+    :type predicate: callable
     '''
     if predicate is None:
         predicate = lambda *x: True

@@ -117,12 +117,21 @@ class RandomEffect(object):
 
     @property
     def nlevels(self):
+        """
+        The number of levels of the random effect
+
+        :rtype: int
+        """
         return len(self.levels)
 
     # Convenience properties for linear algebra
     @property
     def sigma(self):
-        "Convenience property for returning the variance of the component"
+        """ 
+        Convenience property for returning the variance of the component 
+        
+        :rtype: float
+        """
         return self.variance_component
 
     @property
@@ -175,7 +184,12 @@ class MixedModel(object):
         self.V = None
 
     def copy(self):
-        "Return a copy of the model"
+        """ 
+        Returns a deep copy of the model 
+
+        :returns: A copy of the model object
+        :rtype: MixedModel
+        """
         # We want to avoid copying pedigree and individual data, so
         # we'll set the pedigrees attribute to None for a sec, and then
         # change it back
@@ -196,8 +210,8 @@ class MixedModel(object):
         """
         Builds X, Z, Y, and R for the model
 
-        Arguements: None
-        Returns: Nothing
+        
+        :returns: void
         """
         self.y = self._makey()
         self.X = self._makeX()
@@ -238,8 +252,8 @@ class MixedModel(object):
         Fully observed individuals have observations for each fixed effect and
         and observation for the outcome variable.
 
-        Arguements: None
-        Returns: The list of fully observed individuals
+        :returns: the fully observed individuals
+        :rtype: list of Individuals
         """
 
         def has_all_fixefs(ind, effects):
@@ -266,18 +280,27 @@ class MixedModel(object):
 
     def nobs(self):
         """
-        Returns the number of fully observed individuals in the pedigree
-        Arguements: None
-        Returns: An integer
+        :returns: the number of fully observed individuals in the model
+        :rtype: integer
         """
         return len(self.observations())
 
     @property
     def variance_components(self):
+        """
+        The current variances associated with each random effect
+
+        :rtype: list of floats
+        """
         return [x.sigma for x in self.random_effects]
 
     @property
     def covariance_matrices(self):
+        """
+        The covariance matrices associated with each random effect
+
+        :rtype: list of matrices
+        """
         return [x.covariance_matrix for x in self.random_effects]
 
     @property
@@ -291,7 +314,11 @@ class MixedModel(object):
         return makeP(self.X, inv(self.V))
 
     def residual_variance(self):
-        """ Returns the variance in y not accounted for by random effects """
+        """ 
+        Returns the variance in y not accounted for by random effects 
+        
+        :rtype: float
+        """
         return self.random_effects[-1].sigma
 
     def coefficient_matrix(self):
@@ -316,8 +343,7 @@ class MixedModel(object):
         Builds the design matrix for the fixed effects in the mixed model.
         Includes a column of ones for the intercept.
 
-        Arguements: None
-        Returns: A numpy matrix
+        Returns: matrix
         """
         obs = self.observations()
         xmat = [[1] * len(obs)]
@@ -330,8 +356,7 @@ class MixedModel(object):
         """
         Makes the incidence matrix for random effects
 
-        Arguements: None
-        Returns: A list of numpy matrixes
+        :rtype: A list of numpy matrices
         """
         Zlist = [ranef.Z for ranef in self.random_effects]
 
@@ -382,6 +407,12 @@ class MixedModel(object):
         self.Zlist = self._makeZs()
 
     def add_genetic_effect(self, kind='additive'):
+        """
+        Adds a genetic effect to the model as a random effect
+
+        :param kind: type of effect to add
+        :type kind: 'additive' or 'dominance'
+        """
         inds = [x.full_label for x in self.observations()]
         peds = self.pedigrees
 
@@ -401,6 +432,9 @@ class MixedModel(object):
         Manually set variance components for each random effect in the model.
         Useful if you know a priori, say a heritability, and just want to
         predict breeding values for the trait.
+
+        :param variance_components: variances associated with each random effect
+        :type variance_components: iterable of numerics
         """
         if not all(x is not None for x in variance_components):
             raise ValueError('Not all variance components are specified')
@@ -410,8 +444,17 @@ class MixedModel(object):
     def maximize(self, method="Average Information", restricted=False,
                  starts=None, verbose=False):
         """
-        Finds the optimal values for variance components of the model by
-        restricted maximum likelihood estimation.
+        Finds the optimal values for variance components in the model using
+        provided optimization methods.
+
+        :param restricted: Uses REML estimation
+        :param starts: starting values for the variance components
+        :param method: maximization method
+        :param verbose: output maximization progress
+        :type restricted: bool
+        :type method: string
+        :type starts: iterable of numerics
+        :type verbose: bool:  
         """
 
         if (isinstance(self.mle, MLEResult) and
@@ -454,6 +497,9 @@ class MixedModel(object):
     def loglikelihood(self, restricted=False, vcs=None, vmat=None):
         """
         Returns the loglikelihood of the model with the current model parameters
+
+        :returns: loglikelihood
+        :rtype: float
         """
         if self.mle is not None and vcs is None and vmat is None:
             if restricted:
@@ -479,11 +525,19 @@ class MixedModel(object):
         '''
         The number of observations minus the number of fixed effects, minus
         the number of non-residual random effects
+
+        :rtype: integer
         '''
         return self.nobs() - self.X.shape[1] - len(self.random_effects) + 1
 
     @property
     def bic(self):
+        """ 
+        Calculates the Bayesian Information Criterion (BIC) for the model
+
+        :rtype: float
+        """
+
         if not self.maximized:
             raise ValueError('Model not maximized!')
         # Add 1 because the intercept has to be estimated
@@ -586,6 +640,13 @@ class MixedModel(object):
             equal values).
         'equal': Chooses all variance components (including residual)
             to be equal.
+
+
+        :param kind: the method to find starting values
+        :type kind: string
+
+        :returns: variance components
+        :rtype: numpy array of floats
         """
 
         if kind.lower() == 'minque0':

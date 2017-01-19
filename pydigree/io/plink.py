@@ -29,10 +29,11 @@ def read_map(mapfile):
     """
     Reads a PLINK map file into a list of ChromosomeTemplate objects
 
-    Arguments:
-    mapfile: The file to be read
+    
+    :param mapfile: Path of the file to be read
+    :type mapfile: string
 
-    Returns: a list of ChromosomeTemplate objects
+    :rtype: a list of ChromosomeTemplate objects
     """
     last_chr, last_pos = None, 0
     chroms = []
@@ -68,12 +69,12 @@ def read_plink(pedfile=None, mapfile=None, prefix=None, **kwargs):
     or by using a prefix. Pass additional arguments to 
     pydigree.io.base.read_ped with kwargs
 
-    Arguments:
-    pedfile: a plink PED file to be read
-    mapfile: a plink MAP file to be read
-    prefix: sets mapfile to 'prefix.map' and pedfile to 'prefix.ped'
-    kwargs: additional arguments passed to read_ped
-
+    
+    :param pedfile: a plink PED file to be read
+    :param mapfile: a plink MAP file to be read
+    :param prefix: sets mapfile to 'prefix.map' and pedfile to 'prefix.ped'
+    :param kwargs: additional arguments passed to read_ped
+    
     Returns: A PedigreeCollection object
     '''
     if prefix:
@@ -92,8 +93,6 @@ def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
     Write individual genotypes to a file in plink PED data format.
     Optionally outputs the genotype locations to the mapfile.
 
-    Args:
-    ------
     pedigrees: the pedigrees to be written
     filename_prefix: The output ped file ('.ped' will be appended)
     predicate: a callable that evaluates True when the individual 
@@ -121,18 +120,16 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
     write_ped writes data in a plink-format PED file, and optionally a
     plink-format map file.
 
-    Arguments
-    ------
 
-    pedigrees: An object of class PedigreeCollection containing what you
+    :param pedigrees: An object of class PedigreeCollection containing what you
         want to output
-    pedfile: a string giving the name out the file to output to.
-    mapfile: the name of a mapfile to output, if you want to output one.
+    :param pedfile: a string giving the name out the file to output to.
+    :param mapfile: the name of a mapfile to output, if you want to output one.
         an object that evaluates as False or None will skip the mapfile
-    genotypes: Should genotypes be output True/False
-    delim: Field seperator
-    predicate: Which inputs to include in the output file. If not specified
-        all are output. If the string is 'affected', only affected
+    :param genotypes: Should genotypes be output True/False
+    :param delim: Field seperator
+    :param predicate: Which inputs to include in the output file. If not 
+        specified all are output. If the string is 'affected', only affected
         individuals are output. If the string is 'phenotyped', all individuals
         with phenotype information are output. Any other value of predicate
         must be a function to perform on the individual that evaluates to
@@ -196,10 +193,8 @@ def write_map(pedigrees, mapfile, output_chromosomes=None):
     '''
     Writes the genotype location data to a PLINK MAP file
 
-    Arguments
-    ------
-    pedigrees: the population containing the data to be written
-    mapfile: the name of the file to be output to
+    :param pedigrees: the population containing the data to be written
+    :param mapfile: the name of the file to be output to
 
     Returns: Nothing
     '''

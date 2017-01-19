@@ -13,11 +13,13 @@ def count(val, iterable):
     """ 
     Counts how many times a value (val) occurs in an iterable, excluding `None`
 
-    Arguments:
-    val: The value to be counted
-    iterable: the iterable to be counted over 
+    
+    :param val: The value to be counted
+    :param iterable: values to be counted over
+    :type iterable: iterable  
 
-    Returns: An int
+    :return: the count of values
+    :rtype: int
     """
     return sum(1 for x in (y for y in iterable if y is not None) if val == x)
 
@@ -27,13 +29,21 @@ def table(seq):
     For each unique value in seq, runs count() on it. Returns a dictionary in
     the form of {value1: count, value2: count}.
 
-    Returns: a dict
+    :param seq: Values to make a table of
+
+    :rtype: dict
     """
     seq = [x for x in seq]
     keys = set(seq)
     return dict([(k, seq.count(k)) for k in keys])
 
 def mode(seq):
+    """ 
+    Returns the most common value in a sequence 
+
+    :param seq: sequence of values to evaluate
+    """
+
     if not len(seq):
         raise IndexError('Sequence is empty')
     tab = table(seq)
@@ -48,8 +58,6 @@ def random_choice(iterable):
 def flatten(x):
     """
     Recursively flattens lists.
-    From:
-    stackoverflow.com/questions/5409224/python-recursively-flatten-a-list
     """
     try:
         it = iter(x)
@@ -64,11 +72,12 @@ def flatten(x):
 def grouper(iterable, n, fillvalue=None):
     """
     Collect data into fixed-length chunks or blocks
-    Iterable: input iterable
-    n: size of the groups (an integer)
-    fillvalue: Value to pad the last group with if len(iterable) % n != 0
+    :param iterable: values to evaluate
+    :param n: size of the groups
+    :param fillvalue: Value to pad the last group with if len(iterable) % n != 0
     
-    Returns: a generator
+    :type n: integer
+    :rtype: a generator
     """
     
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
@@ -79,13 +88,13 @@ def grouper(iterable, n, fillvalue=None):
 def invert_dict(d):
     """
     Makes the keys the values and the values the keys
-    WARNING: No guarantee of dictionary structure if mappings are not unique
     
-    Arguments
-    ------
-    d: Input dictionary
+    .. warning:: 
+        No guarantee of dictionary structure if mappings are not unique
+    
+    :param d: dictionary to be inverted
 
-    Returns: a dictionary
+    :rtype: dict
     """
     return dict((y, x) for x, y in d.items())
 
@@ -106,7 +115,8 @@ def log_base_change(value, old, new):
     old: old base (numeric)
     new: new base (numeric)
 
-    returns: a float
+    :returns: log of value in new base  
+    :rtype: float
     '''
     return value / log(old, new) 
 
@@ -115,6 +125,9 @@ def product(iter):
     """
     Reduces an iterable by multiplication. Analogous to sum, but with
     multiplication instead of addition.
+
+    :returns: overall product
+    :rtype: numeric
     """
     # This should really be a python builtiin
     if not iter:
@@ -129,11 +142,11 @@ def cumsum(iter):
     >>> pydigree.cumsum([0,1,2,3,4])
     [0, 1, 3, 6, 10]
     
-    Arguments
-    ------
-    iter: the iterable to be cumsum'ed
+
+    :param iter: the iterable to be cumsum'ed
     
-    Returns: a list of the cumulative sums
+    Returns: cumulative sums
+    :rtype: integer
     """
     if not iter:
         return []

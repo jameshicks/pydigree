@@ -10,8 +10,13 @@ def common_ancestors(ind1, ind2):
     Common ancestors of ind1 and ind2.
     A quick set operation on Individual.ancestors()
 
-    Arguments: Two individual objects
-    Returns: a set of individual objects
+    :param ind1: the first individual
+    :param ind2: the second individual
+    :type ind1: Individual
+    :type ind2: Individual
+
+    :returns: Common ancestors
+    :rtype: set
     """
     return ind1.ancestors() & ind2.ancestors()
 
@@ -21,11 +26,10 @@ def path_downward(start, end, path=[]):
     Returns a list of paths (if they exist) from an ancestor (start)
     to a descentdant (end).
 
-    Arguements
-    -----
-    start: The individual at the start of the path
-    end: The individual to be found
-    path: a path to append to
+    :param start: The individual at the start of the path
+    :param end: The individual to be found
+    :path: a path to append to
+    
 
     Returns: A list of individuals, in path order
     """
@@ -42,8 +46,18 @@ def path_downward(start, end, path=[]):
 
 def paths_through_ancestor(ind1, ind2, ancestor):
     """
-    Returns a list of paths through the pedigree between ind1 and ind2
+    Finds all paths through a genealogy between ind1 and ind2
     that pass through a specific ancestor.
+
+    :param ind1: the first endpoint
+    :param ind2: the other endpoint
+    :param ancestor: the ancestor to pass through
+    :type ind1: Individual
+    :type ind2: Individual
+    :type ancestor: Individual
+
+    :returns: identified paths
+    :rtype: list of lists of Individuals 
     """
     paths = []
     ups = path_downward(ancestor, ind1)
@@ -83,6 +97,14 @@ def paths(ind1, ind2):
     For pedigrees, where typically many kinship coefficients must be
     calculated simulateously, kinships are calculated by this function.
     See notes on pedigree.kinship for more information.
+
+    :param ind1: the first individual
+    :param ind2: the second individual
+    :type ind1: Individual
+    :type ind2: Individual
+
+    :returns: identified paths
+    :rtype: list of lists of Individuals 
     """
     paths = path_downward(ind1, ind2) + path_downward(ind2, ind1)
     common = common_ancestors(ind1, ind2)
@@ -104,6 +126,13 @@ def kinship(ind1, ind2):
     the sum of ((1/2) ** N) * (1+ F) for each path, where N is the number of
     individuals in the path and F is the inbreeding coefficient for that
     ancestor.
+
+    :param ind1: the first individual
+    :param ind2: the second individual
+    :type ind1: Individual
+    :type ind2: Individual
+    :returns: Malecot's coefficient of coancestry
+    :rtype: float
     """
     # In paths.fraternity, it asks for kinships between parents.
     # If the individual is a founder, they won't send individual
@@ -148,6 +177,13 @@ def fraternity(ind1, ind2):
     This is equal to: k(x_m,y_m) * k(x_f,y_f) + k(x_m,y_f) + k(x_f,y_m),
     where x_m represents the mother of x, etc. and k(x,y) represents the
     Malecot kinship between x and y.
+
+    :param ind1: the first individual
+    :param ind2: the second individual
+    :type ind1: Individual
+    :type ind2: Individual
+    :returns: coefficient of fraternity
+    :rtype: float
     """
     if ind1 is None or ind2 is None:
         return 0

@@ -90,21 +90,28 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
     or AI-REML to get close to the maximum, then switch over to Newton-Raphson
     to end quicker.
 
-    Arguments:
-    mm: a MixedModel object to be maximized
-    likelihood: a Likelihood object
-    maxiter: The maximum number of iterations of scoring before raising
+    :param mm: model to be maximized
+    :param likelihood: a Likelihood object
+    :param maxiter: The maximum number of iterations of scoring before raising
         an error
-    tol: The minimum amount of change in the proportion of variance by any of
+    :param tol: The minimum amount of change in the proportion of variance by any of
         the variance components to continue iterating.
-    constrained: Force optimizer to keep variance component estimates
+    :param constrained: Force optimizer to keep variance component estimates
         in the range 0 <= vc <= variance(y), by performing a line search
-    scoring: Number of iterations of Fisher Scoring or AI-REML before
+    :param scoring: Number of iterations of Fisher Scoring or AI-REML before
         switching to Newton-Raphson. If already using Newton-Raphson,
         this argument has no effect.
-    verbose: Print likelihood, variance component, and relative variance
+    :param verbose: Print likelihood, variance component, and relative variance
         estimates at each iteration. Useful for debugging or watching the
         direction the optimizer is taking.
+
+    :type mm: MixedModel
+    :type tol: float
+    :type likelihood: Likelihood
+    :type maxiter: integer
+    :type constrained: bool
+    :type scoring: integer
+    :type verbose: bool
 
     Returns: An MLE object of the variance components at the MLE
     """
@@ -170,14 +177,16 @@ def scoring_iteration(info_mat, gradient):
     """
     Performs an iteration for a Newton-type maximization algorithm
 
-    Arguments:
-    info_mat: A matrix of second derivatives (or approximations of it) at 
+    :param info_mat: A matrix of second derivatives (or approximations of it) at 
         the current parameter estimates
-    gradient: A vector containing the gradient at the current parameter
+    :param gradient: A vector containing the gradient at the current parameter
         estimates
 
-    Returns: A numpy array of the change in parameters for the current 
-        iteration.
+    :type info_mat: 2d numpy array
+    :type gradient: 1d numpy array
+
+    :returns: change in parameters for the current iteration.
+    :rtype: numpy array
 
     Raises: LinAlgError if the information matrix is singular
 
@@ -215,22 +224,23 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
     occasionally found with Newton-type methods and have to be remedied as 
     a special case. 
 
-    Arguments:
-    mm: a MixedModel object to be maximized
-    likelihood: A likelihood object
-    maxiter: The maximum number of iterations of scoring before raising 
+    :param mm: a model to be maximized
+    :param likelihood: A likelihood object
+    :param maxiter: The maximum number of iterations of scoring before raising 
         an error
-    tol: The minimum amount of change in the proportion of variance by any of 
-        the variance components to continue iterating. 
-    verbose: Print likelihood, variance component, and relative variance 
+    :param tol: The minimum amount of change in the proportion of variance by 
+        any of the variance components to continue iterating. 
+    :param verbose: Print likelihood, variance component, and relative variance 
         estimates at each iteration. Useful for debugging or watching the 
         direction the optimizer is taking.
-    vcs_after_maxiter: Returns estimates of variance components after reaching
-        the maximum number of iterations. Useful for getting starting values 
-        for variance components if generic starting values aren't working for
-        some reason.
 
-    Returns: An MLE object of the variance components at the MLE
+    :type mm: MixedModel
+    :type maxiter: integer
+    :type tol: float
+    :type verbose: bool
+
+    :returns:  variance components at the MLE
+    :rtype: MLEResult
     '''
     i = 0
 
@@ -352,14 +362,17 @@ def grid_search(mm, likelihood, nevals=10, oob=False):
     Grid searches a likelihood function over a range of variance 
     component values
 
-    Arguments
-    ------
-    mm: A mixed model object to be maximized
-    likelihood: a MixedModelLikelihood object (i.e. ML, or REML)
-    nevals: number of evaluations over each component
-    oob: Evaluate out of bounds arguments (e.g. sum(vcs) > var(y))
+    :param mm: A model to be maximized
+    :param likelihood: a MixedModelLikelihood object (i.e. ML, or REML)
+    :param nevals: number of evaluations over each component
+    :param oob: Evaluate out of bounds arguments (e.g. sum(vcs) > var(y))
 
-    Returns: An MLE object
+    :type mm: MixedModel
+    :type nevals: integer
+    :type oob: bool
+    
+    :returns: variance components at the best node in the grid
+    :rtype: MLEResult
     '''
     totvar =  mm.y.var()
     

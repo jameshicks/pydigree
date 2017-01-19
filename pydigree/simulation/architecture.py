@@ -7,13 +7,6 @@ class QuantitativeGeneticEffect(object):
     '''
     QuantitativeGeneticEffect is a class for objects that relate loci to 
     phenotypes.
-
-    Effects are parameterized with a and k (see also Lynch & Walsh p. 62), 
-    illustrated by the following ascii art diagram:
-
-    effect:      0                        (1+k)a            2a 
-                 |---------------------------|--------------|
-    genotype:  A1/A1                       A1/A2          A2/A2 
     '''
 
     def __init__(self, locus, a, k=0, chromosomes=None):
@@ -132,14 +125,13 @@ class Architecture(object):
         """
         Add a main effect
 
-        Arguments
-        ------
-        locus:  a chromosome, index tuple
-        a:      The additive effect of each minor allele
-        k:      The dominance effect of at the locus, where k is the 
+
+        :param locus:  a chromosome, index tuple
+        :param a: The additive effect of each minor allele
+        :param k: The dominance effect of at the locus, where k is the 
                 deviation from additivity (default 0)
-        effect: a QuantitativeGeneticEffect object if you don't 
-                want to supply a and k
+        :param effect: a QuantitativeGeneticEffect object if a and k
+            are not supplied
         """
         chrom, marker = locus
 
@@ -217,14 +209,16 @@ class Architecture(object):
         Creates many independently segregating chromosomes that 
         additively influence the trait.
 
-        Arguments:
-        population: The population to add the chromosomes to
-        nloc:       The number of dummy chromosomes to create
-        mean:       Mean locus additive effect
-        sd:         Standard deviation of locus additive effect
-        polylabel:  Label to add give chromosome
+        :param population: The population to add the chromosomes to
+        :param nloc:       The number of dummy chromosomes to create
+        :param mean:       Mean locus additive effect
+        :param sd:         Standard deviation of locus additive effect
+        :param polylabel:  Label to add give chromosome
+        
 
-        Returns: Nothing
+        :type nloc: integer
+        :type mean: float
+        :type sd: float
         """
         if population.chromosomes:
             raise ValueError('Population has chromosomes already!')
