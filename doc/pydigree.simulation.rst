@@ -4,14 +4,6 @@ pydigree.simulation package
 Submodules
 ----------
 
-pydigree.simulation.architecture module
----------------------------------------
-
-.. automodule:: pydigree.simulation.architecture
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 pydigree.simulation.chromosomepool module
 -----------------------------------------
 
@@ -40,6 +32,14 @@ pydigree.simulation.simulation module
 -------------------------------------
 
 .. automodule:: pydigree.simulation.simulation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pydigree.simulation.trait module
+--------------------------------
+
+.. automodule:: pydigree.simulation.trait
     :members:
     :undoc-members:
     :show-inheritance:

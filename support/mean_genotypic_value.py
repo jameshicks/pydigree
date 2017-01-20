@@ -1,7 +1,7 @@
 import numpy as np
 
 import pydigree as pyd 
-from pydigree.simulation import Architecture
+from pydigree.simulation import QuantitativeTrait
 
 ninds = 5000
 nloc = 1000
@@ -17,7 +17,7 @@ for i in range(100):
 	c.add_genotype(maf, 0)
 	pop.add_chromosome(c)
 
-# Create trait architecture
+# Create trait QuantitativeTrait
 trait = Architecture('synthetic', 'quantitative', chromosomes=pop.chromosomes)
 for i in range(100):
 	trait.add_effect((i,0), 1 * (-1 if i % 2 else 1))

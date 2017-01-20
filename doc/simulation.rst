@@ -16,7 +16,7 @@ Simulating Phenotypes
 ---------------------
 
 Pydigree can simulate phenotypes under a quantitative genetic models.
-Genetic effects on traits are specified by :class:`QuantitativeTraitArchitecture` objects, which are collections of :class:`QuantitativeGeneticEffect` objects.
+Genetic effects on traits are specified by :class:`QuantitativeTrait` objects, which are collections of :class:`QuantitativeGeneticEffect` objects.
 Phenotypes are realized for individuals with the :meth:`Individual.predict_phenotype` method.
 
 Traits can fixed to specific parameters. 

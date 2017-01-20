@@ -1,6 +1,6 @@
 
 
-from pydigree.simulation.architecture import Architecture
+from pydigree.simulation.trait import QuantitativeTrait
 from pydigree.simulation.simulation import Simulation, SimulationError
 
 

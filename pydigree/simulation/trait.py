@@ -71,10 +71,10 @@ class QuantitativeGeneticEffect(object):
         return (2 * majfreq * (1 - majfreq) * self.a * self.k) ** 2
 
 
-class Architecture(object):
+class QuantitativeTrait(object):
 
     """
-    Architecture is a static class that relates genotypes to phenotypes.
+    QuantitativeTrait is a static class that relates genotypes to phenotypes.
 
     For main (i.e non-epistatic) effects, you supply a tuple of
     (chromosome, position) to indicate location. 
@@ -247,7 +247,7 @@ class Architecture(object):
     def from_file(filename):
         with open(filename) as f:
             type, name = f.readline().strip().split()
-            trait = Architecture(type, name)
+            trait = QuantitativeTrait(type, name)
             for line in f:
                 l = line.strip().split()
                 if len(l) != 5:

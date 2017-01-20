@@ -7,7 +7,7 @@ from pydigree.io import read_ped
 from pydigree.io.genomesimla import read_gs_chromosome_template
 from pydigree.simulation import ConstrainedMendelianSimulation
 from pydigree.simulation import NaiveGeneDroppingSimulation
-from pydigree.simulation import Architecture
+from pydigree.simulation import QuantitativeTrait
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--template', dest='template', metavar='template_pedigrees',
@@ -63,10 +63,10 @@ elif args.method.lower() == 'genedrop':
 
 # Read effects file
 if args.effectfile:
-    trait = Architecture.from_file(args.effectsfile)
+    trait = QuantitativeTrait.from_file(args.effectsfile)
     trait.name = 'affected'
 else:
-    trait = Architecture('affected','dichotomous')
+    trait = QuantitativeTrait('affected','dichotomous')
 
 # More effects. Specified effects override file effects.
 if args.effects:
