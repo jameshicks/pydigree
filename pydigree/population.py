@@ -158,7 +158,7 @@ class Population(IndividualContainer):
     # Random mating
     #
     #
-    def mate(self, ind1, ind2, id):
+    def mate(self, ind1, ind2, id, sex=None):
         """
         Creates an individual as the child of two specificied individual
         objects and randomly chooses a sex.
@@ -168,10 +168,14 @@ class Population(IndividualContainer):
         :type ind1: Individual
         :type ind2: Individual
         :param id: ID label for the child
+        :param sex: Sex of child, randomly chosen if not specified
+        :type sex: {0,1}
         :return: An individual with ind1 and ind2 as parents
         :rtype: Individual
         """
-        child = Individual(self, id, ind1, ind2, np.random.choice([0, 1]))
+        if sex is None:
+            sex = np.random.choice([0, 1])
+        child = Individual(self, id, ind1, ind2, sex)
         return child
 
     def advance_generation(self, gensize):
