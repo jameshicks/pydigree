@@ -5,6 +5,71 @@ import numpy as np
 from pydigree.genotypes import Alleles, SparseAlleles
 from pydigree.io.genomesimla import read_gs_chromosome_template
 
+class ChromosomeSet(object):
+    """
+    An object representing the full complement of variants in a population
+    """
+
+    def __init__(self):
+        self.chroms = []
+
+    def __iter__(self):
+        for c in self.chroms:
+            yield c
+
+    def __getitem__(self, idx):
+        return self.chroms[idx]
+
+    def __len__(self):
+        return len(self.chroms)
+
+    def add_chromosome(self, template):
+        """
+        Add a chromosome to the set.
+
+        :param template: the chromosome to add
+        :type template: ChromosomeTemplate
+        """
+        self.chroms.append(template)
+
+    def finalize(self):
+        "Finalize each template in the set"
+        for c in self.chroms:
+            c.finalize()
+
+    def frequency(self, chrom, variant):
+        """
+        Get the frequency of a variant
+
+        :param chrom: index of chromosome
+        :param variant: index of marker on the chromosome
+        :type chrom: int
+        :type variant: int
+        """
+        return self.chroms[chrom].frequencies[variant]
+
+    def physical_map(self, chrom, variant):
+        """
+        Get the physical position of a variant
+
+        :param chrom: index of chromosome
+        :param variant: index of marker on the chromosome
+        :type chrom: int
+        :type variant: int
+        """
+        return self.chroms[chrom].physical_map[variant]
+
+    def marker_label(self, chrom, variant):
+        """
+        Get the label of a variant
+
+        :param chrom: index of chromosome
+        :param variant: index of marker on the chromosome
+        :type chrom: int
+        :type variant: int
+        """
+        return self.chroms[chrom].labels[variant]
+
 class ChromosomeTemplate(object):
 
     """

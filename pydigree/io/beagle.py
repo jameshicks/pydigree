@@ -3,7 +3,7 @@ import numpy as np
 
 
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate, Alleles
+from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, Alleles
 from pydigree.io import smartopen as open
 from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
@@ -129,7 +129,7 @@ def read_beagle(genofile, markerfile):
     pop = Population()
     chrom = read_beagle_markerfile(markerfile)
     chrom.finalize()
-    pop.chromosomes.append(chrom)
+    pop.chromosomes.add_chromosome(chrom)
 
     read_beagle_genotypefile(genofile, pop)
 

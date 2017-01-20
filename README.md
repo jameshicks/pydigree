@@ -24,6 +24,7 @@ Classes
  * `Pedigree`: A special case of Population for related individuals. Implements kinship/inbreeding functions
 * `PedigreeCollection`: A container class handling multiple pedigrees
 * `ChromosomeTemplate`: Models a chromosome with information on allele frequency and marker position
+* `ChromosomeSet`: The set of `ChromosomeTemplate`s for a population
 * `Alleles`: Stores a haploid set of alleles
  * `SparseAlleles`: Stores a haploid set of alleles as differences from a reference
  * `LabelledAlleles`: An efficient container for storing references to a founder chromosome

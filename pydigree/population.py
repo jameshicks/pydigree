@@ -14,6 +14,7 @@ from pydigree.individual import Individual
 from pydigree.common import *
 from pydigree.recombination import recombine
 from pydigree.individualcontainer import IndividualContainer
+from pydigree.genotypes import ChromosomeSet
 
 missing_genotype = (0, 0)
 
@@ -61,7 +62,7 @@ class Population(IndividualContainer):
     # Methods for mapping types
 
     def __init__(self, intial_pop_size=0, name=None):
-        self.chromosomes = []
+        self.chromosomes = ChromosomeSet()
         self.pool = None
         self.population = {}
         self.n0 = intial_pop_size
@@ -149,7 +150,7 @@ class Population(IndividualContainer):
     #
     def add_chromosome(self, chrom):
         """ Adds a chromosome to the population """
-        self.chromosomes.append(chrom)
+        self.chromosomes.add_chromosome(chrom)
 
     def chromosome_count(self):
         """ Returns the number of chromosomes in this population """

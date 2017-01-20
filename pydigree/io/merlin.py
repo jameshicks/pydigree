@@ -4,7 +4,7 @@ import numpy as np
 
 from pydigree.io import smartopen
 from pydigree.io.base import genotypes_from_sequential_alleles
-from pydigree.genotypes import ChromosomeTemplate
+from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
 from pydigree.exceptions import FileFormatError
 import collections
 from functools import reduce
@@ -115,7 +115,7 @@ def read_map(filename, only=None):
         sex_specific_map = len(header) == 5
 
         lastchrom = None
-        chromosomes = []
+        chromosomes = ChromosomeSet()
         for markernum, line in enumerate(f):
             l = line.strip().split()
 
@@ -133,7 +133,7 @@ def read_map(filename, only=None):
                 if lastchrom:
                     c.finalize()
                 c = ChromosomeTemplate(label=chrom)
-                chromosomes.append(c)
+                chromosomes.add_chromosome(c)
                 lastchrom = chrom
 
             c.add_genotype(map_position=pos, label=marker)

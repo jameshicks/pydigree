@@ -2,7 +2,7 @@ from itertools import chain
 
 from pydigree.common import grouper, cumsum
 from pydigree.common import interleave
-from pydigree.genotypes import ChromosomeTemplate
+from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
 from pydigree.exceptions import FileFormatError
 from pydigree.io.smartopen import smartopen as open
@@ -36,7 +36,7 @@ def read_map(mapfile):
     :rtype: a list of ChromosomeTemplate objects
     """
     last_chr, last_pos = None, 0
-    chroms = []
+    chroms = ChromosomeSet()
     chromosome = None
     with open(mapfile) as f:
         for i, line in enumerate(f):
@@ -51,7 +51,7 @@ def read_map(mapfile):
                 # close up the old one
                 if i > 0:
                     chromosome.finalize()
-                    chroms.append(chromosome)
+                    chroms.add_chromosome(chromosome)
                 # Make the next chromosome
                 chromosome = ChromosomeTemplate(label=chr)
             elif pos < last_pos:
@@ -59,7 +59,7 @@ def read_map(mapfile):
             chromosome.add_genotype(None, cm, label=label, bp=pos)
             last_chr, last_pos = chr, pos
     chromosome.finalize()
-    chroms.append(chromosome)
+    chroms.add_chromosome(chromosome)
     return chroms
 
 

@@ -28,7 +28,8 @@ Genotypes
 ---------
 Genotype storage in pydigree comes in two parts.
 :class:`ChromosomeTemplate` stores the basic information for each variant in a dataset, such as frequency, position, and variant name.
-Templates are retained by the individual collections.
+They are collected into :class:`ChromosomeSet` objects. 
+:class:`ChromosomeSet` instance references are retained by the individual collections.
 Each individual will have a complement of allele containers corresponding to each template in the population. 
 These support basic slicing and copying, as well as finding missing values.
 
