@@ -49,6 +49,19 @@ class IndividualContainer(object):
         """ Returns a list of founders in population """
         return [x for x in self.individuals if not x.is_founder()]
 
+    def sex_ratio(self):
+        """
+        Returns the sex ratio in the population, defined as n_male / n_female
+
+        :returns: sex ratio
+        :rtype: float
+        """
+        counts = [0, 0]
+        for ind in self.individuals:
+            counts[ind.sex == 0] += 1
+
+        return counts[0] / counts[1]
+
     # Phenotype functions
     #
     #
