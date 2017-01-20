@@ -1,4 +1,4 @@
-
+from pydigree.genotypes import ChromosomeTemplate
 import numpy as np
 
 
