@@ -24,9 +24,9 @@ def test_chromwide_ibs():
     expected = np.array([2,2,1,0,64])
     assert (chromwide_ibs(a,b,c,d) == expected).all()
 
-    spa, spb = [SparseAlleles(x) for x in zip(*g1)]
-    spc, spd = [SparseAlleles(x) for x in zip(*g2)]
-    assert (chromwide_ibs(spa, spb, spc, spd) == expected).all()
+    # spa, spb = [SparseAlleles(x) for x in zip(*g1)]
+    # spc, spd = [SparseAlleles(x) for x in zip(*g2)]
+    # assert (chromwide_ibs(spa, spb, spc, spd) == expected).all()
 
     # Test assertions
     assert_raises(ValueError, chromwide_ibs, a, b, c, d, missingval=600)
