@@ -107,6 +107,9 @@ class Population(IndividualContainer):
         ''' Removes an individual from the population '''
         del self[ind.label]
 
+    def add_founders(self, n):
+        for i in range(n):
+            self.founder_individual(register=True)
 
     def update(self, other):
         '''
