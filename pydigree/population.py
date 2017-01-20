@@ -186,16 +186,19 @@ class Population(IndividualContainer):
         :type gensize: numeric
         '''
 
-        def rand_mate(pop, name=None):
-            name = str(name) if not self.name else self.name + str(name)
-            return self.mate(np.random.choice(self.males()),
-                             np.random.choice(self.females()),
-                             name)
+        males = self.males()
+        females = self.females()
+
+        fathers = np.random.randint(0, len(males), gensize)
+        mothers = np.random.randint(0, len(females), gensize)
+        sexes = np.random.randint(0, 2, gensize)
 
         newpop = {}
-        for i in range(gensize):
-            newind = rand_mate(self, name=i)
+        for indidx in range(gensize):
+            dadidx, momidx, sex = fathers[indidx], mothers[indidx], sexes[indidx]
+            newind = self.mate(males[dadidx], females[momidx], indidx, sex=sex)
             newpop[newind.label] = newind
+
         self.population = newpop
 
     def founder_individual(self, register=True, sex=None):
