@@ -69,7 +69,7 @@ setup(
     author='James Hicks',
     author_email='jhicks22@wustl.edu',
     url='https://github.com/jameshicks/pydigree',
-    download_url="https://github.com/jameshicks/pydigree/tarball/0.8a"
+    download_url="https://github.com/jameshicks/pydigree/tarball/0.8a",
     license=license,
     packages=find_packages(),
     ext_modules=cythonize([cyext, dsext, vtext, vcfext]),
