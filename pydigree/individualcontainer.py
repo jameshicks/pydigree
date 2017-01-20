@@ -7,6 +7,19 @@ from pydigree.common import table
 
 class IndividualContainer(object):
 
+    def apply(func):
+        ''' 
+        Calls a function on each individual object in the collection
+
+        :param func: A function that takes an :class:`Individual` as a parameter
+        :type func: callable
+
+        :rtype: void
+        '''
+
+        for ind in self.individuals:
+            func(ind) 
+
     # Individual filtering functions
     def males(self):
         """ Returns list of males in population """
