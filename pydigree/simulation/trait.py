@@ -208,7 +208,10 @@ class QuantitativeTrait(object):
         return phenotype
 
     def add_dummy_polygene_chromosomes(self, population, nloc,
-                                       mean=0, sd=1, polylabel='Polygene'):
+                                       mean=0, 
+                                       sd=1, 
+                                       freqs=None,
+                                       polylabel='Polygene'):
         """
         Creates many independently segregating chromosomes that 
         additively influence the trait.
@@ -217,13 +220,19 @@ class QuantitativeTrait(object):
         :param nloc:       The number of dummy chromosomes to create
         :param mean:       Mean locus additive effect
         :param sd:         Standard deviation of locus additive effect
+        :param freqs: frequencies of each polygene
         :param polylabel:  Label to add give chromosome
-        
 
         :type nloc: integer
         :type mean: float
         :type sd: float
+        :type freqs: sequence of floats
+        :type polylabel: string
+        
+        :rtype: void
         """
+        if freqs is None:
+            freqs = np.zeros(nloc, dtype=np.float) + 0.5
 
         if sd == 0:
             effects = [mean] * nloc
@@ -234,7 +243,7 @@ class QuantitativeTrait(object):
             # Create the chromosome
             lab = '{}{}'.format(polylabel, i)
             c = ChromosomeTemplate(label=lab)
-            c.add_genotype(0.5, 0)
+            c.add_genotype(freqs[i], 0)
             population.add_chromosome(c)
 
             # Add the effect
