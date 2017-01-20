@@ -64,11 +64,12 @@ with open(os.path.join(pydigree_dir, 'LICENSE.txt')) as f:
 
 setup(
     name='pydigree',
-    version='0.8',
+    version='0.8a',
     description='A package for operations on pedigree and genotype data',
     author='James Hicks',
     author_email='jhicks22@wustl.edu',
     url='https://github.com/jameshicks/pydigree',
+    download_url="https://github.com/jameshicks/pydigree/tarball/0.8a"
     license=license,
     packages=find_packages(),
     ext_modules=cythonize([cyext, dsext, vtext, vcfext]),
