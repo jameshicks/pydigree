@@ -208,7 +208,7 @@ class QuantitativeTrait(object):
         return phenotype
 
     def add_dummy_polygene_chromosomes(self, population, nloc,
-                                       mean=0, sd=1, polylabel='Polygenic'):
+                                       mean=0, sd=1, polylabel='Polygene'):
         """
         Creates many independently segregating chromosomes that 
         additively influence the trait.
@@ -234,7 +234,7 @@ class QuantitativeTrait(object):
 
         for i, effect in enumerate(effects):
             # Create the chromosome
-            lab = '{}-{}'.format(polylab, i)
+            lab = '{}{}'.format(polylabel, i)
             c = ChromosomeTemplate(label=lab)
             c.add_genotype(0.5, 0)
             population.add_chromosome(c)
