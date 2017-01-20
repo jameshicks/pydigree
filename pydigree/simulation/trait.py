@@ -224,8 +224,6 @@ class QuantitativeTrait(object):
         :type mean: float
         :type sd: float
         """
-        if population.chromosomes:
-            raise ValueError('Population has chromosomes already!')
 
         if sd == 0:
             effects = [mean] * nloc
