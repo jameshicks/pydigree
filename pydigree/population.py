@@ -215,7 +215,8 @@ class Population(IndividualContainer):
     def get_founder_genotypes(self):
         ''' 
         Gives genotypes to each founder in the population with chromosomes 
-        from the chromosome pool 
+        from the chromosome pool. If there is no pool, genotypes are generated
+        under linkage equilibrium
         '''
         for ind in self.individuals:
             if not self.pool:
