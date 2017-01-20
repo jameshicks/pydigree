@@ -217,10 +217,13 @@ class Population(IndividualContainer):
         Gives genotypes to each founder in the population with chromosomes 
         from the chromosome pool 
         '''
-        
-        if not self.pool:
-            raise ValueError('Nothing in chromosome pool')
-        return self.pool.get_genotype_set()
+        for ind in self.individuals:
+            if not self.pool:
+                genotypes = self.get_linkage_equilibrium_genotypes()
+            else: 
+                genotypes = self.pool.get_genotype_set()
+
+            ind.genotypes = genotypes
 
     def get_genotypes(self):
         ''' 
