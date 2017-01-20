@@ -7,7 +7,7 @@ from pydigree.common import table
 
 class IndividualContainer(object):
 
-    def apply(func):
+    def apply_inplace(func):
         ''' 
         Calls a function on each individual object in the collection
 
@@ -18,7 +18,19 @@ class IndividualContainer(object):
         '''
 
         for ind in self.individuals:
-            func(ind) 
+            func(ind)
+
+    def apply(func):
+        '''
+        Calls a function on each individual object in the collection and yields its value
+
+        :param func: A function that takes an :class:`Individual` as a parameter
+        :type func: callable
+
+        :rtype: generator
+        '''
+        for ind in self.individuals:
+            yield func(ind)
 
     # Individual filtering functions
     def males(self):
