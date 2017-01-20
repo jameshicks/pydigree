@@ -153,7 +153,7 @@ class QuantitativeTrait(object):
     @property
     def intercept(self):
         # E[P_environment] == 0, so we can ignore it
-        return self.mean - self.expected_genotypic_value
+        return self.mean - (self.expected_genotypic_value if self.h2 < 1.0 else 0)
 
     @property
     def additive_genetic_variance(self):
