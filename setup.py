@@ -59,9 +59,10 @@ with open('LICENSE.txt') as f:
 
 setup(
     name='pydigree',
-    version='0.6',
+    version='0.8',
     description='A package for operations on pedigree and genotype data',
     author='James Hicks',
+    author_email='jhicks22@wustl.edu',
     url='https://github.com/jameshicks/pydigree',
     license=license,
     packages=['pydigree'],
