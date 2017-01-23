@@ -1,8 +1,10 @@
-from bisect import bisect_right
+from bisect import bisect_right, bisect_left
 
 import numpy as np
 
+from pydigree.common import cumsum
 from pydigree.genotypes import Alleles, SparseAlleles
+from pydigree.exceptions import SimulationError
 from pydigree.io.genomesimla import read_gs_chromosome_template
 
 class ChromosomeSet(object):
@@ -77,6 +79,38 @@ class ChromosomeSet(object):
         :type variant: int
         """
         return self.chroms[chrom].labels[variant]
+
+    def select_random_loci(self, nloc):
+        """
+        Chooses nloc random sites throughout the set of chromosomes
+
+        :param nloc: number of loci to select
+        :type nloc: int
+        :rtype: generator of locations
+        """
+        nchrom = self.nchrom()
+        available = self.nloci()
+        loci = set(np.random.randint(0, available, nloc))
+
+        # We may have duplicates
+        for attempt in range(100):
+            if len(loci) == nloc:
+                break
+            needed = nloc - len(loci)
+            loci |= set(np.random.randint(0, available, needed))  
+        else:
+            raise SimulationError
+
+        loci = sorted(loci)
+        chromsizes = [0] + cumsum([c.nmark() for c in self.chroms])
+
+        
+        chromidx = 0
+        for loc in loci:
+            while loc > chromsizes[chromidx]: 
+                chromidx += 1
+            yield chromidx, loc - (chromsizes[chromidx])
+
 
 class ChromosomeTemplate(object):
 
