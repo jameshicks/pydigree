@@ -37,6 +37,14 @@ class ChromosomeSet(object):
         for c in self.chroms:
             c.finalize()
 
+    def nloci(self):
+        "Returns the total number of variants in the set"
+        return sum(c.nmark() for c in self.chroms)
+
+    def nchrom(self):
+        "Returns the number of chromosomes in the set"
+        return len(self.chroms)
+
     def frequency(self, chrom, variant):
         """
         Get the frequency of a variant
