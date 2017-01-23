@@ -20,6 +20,14 @@ pydigree.simulation.constrained_mendelian module
     :undoc-members:
     :show-inheritance:
 
+pydigree.simulation.mating module
+---------------------------------
+
+.. automodule:: pydigree.simulation.mating
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pydigree.simulation.naivegenedrop module
 ----------------------------------------
 

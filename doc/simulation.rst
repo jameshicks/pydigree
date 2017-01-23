@@ -50,6 +50,19 @@ When the architecture realizes the trait for the :class:`Individual` it will be 
 Fully-penetrant Mendelian traits can be considered as special quantiative traits that only involve a single locus. 
 They can be modeled as a :class:`QuantativeGeneticEffect` that adds some breeding value, and any individual with a non-zero breeding value is affected.  
 
+Mating Schemes
+--------------
+Populations do not always mate in a completely random fashion. 
+Individuals can put themselves into pairs or other groups that only produce offspring with parents within the group. 
+The obvious example of this is a male-female pair, but polygamous structures may occur as well.
+
+Pydigree supports non-random mating mating structure through the class :class:`MatingStructure`. 
+The default scheme used is :class:`RandomMating`, which produces offspring from randomly selected parents.
+The others, :class:`MonogamousMating`, form collections of `MatingClique` objects.
+The population is partitioned into mating groups, which are randomly selected to produce a child until the desired number of offspring is reached.
+
+This process is simple to use. An object of class :class:`MatingStructure` can be passed to :meth:`Population.advance_generation`, which will handle the mating automatically. 
+
 Chromosome Pools
 ----------------
 
