@@ -23,8 +23,18 @@ def chromwide_ibs(a, b, c, d, missingval=64):
     Efficiently evaluates IBS across a diploid set of chromosomes,
     sets IBS where one genotype is missing to missingval.
 
-    Returns: A numpy array (dtype: np.uint8) of IBS states, with IBS
-    between missing values coded as missingval
+    :param a: haploid genotypes
+    :param b: haploid genotypes
+    :param c: haploid genotypes
+    :param d: haploid genotypes
+    :type a: AlleleContainer
+    :type b: AlleleContainer
+    :type c: AlleleContainer
+    :type d: AlleleContainer
+
+
+    :returns: IBS states, with missing values coded as missingval
+    :rtype: numpy array of type uint8
     '''
 
     if not 0 <= missingval <= 255:
