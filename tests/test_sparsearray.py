@@ -1,5 +1,6 @@
 import numpy as np
-from pydigree.cydigree.datastructures import SparseArray
+from nose.tools import assert_almost_equal
+from pydigree.cydigree.sparray2 import SparseArray2 as SparseArray
 
 
 def test_setitem():
@@ -44,15 +45,15 @@ def test_getslice():
     s[5] = 20
     s[10] = 40
 
-    assert len(s[4:20].container) == 2
-    assert list(s[4:20].container.keys()) == [1, 6]
+    assert s[4:20].ndense() == 2
+    assert list(s[4:20].keys()) == [1, 6]
     s2 = SparseArray(100, 0)
     s2[1] = 2
     s2[99] = 2
     s2[5] = 20
     s2[10] = 40
 
-    assert len(s2[4:20].container) == 2
+    assert s2[4:20].ndense() == 2
 
 def test_fancy_index_get():
     # Bool masks
@@ -63,7 +64,7 @@ def test_fancy_index_get():
     try:
         s[(False, True)] 
         assert False
-    except IndexError:
+    except ValueError:
         # We wanted this error
         pass
 
@@ -90,6 +91,10 @@ def test_fancy_index_set():
     s[(5,3)] = [20, 20]
     assert s.tolist() == [0, 0, 0, 20, 0, 20, 0, 0, 0, 0]
 
+    s = SparseArray(10, 0)
+    s[(2,3)] = 1
+    assert s.tolist() == [0,0,1,1,0,0,0,0,0,0]
+
     s = SparseArray(10,0)
     mask = [False, False, False, True, False, True, False, False, False, False]
     s[mask] = 2
@@ -110,7 +115,7 @@ def test_setslice():
     s[99] = 2
 
     s[5:8] = 3
-    assert len(s.container) == 5
+    assert s.ndense() == 5
     assert s.keys() == [1, 5, 6, 7, 99]
     assert s.values() == [2, 3, 3, 3, 2]
 
@@ -118,7 +123,7 @@ def test_setslice():
     s[1] = 2
     s[99] = 2
     s[5:8] = [3,3,3]
-    assert len(s.container) == 5
+    assert s.ndense() == 5
     assert s.keys() == [1, 5, 6, 7, 99]
     assert s.values() == [2, 3, 3, 3, 2]
 
@@ -126,7 +131,7 @@ def test_setslice():
     t = SparseArray(100,0)
     t[5:10] = 1
     s[5:10] = t[5:10]
-    assert len(t.container) == 5
+    assert t.ndense() == 5
     assert t.values() == [1]*5
     assert t.keys() == [5, 6, 7, 8, 9]
 
@@ -140,14 +145,14 @@ def test_setslice():
     s[20:50] = t[20:50]
     assert all(sv == 1 for sv in s[20:50].tolist())
 
-def test_cmp():
-    s = SparseArray(5, 0)
-    s[(1,3)] = [1, 1]
-    assert (s == 1).tolist() == [False, True, False, True, False]
-    assert (s > 0).tolist() == [False, True, False, True, False]
-    assert (s < 1).tolist() == [True, False, True, False, True]
+# def test_cmp():
+#     s = SparseArray(5, 0)
+#     s[(1,3)] = [1, 1]
+#     assert (s == 1).tolist() == [False, True, False, True, False]
+#     assert (s > 0).tolist() == [False, True, False, True, False]
+#     assert (s < 1).tolist() == [True, False, True, False, True]
 
-    assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
+#     assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
 
 def test_logic():
     s = SparseArray(5,0)
@@ -169,11 +174,11 @@ def test_logic():
 def test_misc():
     # Sparsity function
     s = SparseArray(10, 0)
-    assert s.sparsity() == 1.0
+    assert_almost_equal(s.sparsity(), 1.0)
     s[0] = 1
-    assert s.sparsity() == 0.9
+    assert_almost_equal(s.sparsity(), 0.9)
     s[1] = 1
-    assert s.sparsity() == 0.8
+    assert_almost_equal(s.sparsity(), 0.8)
 
     # items() generator
     s = SparseArray(10, 0)

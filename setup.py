@@ -58,6 +58,12 @@ vcfext = Extension('pydigree.cydigree.vcfparse',
                    sources=[os.path.join(cydigree_dir, 'vcfparse.pyx')],
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)
+sparray2 = Extension('pydigree.cydigree.sparray2',
+                    language='c++',
+                    sources=[os.path.join(cydigree_dir, 'sparray2.pyx')],
+                    extra_compile_args=['-Wno-unused-function'],
+                    define_macros=macros)
+
 
 with open(os.path.join(pydigree_dir, 'LICENSE.txt')) as f:
     license = f.read()
@@ -72,7 +78,7 @@ setup(
     download_url="https://github.com/jameshicks/pydigree/tarball/0.8a",
     license=license,
     packages=find_packages(),
-    ext_modules=cythonize([cyext, dsext, vtext, vcfext]),
+    ext_modules=cythonize([cyext, dsext, vtext, vcfext, sparray2]),
     requires=['numpy', 'scipy', 'pandas', 'cython'],
     classifiers=['Programming Language :: Python :: 3 :: Only',
                  'Programming Language :: Cython',
