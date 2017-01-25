@@ -1,7 +1,8 @@
 
 
 from pydigree.simulation.trait import QuantitativeTrait
-from pydigree.simulation.simulation import Simulation, SimulationError
+from pydigree.simulation.simulation import Simulation
+from pydigree.exceptions import SimulationError
 
 
 class NaiveGeneDroppingSimulation(Simulation):

@@ -1,7 +1,8 @@
 "Genedropping with IBD constraints"
 from pydigree.common import random_choice
 from pydigree.genotypes import AncestralAllele
-from pydigree.simulation.simulation import Simulation, SimulationError
+from pydigree.simulation.simulation import Simulation 
+from pydigree.exceptions import SimulationError
 from pydigree import paths
 from pydigree import Individual
 import collections
