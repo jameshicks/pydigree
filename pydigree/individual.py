@@ -5,7 +5,7 @@ import pandas as pd
 from pydigree.recombination import recombine
 from pydigree.paths import kinship
 from pydigree.common import flatten
-from pydigree.genotypes import Alleles, LabelledAlleles
+from pydigree.genotypes import LabelledAlleles
 from pydigree.exceptions import IterationError
 
 # TODO: Move this somewhere more useful
@@ -171,8 +171,9 @@ class Individual(object):
         in pydigree.simulation
         '''
         self.get_genotypes(linkeq=linkeq)
+        
         for constraint in constraints:
-            locus, chromatid, allele, method = constraint
+            locus, chromatid, allele, _ = constraint
             gt = list(self.get_genotype(locus))
             gt[chromatid] = allele
             self.set_genotype(locus, tuple(gt))

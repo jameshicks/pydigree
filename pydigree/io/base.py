@@ -239,7 +239,6 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
     :type missing_code: string
     :returns: A list of 2-tuples of Alleles objects
     '''
-    Chromobj = Alleles
 
     genotypes = []
 
@@ -262,8 +261,8 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
     for chrom in chromosomes:
         size = chrom.nmark()
         stop = start + size
-        chroma = Chromobj(strand_a[start:stop], template=chrom)
-        chromb = Chromobj(strand_b[start:stop], template=chrom)
+        chroma = Alleles(strand_a[start:stop], template=chrom)
+        chromb = Alleles(strand_b[start:stop], template=chrom)
 
         genotypes.append((chroma, chromb))
         start += size

@@ -22,7 +22,7 @@ def read_gs_chromosome_template(templatef):
         for line in f:
             if line == '\n':
                 continue
-            label, majf, minf, cm, bp = line.strip().split()
+            label, _, minf, cm, bp = line.strip().split()
             bp = int(bp)
             cm = float(cm)
             last_cm += cm

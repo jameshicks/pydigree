@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+"""
+Functions for recombining haploid chromosomes
+"""
 
 from bisect import bisect_left
 from pydigree.genotypes import AlleleContainer
@@ -6,10 +8,20 @@ from pydigree.genotypes import AlleleContainer
 import numpy as np
 
 
-def recombine(chr1, chr2, map):
-    '''
+def recombine(chr1, chr2, genetic_map):
+    """
     Takes two chromatids and returns a simulated one by an exponential process
-    '''
+    
+    :param chr1: first chrom
+    :param chr2: second chrom
+    :param genetic_map: map positions (in centiMorgans)
+    :type chr1: AlleleContainer
+    :type chr2: AlleleContainer
+    :type genetic_map: sequence of floats
+
+    :returns: Recombined chromosome
+    :rtype: AlleleContainer
+    """
     if not isinstance(chr1, AlleleContainer): 
         raise ValueError(
             'Invalid chromosome type for recombination: {}'.format(type(chr1))) 
@@ -23,17 +35,17 @@ def recombine(chr1, chr2, map):
     # An optimization for gene dropping procedures on IBD states.
     # If there is only one marker, choose one at random, and return that.
     # There's no need for searching through the map to find crossover points
-    if len(map) == 1:
+    if len(genetic_map) == 1:
         return chr1 if np.random.randint(0, 2) else chr2
 
-    newchrom = _recombine_haldane(chr1, chr2, map)
+    newchrom = _recombine_haldane(chr1, chr2, genetic_map)
     return newchrom
 
-def _recombine_haldane(chr1, chr2, map):    
+def _recombine_haldane(chr1, chr2, genetic_map):    
 
     # The map is sorted list, and the last item will always be largest.
-    maxmap = map[-1]
-    nmark = len(map)
+    maxmap = genetic_map[-1]
+    nmark = len(genetic_map)
     
     # Return a new genotype container with the same specs as chr1
     newchrom = chr1.empty_like() 
@@ -62,8 +74,9 @@ def _recombine_haldane(chr1, chr2, map):
             break
 
         # Find the next crossover point in the chromosome by binary search
-        nextidx = bisect_left(
-            map, crossover_position, last_crossover_index, nmark)
+        nextidx = bisect_left(genetic_map, crossover_position, 
+                              last_crossover_index, nmark)
+        
         newchrom.copy_span(c, last_crossover_index, nextidx)
 
         # Get ready to do it all over again

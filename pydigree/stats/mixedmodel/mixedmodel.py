@@ -184,6 +184,10 @@ class MixedModel(object):
         self.random_effects.append(residual)
 
         self.V = None
+        self.X = None
+        self.y = None
+        self.Zlist = None
+        self.beta = None
 
     def copy(self):
         """ 
@@ -628,6 +632,7 @@ class MixedModel(object):
         if kind.lower() == 'em':
             starts = self._starting_variance_components('equal')
             vcs_start = expectation_maximization(self,
+                                                 REML(self),
                                                  starts=starts,
                                                  return_after=100)
             return vcs_start.parameters

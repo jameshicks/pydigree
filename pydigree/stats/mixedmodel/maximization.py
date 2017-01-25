@@ -3,7 +3,7 @@ from numpy.linalg import LinAlgError
 
 from pydigree.stats.mathfuncs import is_positive_definite, grid
 
-from .likelihood import makeP, makeVinv
+from .likelihood import makeP
 
 
 class MLEResult(object):

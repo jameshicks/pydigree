@@ -1,5 +1,3 @@
-from collections import Sequence
-
 import numpy as np
 
 from pydigree.cydigree.sparsearray import SparseArray

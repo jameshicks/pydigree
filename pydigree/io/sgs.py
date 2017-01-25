@@ -116,7 +116,6 @@ def read_germline(filename):
                 analysis[rec.pair] = SGS(rec.ind1, rec.ind2)
 
             phys_loc = (rec.location if rec.bp_locations else None)
-            gen_loc = (rec.location if not rec.bp_locations else None)
             seg = Segment(rec.ind1, rec.ind2, rec.chromosome, None, None,
                           physical_location=phys_loc)
             

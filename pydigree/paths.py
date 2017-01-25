@@ -39,12 +39,12 @@ def path_downward(start, end, path=None):
     path = path + [start]
     if start == end:
         return [path]
-    paths = []
+    identified_paths = []
     for child in start.children:
         newpath = path_downward(child, end, path=path)
         for p in newpath:
-            paths.append(p)
-    return paths
+            identified_paths.append(p)
+    return identified_paths
 
 
 def paths_through_ancestor(ind1, ind2, ancestor):
@@ -62,7 +62,7 @@ def paths_through_ancestor(ind1, ind2, ancestor):
     :returns: identified paths
     :rtype: list of lists of Individuals 
     """
-    paths = []
+    identified_paths = []
     ups = path_downward(ancestor, ind1)
     downs = path_downward(ancestor, ind2)
     for u in ups:
@@ -84,8 +84,8 @@ def paths_through_ancestor(ind1, ind2, ancestor):
             pt = table(path)
             if [pt[k] for k in pt if pt[k] > 1]:
                 continue
-            paths.append(path)
-    return paths
+            identified_paths.append(path)
+    return identified_paths
 
 
 def paths(ind1, ind2):
@@ -109,11 +109,11 @@ def paths(ind1, ind2):
     :returns: identified paths
     :rtype: list of lists of Individuals 
     """
-    paths = path_downward(ind1, ind2) + path_downward(ind2, ind1)
+    identified_paths = path_downward(ind1, ind2) + path_downward(ind2, ind1)
     common = common_ancestors(ind1, ind2)
     for ancestor in common:
-        paths.extend(paths_through_ancestor(ind1, ind2, ancestor))
-    return paths
+        identified_paths.extend(paths_through_ancestor(ind1, ind2, ancestor))
+    return identified_paths
 
 
 def kinship(ind1, ind2):

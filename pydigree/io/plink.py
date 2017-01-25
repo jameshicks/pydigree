@@ -1,6 +1,4 @@
-from itertools import chain
-
-from pydigree.common import grouper, cumsum
+from pydigree.common import grouper
 from pydigree.common import interleave
 from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
 from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
@@ -41,11 +39,11 @@ def read_map(mapfile):
     with open(mapfile) as f:
         for i, line in enumerate(f):
             line = line.strip().split()
-            chr, label, cm, pos = line
+            chrom, label, cm, pos = line
             cm, pos = float(cm), int(pos)
             if pos < 0:
                 raise FileFormatError('Invalid position: {}'.format(pos))
-            if chr != last_chr:
+            if chrom != last_chr:
                 # If this happens, we've moved on to a new chromosome,
                 # or we've just started. If we haven't just started, We'll
                 # close up the old one
@@ -53,11 +51,11 @@ def read_map(mapfile):
                     chromosome.finalize()
                     chroms.add_chromosome(chromosome)
                 # Make the next chromosome
-                chromosome = ChromosomeTemplate(label=chr)
+                chromosome = ChromosomeTemplate(label=chrom)
             elif pos < last_pos:
                 raise FileFormatError('Map file not sorted')
             chromosome.add_genotype(None, cm, label=label, bp=pos)
-            last_chr, last_pos = chr, pos
+            last_chr, last_pos = chrom, pos
     chromosome.finalize()
     chroms.add_chromosome(chromosome)
     return chroms
@@ -211,11 +209,11 @@ def write_map(pedigrees, mapfile, output_chromosomes=None):
         checkchroms = False
 
     with open(mapfile, 'w') as f:
-        for ci, chromosome in enumerate(pedigrees.chromosomes):
+        for chromosome in pedigrees.chromosomes:
             if checkchroms and chromosome.outputlabel not in output_chromosomes:
                 continue
             for mi, marker in enumerate(chromosome._iinfo()):
-                label, cm, mb, frequency = marker
+                label, cm, mb, _ = marker
                 if not mb:
                     mb = int(cm * 10e6)
                 if not label:

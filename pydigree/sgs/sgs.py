@@ -210,7 +210,7 @@ class SGS(object):
         if not self.segments:
             return 0
 
-        chrom, pos = locus
+        chrom, _ = locus
 
         if isinstance(chrom, int) and isinstance(self.segments[0].chromosome, ChromosomeTemplate):
             chrom = self.ind1.population.chromosomes[chrom]

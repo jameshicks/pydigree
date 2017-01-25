@@ -226,9 +226,6 @@ class REML(MixedModelLikelihood):
         
         varmats = [x.V_i for x in self.mm.random_effects]
         nrf = len(varmats)
-
-        def is_residual(idx):
-            return idx == nrf - 1
              
         mat = np.zeros((nrf, nrf))
 

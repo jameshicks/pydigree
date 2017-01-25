@@ -1,18 +1,21 @@
-
+""" 
+A base class for gene dropping simulations to inherit from
+"""
 
 from itertools import combinations_with_replacement
 
 from pydigree.ibs import ibs
 from pydigree.io.smartopen import smartopen
 from pydigree.io.base import write_pedigree
-from pydigree.io.plink import write_plink, write_map
+from pydigree.io.plink import write_plink
 from pydigree.io.base import write_phenotypes
-from pydigree.exceptions import SimulationError
 
 
-# A base class for simulations to inherit from
+
 class Simulation(object):
-
+    """ 
+    A base class for gene dropping simulations to inherit from
+    """
     def __init__(self, template=None, label=None, replications=1000, only=None):
         self.template = template
         self.label = label if label is not None else 'unlabeled'
@@ -75,7 +78,7 @@ class Simulation(object):
             for ped in self.template.pedigrees:
                 for ind1, ind2 in combinations_with_replacement(ped.individuals, 2):
                     identical = []
-                    for chrom_idx, chromosome in enumerate(ind1.chromosomes):
+                    for chrom_idx in range(ind1.chromosomes.nchrom()):
                         if ind1 == ind2:
                             genos = zip(*ind1.genotypes[chrom_idx])
                             ibd = [2 * (x == y) for x, y in genos]
@@ -114,13 +117,13 @@ class Simulation(object):
 
                 l = line.split()
                 if l[0].lower() == 'genotype':
-                    con_type, ped, ind, chrom, index, allele, chromatid, method = l
+                    _, ped, ind, chrom, index, allele, chromatid, method = l
                     locus = (chrom, index)
                     ind = self.template[ped][ind]
                     self.add_genotype_constraint(ind, locus, allele,
                                                  chromatid, method)
                 elif l[0].lower() == 'ibd':
-                    con_type, ped, ind, ancestor, chrom, index, anc_chromatid = l
+                    _, ped, ind, ancestor, chrom, index, anc_chromatid = l
                     locus = (chrom, index)
                     ind = self.template[ped][ind]
                     ancestor = self.template[ped][ancestor]
