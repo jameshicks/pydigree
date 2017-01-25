@@ -2,8 +2,8 @@ doc-warnings: true
 test-warnings: false
 strictness: veryhigh
 ignore-patterns:
-    - *init__.py
-    - *common.py
+    - .*init__\.py$
+    - .*common.py$
 ignore-paths:
     - docs
     - support 
