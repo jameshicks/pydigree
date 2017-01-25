@@ -166,13 +166,12 @@ class SGSAnalysis(object):
         self.pairs = {pairlookup(k): v for k, v in list(self.pairs.items())}
 
     @staticmethod
-    def direct_to_disk(filename, pop, seed_size=500, phaseknown=False,
+    def direct_to_disk(filename, pop, seed_size=500, 
                        min_length=1, size_unit='mb',
                        min_density=100, maxmiss=0.25,
                        onlywithin=False, njobs=1):
         with open(filename, 'w') as outf:
             results = _perform_sgs(pop, seed_size=seed_size,
-                                   phaseknown=phaseknown,
                                    min_length=min_length, size_unit=size_unit,
                                    min_density=min_density, maxmiss=maxmiss,
                                    onlywithin=onlywithin, njobs=njobs)
@@ -408,7 +407,7 @@ def sgs_population(pop, seed_size=500,
 
 
 def sgs_autozygous(ind, chromosome_idx, seed_size=500,
-                   phaseknown=False, min_length=1, size_unit='mb',
+                min_length=1, size_unit='mb',
                    min_density=100, maxmiss=0.25):
     chromosome = ind.chromosomes[chromosome_idx]
     hapa, hapb = ind.genotypes[chromosome_idx]
