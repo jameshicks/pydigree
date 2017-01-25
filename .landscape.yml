@@ -12,7 +12,7 @@ python-targets:
 
 pylint:
   disable:
-    anomalous-backslash-in-string
+    - anomalous-backslash-in-string
 
 pep8:
   disable:
