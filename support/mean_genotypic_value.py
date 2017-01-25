@@ -18,7 +18,7 @@ for i in range(100):
 	pop.add_chromosome(c)
 
 # Create trait QuantitativeTrait
-trait = Architecture('synthetic', 'quantitative', chromosomes=pop.chromosomes)
+trait = QuantitativeTrait('synthetic', 'quantitative', chromosomes=pop.chromosomes)
 for i in range(100):
 	trait.add_effect((i,0), 1 * (-1 if i % 2 else 1))
 

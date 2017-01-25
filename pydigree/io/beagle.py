@@ -5,6 +5,7 @@ import numpy as np
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, Alleles
 from pydigree.io import smartopen as open
+from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
 
@@ -21,11 +22,11 @@ class BeagleMarkerRecord(object):
 
     @property
     def reference(self):
-        return alleles[0]
+        return self.alleles[0]
 
     @property
     def alternates(self):
-        return allels[1:]
+        return self.alleles[1:]
 
 class BeagleGenotypeRecord(object):
     __slots__ = ['identifier', 'label', 'data']
@@ -65,8 +66,9 @@ def read_beagle_markerfile(filename, label=None):
             elif rec.pos <= last_pos:
                 raise FileFormatError('Makers in file out of order')
 
-            chrom.add_genotype(None, cm=None, label=rec.label, bp=rec.pos,
-                               reference=rec.reference, alternates=rec.alternates)
+            chrom.add_genotype(None, map_position=None, label=rec.label, 
+                               bp=rec.pos, reference=rec.reference, 
+                               alternates=rec.alternates)
             last_pos = rec.pos
 
     return chrom

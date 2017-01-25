@@ -1,7 +1,6 @@
 from pydigree.exceptions import NotMeaningfulError
 
 class AlleleContainer(object):
-
     " A base class for the interface allele containers object must implement"
 
     def empty_like(self):
@@ -33,4 +32,4 @@ class AlleleContainer(object):
             'Value comparisions not meaningful for genotypes')
 
     def __delitem__(self, key):
-    	raise NotMeaningfulError('Allele arrays are fixed size')
+        raise NotMeaningfulError('Allele arrays are fixed size')

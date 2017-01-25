@@ -73,6 +73,7 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
 
                 break
         
+        chromobj = None
         for i, line in enumerate(f):
             record = VCFRecord(line)
 
@@ -84,7 +85,6 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
 
             if record.chrom != last_chrom:
                 if last_chrom is not None:
-                    chromobj.finalize()
                     pop.add_chromosome(chromobj)
                 chromobj = ChromosomeTemplate(label=record.chrom)
 
@@ -106,9 +106,8 @@ def read_vcf(filename, require_pass=False, freq_info=None, info_filters=None):
 
             last_chrom = record.chrom
 
-        chromobj.finalize()
         pop.add_chromosome(chromobj)
-
+        pop.chromosomes.finalize()
     for ind in inds:
         # Initialize new genotypes
         ind._init_genotypes(sparse=True)

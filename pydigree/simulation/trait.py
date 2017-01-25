@@ -321,3 +321,4 @@ class QuantitativeTrait(object):
                 chrom, loc, allele_a, allele_b, a, k = line.strip().split()
                 locus = chrom, loc
                 trait.add_effect(locus, a, k)
+        return trait

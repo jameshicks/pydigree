@@ -21,7 +21,7 @@ def common_ancestors(ind1, ind2):
     return ind1.ancestors() & ind2.ancestors()
 
 
-def path_downward(start, end, path=[]):
+def path_downward(start, end, path=None):
     """
     Returns a list of paths (if they exist) from an ancestor (start)
     to a descentdant (end).
@@ -33,6 +33,9 @@ def path_downward(start, end, path=[]):
 
     Returns: A list of individuals, in path order
     """
+    if path is None:
+        path = []
+
     path = path + [start]
     if start == end:
         return [path]

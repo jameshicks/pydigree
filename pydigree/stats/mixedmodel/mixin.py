@@ -75,6 +75,7 @@ class MixedModelMixin(object):
                    for Z, G, sigma in zip(incidence_matrices, covariance_matrices, variance_components))
 
     def inv_vcov_matrix(self, incidence_matrices, covariance_matrices, variance_components):
-        V = vcov_matrix(
-            incidence_matrices, covariance_matrices, variance_components)
+        V = self.vcov_matrix(incidence_matrices, 
+                             covariance_matrices, 
+                             variance_components)
         return spinv(V) if issparse(V) else inv(V)

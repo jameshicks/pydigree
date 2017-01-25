@@ -5,6 +5,8 @@ from itertools import product
 import copy
 
 import numpy as np
+from numpy.linalg import LinAlgError
+
 from scipy.sparse import csc_matrix, issparse
 from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv as scipy_inv

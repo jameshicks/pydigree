@@ -47,7 +47,7 @@ def sbool(ped, inds, loc):
 
 def genedrop(ped, affs, scorer, iteration):
     if iteration % (args.niter / 10) == 0:
-        print('Simulation %s' % x)
+        print('Simulation %s' % iteration)
     ped.simulate_ibd_states(inds=affs)
     s = scorer(ped, affs, (0, 0))
     return s

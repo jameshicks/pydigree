@@ -1,3 +1,4 @@
+import pandas as pd
 from itertools import chain
 from operator import add
 from functools import reduce
@@ -7,7 +8,7 @@ from pydigree.common import table
 
 class IndividualContainer(object):
 
-    def apply_inplace(func):
+    def apply_inplace(self, func):
         ''' 
         Calls a function on each individual object in the collection
 
@@ -20,7 +21,7 @@ class IndividualContainer(object):
         for ind in self.individuals:
             func(ind)
 
-    def apply(func):
+    def apply(self, func):
         '''
         Calls a function on each individual object in the collection and yields its value
 
@@ -138,6 +139,7 @@ class IndividualContainer(object):
 
         Returns: A float
         """
+        missing_genotype = (0,0)
         genotypes = [x.get_genotype(location) for x in self.individuals]
         tab = table(genotypes)
         return tab[missing_genotype] / float(len(genotypes))

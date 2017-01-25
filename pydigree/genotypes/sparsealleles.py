@@ -5,7 +5,6 @@ import numpy as np
 from pydigree.cydigree.sparsearray import SparseArray
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.genotypes import AlleleContainer, Alleles
-from pydigree.exceptions import NotMeaningfulError
 from pydigree.common import mode
 
 class SparseAlleles(AlleleContainer):
@@ -149,6 +148,6 @@ class SparseAlleles(AlleleContainer):
         """
         Creates an empty SparseAlleles (everybody is wild-type)
         """
-        out = SparseAlleles(size, template=template, missingcode=missingcode)
+        out = SparseAlleles(self.size, template=template, missingcode=missingcode)
 
         return out 

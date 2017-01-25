@@ -22,7 +22,7 @@ class VarianceComponentsLinkage(object):
                                      self.outcome in x.phenotypes]
         if self.fixed_effects:
             for effect in self.fixed_effects:
-                self.analysis_individuals = [x for x in analysis_individuals
+                self.analysis_individuals = [x for x in self.analysis_individuals
                                              if effect in x.phenotypes]
         self.ibd_matrix = ibd_matrix
         self.joint = joint
