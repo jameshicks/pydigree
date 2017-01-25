@@ -91,10 +91,10 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
         print('less than two affected individuals. Skipping.')
         continue
 
-    print("Pedigree %s (%s/%s), ".format(ped.label, i+1, len(peds)), end='')
-    print("%s affecteds, %s bits, %s simulations" % (len(affs), 
-                                                     ped.bit_size(),
-                                                    args.niter))
+    print("Pedigree {} ({}/{}), ".format(ped.label, i+1, len(peds)), end='')
+    print("{} affecteds, {} bits, {} simulations".format(len(affs), 
+                                                         ped.bit_size(),
+                                                         args.niter))
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
                              for x in range(args.niter)])
