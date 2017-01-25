@@ -30,7 +30,7 @@ class Simulation(object):
         if not self.trait.chromosomes:
             self.trait.chromosomes = self.template.chromosomes
 
-    def replicate(self):
+    def replicate(self, **kwargs):
         raise NotImplementedError("This is a base class don't call me")
 
     def get_founder_genotypes(self, linkeq=True):
