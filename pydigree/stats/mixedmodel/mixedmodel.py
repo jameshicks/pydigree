@@ -323,17 +323,6 @@ class MixedModel(object):
         """
         return self.random_effects[-1].sigma
 
-    def coefficient_matrix(self):
-        ginvlist = [(1 / rf.sigma) * inv(rf.G) for rf in self.random_effects]
-        return makeLHS(self.X, self.Zlist, ginvlist, inv(self.R))
-
-    def _fixef_vcv(self):
-        "Variance-covariance matrix of fixed effect estimates"
-        # Add 1 to include intercept
-        nfixef = len(self.fixed_effects) + 1
-        C = self.coefficient_matrix()
-        vcv_beta = inv(C)[0:nfixef, 0:nfixef]
-        return vcv_beta
 
     def _makey(self):
         """ Prepares the vector of outcome variables for model estimation """

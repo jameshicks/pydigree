@@ -187,7 +187,7 @@ def scoring_iteration(info_mat, gradient):
 
 
 def expectation_maximization(mm, likelihood, maxiter=10000, 
-                             tol=1e-4, verbose=False):
+                             tol=1e-4, return_after=1e30, verbose=False):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
 
@@ -220,7 +220,8 @@ def expectation_maximization(mm, likelihood, maxiter=10000,
     :param verbose: Print likelihood, variance component, and relative variance 
         estimates at each iteration. Useful for debugging or watching the 
         direction the optimizer is taking.
-
+    :param return_after: return estimates after n iterations, regardless of 
+        whether or not the model converged.
     :type mm: MixedModel
     :type maxiter: integer
     :type tol: float
@@ -235,7 +236,7 @@ def expectation_maximization(mm, likelihood, maxiter=10000,
         print('Maximizing model by Expectation-Maximization')
 
     vcs, llik = likelihood.parameters, likelihood.loglikelihood()
-    while True:
+    while i < return_after:
         if verbose:
             print((i, llik, vcs))
 

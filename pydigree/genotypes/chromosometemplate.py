@@ -239,7 +239,7 @@ class ChromosomeTemplate(object):
         if sparse:
             return SparseAlleles(size=self.nmark(), 
                                  template=self, 
-                                refcode=refcode)
+                                 refcode=refcode)
         else:
             return Alleles(np.zeros(self.nmark(), dtype=dtype), 
                            template=self)

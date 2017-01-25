@@ -1,4 +1,4 @@
-
+from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, Alleles
 from pydigree.io import smartopen as open
@@ -109,8 +109,7 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
         genotypes = zip(*gtrows)
         for ind, sequentialalleles in zip(inds, genotypes):
             ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes,
-                                                              sequentialalleles,
-                                                              missingcode=missingcode)
+                                                              sequentialalleles)
 
 
 def read_beagle(genofile, markerfile):

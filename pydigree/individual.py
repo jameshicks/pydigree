@@ -4,7 +4,7 @@ import pandas as pd
 
 from pydigree.recombination import recombine
 from pydigree.paths import kinship
-from pydigree.common import count, flatten
+from pydigree.common import flatten
 from pydigree.genotypes import Alleles, LabelledAlleles
 from pydigree.exceptions import IterationError
 

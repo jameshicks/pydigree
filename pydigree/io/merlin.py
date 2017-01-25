@@ -36,7 +36,7 @@ def create_data_handler_func(chromosomes,
             ind.phenotypes[label] = value
 
         gts = data[genotype_indices]
-        ind.genotypes = genotypes_from_sequential_alleles(chromsomes,
+        ind.genotypes = genotypes_from_sequential_alleles(chromosomes,
                                                           gts,
                                                           missing_code='X')
 
