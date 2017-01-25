@@ -76,8 +76,3 @@ def test_bitsize():
 
     huntingtons = peds['vz_huntington_autosomal_dominant']
     assert huntingtons.bit_size() == 2*47-18 
-
-@raises(NotImplementedError)
-def test_ld():
-    ped = Pedigree()
-    ped.ld()

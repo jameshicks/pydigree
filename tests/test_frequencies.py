@@ -53,17 +53,3 @@ def test_freq():
     assert pop.allele_frequency(loc, 1) == ((2*600) + (1*400)) / float(2*1000)
     assert pop.allele_frequency(loc, 2) == (1*400) / float(2*1000)
 
-@raises(NotImplementedError)
-def test_ld():
-    # Data from Hartl & Clark, Table 2.2 (pg 85)
-    haplotypes = chain([Alleles(['A','B'])] * 25,
-        [Alleles(['A','b'])] * 475, [Alleles(['a','B'])] * 475,
-        [Alleles(['a','b'])] * 9025)
-
-    pop = Population()
-    for chroms in grouper(haplotypes,2):
-        ind = pop.founder_individual()
-        ind.genotypes = [chroms]
-
-    known_D = 0
-    assert pop.ld( (0,0), (0,1), method='D') == known_D

@@ -33,10 +33,7 @@ class Pedigree(Population):
         """
         t = table([x.is_founder() for x in self.individuals])
         return 2 * t[False] - t[True]
-
-    def ld(self):
-        raise NotImplementedError('LD not meaningful for pedigrees?')
-
+   
     # Relationships
     #
     def kinship(self, id1, id2):
