@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import pydigree
-import sys
-import time
 import itertools
 import argparse
 

@@ -47,8 +47,8 @@ def test_alleles():
 
 
 def test_sparsealleles():
-    a = SparseAlleles([1,2,3,-1], missingcode=-1, refcode=1)
-    b = SparseAlleles([1,3,2,-1], missingcode=-1, refcode=1)
+    a = SparseAlleles([1,2,3,-1], refcode=1)
+    b = SparseAlleles([1,3,2,-1], refcode=1)
 
     assert a.nmark() == b.nmark() == 4
     assert (a.missing == np.array([False, False, False, True])).all()
@@ -58,7 +58,7 @@ def test_sparsealleles():
     assert (a.todense() == [1, 2, 3, -1]).all()
     assert isinstance(a.todense(), Alleles)
 
-    a = SparseAlleles([0,0,1, 0,-1, 1], refcode=0, missingcode=-1)
+    a = SparseAlleles([0,0,1, 0,-1, 1], refcode=0)
     a[0] = a.missingcode
     assert list(a.missing) == [True, False, False, False, True, False] 
 

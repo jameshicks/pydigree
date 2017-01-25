@@ -1,4 +1,4 @@
-from itertools import combinations, product, chain
+from itertools import combinations, chain
 from functools import partial
 from bisect import bisect_left
 import multiprocessing
@@ -6,11 +6,9 @@ import multiprocessing
 import numpy as np
 from scipy.sparse import lil_matrix
 
-from pydigree.common import runs
-from pydigree.ibs import ibs, get_ibs_states
+from pydigree.ibs import get_ibs_states
 from pydigree.cydigree.cyfuncs import set_intervals_to_value, runs_gte_uint8
 from pydigree.io import smartopen as open
-from pydigree import Population, PedigreeCollection
 from pydigree import Individual, ChromosomeTemplate
 from functools import reduce
 
@@ -62,13 +60,20 @@ class SGSAnalysis(object):
         '''
         Creates an IBD matrix for a set of individuals at a locus
 
-        individuals: A list of individuals to form the matrix for
-        locus: a 2-tuple in the form (chromosome, position)
-        location_type: the type of location units specified. Valid entries are
-        'index' (the index of the markers), 'physical' (the positions in bp),
-        and 'genetic' (location in cM)
+        :param individuals: individuals to form the matrix for
+        :param locus: location to form the matrix on
+        :param location_type: the type of location units specified. 
+            Valid entries are
+            'index' (the index of the markers), 
+            'physical' (the positions in bp),
+            and 'genetic' (location in cM)
+            
+        :type individuals: iterable
+        :type locus: 2-tuple 
+
+        :returns: IBD matrix
+        :rtype: scipy.sparse.lil_matrix 
         '''
-        nind = len(individuals)
         mat = []
         for ind1 in individuals:
             row = [self.ibd_state(ind1, ind2, locus, location_type, onlywithin=onlywithin)
@@ -82,8 +87,8 @@ class SGSAnalysis(object):
 
     def chromwide_ibd(self, chromidx, size=None, onlywithin=False, onlybetween=False):
         if onlybetween and onlywithin:
-            raise ValueError(
-                'Cannot set onlywithin and onlywithin simultaneously')
+            errmsg = 'Cannot set onlywithin and onlywithin simultaneously'
+            raise ValueError(errmsg)
         if size is None:
             size = max([x.stop for x in self.segments])
 
@@ -332,9 +337,10 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
     if onlywithin and (ind1.full_label[0] != ind2.full_label[0]):
         return results
 
+    nchrom = len(ind1.chromosomes)
     if ind1 == ind2:
 
-        for chridx, chromosome in enumerate(ind1.chromosomes):
+        for chridx in range(nchrom):
             shares = sgs_autozygous(ind1, chridx,
                                     seed_size=seed_size,
                                     min_length=min_length,
@@ -345,7 +351,7 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
 
     else:
         results = SGS(ind1, ind2)
-        for chridx, chromosome in enumerate(ind1.chromosomes):
+        for chridx in range(nchrom):
             shares = sgs_unphased(ind1, ind2, chridx,
                                   seed_size=seed_size,
                                   min_length=min_length,

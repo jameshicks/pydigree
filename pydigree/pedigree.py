@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from pydigree.common import *
+from pydigree.paths import fraternity
+from pydigree.common import table
 from pydigree.population import Population
-from pydigree.paths import kinship, fraternity
 
 
 class Pedigree(Population):
@@ -66,13 +66,13 @@ class Pedigree(Population):
         # Since with pedigree objects we're typically working with IDs,
         # I define these functions to get parents for IDs by looking them
         # up in the pedigree
-        def fa(id):
-            return (self[id].father.label
-                    if self[id].father is not None else None)
+        def fa(lab):
+            return (self[lab].father.label
+                    if self[lab].father is not None else None)
 
-        def mo(id):
-            return (self[id].mother.label
-                    if self[id].mother is not None else None)
+        def mo(lab):
+            return (self[lab].mother.label
+                    if self[lab].mother is not None else None)
 
         # Use tuples here to take advantage of the implicit tuple ordering
         # With depth as the first item, it assures that descendants aren't
@@ -103,13 +103,13 @@ class Pedigree(Population):
         """
         pair = frozenset([id1, id2])
         if pair not in self.fratmat:
-            f = fraternity(self[id1], self[id2])
+            f = f = fraternity(self[id1], self[id2])
             self.fratmat[pair] = f
             return f
         else:
             return self.fratmat[pair]
 
-    def inbreeding(self, id):
+    def inbreeding(self, indlab):
         """
         Like Pedigree.kinship, this is a convenience function for getting
         inbreeding coefficients for individuals in pedigrees by their id
@@ -122,7 +122,7 @@ class Pedigree(Population):
         :returns: inbreeding coefficient
         :rtype: a double
         """
-        ind = self[id]
+        ind = self[indlab]
         if ind.is_founder():
             return 0.0
         if ind.father.is_founder() or ind.mother.is_founder():

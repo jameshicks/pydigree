@@ -2,13 +2,13 @@ from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen as open
-from pydigree.cydigree.datastructures import SparseArray
+
 from pydigree.cydigree.vcfparse import vcf_allele_parser, assign_genorow
 
 class VCFRecord(object):
     ''' A class for parsing lines in VCF files '''
     def __init__(self, line):
-        chromid, pos, varid, ref, alt, qual, filter_passed, info, format, data = line.strip(
+        chromid, pos, varid, ref, alt, qual, filter_passed, info, field_format, data = line.strip(
         ).split(None, 9)
         self.chrom = chromid
         self.pos = int(pos)
@@ -18,7 +18,7 @@ class VCFRecord(object):
         self.qual = float(qual)
         self.filter_passed = (filter_passed == 'PASS')
         self._info = info
-        self.format = format
+        self.field_format = field_format
         self.data = data
 
     @property
@@ -32,13 +32,13 @@ class VCFRecord(object):
     # @profile
     def genotypes(self):
         ''' Extract the genotypes from a VCF record '''
-        alleles = vcf_allele_parser(self.data, self.format)
+        alleles = vcf_allele_parser(self.data, self.field_format)
 
         return alleles
         
     def getitems(self, item):
-        format = self.format.split(':')
-        idx = format.index(item)
+        format_ = self.field_format.split(':')
+        idx = format_.index(item)
         return [x.split(':')[idx] for x in self.data]
 
 

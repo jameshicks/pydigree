@@ -2,13 +2,11 @@
 
 from itertools import combinations_with_replacement
 
-from pydigree.common import *
 from pydigree.ibs import ibs
 from pydigree.io.smartopen import smartopen
 from pydigree.io.base import write_pedigree
 from pydigree.io.plink import write_plink, write_map
 from pydigree.io.base import write_phenotypes
-from pydigree.individual import Individual
 from pydigree.exceptions import SimulationError
 
 
@@ -116,15 +114,15 @@ class Simulation(object):
 
                 l = line.split()
                 if l[0].lower() == 'genotype':
-                    type, ped, id, chr, index, allele, chromatid, method = l
-                    locus = (chr, index)
-                    ind = self.template[ped][id]
+                    con_type, ped, ind, chrom, index, allele, chromatid, method = l
+                    locus = (chrom, index)
+                    ind = self.template[ped][ind]
                     self.add_genotype_constraint(ind, locus, allele,
                                                  chromatid, method)
                 elif l[0].lower() == 'ibd':
-                    type, ped, id, ancestor, chr, index, anc_chromatid = l
-                    locus = (chr, index)
-                    ind = self.template[ped][id]
+                    con_type, ped, ind, ancestor, chrom, index, anc_chromatid = l
+                    locus = (chrom, index)
+                    ind = self.template[ped][ind]
                     ancestor = self.template[ped][ancestor]
                     self.add_ibd_constraint(ind, ancestor,
                                             locus, anc_chromatid)

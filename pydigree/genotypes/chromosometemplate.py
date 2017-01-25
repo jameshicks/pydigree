@@ -1,4 +1,4 @@
-from bisect import bisect_right, bisect_left
+from bisect import bisect_right
 
 import numpy as np
 
@@ -88,12 +88,12 @@ class ChromosomeSet(object):
         :type nloc: int
         :rtype: generator of locations
         """
-        nchrom = self.nchrom()
+
         available = self.nloci()
         loci = set(np.random.randint(0, available, nloc))
 
         # We may have duplicates
-        for attempt in range(100):
+        for _ in range(100):
             if len(loci) == nloc:
                 break
             needed = nloc - len(loci)
@@ -237,9 +237,12 @@ class ChromosomeTemplate(object):
         :returns: empty alleles container 
         """
         if sparse:
-            return SparseAlleles(size=self.nmark(), template=self, refcode=0)
+            return SparseAlleles(size=self.nmark(), 
+                                 template=self, 
+                                refcode=refcode)
         else:
-            return Alleles(np.zeros(self.nmark(), dtype=dtype), template=self)
+            return Alleles(np.zeros(self.nmark(), dtype=dtype), 
+                           template=self)
 
     def closest_marker(self, position, map_type='physical'):
         """ 

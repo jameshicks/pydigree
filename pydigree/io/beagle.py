@@ -1,6 +1,3 @@
-import numpy as np
-
-
 
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, Alleles

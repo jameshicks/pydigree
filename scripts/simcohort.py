@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
 import pydigree
-import sys
-import time
-from pydigree import table
 from pydigree.simulation import QuantitativeTrait
 
 nchrom = 1

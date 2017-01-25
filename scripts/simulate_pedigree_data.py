@@ -49,11 +49,11 @@ for cfile in args.chromosomes:
     c = read_gs_chromosome_template(cfile)
     template.add_chromosome(c)
 for freq in args.freqs:
-    chr, idx, maf = freq
+    chrom, idx, maf = freq
     maf = float(maf)
-    chr, idx = int(chr), int(idx)
+    chrom, idx = int(chrom), int(idx)
     # TODO: Sort out frequency semantics
-    template.chromosomes[chr].frequencies[idx] = 1-maf
+    template.chromosomes[chrom].frequencies[idx] = 1-maf
     
 # Simulation method
 if args.method.lower() == 'constrained':

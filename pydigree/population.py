@@ -3,15 +3,10 @@
 # Packages we're going to use
 import math
 import numpy as np
-import pandas as pd
-from itertools import chain
-
-# Abstract base class for population and pedigree
-from collections import MutableMapping
 
 # Other pydigree objects
 from pydigree.individual import Individual
-from pydigree.common import *
+
 from pydigree.recombination import recombine
 from pydigree.individualcontainer import IndividualContainer
 from pydigree.genotypes import ChromosomeSet
@@ -110,7 +105,15 @@ class Population(IndividualContainer):
         del self[ind.label]
 
     def add_founders(self, n):
-        for i in range(n):
+        """
+        Adds a number of founder individuals to the population
+
+        :param n: number of individuals to add
+        :type n: int
+
+        :rtype: void
+        """
+        for _ in range(n):
             self.founder_individual(register=True)
 
     def update(self, other):
@@ -135,7 +138,7 @@ class Population(IndividualContainer):
             return
 
         for x in overlap:
-            self.population[x].update(other._getindividual(x))
+            self.population[x].update(other[x])
 
     def _getindividual(self, label):
         return self[label]
@@ -160,7 +163,7 @@ class Population(IndividualContainer):
     # Random mating
     #
     #
-    def mate(self, ind1, ind2, id, sex=None):
+    def mate(self, ind1, ind2, indlab, sex=None):
         """
         Creates an individual as the child of two specificied individual
         objects and randomly chooses a sex.
@@ -169,7 +172,7 @@ class Population(IndividualContainer):
         :param ind2: The second parent
         :type ind1: Individual
         :type ind2: Individual
-        :param id: ID label for the child
+        :param indlab: ID label for the child
         :param sex: Sex of child, randomly chosen if not specified
         :type sex: {0,1}
         :return: An individual with ind1 and ind2 as parents
@@ -177,7 +180,7 @@ class Population(IndividualContainer):
         """
         if sex is None:
             sex = np.random.choice([0, 1])
-        child = Individual(self, id, ind1, ind2, sex)
+        child = Individual(self, indlab, ind1, ind2, sex)
         return child
 
     def advance_generation(self, gensize, mating=None):

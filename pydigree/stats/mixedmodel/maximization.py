@@ -1,11 +1,5 @@
-
-
-
 import numpy as np
-from numpy.linalg import inv, LinAlgError
-from scipy.sparse import csc_matrix
-from scipy import matrix
-import scipy.linalg
+from numpy.linalg import LinAlgError
 
 from pydigree.stats.mathfuncs import is_positive_definite, grid
 
@@ -26,9 +20,8 @@ class MLEResult(object):
         self.hessian = hessian
 
 
-def newtonlike_maximization(mm, likelihood, maxiter=250,
-                            tol=1e-4, constrained=False, scoring=10,
-                            verbose=False):
+def newtonlike_maximization(mm, likelihood, maxiter=250, tol=1e-4, 
+                            scoring=10, verbose=False):
     """
     Updates variance components for a linear mixed model by an
     iterative scheme to find the restricted maximum likelihood estimates
@@ -124,7 +117,7 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
 
     for i in range(maxiter):
         if (i - 1) == scoring:
-            information_mat = likelihood.set_info('nr')
+            likelihood.set_info('nr')
 
 
         # Make the information matrix and gradient
@@ -193,8 +186,8 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
-                                  verbose=False, return_after=1e300):
+def expectation_maximization(mm, likelihood, maxiter=10000, 
+                             tol=1e-4, verbose=False):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
 

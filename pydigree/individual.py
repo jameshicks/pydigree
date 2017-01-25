@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
-import itertools
-
-
-import numpy as np
 import pandas as pd
 
 from pydigree.recombination import recombine
-from pydigree.paths import *
-from pydigree.common import *
+from pydigree.paths import kinship
+from pydigree.common import count, flatten
 from pydigree.genotypes import Alleles, LabelledAlleles
 from pydigree.exceptions import IterationError
 
@@ -404,18 +400,17 @@ class Individual(object):
     def constrained_gamete(self, constraints, attempts=1000):
         # Constraints here is a list of ((location, index), alleles) tuples
         # for alleles that the gamete has to have
-        for x in range(attempts):
+        for _ in range(attempts):
             g = self.gamete()
             success = True
             for loc, allele in constraints:
-                chr, pos = loc
-                if g[chr][pos] != allele:
+                chrom, pos = loc
+                if g[chrom][pos] != allele:
                     success = False
                     continue
             if success:
                 return g
-        else:
-            raise IterationError('Ran out of constrained gamete attempts')
+        raise IterationError('Ran out of constrained gamete attempts')
 
     @staticmethod
     def fertilize(father, mother):

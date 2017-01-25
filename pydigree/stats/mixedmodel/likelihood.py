@@ -174,7 +174,7 @@ class ML(MixedModelLikelihood):
         "Performs a round of Expectation-Maximization ML"
         resid, Vinv = self.resid, self.Vinv
 
-        n = self.mm.nobs()
+
         coefficients = np.array([
             matrix.item(resid.T * Vinv * rf.V_i * Vinv * resid - np.trace(Vinv * rf.V_i))
                         for rf in self.mm.random_effects])
@@ -229,8 +229,6 @@ class REML(MixedModelLikelihood):
 
         def is_residual(idx):
             return idx == nrf - 1
-
-        residual_variance = self.parameters[-1]
              
         mat = np.zeros((nrf, nrf))
 
@@ -239,7 +237,7 @@ class REML(MixedModelLikelihood):
                 if j < i: 
                     continue
                 
-                element = 1/2 * y.T * P * V_i * P * V_j * P * y
+                element = 1/2 * y.T * P * V_i * P * V_j * Py
                 element = matrix.item(element)
                 mat[i, j] = element
                 mat[j, i] = element
@@ -318,7 +316,6 @@ class REML(MixedModelLikelihood):
         "Performs a round of Expectation-Maximization REML"
         y, P = self.mm.y, self.P
         Py = P*y
-        n = self.mm.nobs()
 
         def get_coef(rf):
             V_i = rf.V_i

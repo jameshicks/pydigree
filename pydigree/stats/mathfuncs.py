@@ -17,7 +17,7 @@ def is_positive_definite(mat):
     return all(np.linalg.eigvals(mat) > 0)
 
 
-def grid(func, nargs, low, high, ntests=10, predicate=None, catch=None):
+def grid(func, nargs, low, high, ntests=10, predicate=None):
     '''
     Evaluates a function over a range of argument values.
     

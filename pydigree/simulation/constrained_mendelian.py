@@ -1,6 +1,4 @@
-import numpy as np
-
-from pydigree.common import *
+from pydigree.common import random_choice
 from pydigree.genotypes import AncestralAllele
 from pydigree.simulation import *
 from pydigree.simulation.simulation import Simulation, SimulationError

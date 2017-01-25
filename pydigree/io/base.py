@@ -1,8 +1,5 @@
-from itertools import chain
-
 import numpy as np
 
-from pydigree.common import *
 from pydigree.io.smartopen import smartopen as open
 from pydigree.population import Population
 from pydigree.individual import Individual
@@ -78,30 +75,30 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         for line in f:
             split = line.strip().split(delimiter)
             if len(split) > 5:
-                fam, id, fa, mo, sex, aff = split[0:6]
+                fam, ind_id, fa, mo, sex, aff = split[0:6]
             elif len(split) == 5:
-                fam, id, fa, mo, sex = split[0:5]
+                fam, ind_id, fa, mo, sex = split[0:5]
                 aff = None
-            # Give a special id for now, to prevent overwriting duplicated
-            # ids between families
-            id = (fam, id)
+            # Give a special ind_id for now, to prevent overwriting duplicated
+            # ind_ids between families
+            ind_id = (fam, ind_id)
 
-            if onlyinds and (id not in onlyinds):
+            if onlyinds and (ind_id not in onlyinds):
                 continue
 
-            p[id] = Individual(population, id, fa, mo, sex)
-            p[id].phenotypes['affected'] = getph(aff)
-            p[id].pedigree = p
-            p[id].sex = sex_codes[p[id].sex]
+            p[ind_id] = Individual(population, ind_id, fa, mo, sex)
+            p[ind_id].phenotypes['affected'] = getph(aff)
+            p[ind_id].pedigree = p
+            p[ind_id].sex = sex_codes[p[ind_id].sex]
 
             if isinstance(data_handler, Callable) and len(split) > 6:
                 data = split[6:]
-                data_handler(p[id],  data)
+                data_handler(p[ind_id],  data)
 
     # Fix the individual-level data
     if connect_inds:
         for ind in p.individuals:
-            fam, id = ind.label
+            fam, ind_id = ind.label
             # Actually make the references instead of just pointing at strings
             ind.father = p[(fam, ind.father)] if ind.father != '0' else None
             ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
@@ -158,7 +155,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
                 try:
                     v = float(v)
                 except ValueError:
-                    if not v:
+                    if not v or v == missingcode:
                         v = None
                 if k in set(['famid', 'id']):
                     continue
@@ -262,7 +259,7 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
     strand_b = data[1::2]
 
     start = 0
-    for i, chrom in enumerate(chromosomes):
+    for chrom in chromosomes:
         size = chrom.nmark()
         stop = start + size
         chroma = Chromobj(strand_a[start:stop], template=chrom)

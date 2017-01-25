@@ -474,7 +474,7 @@ class MixedModel(object):
         # if method.lower().startswith('minque'):
         #     mle = minque(self, value=0, verbose=verbose, starts=starts)
 
-        elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
+        if method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             mle = expectation_maximization(self, llik, verbose=verbose)
 
         elif method.lower() == 'grid':

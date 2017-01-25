@@ -3,7 +3,6 @@ from collections import Sequence
 import numpy as np
 
 from pydigree.cydigree.sparsearray import SparseArray
-from pydigree.exceptions import NotMeaningfulError
 from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.common import mode
 
@@ -18,10 +17,11 @@ class SparseAlleles(AlleleContainer):
     Negative values are interpreted as missing.
     '''
 
-    def __init__(self, data=None, refcode=0, missingcode=-1, size=None, template=None):
+    def __init__(self, data=None, refcode=0, size=None, template=None):
         self.template = template
 
-        self.refcode = refcode
+        if refcode is None:
+            refcode = 0
 
         if data is None:
             if template is None and size is None:
@@ -31,14 +31,14 @@ class SparseAlleles(AlleleContainer):
             self.container = SparseArray(size, refcode) 
             return 
 
-        if type(data) is SparseArray:
-            raise NotImplementedError
+        elif type(data) is SparseArray:
+            self.container = data.copy()
         
         else:    
             if not isinstance(data, np.ndarray):
                 data = np.array(data)
-            
-            self.container = SparseArray.from_dense(data, refcode)
+            ref = refcode if refcode is not None else mode(data)
+            self.container = SparseArray.from_dense(data, ref)
 
 
         self.size = len(self.container)
@@ -54,6 +54,15 @@ class SparseAlleles(AlleleContainer):
     
     def values(self):
         return self.container.values()
+
+    @property 
+    def refcode(self):
+        """ 
+        Returns the sparse value in the container 
+        
+        :rtype: int8_t
+        """
+        return self.container.ref
 
     @property
     def missingcode(self):
@@ -111,7 +120,6 @@ class SparseAlleles(AlleleContainer):
         :returns: empty SparseAlleles
         """
         output = SparseAlleles(template=self.template,
-                               missingcode=self.missingcode,
                                refcode=self.refcode, size=self.nmark())
         return output
 
@@ -144,18 +152,16 @@ class SparseAlleles(AlleleContainer):
         return outp
 
     @staticmethod
-    def empty(template, missingcode=-1):
+    def empty(template):
         """
         Creates an empty SparseAlleles (everybody is wild-type)
 
         :param template: The chromosome info associated with this set of alleles
         :type template: ChromosomeTemplate
-        :param missingcode: code to use for missing values
-        :type missingcode: int8_t
 
         :returns: Empty container
         :rtype: SparseAlleles
         """
-        out = SparseAlleles(template.nmark(), template=template, missingcode=missingcode)
+        out = SparseAlleles(template.nmark(), template=template)
 
         return out 

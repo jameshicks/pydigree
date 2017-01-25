@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-
-import itertools
-
-from .common import *
-from collections import MutableMapping
-
-import pandas as pd
 from scipy.sparse import block_diag
 
 from pydigree.pedigree import Pedigree

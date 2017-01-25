@@ -178,7 +178,6 @@ class QuantitativeTrait(object):
         :param effect: a QuantitativeGeneticEffect object if a and k
             are not supplied
         """
-        chrom, marker = locus
 
         if effect is None:
             eff = QuantitativeGeneticEffect(locus,
@@ -310,8 +309,8 @@ class QuantitativeTrait(object):
     @staticmethod
     def from_file(filename):
         with open(filename) as f:
-            type, name = f.readline().strip().split()
-            trait = QuantitativeTrait(type, name)
+            trait_type, name = f.readline().strip().split()
+            trait = QuantitativeTrait(trait_type, name)
             for line in f:
                 l = line.strip().split()
                 if len(l) != 5:

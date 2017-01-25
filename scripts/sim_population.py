@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-import sys
+
 import pydigree
 import time
 import numpy as np
-
 
 n=5000
 k = 2 * 10**5
