@@ -144,10 +144,18 @@ class SparseAlleles(AlleleContainer):
         return outp
 
     @staticmethod
-    def empty(reference=None, template=None, missingcode=-1):
+    def empty(template, missingcode=-1):
         """
         Creates an empty SparseAlleles (everybody is wild-type)
+
+        :param template: The chromosome info associated with this set of alleles
+        :type template: ChromosomeTemplate
+        :param missingcode: code to use for missing values
+        :type missingcode: int8_t
+
+        :returns: Empty container
+        :rtype: SparseAlleles
         """
-        out = SparseAlleles(self.size, template=template, missingcode=missingcode)
+        out = SparseAlleles(template.nmark(), template=template, missingcode=missingcode)
 
         return out 
