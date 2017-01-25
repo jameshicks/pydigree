@@ -11,4 +11,4 @@ ignore-paths:
     - support 
 
 python-targets:
-    - 2
+    - 3
