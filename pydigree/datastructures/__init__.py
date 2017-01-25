@@ -1,1 +1,1 @@
-from pydigree.cydigree.datastructures import SparseArray, IntTree
+from pydigree.cydigree.SparseArray import SparseArray

@@ -1,6 +1,6 @@
 import numpy as np
 from nose.tools import assert_almost_equal
-from pydigree.cydigree.sparray2 import SparseArray2 as SparseArray
+from pydigree.cydigree.sparsearray import SparseArray
 
 
 def test_setitem():
@@ -145,14 +145,17 @@ def test_setslice():
     s[20:50] = t[20:50]
     assert all(sv == 1 for sv in s[20:50].tolist())
 
-# def test_cmp():
-#     s = SparseArray(5, 0)
-#     s[(1,3)] = [1, 1]
-#     assert (s == 1).tolist() == [False, True, False, True, False]
-#     assert (s > 0).tolist() == [False, True, False, True, False]
-#     assert (s < 1).tolist() == [True, False, True, False, True]
+def test_cmp():
+    s = SparseArray(5, 0)
+    s[(1,3)] = [1, 1]
+    assert (s == 1).tolist() == [False, True, False, True, False]
+    assert (s != 1).tolist() == [True,  False, True, False, True]
+    assert (s > 0).tolist() == [False, True, False, True, False]
+    assert (s < 1).tolist() == [True, False, True, False, True]
 
-#     assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
+    s2 = SparseArray.from_dense([0,1,0,1,0], 0)
+    assert (s == s2) 
+    assert (s == [0,1,0,1,0]).tolist() == [True, True, True, True, True]
 
 def test_logic():
     s = SparseArray(5,0)

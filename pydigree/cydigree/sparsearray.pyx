@@ -7,24 +7,34 @@ from libcpp.map cimport map as stlmap
 from libcpp.vector cimport vector
 
 
-# cdef extern from "sparsearray.hpp" namespace CPPSparseArray:
-#     ctypedef uint32_t sparsekey;
-#     ctypedef int8_t sparseval; 
+ctypedef uint32_t sparsekey
+ctypedef int8_t sparseval
 
-#     cdef cppclass CPPSparseArray:
-#         CPPSparseArray(sparsekey arraysize, sparseval refcode)
-#         sparseval get_item(int k) except +
-#         CPPSparseArray get_range(int startk, int stopk)
+cdef bint sparseval_cmp(sparseval a, sparseval b, int op):
+    """
+    values for op
+    <   0
+    ==  2
+    >   4
+    <=  1
+    !=  3
+    >=  5
+    """
 
-#         void set_item(int k, sparseval v)
-#         void set_range(int startk, int stopk, CPPSparseArray& array_template)
+    if op == 0:
+        return a < b
+    elif op == 2:
+        return a == b
+    elif op == 4:
+        return a > b
+    elif op == 1:
+        return a <= b
+    elif op == 3:
+        return a != b
+    elif op == 5:
+        return a >= b
 
-ctypedef  uint32_t sparsekey
-ctypedef  int8_t sparseval
-
-# ctypedef stlmap_iterator stlmap[sparsekey, sparseval].iterator
-
-cdef class SparseArray2:
+cdef class SparseArray:
     cdef public stlmap[sparsekey, sparseval] data
     cdef public sparsekey size
     cdef public sparseval ref
@@ -53,7 +63,7 @@ cdef class SparseArray2:
 
     @staticmethod
     def from_dense(seq, sparseval refcode):
-        cdef SparseArray2 out = SparseArray2(len(seq), refcode)
+        cdef SparseArray out = SparseArray(len(seq), refcode)
 
         cdef int k = 0
         cdef sparseval v
@@ -67,7 +77,7 @@ cdef class SparseArray2:
 
     @staticmethod
     def from_items(seq, sparsekey size, sparseval refcode):
-        cdef SparseArray2 out = SparseArray2(size, refcode)
+        cdef SparseArray out = SparseArray(size, refcode)
 
         cdef sparsekey k
         cdef sparseval v
@@ -96,9 +106,9 @@ cdef class SparseArray2:
 
         return deref(val).second
 
-    cdef SparseArray2 get_fancy(self, indices):
+    cdef SparseArray get_fancy(self, indices):
         cdef sparsekey n = len(indices)
-        cdef SparseArray2 out = SparseArray2(n, self.ref)
+        cdef SparseArray out = SparseArray(n, self.ref)
 
         cdef int i = 0
         for i in range(n):
@@ -106,7 +116,7 @@ cdef class SparseArray2:
 
         return out
 
-    cdef SparseArray2 get_boolidx(self, indices):
+    cdef SparseArray get_boolidx(self, indices):
         cdef int n = len(indices)
         if n != self.size:
             raise ValueError
@@ -116,7 +126,7 @@ cdef class SparseArray2:
         for i in range(n):
             if indices[i]: inc(sz)
 
-        cdef SparseArray2 out = SparseArray2(sz, self.ref)
+        cdef SparseArray out = SparseArray(sz, self.ref)
         i = 0
         keepidx = 0
         for i in range(n):
@@ -126,10 +136,10 @@ cdef class SparseArray2:
 
         return out
 
-    cpdef SparseArray2 get_slice(self, slice):
+    cpdef SparseArray get_slice(self, slice):
         cdef int start = slice.start 
         cdef int stop = slice.stop
-        cdef SparseArray2 out = SparseArray2(stop - start, self.ref) 
+        cdef SparseArray out = SparseArray(stop - start, self.ref) 
 
         for k, v in self.data:
             if start <= k < stop:
@@ -159,7 +169,7 @@ cdef class SparseArray2:
         else:
             self.data[k] = v
 
-    cdef void set_slice_to_sparray(self, sparsekey start, sparsekey stop, SparseArray2 arr):
+    cdef void set_slice_to_sparray(self, sparsekey start, sparsekey stop, SparseArray arr):
         if arr.ref != self.ref:
             self.set_slice(slice(start, stop), arr.ref)
         
@@ -173,7 +183,7 @@ cdef class SparseArray2:
         cdef sparsekey start = slice.start
         cdef sparsekey stop = slice.stop
 
-        if isinstance(values, SparseArray2):
+        if isinstance(values, SparseArray):
             self.set_slice_to_sparray(start, stop, values)
             return
 
@@ -254,7 +264,7 @@ cdef class SparseArray2:
         return self.ndense() / <float>self.size
 
     cpdef copy(self): 
-        cdef SparseArray2 out = SparseArray2(self.size, self.ref)
+        cdef SparseArray out = SparseArray(self.size, self.ref)
         cdef sparsekey k 
         cdef sparseval v 
 
@@ -263,8 +273,58 @@ cdef class SparseArray2:
 
         return out
 
-    cdef sparse_eq(self, SparseArray2 other):
-        cdef SparseArray2 out = SparseArray2(self.size, self.ref == other.ref)
+    def __richcmp__(self, other, int op):
+       
+        if isinstance(other, SparseArray):  
+            if op == 2:
+                return self.sparse_eq(other)
+            elif op == 3:
+                return self.sparse_eq(other).logical_not()
+            else: 
+                return self.sparse_cmp(other, op)
+
+        elif  isinstance(other, Sequence):
+            return self.dense_cmp(other, op)
+
+        else:
+            if op == 2:
+                return self.eq_single(other)
+            elif op == 3:
+                return self.eq_single(other).logical_not()
+            else:
+                return self.cmp_single(other, op)
+    
+    cpdef SparseArray dense_cmp(self, other, op):
+        cdef vector[sparseval] thisone = self.tolist()
+        cdef SparseArray out = SparseArray(self.size, 0)
+
+        cdef stlmap[sparsekey, sparseval].iterator it = self.data.begin()
+        cdef int i = 0
+        while it != self.data.end():
+            while i < deref(it).first:
+                if sparseval_cmp(other[i], self.ref, op):
+                    out.set_item(i, True)
+                inc(i)
+
+            out.set_item(i, sparseval_cmp(deref(it).second, other[i], op))
+
+            inc(it)
+            inc(i)
+
+        while i < len(other):
+            if sparseval_cmp(other[i], self.ref, op):
+                out.set_item(i, True)
+
+            inc(i)
+
+        return out
+
+            
+    cpdef SparseArray sparse_eq(self, SparseArray other):
+        cdef SparseArray out = SparseArray(self.size, self.ref == other.ref)
+        
+        cdef sparsekey k
+        cdef sparseval v
 
         # This can definitely be done faster
         for k,v in self.data:
@@ -275,8 +335,53 @@ cdef class SparseArray2:
 
         return out
 
-    cpdef logical_not(self):
-        cdef SparseArray2 out = SparseArray2(self.size, not self.ref)
+    cpdef SparseArray sparse_cmp(self, SparseArray other, int op):
+        cdef SparseArray out = SparseArray(self.size, sparseval_cmp(self.ref, other.ref, op))
+
+        cdef sparsekey k
+        cdef sparseval v
+
+        # This can definitely be done faster
+        for k,v in self.data:
+            out.set_item(k, sparseval_cmp(other.get_item(k), v, op))
+
+        for k,v in other.data:
+            out.set_item(k, sparseval_cmp(self.get_item(k), v, op))
+
+        return out
+
+    cpdef SparseArray eq_single(self, sparseval val):
+        cdef SparseArray out = SparseArray(self.size, self.ref == val)
+
+        cdef sparsekey k
+        cdef sparseval v
+
+        cdef stlmap[sparsekey, sparseval].iterator it = self.data.begin()
+        while it != self.data.end():
+            k = deref(it).first
+            v = deref(it).second
+            out.set_item(k, val == v)
+            inc(it)
+
+        return out
+
+    cpdef SparseArray cmp_single(self, sparseval val, int op):
+        cdef SparseArray out = SparseArray(self.size, sparseval_cmp(self.ref, val, op))
+
+        cdef sparsekey k
+        cdef sparseval v
+
+        cdef stlmap[sparsekey, sparseval].iterator it = self.data.begin()
+        while it != self.data.end():
+            k = deref(it).first
+            v = deref(it).second
+            out.set_item(k, sparseval_cmp(v, val, op))
+            inc(it)
+
+        return out
+
+    cpdef SparseArray logical_not(self):
+        cdef SparseArray out = SparseArray(self.size, not self.ref)
         
         for k, v in self.data:
             out.set_item(k, not v) 

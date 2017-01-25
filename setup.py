@@ -58,9 +58,9 @@ vcfext = Extension('pydigree.cydigree.vcfparse',
                    sources=[os.path.join(cydigree_dir, 'vcfparse.pyx')],
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)
-sparray2 = Extension('pydigree.cydigree.sparray2',
+sparray2 = Extension('pydigree.cydigree.sparsearray',
                     language='c++',
-                    sources=[os.path.join(cydigree_dir, 'sparray2.pyx')],
+                    sources=[os.path.join(cydigree_dir, 'sparsearray.pyx')],
                     extra_compile_args=['-Wno-unused-function'],
                     define_macros=macros)
 
