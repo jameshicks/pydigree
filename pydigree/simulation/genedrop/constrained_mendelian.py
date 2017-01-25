@@ -1,14 +1,14 @@
 "Genedropping with IBD constraints"
 from pydigree.common import random_choice
 from pydigree.genotypes import AncestralAllele
-from pydigree.simulation.simulation import Simulation 
+from .simulation import GeneDroppingSimulation 
 from pydigree.exceptions import SimulationError
 from pydigree import paths
 from pydigree import Individual
 import collections
 
 
-class ConstrainedMendelianSimulation(Simulation):
+class ConstrainedMendelianSimulation(GeneDroppingSimulation):
     """
     Performs a gene-dropping simulation constrained to a specific 
     IBD pattern

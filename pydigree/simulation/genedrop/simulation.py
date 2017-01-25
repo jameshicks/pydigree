@@ -12,7 +12,7 @@ from pydigree.io.base import write_phenotypes
 
 
 
-class Simulation(object):
+class GeneDroppingSimulation(object):
     """ 
     A base class for gene dropping simulations to inherit from
     """

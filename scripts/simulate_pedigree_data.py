@@ -5,8 +5,8 @@ import argparse
 import pydigree
 from pydigree.io import read_ped
 from pydigree.io.genomesimla import read_gs_chromosome_template
-from pydigree.simulation import ConstrainedMendelianSimulation
-from pydigree.simulation import NaiveGeneDroppingSimulation
+from pydigree.simulation.genedrop import ConstrainedMendelianSimulation
+from pydigree.simulation.genedrop import NaiveGeneDroppingSimulation
 from pydigree.simulation import QuantitativeTrait
 
 parser = argparse.ArgumentParser()

@@ -1,11 +1,11 @@
 
 
 from pydigree.simulation.trait import QuantitativeTrait
-from pydigree.simulation.simulation import Simulation
+from .simulation import GeneDroppingSimulation
 from pydigree.exceptions import SimulationError
 
 
-class NaiveGeneDroppingSimulation(Simulation):
+class NaiveGeneDroppingSimulation(GeneDroppingSimulation):
 
     def __init__(self, template=None, replications=1000):
         Simulation.__init__(self, template, replications)

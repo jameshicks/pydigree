@@ -1,6 +1,13 @@
 pydigree.simulation package
 ===========================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    pydigree.simulation.genedrop
+
 Submodules
 ----------
 
@@ -12,34 +19,10 @@ pydigree.simulation.chromosomepool module
     :undoc-members:
     :show-inheritance:
 
-pydigree.simulation.constrained_mendelian module
-------------------------------------------------
-
-.. automodule:: pydigree.simulation.constrained_mendelian
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 pydigree.simulation.mating module
 ---------------------------------
 
 .. automodule:: pydigree.simulation.mating
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pydigree.simulation.naivegenedrop module
-----------------------------------------
-
-.. automodule:: pydigree.simulation.naivegenedrop
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pydigree.simulation.simulation module
--------------------------------------
-
-.. automodule:: pydigree.simulation.simulation
     :members:
     :undoc-members:
     :show-inheritance:

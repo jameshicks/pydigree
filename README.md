@@ -32,7 +32,7 @@ Classes
  * `MLEResult`: A class containing the maximum likelihood estimates of parameters and 
  values pertaining to the likelihood function at the MLE
 * `Architecture`: A class describing the genetic architecture for a trait to be used in simulation
-* `Simulation`: A base class from which other simulation objects inherit
+* `GeneDroppingSimulation`: A base class from which other gene-drop simulation objects inherit
  * `NaiveGeneDroppingSimulation`: Simulates genetic data for pedigrees by random gene dropping
  * `ConstrainedMendelianSimulation`: Simulates genetic data for pedigrees from a prespecified inheritance structure
 * `SGSAnalysis`: A class containing the result of a shared genomic segment (SGS) analysis
