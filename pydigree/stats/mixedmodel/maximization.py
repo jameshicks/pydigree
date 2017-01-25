@@ -96,8 +96,6 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
         an error
     :param tol: The minimum amount of change in the proportion of variance by any of
         the variance components to continue iterating.
-    :param constrained: Force optimizer to keep variance component estimates
-        in the range 0 <= vc <= variance(y), by performing a line search
     :param scoring: Number of iterations of Fisher Scoring or AI-REML before
         switching to Newton-Raphson. If already using Newton-Raphson,
         this argument has no effect.
@@ -109,7 +107,6 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
     :type tol: float
     :type likelihood: Likelihood
     :type maxiter: integer
-    :type constrained: bool
     :type scoring: integer
     :type verbose: bool
 
@@ -145,14 +142,11 @@ def newtonlike_maximization(mm, likelihood, maxiter=250,
         if not np.isfinite(delta).all():
             raise LinAlgError('NaNs in scoring update')
 
-        if constrained:
-            new_vcs, new_llik = line_search_reml(mm, vcs, llik, delta, tol=tol)
-        else:
-            new_vcs = vcs - delta
 
-            likelihood.set_parameters(new_vcs)
+        new_vcs = vcs - delta
 
-            new_llik = likelihood.loglikelihood()
+        likelihood.set_parameters(new_vcs)
+        new_llik = likelihood.loglikelihood()
 
         if new_vcs.sum() / mm._variance_after_fixefs() > 10:
             raise LinAlgError('Optimizer left parameter space')
