@@ -19,7 +19,7 @@ from pydigree.stats.mixedmodel.likelihood import REML, ML
 
 from pydigree.stats.mixedmodel.maximization import newtonlike_maximization
 from pydigree.stats.mixedmodel.maximization import expectation_maximization
-from pydigree.stats.mixedmodel.maximization import minque
+# from pydigree.stats.mixedmodel.maximization import minque
 from pydigree.stats.mixedmodel.maximization import grid_search
 from pydigree.stats.mixedmodel.maximization import MLEResult
 
@@ -471,8 +471,8 @@ class MixedModel(object):
         llik = likefunc(self, info=method)
         llik.set_parameters(starts)
 
-        if method.lower().startswith('minque'):
-            mle = minque(self, value=0, verbose=verbose, starts=starts)
+        # if method.lower().startswith('minque'):
+        #     mle = minque(self, value=0, verbose=verbose, starts=starts)
 
         elif method.lower() in {'em', 'emreml', 'expectation-maximization'}:
             mle = expectation_maximization(self, llik, verbose=verbose)
@@ -630,11 +630,7 @@ class MixedModel(object):
         """
         Starting variance components in optimization.
         Valid values:
-        'minque0': Starting values are those from MINQUE with all weights
-            set equal to 0 except for the residual variance, which is set
-            to 1. This is the default method used by SAS's PROC MIXED.
-        'minque1': Starting values are those from MINQUE with all weights
-            set equal to 1
+
         'ols': Starting values are all 0 except residual, which is 
             var(y - X*Beta)
         'EM': the starting values are the variance components after
@@ -650,17 +646,21 @@ class MixedModel(object):
         :returns: variance components
         :rtype: numpy array of floats
         """
+        # 'minque0': Starting values are those from MINQUE with all weights
+        #     set equal to 0 except for the residual variance, which is set
+        #     to 1. This is the default method used by SAS's PROC MIXED.
+        # 'minque1': Starting values are those from MINQUE with all weights
+        #     set equal to 1
+        # if kind.lower() == 'minque0':
+        #     return minque(self, value=0, return_after=1, return_vcs=True)
 
-        if kind.lower() == 'minque0':
-            return minque(self, value=0, return_after=1, return_vcs=True)
+        # if kind.lower() == 'minque1':
+        #     return minque(self, value=1, return_after=1, return_vcs=True)
 
-        if kind.lower() == 'minque1':
-            return minque(self, value=1, return_after=1, return_vcs=True)
-
-        if kind.lower() == 'minquemean':
-            zero = minque(self, value=0, return_after=1, return_vcs=True)
-            one = minque(self, value=1, return_after=1, return_vcs=True)
-            return (zero + one) / 2.0
+        # if kind.lower() == 'minquemean':
+        #     zero = minque(self, value=0, return_after=1, return_vcs=True)
+        #     one = minque(self, value=1, return_after=1, return_vcs=True)
+        #     return (zero + one) / 2.0
 
         if kind.lower() == 'ols':
             vcs_start = np.zeros(len(self.random_effects))

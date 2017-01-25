@@ -256,9 +256,6 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
 
         vcs = new_vcs
 
-        if i > maxiter and vcs_after_maxiter:
-            break
-
         if i > maxiter:
             raise LinAlgError('Ran out of scoring iterations')
 
@@ -267,89 +264,89 @@ def expectation_maximization(mm, likelihood, maxiter=10000, tol=1e-4,
     return mle
 
 
-def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
-           verbose=False, return_after=1e300, return_vcs=False):
-    """ 
-    MINQUE (MInimum Norm Quadratic Unbiansed Estimation). Only used for 
-    historical purposes or getting starting variance components for another
-    maximization scheme.
+# def minque(mm, starts=None, value=0, maxiter=200, tol=1e-4,
+#            verbose=False, return_after=1e300, return_vcs=False):
+#     """ 
+#     MINQUE (MInimum Norm Quadratic Unbiansed Estimation). Only used for 
+#     historical purposes or getting starting variance components for another
+#     maximization scheme.
 
-    MINQUE gets variance component estimates by solving the equation Cz=t
+#     MINQUE gets variance component estimates by solving the equation Cz=t
 
-    For d random effects 
-    z is a vector of variance compnents
-    C is a dxd matrix with element  C_ij trace(P * V_i * P * V_j)
-    t is a column vector with row element i = y' * P * V_i * P * y
+#     For d random effects 
+#     z is a vector of variance compnents
+#     C is a dxd matrix with element  C_ij trace(P * V_i * P * V_j)
+#     t is a column vector with row element i = y' * P * V_i * P * y
 
-    M = I_n - (1/n) * ONES_n * ONES_n'
-    (Ones_n is a row vector of all ones)
+#     M = I_n - (1/n) * ONES_n * ONES_n'
+#     (Ones_n is a row vector of all ones)
 
 
-    Useful reference: 
-    J.W. Keele & W.R. Harvey (1988) "Estimation of components of variance and
-    covariance by symmetric difference squaredand minimum norm quadratic 
-    unbiased estimation: a comparison" Journal of Animal Science
-    Vol 67. No.2 p348-356
-    doi:10.2134/jas1989.672348x
-    """
-    d = len(mm.random_effects)  # the number of random effects
-    if verbose:
-        print('Maximizing model by MINQUE')
+#     Useful reference: 
+#     J.W. Keele & W.R. Harvey (1988) "Estimation of components of variance and
+#     covariance by symmetric difference squaredand minimum norm quadratic 
+#     unbiased estimation: a comparison" Journal of Animal Science
+#     Vol 67. No.2 p348-356
+#     doi:10.2134/jas1989.672348x
+#     """
+#     d = len(mm.random_effects)  # the number of random effects
+#     if verbose:
+#         print('Maximizing model by MINQUE')
 
-    if starts is not None:
-        weights = np.array(starts)
+#     if starts is not None:
+#         weights = np.array(starts)
 
-    elif value == 0:
-        # MINQUE(0)
-        weights = np.zeros(d)
-        weights[-1] = 1
+#     elif value == 0:
+#         # MINQUE(0)
+#         weights = np.zeros(d)
+#         weights[-1] = 1
 
-    elif value == 1:
-        # MINQUE(1)
-        weights = np.ones(d)
+#     elif value == 1:
+#         # MINQUE(1)
+#         weights = np.ones(d)
 
-    vcs = np.var(mm.y - mm.X * mm.beta) * weights
-    n = mm.nobs()
+#     vcs = np.var(mm.y - mm.X * mm.beta) * weights
+#     n = mm.nobs()
 
-    y = mm.y
+#     y = mm.y
 
-    if verbose:
-        print(vcs)
-    for i in range(maxiter):
+#     if verbose:
+#         print(vcs)
+#     for i in range(maxiter):
 
-        if i + 1 > return_after:
-            return vcs
+#         if i + 1 > return_after:
+#             return vcs
 
-        V = mm._makeV(vcs=vcs.tolist())
-        Vinv = makeVinv(V)
-        P = makeP(mm.X, Vinv)
+#         V = mm._makeV(vcs=vcs.tolist())
+#         Vinv = makeVinv(V)
+#         P = makeP(mm.X, Vinv)
 
-        t = [matrix.item(y.T * P * ranef.V_i * P * y)
-             for ranef in mm.random_effects]
-        t = np.matrix(t).T
+#         t = [matrix.item(y.T * P * ranef.V_i * P * y)
+#              for ranef in mm.random_effects]
+#         t = np.matrix(t).T
 
-        # Make C
-        C = []
-        for ranef_i in mm.random_effects:
-            row = [np.trace(P * ranef_i.V_i * P * ranef_j.V_i)
-                   for ranef_j in mm.random_effects]
-            C.append(row)
-        C = np.matrix(C)
-        new_vcs = scipy.linalg.solve(C, t).T[0]
+#         # Make C
+#         C = []
+#         for ranef_i in mm.random_effects:
+#             row = [np.trace(P * ranef_i.V_i * P * ranef_j.V_i)
+#                    for ranef_j in mm.random_effects]
+#             C.append(row)
+#         C = np.matrix(C)
+#         new_vcs = scipy.linalg.solve(C, t).T[0]
 
-        delta = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
-        llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
+#         delta = (new_vcs / new_vcs.sum()) - (vcs / vcs.sum())
+#         llik = restricted_loglikelihood(mm.y, V, mm.X, P, Vinv)
 
-        if all(delta < tol):
-            if return_vcs:
-                return new_vcs
-            mle = MLEResult(new_vcs, llik, 'MINQUE')
-            return mle
+#         if all(delta < tol):
+#             if return_vcs:
+#                 return new_vcs
+#             mle = MLEResult(new_vcs, llik, 'MINQUE')
+#             return mle
 
-        if verbose:
-            print((i, llik, vcs))
-        vcs = new_vcs
-        weights = vcs
+#         if verbose:
+#             print((i, llik, vcs))
+#         vcs = new_vcs
+#         weights = vcs
 
 def grid_search(mm, likelihood, nevals=10, oob=False):
     ''' 
