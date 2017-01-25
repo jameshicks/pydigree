@@ -574,43 +574,6 @@ class MixedModel(object):
         print('BIC: {:10.3f}'.format(self.bic))
         print()
 
-    def varianceplot1d(self, effect_index, nevals=20):
-        raise NotImplementedError
-        import matplotlib.pyplot as plt
-        if len(self.variance_components) > 2:
-            raise ValueError(
-                'Only for models with one non-residual random effect')
-
-        def eval_vcs(vcs):
-            V = sum(sigma * ranef.V_i for sigma,
-                    ranef in zip(vcs, self.random_effects))
-            return restricted_loglikelihood(self.y, V, self.X)
-
-        eff = self.random_effects[0]
-        v = self.y.var()
-
-        results = []
-        potential_sigmas = np.linspace(0, v, nevals)
-        for sigma in potential_sigmas:
-            vcs = np.array([sigma, (1-sigma)])
-            results.append((sigma, eval_vcs(vcs)))
-        return results
-
-    def varianceplot2d(self, idx1, idx2, nevals=10, restricted=True):
-        raise NotImplementedError
-        total_variance = self._variance_after_fixefs()
-
-        potential_sigmas = np.linspace(0.1, total_variance, nevals)
-        likelihood_grid = np.zeros((nevals, nevals))
-
-        for i, vc1 in enumerate(potential_sigmas):
-            for j, vc2 in enumerate(potential_sigmas):
-                vcs = [vc1, vc2, total_variance - (vc1 + vc2)]
-                likelihood_grid[i, j] = self.loglikelihood(vcs=vcs,
-                                                           restricted=restricted)
-
-        X, Y = np.meshgrid(potential_sigmas, potential_sigmas)
-        return X, Y, likelihood_grid
 
     def _variance_after_fixefs(self):
         return np.var(self.y - self.X * self.beta)

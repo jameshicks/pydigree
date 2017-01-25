@@ -186,7 +186,7 @@ def scoring_iteration(info_mat, gradient):
         raise LinAlgError('Information matrix not invertible!')
 
 
-def expectation_maximization(mm, likelihood, maxiter=10000, 
+def expectation_maximization(mm, likelihood, starts=None, maxiter=10000, 
                              tol=1e-4, return_after=1e30, verbose=False):
     '''
     Maximizes a linear mixed model by Expectation-Maximization
@@ -213,6 +213,7 @@ def expectation_maximization(mm, likelihood, maxiter=10000,
 
     :param mm: a model to be maximized
     :param likelihood: A likelihood object
+    :param starts: starting values
     :param maxiter: The maximum number of iterations of scoring before raising 
         an error
     :param tol: The minimum amount of change in the proportion of variance by 
@@ -226,6 +227,7 @@ def expectation_maximization(mm, likelihood, maxiter=10000,
     :type maxiter: integer
     :type tol: float
     :type verbose: bool
+    :type starts: numpy array
 
     :returns:  variance components at the MLE
     :rtype: MLEResult
@@ -235,7 +237,8 @@ def expectation_maximization(mm, likelihood, maxiter=10000,
     if verbose:
         print('Maximizing model by Expectation-Maximization')
 
-    vcs, llik = likelihood.parameters, likelihood.loglikelihood()
+    vcs = likelihood.parameters if starts is None else starts 
+    llik = likelihood.loglikelihood()
     while i < return_after:
         if verbose:
             print((i, llik, vcs))
