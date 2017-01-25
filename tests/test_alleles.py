@@ -84,7 +84,9 @@ def test_sparsealleles_meaninglesscomparisions():
 def test_sparsealleles_emptylike():
     a = SparseAlleles([1,2,3,4])
     e = a.empty_like()
-    assert (e.container == e.refcode).all()
+    assert ((not e.container.any()) and 
+            (e.refcode == a.refcode) and 
+            (a.nmark() == e.nmark()))
 
 def test_sparsealleles_copyspan():
     a = SparseAlleles(np.array([1,1,1,1,1,1,1], dtype=np.int), refcode=1)
