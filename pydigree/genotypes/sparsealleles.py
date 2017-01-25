@@ -130,7 +130,7 @@ class SparseAlleles(AlleleContainer):
         if isinstance(template, SparseAlleles):
             self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
         else:
-            self.container = template[copy_start:copy_stop]
+            self.container[copy_start:copy_stop] = template[copy_start:copy_stop]
 
     def copy(self):
         """
