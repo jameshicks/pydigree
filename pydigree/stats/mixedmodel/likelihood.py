@@ -44,9 +44,9 @@ def logdet(mat):
     # always be positive. Covariance matrices are positive-definite
     # (i.e. all eigenvalues are > 0). The determinant is the product of the
     # eigenvalues, so the determinant should always be positive.
-    sign, logdet = np.linalg.slogdet(mat.todense() if issparse(mat) else mat)
-    
-    return logdet
+    sign, log_det = np.linalg.slogdet(mat.todense() if issparse(mat) else mat)
+
+    return log_det
 
 
 def makeP(X, Vinv):
@@ -89,7 +89,6 @@ class MixedModelLikelihood(object):
         else:
             self.set_parameters(mm.variance_components)
         
-
         if info.lower() in {'fs', 'fisher', 'fisher scoring'}:
             self.set_info('fs')
         elif info.lower() in {'newton-raphson', 'newton', 'nr'}:
@@ -107,9 +106,11 @@ class MixedModelLikelihood(object):
         self.rankX = np.linalg.matrix_rank(self.X)
     
     def set_info(self, info):
+        "Change which information matrix is used in fitting"
         self.method = info
 
     def set_parameters(self, params):
+        "set the parameters"
         self.parameters = np.array(params)
 
         self.V = self.mm._makeV(params)
