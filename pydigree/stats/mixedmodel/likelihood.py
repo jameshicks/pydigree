@@ -270,12 +270,15 @@ class ML(MixedModelLikelihood):
         Performs a round of Expectation-Maximization ML
         """
         resid, Vinv = self.resid, self.Vinv
+        Vinvresid = Vinv * resid
 
+        def coef(rf):
+            "gets the coefficients for em estimation"
+            VinvV_i = Vinv * rf.V_i 
+            c1 = resid.T * VinvV_i * Vinvresid - np.trace(VinvV_i)
+            return matrix.item(c1)
 
-        coefficients = np.array([
-            matrix.item(resid.T * Vinv * rf.V_i * Vinv * resid - np.trace(Vinv * rf.V_i))
-                        for rf in self.mm.random_effects])
-
+        coefficients = np.array([coef(rf) for rf in self.mm.random_effects])
         levelsizes = np.array([x.nlevels for x in self.mm.random_effects])
 
         delta = (self.parameters ** 2 / levelsizes) * coefficients
