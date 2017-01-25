@@ -81,7 +81,7 @@ class ChromosomePool(object):
     # Chromosome functions
     def chromosome(self, chromindex):
         # Get a random chromomsome
-        chidx = np.random.randint(0, len(self.pool[i]))
+        chidx = np.random.randint(0, len(self.pool[chromindex]))
 
         return self.pool[chromindex][chidx]
 
