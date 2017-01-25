@@ -36,13 +36,6 @@ pydigree.io.kinship module
     :undoc-members:
     :show-inheritance:
 
-pydigree.io.merlin module
--------------------------
-
-.. automodule:: pydigree.io.merlin
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 pydigree.io.plink module
 ------------------------
