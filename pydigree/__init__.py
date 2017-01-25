@@ -7,7 +7,7 @@ if sys.version_info < (3,3):
 # Common functions (cumsum, table, etc)
 import pydigree.common 
 from pydigree.ibs import ibs
-from pydigree.support import set_seed
+from pydigree.rand import set_seed
 
 # Functions for navigating pedigree structures
 from pydigree.paths import path_downward, paths, paths_through_ancestor
