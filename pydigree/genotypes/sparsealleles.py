@@ -2,7 +2,7 @@ from collections import Sequence
 
 import numpy as np
 
-from pydigree.cydigree.datastructures import SparseArray
+from pydigree.cydigree.sparsearray import SparseArray
 from pydigree.exceptions import NotMeaningfulError
 from pydigree.genotypes import AlleleContainer, Alleles
 from pydigree.exceptions import NotMeaningfulError
