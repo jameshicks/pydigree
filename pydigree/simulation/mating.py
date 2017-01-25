@@ -3,6 +3,9 @@ import numpy as np
 
 
 class MatingStructure(object):
+    """
+    A class representing how a population mates, for when fully random mating is not desired
+    """
 
     def __init__(self):
         self.cliques = []
@@ -17,7 +20,6 @@ class MatingStructure(object):
         :type gensize: int 
         :rtype: list of Individuals
         :returns: progeny
-
         """
         if not self.cliques:
             self.cliques = self.form_cliques(pop)
@@ -40,14 +42,16 @@ class MatingClique(object):
 
     """
     A class that holds a group of individuals that can form offspring
-    """
-    males = []
-    females = []
 
-    def __init__(self, pop, males, females):
+    :ivar pop: current population
+    :ivar males: the males in the clique
+    :ivar females: the females in the clique
+    """
+
+    def __init__(self, pop, males=None, females=None):
         self.pop = pop
-        self.males = males
-        self.females = females
+        self.males = males if males is not None else []
+        self.females = females if females is not None else []
 
     def children_possible(self):
         """
@@ -98,9 +102,13 @@ class MatingClique(object):
         return child
 
 
-class RandomMating(object):
+class RandomMating(MatingStructure):
+    """
+    A MatingStructure representing purely random mating
+    """
 
     def next_generation(self, pop, gensize):
+
         males = pop.males()
         females = pop.females()
 
@@ -117,10 +125,17 @@ class RandomMating(object):
 
 
 class MonogamousMating(MatingStructure):
-
+    """
+    A mating structure where pairs of individals from the opposite sex 
+    pair up and form childen together, and not with anyone else
+    """
     def form_cliques(self, pop):
         """
         Creates the monogamous pairs
+
+        :param pop: The population we're working with
+        :returns: The cliques
+        :rtype: List of MatingCliques
         """
         fathers = pop.males()
         mothers = pop.females()

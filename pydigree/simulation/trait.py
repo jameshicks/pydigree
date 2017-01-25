@@ -7,15 +7,39 @@ class QuantitativeGeneticEffect(object):
     '''
     QuantitativeGeneticEffect is a class for objects that relate loci to 
     phenotypes.
+    
+    :ivar a: the additive effect of an allele
+    :type a: numeric
+
+    :ivar k: the deviation from additivity for the heterozygote
+    :type k: numeric
+
+    :ivar chromosomes: Chromosomes to get frequencies from
+    :type chromosomes: ChromosomeSet
     '''
 
     def __init__(self, locus, a, k=0, chromosomes=None):
+
         self.locus = locus
         self.chromosomes = chromosomes
         self.a = a
         self.k = k
 
     def genotypic_value(self, individual):
+        """
+        The value that this individual gets from this genotype:
+
+        ============= ======
+        Minor Alleles Effect
+        ============= ======
+        0             0
+        1             (1+k)a
+        2             2a
+        ============= ======
+        
+        :param individual:
+        :type individual: Individual
+        """ 
         gt = individual.get_genotype(self.locus)
         N = gt.count(2)  # Number of minor alleles
         if N == 0:
@@ -51,6 +75,15 @@ class QuantitativeGeneticEffect(object):
 
     @property
     def locus_additive_variance(self):
+        """
+        Returns the additive variance due to the locus, based on 
+        the frequencies in the chromosomeset
+
+        :math:`\sigma^2_a = 2pq \alpha ^2`
+        
+        :returns: :math:`\sigma ^{2}_{A_{x}}`
+        :rtype: float
+        """
         # See Lynch & Walsh p. 69
         if not self.chromosomes:
             raise ValueError('Chromosomes not specified')
@@ -62,6 +95,15 @@ class QuantitativeGeneticEffect(object):
 
     @property
     def locus_dominance_variance(self):
+        """
+        Returns the dominance variance due to the locus, based on 
+        the frequencies in the chromosomeset
+
+        :math:`\sigma^2_d = (2pqak)^2`
+        
+        :returns: :math:`\sigma ^{2}_{D_{x}}`
+        :rtype: float
+        """
         # See Lynch & Walsh p. 69
         if not self.chromosomes:
             raise ValueError('Chromosomes not specified')
@@ -127,8 +169,7 @@ class QuantitativeTrait(object):
 
     def add_effect(self, locus, a=0, k=0, effect=None):
         """
-        Add a main effect
-
+        Add a main genetic effect for a locus.
 
         :param locus:  a chromosome, index tuple
         :param a: The additive effect of each minor allele
@@ -171,12 +212,17 @@ class QuantitativeTrait(object):
 
     @property
     def total_variance(self):
+        "The total variance of the phenotype"
         return self.additive_genetic_variance + self.environmental_variance
 
     def rescale(self, mean, sd):
         """
         Rescale trait to have the distribution N(mean, sd). Modifies genotype
-        effects so that they sum to the appropriate variance.   
+        effects so that they sum to the appropriate variance.
+
+        :param mean: the desired mean
+        :param sd: the desired sd
+        :rtype: void   
         """
 
         old_add_variance = self.additive_genetic_variance
@@ -190,6 +236,17 @@ class QuantitativeTrait(object):
         self.mean = mean
 
     def predict_phenotype(self, individual):
+        """
+        Generates a predicted phenotype for an individual based off their 
+        genotype
+        
+        :param individual: subject to have a phenotype prediected
+
+
+        :returns: Trait value if quantitative, affectation status if dichotomous
+        :rtype: double (quantitative); 0 or 1 (dichotomous)
+        """
+
         phenotype = [eff.genotypic_value(individual) for eff in self.effects]
         phenotype = self.intercept + sum(phenotype)
 

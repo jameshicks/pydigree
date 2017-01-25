@@ -35,6 +35,25 @@ cdef bint sparseval_cmp(sparseval a, sparseval b, int op):
         return a >= b
 
 cdef class SparseArray:
+    """
+    A data structure for working with sparse sets of small ints. 
+    Can support an array of size :math:`2^{32}-1`. 
+
+    Dense values are stored in a self balancing tree, so lookups, 
+    setting a dense value, or changing a dense value to sparse will have 
+    slower algorithmic performance (O(log n) instead of O(1)).
+    The bookeeping of the tree will also incur some penalties in memory use. 
+    For each non-sparse value, a uint32_t is used for the key (4 bytes), 
+    int8_t (1 byte) for the value.
+
+    :ivar size: the size of the array
+    :ivar ref: the sparse value
+    :ivar data: the non-sparse positions values
+    :type size: uint32_t
+    :type ref: int8_t
+    :type data: C++ std::map<uint32_t, int8_t>
+    """
+
     cdef public stlmap[sparsekey, sparseval] data
     cdef public sparsekey size
     cdef public sparseval ref
@@ -47,22 +66,54 @@ cdef class SparseArray:
         return self.size
 
     def keys(self):
+        """
+        Gets the non-sparse locations
+
+        :returns: locations of the non-sparse values
+        :rtype: list
+        """ 
         return [x.first for x in self.data]
 
     def values(self):
+        """
+        Gets the non-sparse values
+
+        :returns: non-sparse values, in order
+        :rtype: list
+        """ 
         return [x.second for x in self.data]
 
     def items(self):
+        """
+        Gets the non-sparse indices and their values
+
+        :returns: non-sparse locations and values
+        :rtype: list of (uint32_t, int8_t) tuples
+        """
         return [(x.first, x.second) for x in self.data]
 
     cpdef bint any(self):
+        """
+        Are there any non-sparse values?
+        """
         return self.data.size() != 0
 
     cpdef bint all(self):
+        """
+        :returns: are all values are nondense?
+        :rtype bool:
+        """
         return self.data.size() == self.size
 
     @staticmethod
     def from_dense(seq, sparseval refcode):
+        """
+        Creates a SparseArray from a dense sequence
+
+        :returns: resulting array
+        :rtype: SparseArray
+        """
+
         cdef SparseArray out = SparseArray(len(seq), refcode)
 
         cdef int k = 0
@@ -77,6 +128,18 @@ cdef class SparseArray:
 
     @staticmethod
     def from_items(seq, sparsekey size, sparseval refcode):
+        """
+        Creates a SparseArray from pairs of itemss
+
+        :param seq: A sequence of pairs of type (uint32_t, int8_t)
+        :param size: the size of the array
+        :param refcode: the sparse value of the array
+        :type size: uint32_t
+        :type refcode: int8_t
+
+        :returns: the resulting array
+        :rtype: SparseArray
+        """
         cdef SparseArray out = SparseArray(size, refcode)
 
         cdef sparsekey k
@@ -249,21 +312,59 @@ cdef class SparseArray:
                 self.set_item(indices[i], value)
 
     cpdef void clear(self, sparsekey k):
+        """
+        Removes a non-sparse value
+
+        :param k: the key to remove
+        :type k: uint32_t
+        """
         self.data.erase(k)
 
     cpdef void clear_range(self, sparsekey start, sparsekey stop):
+        """
+        Removes all non-sparse values in a region
+
+        :param start: start of the location (inclusive)
+        :param stop: the end of the region (exclusive)
+        :type start: uint32_t
+        :type stop: uint32_t
+        """
         self.data.erase(self.data.lower_bound(start), self.data.upper_bound(stop))
 
     cpdef sparsekey ndense(self):
+        """
+        The number of non-sparse sites in the array
+
+        :returns: number of non-sparse items
+        :rtype: int
+        """
         return self.data.size()
 
     cpdef sparsity(self):
+        """
+        Proportion of array that is sparse
+
+        :returns: Percent sparse
+        :rtype: float
+        """
         return 1 - self.ndense() / <float>self.size
 
     cpdef density(self):
+        """
+        Proportion of non-sparse sites
+
+        :returns: Percent non-sparse
+        :rtype: float
+        """
         return self.ndense() / <float>self.size
 
     cpdef copy(self): 
+        """
+        Creates a copy of the array.
+
+        :returns: the copy
+        :rtype: SparseArray
+        """
         cdef SparseArray out = SparseArray(self.size, self.ref)
         cdef sparsekey k 
         cdef sparseval v 
@@ -381,6 +482,11 @@ cdef class SparseArray:
         return out
 
     cpdef SparseArray logical_not(self):
+        """
+        Performs a logical not on the entire array
+
+        :returns: the not-ed array
+        """ 
         cdef SparseArray out = SparseArray(self.size, not self.ref)
         
         for k, v in self.data:
@@ -390,6 +496,10 @@ cdef class SparseArray:
 
 
     cpdef vector[sparseval] tolist(self):
+        """
+        Returns the SparseArray in a dense format
+        :rtype: list in python, C++ std::vector<uint8_t>
+        """
         cdef vector[sparseval] out = vector[sparseval](self.size, self.ref)
         cdef sparsekey k
         cdef sparseval v

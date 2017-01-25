@@ -171,14 +171,31 @@ class ChromosomeTemplate(object):
 
     @staticmethod
     def from_genomesimla(filename):
+        """
+        Reads positions and frequencies from a genomeSIMLA template file
+
+        :param filename: path to the template
+        :type filename: string
+        :returns: Template containing the data from the file
+        :rtype: ChromosomeTemplate
+        """
         return read_gs_chromosome_template(filename)
 
     def nmark(self):
-        ''' Returns the number of markers on the chromosome '''
+        ''' 
+        Returns the number of markers on the chromosome 
+        
+        :returns: marker count
+        :rtype: int
+        '''
         return len(self.genetic_map)
 
     def size(self):
-        ''' Returns the size of the chromosome in centimorgans '''
+        ''' 
+        Returns the size of the chromosome in centimorgans 
+        
+        :rtype: float
+        '''
         return self.genetic_map[-1] - self.genetic_map[0]
 
     def add_genotype(self, frequency=None, map_position=None, label=None,
@@ -197,18 +214,44 @@ class ChromosomeTemplate(object):
         self.alternates.append(alternates)
 
     def set_frequency(self, position, frequency):
-        """ Manually change an allele frequency """
+        """
+        Manually change an allele's frequency
+        
+        :param position: Index to change
+        :type position: int
+        :param frequency: new minor allele frequency
+        :type frequency: float
+
+        """
         self.frequencies[position] = frequency
 
     def empty_chromosome(self, dtype=np.uint8, sparse=False, refcode=None):
+        """
+        Produces a completely empty chromosome associated with this template.
+
+        :param sparse: Should a SparseAlleles object be returned
+        :type sparse: bool
+        :param refcode: if sparse, what should the refcode be?
+        :type refcode: int8_t
+        
+        :returns: empty alleles container 
+        """
         if sparse:
-            
             return SparseAlleles(size=self.nmark(), template=self, refcode=0)
         else:
             return Alleles(np.zeros(self.nmark(), dtype=dtype), template=self)
 
     def closest_marker(self, position, map_type='physical'):
-        "Returns the index of the closest marker to a position"
+        """ 
+        Returns the index of the closest marker to a position
+
+        :param position: desired location
+        :param map_type: distance metric to use
+        :type map_type: 'physical' or 'genetic'
+
+        :returns: closest index
+        :rtype: int
+        """
         if map_type == 'physical':
             mp = self.physical_map
         elif map_type == 'genetic':
@@ -235,13 +278,29 @@ class ChromosomeTemplate(object):
             return left_idx
 
     def finalize(self):
+        """
+        When no more major modifications (i.e. adding or removing sites),
+        ChromosomeTemplate can be reorganized into something more efficient
+
+        numpy arrays instead of lists, for example
+
+        :rtype: void
+        """
         self.final = True
         self.frequencies = np.array(self.frequencies)
         self.physical_map = np.array(self.physical_map, dtype=np.int)
         self.genetic_map = np.array(self.genetic_map)
 
     def linkageequilibrium_chromosome(self, sparse=False):
-        """ Returns a randomly generated chromosome """
+        """ 
+        Returns a randomly generated chromosome in linage equilibrium 
+
+        :param sparse: Should the output be sparse
+        :type sparse: bool
+
+        :returns: random chromosome
+        :rtype: Alleles or SparseAlleles 
+        """
         if (self.frequencies < 0).any():
             raise ValueError('Not all frequencies are specified')
         r = np.random.random(self.nmark())

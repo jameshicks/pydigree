@@ -20,6 +20,14 @@ pydigree.cydigree.datastructures module
     :undoc-members:
     :show-inheritance:
 
+pydigree.cydigree.sparsearray module
+------------------------------------
+
+.. automodule:: pydigree.cydigree.sparsearray
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pydigree.cydigree.varianttree module
 ------------------------------------
 

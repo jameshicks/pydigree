@@ -6,7 +6,13 @@ from libc.stdint cimport int32_t, uint32_t
 cpdef ibs(g1,g2, missingval=None):
     '''
     Returns how many alleles (0, 1, or 2) are identical-by-state between
-    two diploid genotypes, or missingval if either genotype is missing
+    two diploid genotypes
+
+    :param g1: genotype 1
+    :type g1: tuple
+    :param g2: genotype 2
+    :type g2: tuple
+    :param missingval: value if either g1 or g2 is missing
     '''
     a, b = g1
     c, d = g2
@@ -22,9 +28,19 @@ cpdef ibs(g1,g2, missingval=None):
 
 def runs(sequence, predicate, Py_ssize_t minlength=2):
     """
-    Identifies runs of values in an interable for which predicate(value) 
+    Identifies runs of values in a sequence for which predicate(value) 
     evaluates True and yields 2-tuples of the start and end (inclusive)
     indices
+
+    :param sequence: Sequence to run through
+    :type sequence: iterable
+    :param predicate: function to call
+    :type predicate: callable
+    :param minlength: shortest allowable run
+    :type minlength: int
+
+    :returns: Runs
+    :rtype: list of tuples
     """
     cdef bint inrun = False
     cdef Py_ssize_t start, stop, i
@@ -58,6 +74,12 @@ def runs_gte(sequence, double minval, int minlength=2):
     Identifies runs of values in an iterable where each value is greater
     than or equal to a value minval, and returns a list of 2-tuples with
     the start and end (inclusive) indices of the runs
+
+    :param sequence: 
+    :param minval: minimum value to occur in run
+    :param minlength: minimum allowable runlength
+    :returns: runs
+    :rtype: list of tuples
     """
     cdef int inrun = False
     cdef int start, stop, i, l
@@ -104,6 +126,9 @@ def runs_gte_uint8(np.ndarray[np.uint8_t] sequence, np.uint8_t minval, Py_ssize_
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def fastfirstitem(tuple2d):
+    """
+    Rapidly gets the first item from each element in an interable of iterables
+    """
     cdef Py_ssize_t i, l
     tuple2d = list(tuple2d)
     l = len(tuple2d)
@@ -115,6 +140,13 @@ def fastfirstitem(tuple2d):
 
 
 def interleave(list a, list b):
+    """
+    Takes two lists and interleaves them. For example
+    interleave("AAA", "BBB") gives ["A", "B", "A", "B", "A", "B"]
+
+    :returns: interleaved iterables
+    :rtype: list
+    """
     if len(a) != len(b):
         raise ValueError('Lists must be same length')
     cdef Py_ssize_t n = len(a)
@@ -127,7 +159,15 @@ def interleave(list a, list b):
     return output 
 
 def all_same_type(iter, t):
-    "Returns true if all items in an iterable are the same type"
+    """
+    Quickly checks if all items in iterable are the same type
+
+    :param iter: sequence to be checked
+    :param t: type desired
+
+    :returns: items are all same type
+    :rtype: bool
+    """
     for v in iter:
         if type(v) is not t:
             return False
@@ -136,8 +176,14 @@ def all_same_type(iter, t):
 
 def set_intervals_to_value(intervals, size, value):
     '''
-    Creates a numpy integer array and sets intervals to a value
-    Intervals should be in the format (start_idx, stop_idx_inclusive)
+    Creates a numpy integer array and sets intervals to a single value
+
+    :param intervals: Intervals tuples in format (start_idx, stop_idx_inclusive)
+    :param size: outgoing array size
+    :param value: value to set itervals to
+    :type intervals: iterable of 2-tuples
+    :type size: unsigned int
+    :type value: np.int 
     '''
 
     cdef int start = 0
@@ -148,6 +194,12 @@ def set_intervals_to_value(intervals, size, value):
     return array
 
 cpdef bint is_sorted(sequence):
+    """
+    Check if the sequence is sorted
+
+    :returns: sorted?
+    :rtype: bool
+    """
     cdef Py_ssize_t n = len(sequence)
     cdef Py_ssize_t i = 0
 

@@ -58,7 +58,12 @@ class SparseAlleles(AlleleContainer):
 
     @property
     def missingcode(self):
+        "Returns the code used for missing values"
         return -1
+
+    @property
+    def dtype(self):
+        return int
 
     @property
     def missing(self):
@@ -84,32 +89,66 @@ class SparseAlleles(AlleleContainer):
         '''
         Return the number of markers (both reference and non-reference)
         represented by the SparseAlleles object
+
+        :returns: markercount
+        :rtype: int
         '''
         return self.container.size
 
     def todense(self):
+        """
+        Converts to a dense representation of the same genotypes (Alleles).
+
+        :returns: dense version
+        :rtype: Alleles
+        """
         dense = Alleles(self.container.tolist(), template=self.template)
         return dense
 
     def empty_like(self):
+        """
+        Creates a blank SparseAlleles with same parameters
+
+        :returns: empty SparseAlleles
+        """
         output = SparseAlleles(template=self.template,
                                missingcode=self.missingcode,
                                refcode=self.refcode, size=self.nmark())
         return output
 
     def copy_span(self, template, copy_start, copy_stop):
+        """
+        Copies one segment of a chromosome over to the other
+
+        :param template: the data to be copied from
+        :param copy_start: where to start copying (inclusive)
+        :param copy_stop: where to stop copying (exclusive)
+        :type template: AlleleContainer
+        :type copy_start: int
+        :type copy_stop: int
+        :rtype void:
+        """
         if isinstance(template, SparseAlleles):
             self.container[copy_start:copy_stop] = template.container[copy_start:copy_stop]
         else:
             self.container = template[copy_start:copy_stop]
 
     def copy(self):
+        """
+        Creates a copy of the current data
+
+        :returns: cloned allele set
+        :rtype: SparseAlleles
+        """
         outp = self.empty_like()
         outp.container = self.container.copy()
         return outp
 
     @staticmethod
-    def empty(reference=None, template=None, missingcode=''):
+    def empty(reference=None, template=None, missingcode=-1):
+        """
+        Creates an empty SparseAlleles (everybody is wild-type)
+        """
         out = SparseAlleles(size, template=template, missingcode=missingcode)
 
         return out 
