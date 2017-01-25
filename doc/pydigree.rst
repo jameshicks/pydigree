@@ -81,6 +81,14 @@ pydigree.pedigreecollection module
     :undoc-members:
     :show-inheritance:
 
+pydigree.phenotypes module
+--------------------------
+
+.. automodule:: pydigree.phenotypes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pydigree.population module
 --------------------------
 
@@ -101,14 +109,6 @@ pydigree.recombination module
 -----------------------------
 
 .. automodule:: pydigree.recombination
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-pydigree.support module
------------------------
-
-.. automodule:: pydigree.support
     :members:
     :undoc-members:
     :show-inheritance:

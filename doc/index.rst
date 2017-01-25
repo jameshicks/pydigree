@@ -19,7 +19,7 @@ Welcome to pydigree's documentation!
 
 Indices and tables
 ==================
-
+* :doc:`modules`
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

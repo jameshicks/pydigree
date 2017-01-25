@@ -95,7 +95,7 @@ class IndividualContainer(object):
 
         Returns: A pandas dataframe
         '''
-        records = [x._phenotypes_to_series() for x in self.individuals]
+        records = [x.phenotypes.to_series() for x in self.individuals]
         df = pd.DataFrame.from_records(records)
 
         if onlyphenotyped:

@@ -36,7 +36,6 @@ pydigree.io.kinship module
     :undoc-members:
     :show-inheritance:
 
-
 pydigree.io.plink module
 ------------------------
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 import pandas as pd
 
@@ -7,6 +6,7 @@ from pydigree.paths import kinship
 from pydigree.common import flatten
 from pydigree.genotypes import LabelledAlleles
 from pydigree.exceptions import IterationError
+from pydigree.phenotypes import Phenotypes
 
 # TODO: Move this somewhere more useful
 missing_genotype = (0, 0)
@@ -34,7 +34,7 @@ class Individual(object):
         self.pedigree = None
         self.genotypes = None
         self.observed_genos = False
-        self.phenotypes = {}
+        self.phenotypes = Phenotypes()
         self.attrib = {}
         self.children = []
         if isinstance(self.father, Individual):
@@ -431,33 +431,14 @@ class Individual(object):
         """
         return [[x, y] for x, y in zip(father, mother)]
 
-    # Phenotype functions
-    def has_phenotype(self, phenotype):
-        """
-        Does the individual have a phenotype?
-
-        :param phenotype: what phenotype are we looking for
-        :type phenotype: string
-    
-        :returns: True if phenotype present and not None
-        :rtype: bool 
-        """
-        return (phenotype in self.phenotypes and
-                self.phenotypes[phenotype] is not None)
-
     def predict_phenotype(self, trait):
         """ Predicts phenotypes from a given trait architecture and sets it """
         self.phenotypes[trait.name] = self.predicted_phenotype(trait)
 
     def delete_phenotype(self, trait):
         "Removes a phenotype from the phenotype dictionary"
-        if trait not in self.phenotypes:
-            return
-        del self.phenotypes[trait]
+        self.phenotypes.delete_phenotype(trait)
     
-    def clear_phenotypes(self):
-        """ Removes phenotypes """
-        self.phenotypes = {}
 
     def genotype_as_phenotype(self, locus, minor_allele, label):
         """
@@ -483,12 +464,3 @@ class Individual(object):
 
         self.phenotypes[label] = val
 
-
-    def _phenotypes_to_series(self):
-        '''
-        Converts phenotype records to a pandas compatible structure
-
-        :returns: phenotype records
-        :rtype: `pd.Series`
-        '''
-        return pd.Series(self.phenotypes)
