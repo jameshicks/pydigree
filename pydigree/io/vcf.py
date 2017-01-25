@@ -54,7 +54,7 @@ def read_vcf(filename, require_pass=False, freq_info=None):
         last_chrom = None
         genotypes = []
 
-        for i, line in enumerate(f):
+        for line in f:
 
             if line.startswith('##'):
                 continue
@@ -68,7 +68,7 @@ def read_vcf(filename, require_pass=False, freq_info=None):
                 break
         
         chromobj = None
-        for i, line in enumerate(f):
+        for line in f:
             record = VCFRecord(line)
 
             if require_pass and not record.filter_passed:
