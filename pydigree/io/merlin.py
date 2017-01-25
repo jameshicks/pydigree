@@ -40,6 +40,8 @@ def create_data_handler_func(chromosomes,
                                                           gts,
                                                           missing_code='X')
 
+    return data_handler
+
 
 def read_dat(filename):
     with open(filename) as f:
