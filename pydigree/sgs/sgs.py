@@ -273,10 +273,10 @@ class Segment(object):
     @property
     def missing(self):
         chridx = self._chridx
-        miss1 = (ind1.genotypes[chridx][0].missing |
-                 ind1.genotypes[chridx][1].missing)
-        miss2 = (ind2.genotypes[chridx][0].missing |
-                 ind2.genotypes[chridx][1].missing)
+        miss1 = (self.ind1.genotypes[chridx][0].missing |
+                 self.ind1.genotypes[chridx][1].missing)
+        miss2 = (self.ind2.genotypes[chridx][0].missing |
+                 self.ind2.genotypes[chridx][1].missing)
         miss = miss1 | miss2
         return miss[self.start:(self.stop + 1)]
 
