@@ -1,0 +1,14 @@
+doc-warnings: true
+test-warnings: false
+strictness: veryhigh
+
+ignore-patterns:
+    - *init__.py
+    - *common.py
+
+ignore-paths:
+    - docs
+    - support 
+
+python-targets:
+    - 2
