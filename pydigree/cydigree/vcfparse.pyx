@@ -4,7 +4,6 @@ from libc.stdint cimport int8_t, uint32_t
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 cimport cython
-cimport pydigree.cydigree.datastructures as datastructures
 
 cdef struct VariantCall:
     uint32_t alleleidx
@@ -137,7 +136,6 @@ def vcf_allele_parser(datastr, formatstr):
 
 @cython.boundscheck(False)
 def assign_genorow(VariantStack row, inds, int chromidx, int markidx):
-    cdef datastructures.SparseArray spchrom
     cdef int hapidx, indidx
 
     cdef VariantCall* denseval = row.pop()
@@ -145,8 +143,7 @@ def assign_genorow(VariantStack row, inds, int chromidx, int markidx):
         indidx = denseval.alleleidx // 2
         hapidx = denseval.alleleidx % 2
 
-        spchrom = inds[indidx].genotypes[chromidx][hapidx].container
-        spchrom.set_item(markidx, denseval.allele)
+        inds[indidx].genotypes[chromidx][hapidx].container.set_item(markidx, denseval.allele)
 
         PyMem_Free(denseval)
         denseval = row.pop()
