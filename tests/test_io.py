@@ -6,7 +6,6 @@ from pydigree.exceptions import FileFormatError
 
 from pydigree.io.base import genotypes_from_sequential_alleles
 from pydigree.io.vcf import vcf_allele_parser
-from pydigree.io.merlin import phenotype_indices, genotype_indices
 from pydigree.io import read_plink, read_vcf
 from pydigree.genotypes import Alleles, SparseAlleles, ChromosomeTemplate
 
