@@ -52,6 +52,7 @@ doc/_build/
 ####### Cython ignores
 pydigree/cydigree/*.c
 pydigree/cydigree/*.html
+pydigree/cydigree/*.cpp
 
 ####### C ignores
 

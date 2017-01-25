@@ -1,1 +1,1 @@
-from pydigree.cydigree.SparseArray import SparseArray
+from pydigree.cydigree.sparsearray import SparseArray
