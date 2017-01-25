@@ -245,12 +245,14 @@ cdef class SparseArray:
     cdef void set_slice(self, slice, object values):
         cdef sparsekey start = slice.start
         cdef sparsekey stop = slice.stop
+        
+        self.clear_range(start, stop)
 
         if isinstance(values, SparseArray):
             self.set_slice_to_sparray(start, stop, values)
             return
 
-        self.clear_range(start, stop)
+
 
         cdef int nvals = 0
         cdef int i = 0
