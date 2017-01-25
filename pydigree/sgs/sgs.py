@@ -325,8 +325,7 @@ class Segment(object):
             return self.physical_location[0] <= pos <= self.physical_location[1] 
 
 
-def _pair_sgs(pair, seed_size=500, phaseknown=False,
-              min_length=1, size_unit='mb',
+def _pair_sgs(pair, seed_size=500, min_length=1, size_unit='mb',
               min_density=100, maxmiss=0.25,
               onlywithin=False):
     ind1, ind2 = pair
@@ -362,7 +361,7 @@ def _pair_sgs(pair, seed_size=500, phaseknown=False,
     return results
 
 
-def _perform_sgs(pop, seed_size=500, phaseknown=False,
+def _perform_sgs(pop, seed_size=500, 
                  min_length=1, size_unit='mb',
                  min_density=100, maxmiss=0.25,
                  onlywithin=False, njobs=1):
@@ -389,7 +388,7 @@ def _perform_sgs(pop, seed_size=500, phaseknown=False,
     return res
 
 
-def sgs_population(pop, seed_size=500, phaseknown=False,
+def sgs_population(pop, seed_size=500, 
                    min_length=1, size_unit='mb',
                    min_density=100, maxmiss=0.25,
                    onlywithin=False, njobs=1):
