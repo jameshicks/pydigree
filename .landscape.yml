@@ -13,6 +13,7 @@ python-targets:
 pylint:
   disable:
     - anomalous-backslash-in-string
+    - invalid-name
 
 pep8:
   disable:
@@ -21,6 +22,9 @@ pep8:
     - D400
     - D401
     - D202
+    - N803
+    - N802
+    - N806
 
 pep257:
     disable:

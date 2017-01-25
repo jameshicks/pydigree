@@ -15,14 +15,30 @@ np.seterr(invalid='ignore')
 
 l2pi = log(2 * pi)
 
-def inv(M):
-    if issparse(M):
-        M = M.todense()
-    return scipy_inv(M)
+def inv(mat):
+    """
+    Inverts a dense matrix or makes a sparse matrix dense and inverts that
+    
+    :param mat: matrix
 
-def logdet(M):
-    """ Returns the (positive) log determinant of a matrix. """
-    sign, logdet = np.linalg.slogdet(M.todense() if issparse(M) else M)
+    :returns: matrix inverse
+    :rtype: dense matrix
+    """
+    
+    if issparse(mat):
+        mat = mat.todense()
+    return scipy_inv(mat)
+
+def logdet(mat):
+    """
+    Returns the (positive) log determinant of a matrix. 
+    :param mat: matrix to calculate
+    :type mat: matrix
+
+    :returns: log-determinant of mat
+    :rtype: flaot
+    """
+    sign, logdet = np.linalg.slogdet(mat.todense() if issparse(mat) else mat)
     return logdet
 
 
@@ -73,7 +89,8 @@ class MixedModelLikelihood(object):
             self.set_info('nr')
         elif info.lower() in {'average information', 'aireml', 'ai'}:
             self.set_info('ai')
-        elif info.lower() in {'em', 'emreml', 'expectation-maximization', 'grid'}:
+        elif info.lower() in {'em', 'emreml', 
+                              'expectation-maximization', 'grid'}:
             pass
         else:
             raise ValueError('Unknown maximization method')
@@ -98,13 +115,26 @@ class MixedModelLikelihood(object):
         self.resid = self.mm.y - X * self.beta
 
     def gradient(self):
-        "The gradient of the likelihood function w/r/t each variance component"
+        """
+        The gradient of the likelihood function with regard to 
+        each variance component
+        
+        :returns: gradient
+        :rtype: np.array
+        """
         ranefs = self.mm.random_effects
         nabla = [self.gradient_element(rf.V_i) for rf in ranefs]
         return np.array(nabla)
 
     def info_matrix(self, kind=None):
+        """
+        The matrix of second deriviatives for each variance component
 
+        :param kind: the kind of information matrix required
+        :type kind: string
+        
+        :rtype: 2d matrix
+        """
         if not kind:
             kind = self.method
         
@@ -139,6 +169,7 @@ class MixedModelLikelihood(object):
 class ML(MixedModelLikelihood):
 
     def loglikelihood(self):
+        "Full loglikelihood of the model"
         n = self.mm.nobs()
 
         y, X, beta = self.mm.y, self.mm.X, self.beta
@@ -147,12 +178,34 @@ class ML(MixedModelLikelihood):
         return matrix.item(llik)
 
     def gradient_element(self, V_i):
+        """
+        Derivative of the full loglikelihood with regard to a variance component
+        
+        :param V_i: variance-covariance matrix of the component
+        :param V_i: matrix
+
+        :returns: derivative
+        :rtype: float 
+        """
         resid, Vinv = self.resid, self.Vinv
         VinvV_i = Vinv*V_i
 
         return -0.5 * np.trace(VinvV_i) + 0.5 * resid.T * VinvV_i * Vinv * resid
 
     def hessian_element(self, V_i, V_j):
+        """
+        Second derivative of the full loglikelihood with regard to two 
+        variance components
+
+        :param V_i: variance-covariance matrix of the first component
+        :param V_i: matrix
+        :param V_j: variance-covariance matrix of the second component
+        :param V_j: matrix
+
+        :returns: derivative
+        :rtype: float 
+        """
+
         resid, Vinv = self.resid, self.Vinv
         term1 = 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
         term2 = resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
@@ -160,18 +213,55 @@ class ML(MixedModelLikelihood):
         return matrix.item(term1 - term2)
 
     def observed_element(self, V_i, V_j):
+        """
+        An element of the observed information matrix (-1 * hessian) 
+
+        :param V_i: variance-covariance matrix of the first component
+        :param V_i: matrix
+        :param V_j: variance-covariance matrix of the second component
+        :param V_j: matrix
+
+        :returns: derivative
+        :rtype: float 
+        """
         return -1 * self.hessian_element(V_i, V_j)
 
     def fisher_element(self, V_i, V_j):
+        """
+        An element of the expected information matrix (Fisher matrix)
+
+        :param V_i: variance-covariance matrix of the first component
+        :param V_i: matrix
+        :param V_j: variance-covariance matrix of the second component
+        :param V_j: matrix
+
+        :returns: derivative
+        :rtype: float 
+        """
+        
         Vinv = self.Vinv
         return 0.5 * np.trace(Vinv * V_i * Vinv * V_j)
     
     def ai_element(self, V_i, V_j):
+        """
+        An element of the average information matrix (observed+expected)/2
+
+        :param V_i: variance-covariance matrix of the first component
+        :param V_i: matrix
+        :param V_j: variance-covariance matrix of the second component
+        :param V_j: matrix
+
+        :returns: derivative
+        :rtype: float 
+        """
+
         resid, Vinv = self.resid, self.Vinv
         return 0.5 * resid.T * Vinv * V_i * Vinv * V_j * Vinv * resid
 
     def expectation_maximization(self):
-        "Performs a round of Expectation-Maximization ML"
+        """
+        Performs a round of Expectation-Maximization ML
+        """
         resid, Vinv = self.resid, self.Vinv
 
 
@@ -185,8 +275,21 @@ class ML(MixedModelLikelihood):
         return self.parameters + delta
 
 class REML(MixedModelLikelihood):
+    """
+    A likelihood function for mixed effects models that does not consider
+    variance due to fixed effects, which may bias the optimal variance 
+    component estimates 
+    """
 
     def info_matrix(self, kind=None):
+        """
+        The matrix of second deriviatives for each variance component
+
+        :param kind: the kind of information matrix required
+        :type kind: string
+        
+        :rtype: 2d matrix
+        """
 
         if not kind:
             kind = self.method

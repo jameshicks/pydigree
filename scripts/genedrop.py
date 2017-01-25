@@ -11,8 +11,8 @@ from pydigree.ibs import ibs
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', required=True,
                     help='Pedigree file for simulations')
-parser.add_argument('-n', '--niter', type=lambda x: int(float(x)), default=10000,
-                    help='Number of simulations per pedigree')
+parser.add_argument('-n', '--niter', type=lambda x: int(float(x)), 
+                    default=10000, help='Number of simulations per pedigree')
 parser.add_argument('--only', metavar='PED',
                     help='Only simulate specified pedigrees',
                     nargs='*', dest='onlypeds')
@@ -29,13 +29,13 @@ if args.seed is not None:
     pydigree.set_seed(args.seed)
 
 
-def spairs(ped, inds, loc):
+def spairs(pedigree, inds, loc):
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
              k.get_genotype(loc, checkhasgeno=False)) 
          for j, k in itertools.combinations(inds, 2)]
     return sum(r)
 
-def sbool(ped, inds, loc):
+def sbool(pedigree, inds, loc):
     npairs = float(len(inds) * (len(inds) - 1) / 2)
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
              k.get_genotype(loc, checkhasgeno=False)) > 0
@@ -43,11 +43,11 @@ def sbool(ped, inds, loc):
     return sum(r) / npairs
 
 
-def genedrop(ped, affs, scorer, iteration):
+def genedrop(pedigree, affs, scorer, iteration):
     if iteration % (args.niter / 10) == 0:
         print('Simulation %s' % iteration)
-    ped.simulate_ibd_states(inds=affs)
-    s = scorer(ped, affs, (0, 0))
+    pedigree.simulate_ibd_states(inds=affs)
+    s = scorer(pedigree, affs, (0, 0))
     return s
 
 try:
@@ -87,10 +87,14 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
     affs = {x for x in ped if x.phenotypes['affected']}
 
     if len(affs) < 2:
-        print('Error in pedigree {}: less than two affected individuals. Skipping.'.format(ped.label))
+        print('Error in pedigree {}: '.format(ped.label), end='') 
+        print('less than two affected individuals. Skipping.')
         continue
 
-    print("Pedigree %s (%s/%s), %s affecteds, %s bits, %s simulations" % (ped.label, i+1, len(peds), len(affs), ped.bit_size(),  args.niter))
+    print("Pedigree %s (%s/%s), ".format(ped.label, i+1, len(peds)), end='')
+    print("%s affecteds, %s bits, %s simulations" % (len(affs), 
+                                                     ped.bit_size(),
+                                                    args.niter))
 
     sim_share = np.array([genedrop(ped, affs, scorefunction, x)
                              for x in range(args.niter)])
@@ -100,6 +104,8 @@ for i, ped in enumerate(sorted(peds, key=lambda q: q.label)):
 
 
 def stringify(n):
+    "Make strings out of things or pretty-print floats"
+
     if type(n) is str:
         return n
     else:
@@ -107,13 +113,15 @@ def stringify(n):
 
 print('\t'.join(['Pedigree','Min','Mean','SD','Max']))
 for ped, dist in nulldist.items():
-    print('\t'.join(stringify(q) for q in [ped, dist.min(), dist.mean(), dist.std(), dist.max()]))
+    record = [ped, dist.min(), dist.mean(), dist.std(), dist.max()]
+    print('\t'.join(stringify(q) for q in record))
 
 if args.writedist:
     with open(args.writedist, 'w') as of:
         print("Outputting distribution to %s" % args.writedist)
         for ped in sorted(peds, key=lambda q: q.label):
             try:
-                of.write('{} {}\n'.format(ped.label, ' '.join(str(x) for x in nulldist[ped.label])))
+                nd = ' '.join(str(x) for x in nulldist[ped.label])
+                of.write('{} {}\n'.format(ped.label, nd))
             except KeyError:
                 pass
