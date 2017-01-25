@@ -9,3 +9,12 @@ ignore-paths:
     - support 
 python-targets:
     - 3
+
+pylint:
+  disable:
+    anomalous-backslash-in-string
+
+pep8:
+  disable:
+    - W291
+    - W293
