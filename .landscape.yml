@@ -14,6 +14,7 @@ pylint:
   disable:
     - anomalous-backslash-in-string
     - invalid-name
+    - C0303
 
 pep8:
   disable:
@@ -31,5 +32,6 @@ pep257:
         - D401
         - D400
         - D204
+        - D205
         - D210
         - D300

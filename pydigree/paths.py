@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+"Functions for finding paths through pedigrees and genealogies"
 
 from pydigree.common import table
-
-# Functions for finding paths through pedigrees
 
 
 def common_ancestors(ind1, ind2):
     """
     Common ancestors of ind1 and ind2.
-    A quick set operation on Individual.ancestors()
+    
+    Recursively searches ancestors for both individuals, and
+    then performs a set intersection on on each set of ancestors
 
     :param ind1: the first individual
     :param ind2: the second individual
@@ -30,8 +30,7 @@ def path_downward(start, end, path=None):
     :param end: The individual to be found
     :path: a path to append to
     
-
-    Returns: A list of individuals, in path order
+    :returns: A list of individuals, in path order
     """
     if path is None:
         path = []
@@ -107,7 +106,7 @@ def paths(ind1, ind2):
     :type ind2: Individual
 
     :returns: identified paths
-    :rtype: list of lists of Individuals 
+    :rtype: list of lists of Individuals
     """
     identified_paths = path_downward(ind1, ind2) + path_downward(ind2, ind1)
     common = common_ancestors(ind1, ind2)
