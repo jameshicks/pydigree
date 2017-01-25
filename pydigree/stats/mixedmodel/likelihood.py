@@ -32,13 +32,20 @@ def inv(mat):
 def logdet(mat):
     """
     Returns the (positive) log determinant of a matrix. 
+
     :param mat: matrix to calculate
     :type mat: matrix
 
     :returns: log-determinant of mat
-    :rtype: flaot
+    :rtype: float
     """
+
+    # Because we're only working with covariance matrices here, this *should*
+    # always be positive. Covariance matrices are positive-definite
+    # (i.e. all eigenvalues are > 0). The determinant is the product of the
+    # eigenvalues, so the determinant should always be positive.
     sign, logdet = np.linalg.slogdet(mat.todense() if issparse(mat) else mat)
+    
     return logdet
 
 
@@ -337,13 +344,13 @@ class REML(MixedModelLikelihood):
                 if j < i: 
                     continue
                 
-                element = 1/2 * y.T * P * V_i * P * V_j * Py
+                element = 0.5 * y.T * P * V_i * P * V_j * Py
                 element = matrix.item(element)
                 mat[i, j] = element
                 mat[j, i] = element
 
 
-        return 1*np.matrix(mat)
+        return np.matrix(mat)
 
     def fisher_information_matrix(self):
         varmats = [self.P * x.V_i for x in self.mm.random_effects]
@@ -365,12 +372,21 @@ class REML(MixedModelLikelihood):
         return np.matrix(mat)
     
     def gradient(self):
+        """
+        Return the gradient for restricted loglikelihood
+        """
+
         ranefs = self.mm.random_effects
         y, P = self.mm.y, self.P
         Py = P * y
 
+
         PVis = [P * rf.V_i for rf in ranefs]
-        return 0.5 * np.array([-1 * np.trace(PVi) + matrix.item(y.T * PVi * Py) for PVi in PVis])
+        
+        def element(PVi):
+            return 0.5 * np.trace(PVi) + matrix.item(y.T * PVi * Py)
+
+        return np.array([element(PVi) for PVi in PVis])
         
 
     def loglikelihood(self):
@@ -396,26 +412,30 @@ class REML(MixedModelLikelihood):
 
 
     def hessian_element(self, PV_i, PV_j):
+        "Second derivative of REML function w.r.t two variance components"
         y, P = self.mm.y, self.P
         PViPVj = PV_i * PV_j
         a = 0.5 * np.trace(PViPVj)
         b = y.T * PViPVj * P * y
         return matrix.item(a - b)
 
-    def observed_element(self, PV_i, PV_j):        
+    def observed_element(self, PV_i, PV_j):
+        "Element of the observed information matrix (i.e. -hessian)"        
         return -1.0 * self.hessian_element(PV_i, PV_j)
   
     def fisher_element(self, PV_i, PV_j):
-        return .5 * np.trace(PV_i * PV_j)
+        "Element of the expected information matrix"
+        return 0.5 * np.trace(PV_i * PV_j)
     
     def ai_element(self, PV_i, PV_j):
+        "Element of the average information matrix"
         y, P = self.mm.y, self.P
-        return .5 * y.T * PV_i * PV_j * P * y
+        return 0.5 * y.T * PV_i * PV_j * P * y
 
     def expectation_maximization(self):
         "Performs a round of Expectation-Maximization REML"
         y, P = self.mm.y, self.P
-        Py = P*y
+        Py = P * y
 
         def get_coef(rf):
             V_i = rf.V_i
@@ -423,7 +443,8 @@ class REML(MixedModelLikelihood):
 
             return matrix.item(y.T * PVi * Py - np.trace(PVi))
 
-        coefficients = np.array([get_coef(rf) for rf in self.mm.random_effects])
+        coefficients = np.array([get_coef(rf) for rf 
+                                 in self.mm.random_effects])
 
         levelsizes = np.array([x.nlevels for x in self.mm.random_effects])
 

@@ -1,6 +1,6 @@
+"Genedropping with IBD constraints"
 from pydigree.common import random_choice
 from pydigree.genotypes import AncestralAllele
-from pydigree.simulation import *
 from pydigree.simulation.simulation import Simulation, SimulationError
 from pydigree import paths
 from pydigree import Individual
@@ -8,9 +8,12 @@ import collections
 
 
 class ConstrainedMendelianSimulation(Simulation):
+    """
+    Performs a gene-dropping simulation constrained to a specific 
+    IBD pattern
+    """
 
-    def __init__(self, template=None, label=None,
-                 replications=1000, only=None, linkeq=True):
+    def __init__(self, template=None, label=None, replications=1000, only=None):
         Simulation.__init__(self, template=template, label=label,
                             replications=replications, only=only)
         for ind in self.template.individuals:
@@ -20,8 +23,8 @@ class ConstrainedMendelianSimulation(Simulation):
                 raise ValueError("ConstrainedMendelian only available"
                                  "for outbred pedigrees")
 
-    def replicate(self, writeibd=False, verbose=False, linkeq=True,
-                  replicatenumber=0):
+    def replicate(self, writeibd=False, verbose=False, replicatenumber=0):
+        "Creates a replicate from the simulation"
         self.template.clear_genotypes()
   
         for x in self.template.founders():
@@ -34,16 +37,19 @@ class ConstrainedMendelianSimulation(Simulation):
                 # already, we've seen them earlier while getting
                 # genotypes for someone deeper in the pedigree
                 continue
+            
             constraints = self.constraints['ibd'][ind]
 
             # TODO: Multiple constraints per individual
             # Right now we're only using the first ([0]) constraint
-            constraints = [(x[1], AncestralAllele(x[0], x[2])) for x in constraints]
+            constraints = [(x[1], AncestralAllele(x[0], x[2])) 
+                           for x in constraints]
+            
             location, allele = constraints[0]
             ancestor = allele.ancestor
             descent_path = random_choice(paths(ancestor, ind))
 
-            for pathindex, path_member in enumerate(descent_path):
+            for path_member in descent_path:
                 if path_member.is_founder():
                     continue
                 fa, mo = path_member.parents()
@@ -69,7 +75,7 @@ class ConstrainedMendelianSimulation(Simulation):
             self._writeibd(replicatenumber)
 
         # Now replace the label genotypes in founders with real ones.
-        self.get_founder_genotypes(linkeq=self.linkeq)
+        self.get_founder_genotypes()
 
         # Now replace the label genotypes in the nonfounders with the
         # genotypes of the founders
@@ -84,7 +90,7 @@ class ConstrainedMendelianSimulation(Simulation):
         # Predict phenotypes
         if self.trait:
             for ind in siminds:
-                ind.phenotypes[self.trait.name] = self.trait.predict_phenotype(ind)
+                ind.predict_phenotype(trait)
 
         if verbose:
             for ind in siminds:

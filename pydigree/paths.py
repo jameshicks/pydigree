@@ -157,7 +157,9 @@ def kinship(ind1, ind2):
     #  connecting the two individuals. The kinship coefficient is then
     #  .5 ** len(path)
     def kin(pathlength, ancF):
+        "Quickly calculate the kinship from the path length"
         return (0.5 ** pathlength) * (1 + ancF)
+
     partialkin = []
     partialkin.append(
         sum(kin(len(p), ind1.inbreeding()) for p in path_downward(ind1, ind2)))

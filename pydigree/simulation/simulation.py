@@ -93,7 +93,7 @@ class Simulation(object):
                     of.write('{}\n'.format(outline))
 
     def predicted_trait_accuracy(self, ped):
-        calls = [(ind.predicted_phenotype(self.trait),
+        calls = [(trait.predict_phenotype(ind),
                   ind.phenotypes['affected'])
                  for ind in ped
                  if ind.phenotypes['affected'] is not None]

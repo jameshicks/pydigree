@@ -7,11 +7,11 @@ from pydigree.genotypes import Alleles, SparseAlleles
 from pydigree.exceptions import SimulationError
 from pydigree.io.genomesimla import read_gs_chromosome_template
 
+
 class ChromosomeSet(object):
     """
     An object representing the full complement of variants in a population
     """
-
     def __init__(self):
         self.chroms = []
 
@@ -88,7 +88,6 @@ class ChromosomeSet(object):
         :type nloc: int
         :rtype: generator of locations
         """
-
         available = self.nloci()
         loci = set(np.random.randint(0, available, nloc))
 
@@ -103,8 +102,7 @@ class ChromosomeSet(object):
 
         loci = sorted(loci)
         chromsizes = [0] + cumsum([c.nmark() for c in self.chroms])
-
-        
+  
         chromidx = 0
         for loc in loci:
             while loc > chromsizes[chromidx]: 
@@ -200,6 +198,9 @@ class ChromosomeTemplate(object):
 
     def add_genotype(self, frequency=None, map_position=None, label=None,
                      bp=None, reference=None, alternates=None):
+        """
+        Adds a variant to the chromosome
+        """
         if self.final:
             raise ValueError('Chromosome already finalized')
         try:
@@ -310,7 +311,7 @@ class ChromosomeTemplate(object):
         r = np.array(r < self.frequencies, dtype=np.int8) + 1
 
         if sparse:
-            return SparseAlleles(r-1, refcode=0, template=self)
+            return SparseAlleles(r - 1, refcode=0, template=self)
         else:
             return Alleles(r, template=self)
 

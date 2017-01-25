@@ -98,12 +98,15 @@ class Individual(object):
         Initializes genotypes so that all genotypes are missing if blankchroms 
         is true, otherwise, just sets what would be the chromosome to None
         """
+        gt = []
         if blankchroms:
-            self.genotypes = [(chrom.empty_chromosome(dtype=dtype, sparse=sparse),
-                               chrom.empty_chromosome(dtype=dtype, sparse=sparse))
-                              for chrom in self.chromosomes]
+            gt = [(chrom.empty_chromosome(dtype=dtype, sparse=sparse),
+                   chrom.empty_chromosome(dtype=dtype, sparse=sparse))
+                   for chrom in self.chromosomes]
         else:
-            self.genotypes = [[None, None] for chrom in self.chromosomes]
+            gt = [[None, None] for chrom in self.chromosomes]
+
+        self.genotypes = gt
 
     def has_genotypes(self):
         """ 
@@ -127,7 +130,8 @@ class Individual(object):
         Retrieve genotypes from a chromosome pool if present, or else a
         chromosome generated under linkage equilibrium
     
-        :param linkeq: should the retrieved genotypes be under linkage equilibrium?
+        :param linkeq: should the retrieved genotypes be generated
+            under linkage equilibrium?
         :type linkeq: bool
 
         :returns: Nothing
@@ -189,8 +193,12 @@ class Individual(object):
 
     def update(self, other):
         '''
-        Takes another individual object, merges/updates phenotypes with the other
-        individual object and REPLACES self's genotypes with other's
+        Takes another individual object, merges/updates phenotypes with the 
+        other individual object and replace self's genotypes with other's
+
+        .. warning::
+            This does not merge genotypes, it replaces them! Additionally,
+            phenotypes in the other data overwrite the existing ones 
 
         :param other: the data to update with
         :type other: Individual
@@ -210,10 +218,12 @@ class Individual(object):
 
     def label_genotypes(self):
         """
-        Gives the individual label genotypes. When these genotypes are
-        transmitted on to the next generation, you can see where each allele
-        in the next generation came from. Useful for gene dropping simulations,
-        probably not much else.
+        Gives the individual label genotypes. 
+
+        When label genotypes are transmitted on to the next generation, you 
+        can see where each allele in the next generation came from. This is
+        sseful for gene dropping simulations and reducing the memory footprint
+        of forward-time simulation. 
         """
         self.__fail_on_observed_genos()
 
@@ -423,15 +433,21 @@ class Individual(object):
 
     # Phenotype functions
     def has_phenotype(self, phenotype):
+        """
+        Does the individual have a phenotype?
+
+        :param phenotype: what phenotype are we looking for
+        :type phenotype: string
+    
+        :returns: True if phenotype present and not None
+        :rtype: bool 
+        """
         return (phenotype in self.phenotypes and
                 self.phenotypes[phenotype] is not None)
 
     def predict_phenotype(self, trait):
         """ Predicts phenotypes from a given trait architecture and sets it """
         self.phenotypes[trait.name] = self.predicted_phenotype(trait)
-
-    def predicted_phenotype(self, trait):
-        return trait.predict_phenotype(self)
 
     def delete_phenotype(self, trait):
         "Removes a phenotype from the phenotype dictionary"
