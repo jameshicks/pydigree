@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"Script for estimating the null distribution of IBD sharing scores"
 
 import pydigree
 import itertools
@@ -18,9 +19,11 @@ parser.add_argument('--only', metavar='PED',
                     nargs='*', dest='onlypeds')
 parser.add_argument('--writedist', 
                     help='Write null distribution to file')
-parser.add_argument('--include-marryins', dest='remove_mif', action='store_false',
-                    help='Include affected marry-in founders in IBD sharing scores')
-parser.add_argument('--scorefunction', '-s', dest='scorefunc', default='sbool')
+parser.add_argument('--include-marryins', 
+                    dest='remove_mif', action='store_false',
+                    help='Include affected marry-in founders in IBD scores')
+parser.add_argument('--scorefunction', '-s', 
+                    dest='scorefunc', default='sbool')
 parser.add_argument('--seed', type=int, help='Random seed', default=None)
 args = parser.parse_args()
 
@@ -29,13 +32,19 @@ if args.seed is not None:
     pydigree.set_seed(args.seed)
 
 
-def spairs(pedigree, inds, loc):
+def spairs(inds, loc):
+    
+    "Returns total number of IBD alleles"
+
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
              k.get_genotype(loc, checkhasgeno=False)) 
          for j, k in itertools.combinations(inds, 2)]
     return sum(r)
 
-def sbool(pedigree, inds, loc):
+def sbool(inds, loc):
+    
+    "Returns proportion of pairs IBD != 0"
+
     npairs = float(len(inds) * (len(inds) - 1) / 2)
     r = [ibs(j.get_genotype(loc, checkhasgeno=False),
              k.get_genotype(loc, checkhasgeno=False)) > 0
@@ -47,7 +56,7 @@ def genedrop(pedigree, affs, scorer, iteration):
     if iteration % (args.niter / 10) == 0:
         print('Simulation %s' % iteration)
     pedigree.simulate_ibd_states(inds=affs)
-    s = scorer(pedigree, affs, (0, 0))
+    s = scorer(affs, (0, 0))
     return s
 
 try:
@@ -111,7 +120,7 @@ def stringify(n):
     else:
         return "{:.1e}".format(n)
 
-print('\t'.join(['Pedigree','Min','Mean','SD','Max']))
+print('\t'.join(['Pedigree', 'Min', 'Mean', 'SD', 'Max']))
 for ped, dist in nulldist.items():
     record = [ped, dist.min(), dist.mean(), dist.std(), dist.max()]
     print('\t'.join(stringify(q) for q in record))

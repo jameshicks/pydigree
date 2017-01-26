@@ -27,10 +27,12 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
     :param filename: The file to be read
     :param population: The population to assign individuals to
-    :param delimiter: a string defining the field separator, default: any whitespace
+    :param delimiter: a string defining the field separator, 
+        default: any whitespace
     :param affected_labels: The labels that determine affection status.
     :param population_handler: a function to set up the population 
-    :param data_handler: a function to turn the data into useful individual information
+    :param data_handler: a function to turn the 
+        data into useful individual information
     :param connect_inds: build references between individuals. Requires all
         individuals be present in the file
     :param onlyinds: only include data for specified individuals 
@@ -44,7 +46,6 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     :type onlyinds: iterable 
 
 
-
     :returns: individuals contained in the pedigree file 
     :rtype: PedigreeCollection
     """
@@ -55,8 +56,11 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
                            'X': None,
                            '-9': None}
 
-    # Tries to get a phenotype and returns unknown on failure
+   
+    
     def getph(ph):
+        "Tries to get a phenotype and returns unknown on failure"
+
         try:
             return affected_labels[ph]
         except KeyError:
@@ -93,7 +97,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
             if isinstance(data_handler, Callable) and len(split) > 6:
                 data = split[6:]
-                data_handler(p[ind_id],  data)
+                data_handler(p[ind_id], data)
 
     # Fix the individual-level data
     if connect_inds:
@@ -151,25 +155,27 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
             # Match columns to their column name
             d = dict(list(zip(header, line.strip().split(delimiter))))
             for k, v in list(d.items()):
+                
                 # Convert all phenotypes into floats
                 try:
                     v = float(v)
                 except ValueError:
                     if not v or v == missingcode:
                         v = None
+                
                 if k in set(['famid', 'id']):
                     continue
+                
                 fam, ind = d['famid'], d['id']
                 pedigrees[fam][ind].phenotypes[k] = v
 
 
-def write_pedigree(pedigrees, filename, missingcode='X', delim=' '):
+def write_pedigree(pedigrees, filename, delim=' '):
     ''' 
     Writes pedigree to a LINKAGE formatted pedigree file 
 
     :param pedigrees: Data to write
     :param filename: filename to write to
-    :param missingcode: code to use for missing values
     :param delim: output field separator 
 
     :rtype: void
@@ -183,8 +189,11 @@ def write_pedigree(pedigrees, filename, missingcode='X', delim=' '):
                      '0' if ind.is_founder() else ind.mother.label,
                      '1' if ind.sex == 1 else '0',
                      '-9']
+            
             oline = delim.join(oline)
+            
             f.write(oline + '\n')
+
 
 def write_phenotypes(pedigrees, filename, predicate=None,
                      missingcode='X', delim=','):
@@ -225,10 +234,13 @@ def genotypes_from_sequential_alleles(chromosomes, data, missing_code='0'):
 
     For example: 
     The series '1 2 1 2 1 2' becomes 
-    chrom1 = [1,1,1]
-    chrom2 = [2,2,2]
+    chrom1 = [1, 1, 1]
+    chrom2 = [2, 2, 2]
 
-    These are returned in the a list in the form [(chroma, chromb), (chroma, chromb)...]
+    These are returned in the a list in the form:
+
+    ::
+        [(chroma, chromb), (chroma, chromb)...]
 
 
     :param chromosomes: genotype data

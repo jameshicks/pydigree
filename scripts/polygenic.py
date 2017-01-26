@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"Script for estimating components of genetic variance"
 
 import argparse
 
@@ -14,8 +15,8 @@ parser.add_argument('--phen', required=True,
 parser.add_argument('--outcome', required=True, help='Outcome phenotype')
 parser.add_argument('--fixedeffects', '--fixefs', nargs="*", dest='fixefs',
                     help='Fixed effects for model')
-parser.add_argument('--reml', action='store_true', 
-    help='Use restricted maximum likelihood (REML) for maximization')
+parser.add_argument('--reml', action='store_true',
+                    help='Use restricted maximum likelihood (REML) for maximization')
 parser.add_argument('--maxmethod', help='Method for maximization',
                     default='Fisher')
 parser.add_argument('--starts', help='Starting values for variance components',
@@ -27,8 +28,6 @@ parser.add_argument('--d7', '--dominance', action='store_true', dest='d7',
 parser.add_argument('--garbley', action='store_true',
                     help='Replace y values with random normal deviates')
 parser.add_argument('--inflate', action='store_true')
-parser.add_argument(
-    '--center', action='store_true', help='Center outcome data')
 args = parser.parse_args()
 
 
@@ -46,9 +45,6 @@ if args.d7:
 print('Done')
 m.fit_model()
 
-if args.center:
-    m.y = m._centery()
-
 if args.inflate:
     m.y *= 100
 if args.garbley:
@@ -57,7 +53,8 @@ if args.garbley:
 starts = args.starts
 if starts is not None:
     starts = [float(x) for x in starts]
-m.maximize(method=args.maxmethod, verbose=True, starts=starts, restricted=args.reml)
+m.maximize(method=args.maxmethod, verbose=True,
+           starts=starts, restricted=args.reml)
 
 m.summary()
 

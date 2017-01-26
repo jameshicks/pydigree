@@ -2,6 +2,7 @@
 Exceptions raised by pydigree routines
 """
 
+
 class IterationError(Exception):
     """
     The procedure has run out of iterations without finding a result

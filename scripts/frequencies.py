@@ -1,3 +1,5 @@
+"A script that calculates allele frequencies from plink data"
+
 import argparse
 
 import pydigree as pyd
@@ -16,6 +18,9 @@ if args.snps is not None:
     onlysnps = set(args.snps)
 
 def formatted(*cells):
+    
+    "Print values in tab-delimited format"
+    
     return '\t'.join([str(x) for x in cells])
 
 for chromidx, chromobj in enumerate(peds.chromosomes):

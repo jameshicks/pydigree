@@ -42,7 +42,9 @@ print('Fitting polygenic model')
 null_model = MixedModel(peds, outcome=args.outcome, fixed_effects=args.fixefs)
 null_model.add_genetic_effect()
 null_model.fit_model()
-null_model.maximize(method=args.maxmethod, verbose=args.verbose, restricted=False)
+null_model.maximize(method=args.maxmethod,
+                    verbose=args.verbose,
+                    restricted=False)
 null_model.summary()
 llik_null = null_model.loglikelihood()
 
@@ -83,8 +85,8 @@ def measured_genotype_association(extrapredictor):
     return model
 
 tableheader = ('CHROM', 'POS', 'MARKER', 'MAJ', 'MIN',
-                  'MAF', 'BETA', 'LOD', 'PVALUE')
-outlines = [] 
+               'MAF', 'BETA', 'LOD', 'PVALUE')
+outlines = []
 print(tableformat(*tableheader))
 
 for chromidx, chromobj in enumerate(peds.chromosomes):
@@ -131,7 +133,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
             beta = np.matrix.item(alt_model.beta[-1])  # Slope of marker effect
 
             lrt = LikelihoodRatioTest(null_model, alt_model)
-            
+
             oline = (chromobj.label,
                      chromobj.physical_map[locidx],
                      markerlabel,
@@ -141,7 +143,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
                      '{:<10.3g}'.format(beta),
                      '{:<10.3f}'.format(lrt.lod),
                      '{:<10.4g}'.format(lrt.pvalue))
-            
+
             outlines.append(oline)
             print(tableformat(*oline))
 
@@ -151,7 +153,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
             peds.delete_phenotype(predictorname)
 
 if args.out is not None:
-  with open(args.out, 'w') as outf:
-    outf.write(','.join(tableheader) + '\n')
-    for oline in outlines:
-      outf.write(','.join(str(x).strip() for x in oline) + '\n')
+    with open(args.out, 'w') as outf:
+        outf.write(','.join(tableheader) + '\n')
+        for oline in outlines:
+            outf.write(','.join(str(x).strip() for x in oline) + '\n')
