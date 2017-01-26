@@ -64,15 +64,9 @@ sparray2 = Extension('pydigree.cydigree.sparsearray',
 with open(os.path.join(pydigree_dir, 'LICENSE.txt')) as f:
     liblicense = f.read()
 
-lib_class = ['Programming Language :: Python :: 3 :: Only',
-             'Programming Language :: Cython',
-             'Intended Audience :: Science/Research',
-             'Topic :: Scientific/Engineering :: Bio-Informatics',
-             'Topic :: Scientific/Engineering :: Mathematics',
-             'Topic :: Sociology :: Genealogy',
-             'Topic :: Software Development :: Libraries :: Python Modules',
-             'Development Status :: 4 - Beta',
-             'License :: OSI Approved :: Apache Software License']
+with open(os.path.join(pydigree_dir, 'classifiers.txt')) as f:
+    lib_class = [x.strip() for x in f if x.strip()]
+
 lib_requirements = ['numpy', 'scipy', 'pandas', 'cython']
 
 setup(
@@ -85,6 +79,6 @@ setup(
     download_url="https://github.com/jameshicks/pydigree/tarball/0.8a",
     license=liblicense,
     packages=find_packages(),
-    ext_modules=cythonize([cyext, dsext, vtext, vcfext, sparray2]),
+    ext_modules=cythonize([cyext, dsext, vcfext, sparray2]),
     requires=lib_requirements,
     classifiers=lib_class)
