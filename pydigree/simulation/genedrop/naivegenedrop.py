@@ -1,18 +1,41 @@
+"Naive gene dropping simulations"
 
-
-from pydigree.simulation.trait import QuantitativeTrait
 from .simulation import GeneDroppingSimulation
 from pydigree.exceptions import SimulationError
 
 
 class NaiveGeneDroppingSimulation(GeneDroppingSimulation):
+    """
+    A class that performs simulations on pedigrees by randomly segregating
+    chromosome through the pedigree
+    """
 
     def __init__(self, template=None, replications=1000):
+        """
+        Create the simulation object.
+
+        :param template: pedigree to simulated
+        :param replications: number of replications to perform
+        :type template: pedigree
+        :type replications: int
+        """
+
         GeneDroppingSimulation.__init__(self, template, replications)
         self.genedrop_attempts = 1000
 
     def replicate(self, writeibd=False, verbose=None, replicatenumber=0):
+        """
+        Perform a single replicate of gene-dropping
 
+        :param writeibd: write IBD states?
+        :param verbose: print incremental output
+        :param replicatenumber: current replicate
+        :type writeibd: bool
+        :type verbose: bool
+        :type replicatenumber: int
+
+        :rtype: void
+        """
         for ind in self.template.individuals:
             ind.clear_genotypes()
 

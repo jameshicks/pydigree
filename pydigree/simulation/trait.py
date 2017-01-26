@@ -1,5 +1,8 @@
-from pydigree.genotypes import ChromosomeTemplate
+"Synthetic quantitative genetic traits"
 import numpy as np
+
+from pydigree.io import smartopen
+from pydigree.genotypes import ChromosomeTemplate
 
 
 class QuantitativeGeneticEffect(object):
@@ -7,7 +10,7 @@ class QuantitativeGeneticEffect(object):
     '''
     QuantitativeGeneticEffect is a class for objects that relate loci to 
     phenotypes.
-    
+
     :ivar a: the additive effect of an allele
     :type a: numeric
 
@@ -19,7 +22,19 @@ class QuantitativeGeneticEffect(object):
     '''
 
     def __init__(self, locus, a, k=0, chromosomes=None):
+        """
+        Create an effect.
 
+        :param locus: the chromosome and marker index of the locus 
+            causing the effect 
+        :param a: additive effect
+        :param k: dominance effect
+        :param chromosomes: chromosomes for the population the effect acts on
+        :type locus: tuple
+        :type a: float
+        :type k: float
+        :type chromosomes: ChromosomeSet
+        """
         self.locus = locus
         self.chromosomes = chromosomes
         self.a = a
@@ -36,10 +51,10 @@ class QuantitativeGeneticEffect(object):
         1             (1+k)a
         2             2a
         ============= ======
-        
+
         :param individual:
         :type individual: Individual
-        """ 
+        """
         gt = individual.get_genotype(self.locus)
         N = gt.count(2)  # Number of minor alleles
         if N == 0:
@@ -53,19 +68,43 @@ class QuantitativeGeneticEffect(object):
 
     @property
     def expected_genotypic_value(self):
+        """
+        The expected genotypic value at the locus. This is the mean of the 
+        three genotype effects, weighted by their frequency.
+
+        :rtype: float
+        """
         chridx, locidx = self.locus
         maf = self.chromosomes[chridx].frequencies[locidx]
 
         mu_g = 0
-        mu_g += (1-maf)**2 * 0  # Genotypic value for major homozygote
-        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k)  # Heterozygote value
+
+        # Genotypic value for major homozygote. Since we're counting minor
+        # alleles, this always evaluates to 0, and we'll skip calculating it.
+        # 
+        # mu_g += (1-maf) ** 2 * 0  
+        
+        # Heterozygote genotypic value
+        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k)  
+        
+        # Genotyping value for minor homozygote
         mu_g += (maf ** 2) * 2 * self.a  # Genotypic value for minor homozygote
 
         return mu_g
 
     @property
     def alpha(self):
-        'Returns the average effect of allelic substitution for the locus'
+        """
+        Returns the average effect of allelic substitution for the locus,
+        :math:`\alpha = a(1 + k(p - q))`.
+
+        "[alpha] represents the average change in genotypic value that results 
+        when a [minor allele] is randomly substituted for a major allele"
+
+        Lynch & Walsh, Genetics and Analysis of Quantitative Traits, p. 68 
+
+        :rtype: float
+        """
         if not self.chromosomes:
             raise ValueError('Chromosomes not specified')
 
@@ -80,7 +119,7 @@ class QuantitativeGeneticEffect(object):
         the frequencies in the chromosomeset
 
         :math:`\sigma^2_a = 2pq \alpha ^2`
-        
+
         :returns: :math:`\sigma ^{2}_{A_{x}}`
         :rtype: float
         """
@@ -100,7 +139,7 @@ class QuantitativeGeneticEffect(object):
         the frequencies in the chromosomeset
 
         :math:`\sigma^2_d = (2pqak)^2`
-        
+
         :returns: :math:`\sigma ^{2}_{D_{x}}`
         :rtype: float
         """
@@ -126,8 +165,8 @@ class QuantitativeTrait(object):
 
     When h2 is specified, phenotypes have an appropriate amount of random
     normal noise added to them so that the heritability of the trait in a 
-    population in Hardy-Weinberg equilibrium (infinitely large, randomly mating, 
-    no migration/selection, etc) equals h2. 
+    population in Hardy-Weinberg equilibrium (infinitely large, randomly 
+    mating, no migration/selection, etc) equals h2. 
 
     The trait can be forced to have a mean at a desired location by computing 
     trait_mean = intercept + expected_genotypic_value. The genotypic value can
@@ -188,19 +227,45 @@ class QuantitativeTrait(object):
 
     @property
     def expected_genotypic_value(self):
+        """
+        The expected genotypic value for an individual in the population.
+        
+        This is the sum of the expected genotypic values for each of the effect
+        loci
+
+        :rtype: float
+        """
         return sum(x.expected_genotypic_value for x in self.effects)
 
     @property
     def intercept(self):
+        """
+        The mean phenotypic value in the population
+        """
         # E[P_environment] == 0, so we can ignore it
-        return self.mean - (self.expected_genotypic_value if self.h2 < 1.0 else 0)
+        return self.mean - (self.expected_genotypic_value if self.h2 < 1.0
+                            else 0)
 
     @property
     def additive_genetic_variance(self):
+        """
+        Total additive variance.
+
+        The sum of the additive variance of each effect.
+
+        :rtype: float
+        """
         return sum(x.locus_additive_variance for x in self.effects)
 
     @property
     def environmental_variance(self):
+        """
+        When h2 is fixed, this returns the corresponding environmental 
+        variance in the population that must be added to result in the 
+        specified h2 value.
+
+        :rtype: float
+        """
         if self.h2 is None:
             raise ValueError('Trait heritability not set!')
 
@@ -211,7 +276,11 @@ class QuantitativeTrait(object):
 
     @property
     def total_variance(self):
-        "The total variance of the phenotype"
+        """
+        The total variance of the phenotype
+
+        :rtype: float
+        """
         return self.additive_genetic_variance + self.environmental_variance
 
     def rescale(self, mean, sd):
@@ -238,7 +307,7 @@ class QuantitativeTrait(object):
         """
         Generates a predicted phenotype for an individual based off their 
         genotype
-        
+
         :param individual: subject to have a phenotype prediected
 
 
@@ -264,8 +333,8 @@ class QuantitativeTrait(object):
         return phenotype
 
     def add_dummy_polygene_chromosomes(self, population, nloc,
-                                       mean=0, 
-                                       sd=1, 
+                                       mean=0,
+                                       sd=1,
                                        freqs=None,
                                        polylabel='Polygene'):
         """
@@ -284,7 +353,7 @@ class QuantitativeTrait(object):
         :type sd: float
         :type freqs: sequence of floats
         :type polylabel: string
-        
+
         :rtype: void
         """
         if freqs is None:
@@ -308,16 +377,26 @@ class QuantitativeTrait(object):
 
     @staticmethod
     def from_file(filename):
-        with open(filename) as f:
+        """
+        Reads a trait from a file
+
+        :param filename: path to file
+        :type filename: string
+
+        :rtype: QuantitativeTrait
+        """
+        with smartopen(filename) as f:
             trait_type, name = f.readline().strip().split()
             trait = QuantitativeTrait(trait_type, name)
             for line in f:
                 l = line.strip().split()
+                
                 if len(l) != 5:
                     # TODO: implement epistatic effects in file
                     raise NotImplementedError(
                         'Epistatic effects not yet implemented')
-                chrom, loc, allele_a, allele_b, a, k = line.strip().split()
+                chrom, loc, _, allele_b, a, k = line.strip().split()
                 locus = chrom, loc
                 trait.add_effect(locus, a, k)
+        
         return trait

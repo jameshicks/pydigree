@@ -1,5 +1,4 @@
-
-import pandas as pd
+"A class representing individuals"
 
 from pydigree.recombination import recombine
 from pydigree.paths import kinship

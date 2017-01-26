@@ -1,6 +1,6 @@
 import numpy as np
 
-from pydigree.io.smartopen import smartopen as open
+from pydigree.io.smartopen import smartopen
 from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.pedigree import Pedigree
@@ -173,7 +173,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     population_handler(p)
 
     # Step 1: Read the data and create the individuals
-    with open(filename) as f:
+    with smartopen(filename) as f:
         # Parse the lines in the file
         for line in f:
             rec = PEDRecord(line, delimiter)
@@ -219,7 +219,7 @@ def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
 
     :rtype: void
     """
-    with open(csvfile) as f:
+    with smartopen(csvfile) as f:
         header = f.readline().strip().split(delimiter)
         for line in f:
             # Match columns to their column name
@@ -251,7 +251,7 @@ def write_pedigree(pedigrees, filename, delim=' '):
     :rtype: void
     '''
     sorting_key = lambda x: (x.population.label, x.depth, x.label)
-    with open(filename, 'w') as f:
+    with smartopen(filename, 'w') as f:
         for ind in sorted(pedigrees.individuals, key=sorting_key):
             oline = [ind.population.label,
                      ind.label,
@@ -288,7 +288,7 @@ def write_phenotypes(pedigrees, filename, predicate=None,
     available_phenotypes = sorted(available_phenotypes)
     header = ['famid', 'id'] + available_phenotypes
 
-    with open(filename, 'w') as ofile:
+    with smartopen(filename, 'w') as ofile:
         ofile.write(delim.join([str(x) for x in header]) + '\n')
         for ind in inds:
             row = [ind.population.label, ind.label]
