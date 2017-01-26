@@ -8,7 +8,7 @@ from pydigree.exceptions import SimulationError
 class NaiveGeneDroppingSimulation(GeneDroppingSimulation):
 
     def __init__(self, template=None, replications=1000):
-        Simulation.__init__(self, template, replications)
+        GeneDroppingSimulation.__init__(self, template, replications)
         self.genedrop_attempts = 1000
 
     def replicate(self, writeibd=False, verbose=None, replicatenumber=0):
