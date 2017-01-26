@@ -1,4 +1,6 @@
-from pydigree.io import smartopen as open
+"Reads kinships from KinInbCoef"
+
+from pydigree.io import smartopen 
 
 
 def read_kinship(filename):
@@ -12,7 +14,7 @@ def read_kinship(filename):
     {frozenset({(fam, ind_a), (fam, ind_b)}): kinship/inbreeding
     '''
     kindict = {}
-    with open(filename) as f:
+    with smartopen(filename) as f:
         for line in f:
             fam, ida, idb, phi = line.strip().split()
             kindict[frozenset({(fam, ida), (fam, idb)})] = float(phi)

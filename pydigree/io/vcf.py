@@ -1,7 +1,7 @@
 from pydigree.population import Population
 from pydigree.individual import Individual
 from pydigree.genotypes import ChromosomeTemplate
-from pydigree.io import smartopen as open
+from pydigree.io import smartopen
 from pydigree.exceptions import FileFormatError
 
 from pydigree.cydigree.vcfparse import vcf_allele_parser, assign_genorow
@@ -102,7 +102,7 @@ def read_vcf(filename, require_pass=False, freq_info=None):
     :returns: Individuals in the VCF
     :rtype: Population
     """
-    with open(filename) as f:
+    with smartopen(filename) as f:
 
         genotypes = []
 

@@ -1,16 +1,25 @@
+"Utilities for reading BEAGLE formatted genotype data"
+
 from pydigree.population import Population
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, Alleles
-from pydigree.io import smartopen as open
-from pydigree.io.base import genotypes_from_sequential_alleles
+from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
+from pydigree.io import smartopen 
+from pydigree.io.base import genotypes_from_sequential_alleles as gt_from_seq
 from pydigree.exceptions import FileFormatError
 from pydigree.common import grouper
 
 
 class BeagleMarkerRecord(object):
+    "A class corresponding to a marker in a BEAGLE marker file"
     __slots__ = ['label', 'pos', 'alleles']
 
     def __init__(self, line):
+        """
+        Create the marker record
+
+        :param line: record line
+        :type line: string
+        """
         name, pos, alleles = line.strip().split(None, 2)
         alleles = alleles.split()
         self.label = name
@@ -19,27 +28,48 @@ class BeagleMarkerRecord(object):
 
     @property
     def reference(self):
+        """
+        The reference allele for the marker
+
+        :returns: reference allele
+        :rtype: string
+        """
         return self.alleles[0]
 
     @property
     def alternates(self):
+        """
+        The alternate alleles for the marker
+        
+        :returns: Each alternate allele
+        :rtype: iterable
+        """
         return self.alleles[1:]
 
+
 class BeagleGenotypeRecord(object):
+    "A class corresponding to a record in a BEAGLE genotype file"
     __slots__ = ['identifier', 'label', 'data']
 
     def __init__(self, line):
+        """
+        Create the genotype record object.
+
+        :param line: record line
+        :type line: string
+        """
         l = line.strip().split()
         self.identifier = l[0]
         self.label = l[1]
         self.data = l[2:]
 
     def is_phenotype_record(self):
+        "Returns true if record corresponds to a phenotype field"
         return self.identifier in 'ACT'
 
 
 def read_beagle_markerfile(filename, label=None):
-    ''' 
+    """ 
     Reads marker locations from a BEAGLE formatted file
     
     :param filename: The file to be read
@@ -49,8 +79,8 @@ def read_beagle_markerfile(filename, label=None):
     :type filename: string
 
     :rtype: ChromosomeTemplate
-    '''
-    with open(filename) as f:
+    """
+    with smartopen(filename) as f:
         chrom = ChromosomeTemplate(label=label)
 
         last_pos = -1
@@ -84,7 +114,7 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
     :type missingcode: string
     :rtype: void
     '''
-    with open(filename) as f:
+    with smartopen(filename) as f:
         for line in f:
             rec = BeagleGenotypeRecord(line)
 
@@ -108,16 +138,18 @@ def read_beagle_genotypefile(filename, pop, missingcode='0'):
                   for x in f if x.startswith('M')]
         genotypes = zip(*gtrows)
         for ind, sequentialalleles in zip(inds, genotypes):
-            ind.genotypes = genotypes_from_sequential_alleles(ind.chromosomes,
-                                                              sequentialalleles)
+            ind.genotypes = gt_from_seq(ind.chromosomes,
+                                        sequentialalleles,
+                                        missing_code=missingcode)
 
 
 def read_beagle(genofile, markerfile):
     '''
     Reads BEAGLE formatted genotype data
 
-    :param genofile: Filename  containing genotype information for individuals
-    :param markerfile: Filename  containing marker location and allele information
+    :param genofile: Filename containing genotype information for individuals
+    :param markerfile: Filename containing marker location and allele 
+        information corresponding to genofile
 
     :type genofile: string
     :type markerfile: string

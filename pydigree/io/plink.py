@@ -1,16 +1,35 @@
-from pydigree.common import grouper
+"Functions for reading PLINK formatted genotype files"
+
 from pydigree.common import interleave
-from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
-from pydigree.io.base import read_ped, genotypes_from_sequential_alleles
+from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet, SparseAlleles
+from pydigree.io.base import read_ped
+from pydigree.io.base import genotypes_from_sequential_alleles as gt_from_seq
 from pydigree.exceptions import FileFormatError
-from pydigree.io.smartopen import smartopen as open
+from pydigree.io.smartopen import smartopen
 import collections
 
 
 def create_pop_handler_func(mapfile):
+    """
+    Creates a closure to provide as the population handler for 
+    pydigree.io.base.read_ped.
+
+    :param mapfile: Filename of PLINK .map file
+    :type mapfile: string 
+
+    :rtype: callable
+    """
     chromosomes = read_map(mapfile)
 
     def pop_handler(pop):
+        """
+        pop_handler for read_ped. Adds each chromosome to the population
+        
+        :param pop: collection to add chromosomes to
+        :type pop: IndividualCollection
+
+        :rtype: void
+        """
         for chrom in chromosomes:
             pop.add_chromosome(chrom)
 
@@ -18,9 +37,17 @@ def create_pop_handler_func(mapfile):
 
 
 def plink_data_handler(ind, data):
-    ''' A function to handle the data payload from a plink line '''
-    ind.genotypes = genotypes_from_sequential_alleles(
-        ind.chromosomes, data, missing_code='0')
+    """
+    A function to handle the data payload from a plink line.
+
+    :param ind: Individual for the record
+    :param data: the data for the record
+    :type ind: Individual
+    :type data: string
+
+    :rtype: void
+    """
+    ind.genotypes = gt_from_seq(ind.chromosomes, data, missing_code='0')
 
 
 def read_map(mapfile):
@@ -36,7 +63,7 @@ def read_map(mapfile):
     last_chr, last_pos = None, 0
     chroms = ChromosomeSet()
     chromosome = None
-    with open(mapfile) as f:
+    with smartopen(mapfile) as f:
         for i, line in enumerate(f):
             line = line.strip().split()
             chrom, label, cm, pos = line
@@ -115,10 +142,11 @@ def write_plink(pedigrees, filename_prefix, predicate=None, mapfile=False,
     write_ped(pedigrees, pedfile, predicate=predicate, 
                 output_chromosomes=output_chromosomes)
     if mapfile:
-        write_map(pedigrees, filename_prefix + '.map', output_chromosomes=output_chromosomes)
+        write_map(pedigrees, filename_prefix + '.map', 
+                  output_chromosomes=output_chromosomes)
 
 
-def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
+def write_ped(pedigrees, pedfile, delim=' ', predicate=None,
               output_chromosomes=None):
     """
     write_ped writes data in a plink-format PED file, and optionally a
@@ -143,11 +171,8 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
     """
 
     # Check if we're only supposed to be outputting certain chromosomes
-    if output_chromosomes is not None:
-        checkchroms = True
-    else:
-        checkchroms = False
-
+    output_chromosomes = output_chromosomes is not None
+    
     if not predicate:
         predicate = lambda x: True
     elif predicate == 'affected':
@@ -157,21 +182,26 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
     elif not isinstance(predicate, collections.Callable):
         raise ValueError('Not a valid predicate!')
 
-    afflab = {1: '2', 0: '1', None: '-9'}
+    pheno_label = {1: '2', 0: '1', None: '-9'}
 
-    with open(pedfile, 'w') as f:
+    def getlab(ind, default):
+        """
+        Gets the label of an individual, or return different value ind is None
+        """
+        return ind.label if ind is not None else default
+
+    with smartopen(pedfile, 'w') as f:
         for pedigree in pedigrees.pedigrees:
             for ind in pedigree.individuals:
                 if not predicate(ind):
                     continue
-                # Get the phenotype code
-                aff = afflab[ind.phenotypes['affected']]
+
                 # Prepare the 6-column identifier
                 outline = [pedigree.label, ind.label,
-                           ind.father.label if ind.father is not None else '0',
-                           ind.mother.label if ind.mother is not None else '0',
+                           getlab(ind.father, '0'),
+                           getlab(ind.mother, '0'),
                            1 if ind.sex == 0 else 2,
-                           aff]
+                           pheno_label[ind.phenotypes['affected']]]
                 # Make strings
                 outline = list(map(str, outline))
 
@@ -181,10 +211,14 @@ def write_ped(pedigrees, pedfile,  delim=' ', predicate=None,
                     if checkchroms and template.outputlabel not in output_chromosomes:
                         continue
                     chroma, chromb = chromatids
+                    if isinstance(chroma, SparseAlleles):
+                        raise ValueError("Plink output not for Sparse Data")
+
                     ga = chroma.astype(str).tolist()
                     gb = chromb.astype(str).tolist()
                     gn = interleave(ga, gb)
                     g.extend(gn)
+
                 outline.extend(g)
 
                 # Write it out
@@ -199,6 +233,7 @@ def write_map(pedigrees, mapfile, output_chromosomes=None):
 
     :param pedigrees: the population containing the data to be written
     :param mapfile: the name of the file to be output to
+    :param output_chromosomes: which chromosomes to write
 
     Returns: Nothing
     '''
@@ -208,15 +243,17 @@ def write_map(pedigrees, mapfile, output_chromosomes=None):
     else:
         checkchroms = False
 
-    with open(mapfile, 'w') as f:
-        for chromosome in pedigrees.chromosomes:
-            if checkchroms and chromosome.outputlabel not in output_chromosomes:
+    with smartopen(mapfile, 'w') as f:
+        for chrom in pedigrees.chromosomes:
+            if checkchroms and chrom.outputlabel not in output_chromosomes:
                 continue
-            for mi, marker in enumerate(chromosome._iinfo()):
+            for mi, marker in enumerate(chrom._iinfo()):
                 label, cm, mb, _ = marker
                 if not mb:
                     mb = int(cm * 10e6)
                 if not label:
-                    label = 'SNP%s-%s' % (chromosome.outputlabel, mi)
-                f.write('\t'.join(str(x) for x
-                                  in [chromosome.outputlabel, label, cm, mb]) + '\n')
+                    label = 'SNP%s-%s' % (chrom.outputlabel, mi)
+
+                rec = [chrom.outputlabel, label, cm, mb]
+                outline = '\t'.join(str(x) for x in rec)
+                f.write(outline + '\n')
