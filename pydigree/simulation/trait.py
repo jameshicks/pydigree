@@ -75,26 +75,28 @@ class QuantitativeGeneticEffect(object):
         :rtype: float
         """
         chridx, locidx = self.locus
-        maf = self.chromosomes[chridx].frequencies[locidx]
+        
+        q = self.chromosomes[chridx].frequencies[locidx]
+        p = 1 - q
 
         mu_g = 0
 
         # Genotypic value for major homozygote. Since we're counting minor
         # alleles, this always evaluates to 0, and we'll skip calculating it.
         # 
-        # mu_g += (1-maf) ** 2 * 0  
+        # mu_g += p ** 2 * 0  
         
         # Heterozygote genotypic value
-        mu_g += 2 * maf * (1-maf) * self.a * (1 + self.k)  
+        mu_g += 2 * q * p * self.a * (1 + self.k)  
         
         # Genotyping value for minor homozygote
-        mu_g += (maf ** 2) * 2 * self.a  # Genotypic value for minor homozygote
+        mu_g += (q ** 2) * 2 * self.a  # Genotypic value for minor homozygote
 
         return mu_g
 
     @property
     def alpha(self):
-        """
+        r"""
         Returns the average effect of allelic substitution for the locus,
         :math:`\alpha = a(1 + k(p - q))`.
 
@@ -395,7 +397,7 @@ class QuantitativeTrait(object):
                     # TODO: implement epistatic effects in file
                     raise NotImplementedError(
                         'Epistatic effects not yet implemented')
-                chrom, loc, _, allele_b, a, k = line.strip().split()
+                chrom, loc, _, _, a, k = line.strip().split()
                 locus = chrom, loc
                 trait.add_effect(locus, a, k)
         
