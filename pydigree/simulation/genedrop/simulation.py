@@ -25,6 +25,7 @@ class GeneDroppingSimulation(object):
         self.trait = None
         self.founder_genotype_hooks = []
         self.only = only
+        self.trait = None
 
     def set_trait(self, architecture):
         self.trait = architecture

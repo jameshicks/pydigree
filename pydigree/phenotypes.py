@@ -22,7 +22,7 @@ class Phenotypes(object):
     def __delitem__(self, key):
         self.clear_phenotype(key)
 
-    def get(key, default):
+    def get(self, key, default):
         "Gets a phenotype or default value if not present"
         return self.data.get(key, default)
 
