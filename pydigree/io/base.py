@@ -14,6 +14,7 @@ sex_codes = {'1': 0, '2': 1,
              'M': 0, 'F': 1, 
              '0': None, '-9': None} 
 
+
 class PEDRecord(object):
     def __init__(self, line, delimiter=' '):
         """
@@ -53,6 +54,7 @@ class PEDRecord(object):
 
         return ind
 
+
 def connect_individuals(pop):
     """
     Makes the connections in the genealogy from parents to children
@@ -65,12 +67,56 @@ def connect_individuals(pop):
     """
 
     for ind in pop.individuals:   
-        fam, ind_id = ind.label
+        fam, _ = ind.label
         
         ind.father = pop[(fam, ind.father)] if ind.father != '0' else None
         ind.mother = pop[(fam, ind.mother)] if ind.mother != '0' else None
 
         ind.register_with_parents()
+
+
+def sort_pedigrees(inds, population_handler):
+    """
+    Takes a set of individuals and sorts them into pedigrees.
+
+    Individuals must have labels that are (pedid, indid) tuples
+
+    :param inds: Individuals to be sorted
+    :param population_handler: a function to set up the population
+    :type inds: iterable
+    :type population_handler: Callable
+
+    :returns: Collection of pedigrees from the individuals
+    :rtype: PedigreeCollections
+    """
+    if not isinstance(population_handler, Callable):
+        population_handler = lambda *x: None
+
+    pc = PedigreeCollection()
+
+    inds = list(inds)
+    # A dict that maps pedigree labels to the corresponding individuals
+    pedigrees = {ind.label[0]: [] for ind in inds}
+
+    for ind in inds:
+        pedigrees[ind.label[0]].append(ind)
+
+
+    for pedigree_label, ped_inds in pedigrees.items():
+        ped = Pedigree(label=pedigree_label)
+
+        population_handler(ped)
+        
+        # Fix the labels 
+        for ind in ped_inds:
+            ind.label = ind.label[1]
+            ped[ind.label] = ind
+            ind.population = ped
+            ind.pedigree = ped
+        
+        pc[pedigree_label] = ped
+
+    return pc
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
              population_handler=None, data_handler=None, connect_inds=True,
@@ -123,7 +169,6 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 
     population = Population() if population is None else population
     p = Pedigree()
-    pc = PedigreeCollection()
 
     population_handler(p)
 
@@ -152,27 +197,8 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
         connect_individuals(p)
 
     # Step 3: Separate the individuals into pedigrees
+    pc = sort_pedigrees(p.individuals, population_handler)
 
-    # A dict that maps pedigree labels to the corresponding individuals
-    pedigrees = {ind.label[0]: [] for ind in p.individuals}
-
-    for ind in p.individuals:
-        pedigrees[ind.label[0]].append(ind)
-
-    # Create the the individual pedigrees
-    for pedigree_label, ped_inds in list(pedigrees.items()):
-        ped = Pedigree(label=pedigree_label)
-
-        population_handler(ped)
-        
-        # Fix the labels 
-        for ind in ped_inds:
-            ind.label = ind.label[1]
-            ped[ind.label] = ind
-            ind.population = ped
-            ind.pedigree = ped
-        
-        pc[pedigree_label] = ped
 
     return pc
 
