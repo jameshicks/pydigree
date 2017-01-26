@@ -10,6 +10,67 @@ from pydigree.genotypes import Alleles, SparseAlleles
 from collections import Callable
 from functools import reduce
 
+sex_codes = {'1': 0, '2': 1, 
+             'M': 0, 'F': 1, 
+             '0': None, '-9': None} 
+
+class PEDRecord(object):
+    def __init__(self, line, delimiter=' '):
+        """
+        Creates pedigree record from line 
+
+        :param line: a line in the pedigree file
+        :param delmiter: field separator
+        :type line: string
+        :type delimiter: string
+        """
+
+        split = line.strip().split(delimiter)
+        self.fam, self.ind_id, self.fa, self.mo, self.sex = split[0:5]
+        self.aff = split[5] if len(split) > 5 else None
+        self.data = split[6:] if len(split) > 6 else None
+
+
+    def create_individual(self, population=None):
+        """
+        Creates an Individual object from a Pedigree Record.
+
+        The individual will have the id tuple of (fam_id, ind_id)
+        
+        :param population: Population for the individual to belong to
+        :type population: Population
+
+        :rtype: Individual
+        """
+        
+        # Give a special ind_id for now to prevent overwriting duplicated
+        # ind_ids between families
+        temp_id = (self.fam, self.ind_id)    
+
+        ind = Individual(population, temp_id, 
+                         self.fa, self.mo, 
+                         sex_codes[self.sex])    
+
+        return ind
+
+def connect_individuals(pop):
+    """
+    Makes the connections in the genealogy from parents to children
+    and vice versa.
+
+    :param population: Set of individuals to connect
+    :type population: IndividualContainer
+
+    :rtype void:
+    """
+
+    for ind in pop.individuals:   
+        fam, ind_id = ind.label
+        
+        ind.father = pop[(fam, ind.father)] if ind.father != '0' else None
+        ind.mother = pop[(fam, ind.mother)] if ind.mother != '0' else None
+
+        ind.register_with_parents()
 
 def read_ped(filename, population=None, delimiter=None, affected_labels=None,
              population_handler=None, data_handler=None, connect_inds=True,
@@ -49,85 +110,68 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
     :returns: individuals contained in the pedigree file 
     :rtype: PedigreeCollection
     """
-    sex_codes = {'1': 0, '2': 1, 'M': 0, 'F': 1, '0': None, '-9': None}
+
     if not affected_labels:
-        affected_labels = {'1': 0, '2': 1,
-                           'A': 1, 'U': 0,
-                           'X': None,
-                           '-9': None}
+        affected_labels = {'1': 0, '2': 1, 'A': 1, 'U': 0,
+                           'X': None, '-9': None}
 
-   
+    if not isinstance(data_handler, Callable):
+        data_handler = lambda *x: None
     
-    def getph(ph):
-        "Tries to get a phenotype and returns unknown on failure"
+    if not isinstance(population_handler, Callable):
+        population_handler = lambda *x: None
 
-        try:
-            return affected_labels[ph]
-        except KeyError:
-            return None
-
-    population = Population()
-
+    population = Population() if population is None else population
     p = Pedigree()
-    if isinstance(population_handler, Callable):
-        population_handler(p)
-
     pc = PedigreeCollection()
 
+    population_handler(p)
+
+    # Step 1: Read the data and create the individuals
     with open(filename) as f:
         # Parse the lines in the file
         for line in f:
-            split = line.strip().split(delimiter)
-            if len(split) > 5:
-                fam, ind_id, fa, mo, sex, aff = split[0:6]
-            elif len(split) == 5:
-                fam, ind_id, fa, mo, sex = split[0:5]
-                aff = None
-            # Give a special ind_id for now, to prevent overwriting duplicated
-            # ind_ids between families
-            ind_id = (fam, ind_id)
-
-            if onlyinds and (ind_id not in onlyinds):
+            rec = PEDRecord(line, delimiter)
+            
+            if onlyinds and (rec.ind_id not in onlyinds):
                 continue
 
-            p[ind_id] = Individual(population, ind_id, fa, mo, sex)
-            p[ind_id].phenotypes['affected'] = getph(aff)
-            p[ind_id].pedigree = p
-            p[ind_id].sex = sex_codes[p[ind_id].sex]
+            ind = rec.create_individual(population)
+            ind.pedigree = p
+            ind.phenotypes['affected'] = affected_labels.get(rec.aff, None)
+            p[ind.label] = ind
 
-            if isinstance(data_handler, Callable) and len(split) > 6:
-                data = split[6:]
-                data_handler(p[ind_id], data)
+            if rec.data:
+                data_handler(p[ind.label], rec.data)
 
-    # Fix the individual-level data
+    # Step 2: Create the between-individual relationships
+
+    # Fix the individual-level data: individuals currently only have parent-ids
+    # in their parent fields and not references to actual individuals
     if connect_inds:
-        for ind in p.individuals:
-            fam, ind_id = ind.label
-            # Actually make the references instead of just pointing at strings
-            ind.father = p[(fam, ind.father)] if ind.father != '0' else None
-            ind.mother = p[(fam, ind.mother)] if ind.mother != '0' else None
+        connect_individuals(p)
 
-            ind.register_with_parents()
+    # Step 3: Separate the individuals into pedigrees
 
-    # Place individuals into pedigrees
-    pedigrees = {}
+    # A dict that maps pedigree labels to the corresponding individuals
+    pedigrees = {ind.label[0]: [] for ind in p.individuals}
+
     for ind in p.individuals:
-        if ind.label[0] not in pedigrees:
-            pedigrees[ind.label[0]] = []
-
         pedigrees[ind.label[0]].append(ind)
 
+    # Create the the individual pedigrees
     for pedigree_label, ped_inds in list(pedigrees.items()):
         ped = Pedigree(label=pedigree_label)
 
-        if isinstance(population_handler, Callable):
-            population_handler(ped)
+        population_handler(ped)
         
+        # Fix the labels 
         for ind in ped_inds:
             ind.label = ind.label[1]
             ped[ind.label] = ind
             ind.population = ped
             ind.pedigree = ped
+        
         pc[pedigree_label] = ped
 
     return pc
@@ -136,7 +180,7 @@ def read_ped(filename, population=None, delimiter=None, affected_labels=None,
 def read_phenotypes(pedigrees, csvfile, delimiter=',', missingcode='X'):
     """
     Reads a csv with header
-    famid,ind,phen,phen,phen,phen etc etc
+    famid, ind, phen, phen, phen, phen etc etc
 
     Arguments
     :param pedigrees:   data to update
