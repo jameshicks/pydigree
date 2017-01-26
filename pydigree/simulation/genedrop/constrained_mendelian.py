@@ -15,7 +15,7 @@ class ConstrainedMendelianSimulation(GeneDroppingSimulation):
     """
 
     def __init__(self, template=None, label=None, replications=1000, only=None):
-        Simulation.__init__(self, template=template, label=label,
+        GeneDroppingSimulation.__init__(self, template=template, label=label,
                             replications=replications, only=only)
         for ind in self.template.individuals:
             if ind.is_founder():
@@ -91,7 +91,7 @@ class ConstrainedMendelianSimulation(GeneDroppingSimulation):
         # Predict phenotypes
         if self.trait:
             for ind in siminds:
-                ind.predict_phenotype(trait)
+                ind.predict_phenotype(self.trait)
 
         if verbose:
             for ind in siminds:

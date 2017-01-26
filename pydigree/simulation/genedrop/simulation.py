@@ -94,7 +94,7 @@ class GeneDroppingSimulation(object):
                     of.write('{}\n'.format(outline))
 
     def predicted_trait_accuracy(self, ped):
-        calls = [(trait.predict_phenotype(ind),
+        calls = [(self.trait.predict_phenotype(ind), 
                   ind.phenotypes['affected'])
                  for ind in ped
                  if ind.phenotypes['affected'] is not None]
