@@ -49,11 +49,6 @@ dsext = Extension('pydigree.cydigree.datastructures',
                   extra_compile_args=['-Wno-unused-function'],
                   define_macros=macros)
 
-vtext = Extension('pydigree.cydigree.varianttree',
-                  sources=[os.path.join(cydigree_dir, 'varianttree.pyx')],
-                  extra_compile_args=['-Wno-unused-function'],
-                  define_macros=macros)
-
 vcfext = Extension('pydigree.cydigree.vcfparse',
                    sources=[os.path.join(cydigree_dir, 'vcfparse.pyx')],
                    extra_compile_args=['-Wno-unused-function'],
