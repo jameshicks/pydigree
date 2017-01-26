@@ -171,7 +171,7 @@ def write_ped(pedigrees, pedfile, delim=' ', predicate=None,
     """
 
     # Check if we're only supposed to be outputting certain chromosomes
-    output_chromosomes = output_chromosomes is not None
+    checkchroms = output_chromosomes is not None
     
     if not predicate:
         predicate = lambda x: True
