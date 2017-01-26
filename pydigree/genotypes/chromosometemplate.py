@@ -1,3 +1,5 @@
+"Classes for storing population level genotype information"
+
 from bisect import bisect_right
 
 import numpy as np
@@ -13,6 +15,7 @@ class ChromosomeSet(object):
     An object representing the full complement of variants in a population
     """
     def __init__(self):
+        "Create a set of chromosomes"
         self.chroms = []
 
     def __iter__(self):
@@ -163,9 +166,12 @@ class ChromosomeTemplate(object):
     def __iter__(self):
         return zip(self.labels, self.genetic_map, self.physical_map)
 
-    def _iinfo(self):
-        return zip(self.labels, self.genetic_map, self.physical_map,
-                    self.frequencies)
+    def iterinfo(self):
+        "Iterator over genotype labels, cM position, bp position, MAF"
+        return zip(self.labels, 
+                   self.genetic_map,
+                   self.physical_map,
+                   self.frequencies)
 
     @staticmethod
     def from_genomesimla(filename):

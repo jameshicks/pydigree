@@ -1,4 +1,5 @@
-# setup.py
+"Package management script"
+
 import sys
 import os.path
 
@@ -8,10 +9,9 @@ if sys.version_info[0:2] < (3, 3):
 from setuptools import setup, find_packages
 
 from distutils.extension import Extension
-from distutils.log import warn, error
+from distutils.log import error
 
 from Cython.Build import cythonize
-from Cython.Distutils import build_ext
 import numpy
 
 cyprofile = False
@@ -22,7 +22,7 @@ if cyprofile:
     directive_defaults['binding'] = True
 
 pydigree_dir = os.path.dirname(__file__)
-cydigree_dir = os.path.join(pydigree_dir, 'pydigree', 'cydigree') 
+cydigree_dir = os.path.join(pydigree_dir, 'pydigree', 'cydigree')
 cysources = ['pydigree/cydigree/cyfuncs.pyx',
              'pydigree/cydigree/datastructures.pyx',
              'pydigree/cydigree/vcfparse.pyx']
@@ -58,15 +58,27 @@ vcfext = Extension('pydigree.cydigree.vcfparse',
                    sources=[os.path.join(cydigree_dir, 'vcfparse.pyx')],
                    extra_compile_args=['-Wno-unused-function'],
                    define_macros=macros)
+
 sparray2 = Extension('pydigree.cydigree.sparsearray',
-                    language='c++',
-                    sources=[os.path.join(cydigree_dir, 'sparsearray.pyx')],
-                    extra_compile_args=['-Wno-unused-function'],
-                    define_macros=macros)
+                     language='c++',
+                     sources=[os.path.join(cydigree_dir, 'sparsearray.pyx')],
+                     extra_compile_args=['-Wno-unused-function'],
+                     define_macros=macros)
 
 
 with open(os.path.join(pydigree_dir, 'LICENSE.txt')) as f:
-    license = f.read()
+    liblicense = f.read()
+
+lib_class = ['Programming Language :: Python :: 3 :: Only',
+             'Programming Language :: Cython',
+             'Intended Audience :: Science/Research',
+             'Topic :: Scientific/Engineering :: Bio-Informatics',
+             'Topic :: Scientific/Engineering :: Mathematics',
+             'Topic :: Sociology :: Genealogy',
+             'Topic :: Software Development :: Libraries :: Python Modules',
+             'Development Status :: 4 - Beta',
+             'License :: OSI Approved :: Apache Software License']
+lib_requirements = ['numpy', 'scipy', 'pandas', 'cython']
 
 setup(
     name='pydigree',
@@ -76,17 +88,8 @@ setup(
     author_email='jhicks22@wustl.edu',
     url='https://github.com/jameshicks/pydigree',
     download_url="https://github.com/jameshicks/pydigree/tarball/0.8a",
-    license=license,
+    license=liblicense,
     packages=find_packages(),
     ext_modules=cythonize([cyext, dsext, vtext, vcfext, sparray2]),
-    requires=['numpy', 'scipy', 'pandas', 'cython'],
-    classifiers=['Programming Language :: Python :: 3 :: Only',
-                 'Programming Language :: Cython',
-                 'Intended Audience :: Science/Research',
-                 'Topic :: Scientific/Engineering :: Bio-Informatics',
-                 'Topic :: Scientific/Engineering :: Mathematics',
-                 'Topic :: Sociology :: Genealogy',
-                 'Topic :: Software Development :: Libraries :: Python Modules',
-                 'Development Status :: 4 - Beta',
-                 'License :: OSI Approved :: Apache Software License']
-)
+    requires=lib_requirements,
+    classifiers=lib_class)

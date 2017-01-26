@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+"A linear mixed effects model"
 
 from itertools import product
 import copy
@@ -11,7 +10,6 @@ from scipy.sparse import csc_matrix, issparse
 from scipy.sparse import eye as sparseeye
 from scipy.linalg import inv as scipy_inv
 from scipy.linalg import pinv
-from scipy.optimize import minimize
 
 from pydigree.stats.mixedmodel.likelihood import makeP
 from pydigree.stats.mixedmodel.likelihood import full_loglikelihood
@@ -25,10 +23,16 @@ from pydigree.stats.mixedmodel.maximization import MLEResult
 
 
 def is_genetic_effect(effect):
+    """
+    Is this effect a genetic effect?
+
+    :rtype: bool
+    """
     return effect in set(['additive', 'dominance', 'mitochondrial'])
 
 
 def inv(M):
+    "Invert a matrix. If sparse, convert to dense first"
     if issparse(M):
         M = M.todense()
     return scipy_inv(M)
@@ -71,11 +75,31 @@ def make_incidence_matrix(individuals, effect_name):
 
 
 class RandomEffect(object):
-    __slots__ = ['label', 'variance_component',
-                 'incidence_matrix', 'covariance_matrix', 'levels', 'V_i']
+    "A random effect in a mixed model"
+    __slots__ = ['label', 
+                 'variance_component',
+                 'incidence_matrix', 
+                 'covariance_matrix', 
+                 'levels', 
+                 'V_i']
 
     def __init__(self, individuals, label, variance=None,
                  incidence_matrix=None, covariance_matrix=None, levels=None):
+        """
+        Create the random effect.
+
+        :param individuals: Individuals included
+        :param label: name of the effect
+        :param variance: variance associated with the effect
+        :param incidence_matrix: incidence matrix for random effect
+        :param covariance_matrix: covariance matrix for random effect
+        :param levels: levels of random effect
+        :type individuals: iterable
+        :type label: string
+        :type variance: float
+        :type incidence_matrix: matrix
+        :type covariance_matrix: matrix 
+        """
         nobs = len(individuals)
 
         self.label = label
@@ -84,10 +108,8 @@ class RandomEffect(object):
         if isinstance(incidence_matrix, str) and incidence_matrix == 'eye':
             self.incidence_matrix = sparseeye(nobs, nobs)
         elif incidence_matrix is None:
-            m = make_incidence_matrix(individuals,
-                                      self.label)
-            self.incidence_matrix = m
-            
+            self.incidence_matrix = make_incidence_matrix(individuals,
+                                                          self.label)
         else:
             self.incidence_matrix = incidence_matrix
 
@@ -106,7 +128,8 @@ class RandomEffect(object):
             self.covariance_matrix = covariance_matrix
 
         if not levels:
-            self.levels = ['L{}'.format(i) for i in range(self.incidence_matrix.shape[1])]
+            self.levels = ['L{}'.format(i) for i in 
+                            range(self.incidence_matrix.shape[1])]
         else:
             if len(levels) != incidence_matrix.shape[1]:
                 raise ValueError('Number of levels not correct')
@@ -209,9 +232,6 @@ class MixedModel(object):
 
         return newmm
 
-    def _centery(self):
-        self.y = self.y - self.y.mean()
-
     def fit_model(self):
         """
         Builds X, Z, Y, and R for the model
@@ -279,9 +299,13 @@ class MixedModel(object):
                 return False
 
         obs = [x for x in self.pedigrees.individuals
-               if has_all_fixefs(x, self.fixed_effects) and has_outcome(x) and x in self.only]
+               if (has_all_fixefs(x, self.fixed_effects) and 
+                   has_outcome(x) and x)
+               in self.only]
+        
         if not self.obs:
             self.obs = obs
+        
         return obs
 
     def nobs(self):
@@ -311,7 +335,7 @@ class MixedModel(object):
 
     @property
     def R(self):
-        "Covariance matrix of residual_variance"
+        "Covariance matrix of the residual variance"
         return self.random_effects[-1].covariance_matrix
 
     @property
@@ -487,11 +511,17 @@ class MixedModel(object):
 
     @property
     def maximized(self):
+        """
+        Has the model been maximized? 
+
+        :rtype: bool
+        """
         return isinstance(self.mle, MLEResult)
 
     def loglikelihood(self, restricted=False, vcs=None, vmat=None):
         """
-        Returns the loglikelihood of the model with the current model parameters
+        Returns the loglikelihood of the model with the current model 
+        parameters
 
         :returns: loglikelihood
         :rtype: float
@@ -543,13 +573,25 @@ class MixedModel(object):
         return -2 * loglike + nparam * np.log(n)
 
     def blup(self, idx):
+        """
+        Get the BLUPs for a random effect
+
+        :param idx: index of effect
+        :type idx: int
+
+        :rtype: np.array
+        """
         rf = self.random_effects[idx]
         res = (self.y - self.X * self.beta) 
         blups = rf.G * rf.Z.T * inv(self.V.todense()) * res
         return np.array(blups.T)[0]
 
     def summary(self):
-        """ Prints a summary of the current model """
+        """ 
+        Prints a summary of the current model 
+
+        :rtype: void
+        """
         if not self.maximized:
             raise ValueError('Model not maximized!')
 

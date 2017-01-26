@@ -1,4 +1,4 @@
-#!/usr/bin/env/python
+"A collection of individuals with fixed relationships"
 
 import numpy as np
 
@@ -8,8 +8,14 @@ from pydigree.population import Population
 
 
 class Pedigree(Population):
-
+    "A collection of individuals with fixed relationships"
+    
     def __init__(self, label=None):
+        """
+        Create a pedigree.
+
+        :param label: pedigree label
+        """
         Population.__init__(self)
         self.label = label
         self.kinmat = {}

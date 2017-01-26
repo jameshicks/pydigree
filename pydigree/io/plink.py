@@ -247,7 +247,7 @@ def write_map(pedigrees, mapfile, output_chromosomes=None):
         for chrom in pedigrees.chromosomes:
             if checkchroms and chrom.outputlabel not in output_chromosomes:
                 continue
-            for mi, marker in enumerate(chrom._iinfo()):
+            for mi, marker in enumerate(chrom.iterinfo()):
                 label, cm, mb, _ = marker
                 if not mb:
                     mb = int(cm * 10e6)

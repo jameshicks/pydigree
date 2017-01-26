@@ -3,7 +3,7 @@ from numpy.linalg import LinAlgError
 
 from pydigree.stats.mathfuncs import is_positive_definite, grid
 
-from .likelihood import makeP
+# from .likelihood import makeP
 
 
 class MLEResult(object):
@@ -87,8 +87,8 @@ def newtonlike_maximization(mm, likelihood, maxiter=250, tol=1e-4,
     :param likelihood: a Likelihood object
     :param maxiter: The maximum number of iterations of scoring before raising
         an error
-    :param tol: The minimum amount of change in the proportion of variance by any of
-        the variance components to continue iterating.
+    :param tol: The minimum amount of change in the proportion of variance by 
+        any of the variance components to continue iterating.
     :param scoring: Number of iterations of Fisher Scoring or AI-REML before
         switching to Newton-Raphson. If already using Newton-Raphson,
         this argument has no effect.
@@ -118,7 +118,6 @@ def newtonlike_maximization(mm, likelihood, maxiter=250, tol=1e-4,
     for i in range(maxiter):
         if (i - 1) == scoring:
             likelihood.set_info('nr')
-
 
         # Make the information matrix and gradient
         grad = likelihood.gradient()
@@ -164,8 +163,8 @@ def scoring_iteration(info_mat, gradient):
     """
     Performs an iteration for a Newton-type maximization algorithm
 
-    :param info_mat: A matrix of second derivatives (or approximations of it) at 
-        the current parameter estimates
+    :param info_mat: A matrix of second derivatives (or approximations of it) 
+        at the current parameter estimates
     :param gradient: A vector containing the gradient at the current parameter
         estimates
 

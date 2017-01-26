@@ -2,7 +2,7 @@
 
 from pydigree.population import Population
 from pydigree.individual import Individual
-from pydigree.genotypes import ChromosomeTemplate, ChromosomeSet
+from pydigree.genotypes import ChromosomeTemplate
 from pydigree.io import smartopen 
 from pydigree.io.base import genotypes_from_sequential_alleles as gt_from_seq
 from pydigree.exceptions import FileFormatError

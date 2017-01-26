@@ -1,13 +1,17 @@
+"Classes for specifying the mating structure in a population"
+
 from pydigree.individual import Individual
 import numpy as np
 
 
 class MatingStructure(object):
     """
-    A class representing how a population mates, for when fully random mating is not desired
+    A class representing how a population mates, for when fully random mating 
+    may not be desired.
     """
 
     def __init__(self):
+        "Create the structure"
         self.cliques = []
 
     def next_generation(self, pop, gensize):
@@ -32,7 +36,9 @@ class MatingStructure(object):
         # Choose the the sexes each child
         sexes = np.random.randint(0, 2, gensize)
 
-        progeny = [self.cliques[parents[i]].mate(pop=pop, sex=sexes[i], label=i)
+        progeny = [self.cliques[parents[i]].mate(pop=pop, 
+                                                 sex=sexes[i],
+                                                 label=i)
                    for i in range(gensize)]
 
         return progeny
@@ -46,9 +52,18 @@ class MatingClique(object):
     :ivar pop: current population
     :ivar males: the males in the clique
     :ivar females: the females in the clique
+    :type pop: Population
     """
 
     def __init__(self, pop, males=None, females=None):
+        """
+        Create a clique
+        
+        :param pop: The population to draw the clique individuals are 
+            drawn from
+        :param males: Males in the clique
+        :param females: Females in the clique
+        """
         self.pop = pop
         self.males = males if males is not None else []
         self.females = females if females is not None else []
@@ -81,7 +96,8 @@ class MatingClique(object):
         is available, they are randomly selected.
 
         :param pop: Population for the new individual
-        :param sex: Sex of the offspring if specified, otherwise randomly chosen
+        :param sex: Sex of the offspring if specified, otherwise offspring 
+            randomly sex is chosen
         :param label: Label for the offspring individual
         :type pop: Population
         :type sex: 0,1
@@ -108,6 +124,14 @@ class RandomMating(MatingStructure):
     """
 
     def next_generation(self, pop, gensize):
+        """
+        Create individuals for the next generation by random mating
+
+        :param pop: Parent population
+        :param gensize: Size of next generation
+        :type pop: Population
+        :type gensize: int
+        """
 
         males = pop.males()
         females = pop.females()
@@ -143,4 +167,5 @@ class MonogamousMating(MatingStructure):
         np.random.shuffle(fathers)
         np.random.shuffle(mothers)
 
-        return [MatingClique(pop, [pa], [ma]) for pa, ma in zip(fathers, mothers)]
+        return [MatingClique(pop, [pa], [ma]) for pa, ma 
+                in zip(fathers, mothers)]

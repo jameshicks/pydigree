@@ -16,7 +16,7 @@ parser.add_argument('--outcome', required=True, help='Outcome phenotype')
 parser.add_argument('--fixedeffects', '--fixefs', nargs="*", dest='fixefs',
                     help='Fixed effects for model')
 parser.add_argument('--reml', action='store_true',
-                    help='Use restricted maximum likelihood (REML) for maximization')
+                    help='Use restricted maximum likelihood for maximization')
 parser.add_argument('--maxmethod', help='Method for maximization',
                     default='Fisher')
 parser.add_argument('--starts', help='Starting values for variance components',

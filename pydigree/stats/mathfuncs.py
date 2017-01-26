@@ -1,8 +1,10 @@
+"Misc math functions"
+
 import itertools
 
 import numpy as np
 from numpy.linalg import LinAlgError
-from scipy.optimize import approx_fprime
+
 
 def is_positive_definite(mat):
     """ 
@@ -35,6 +37,7 @@ def grid(func, nargs, low, high, ntests=10, predicate=None):
     :type func: callable
     :type predicate: callable
     '''
+
     if predicate is None:
         predicate = lambda *x: True
 
