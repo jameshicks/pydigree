@@ -1,3 +1,5 @@
+"A pool of Chromosomes a simulation can draw from"
+
 from itertools import chain
 
 import numpy as np
@@ -15,11 +17,26 @@ def richards(A, C, M, B, T):
     B: Growth Rate
     T: Maximum growth position
     '''
-    return lambda gen: A + (C / (1+ T * np.exp(-B *(gen - M)) ** (1/T)))
+    return lambda gen: A + (C / (1 + T * np.exp(-B * (gen - M)) ** (1 / T)))
+
 
 class ChromosomePool(object):
 
+    """
+    A pool of Chromosomes a simulation can draw from 
+    """
+
     def __init__(self, population=None, chromosomes=None, size=0):
+        """
+        Create the pool.
+
+        :param population: 
+        :param chromosomes: the set of chromosomes
+        :param size: size of the pool
+        :type size: int
+        :type chromosomes: ChromosomeSet
+        :type population: IndividualContainer
+        """
         if population:
             self.chromosomes = population.chromosomes
         elif chromosomes:
@@ -40,7 +57,7 @@ class ChromosomePool(object):
             self.pool[i] = q.linkageequilibrium_chromosomes(2 * size)
 
     def fix(self, loc, value):
-        ''' Sets all alleles at loc to value'''  
+        ''' Sets all alleles at loc to value'''
         chromidx, posidx = loc
         p = self.pool[chromidx]
         for chrom in p:
@@ -65,6 +82,9 @@ class ChromosomePool(object):
 
             # Chromosomes have a 1/2 chance of being recombined with another
             def choose_chrom(pool, chrmap):
+                """
+                Get two random chromosomes, recombine them, return the result
+                """
                 # Since Alleles is a subclass of ndarray, numpy has been
                 # treating pool as a multidimensional array. We'll generate
                 # the indices ourself and get them that way. Eventually
@@ -80,7 +100,13 @@ class ChromosomePool(object):
 
     # Chromosome functions
     def chromosome(self, chromindex):
-        # Get a random chromomsome
+        """ 
+        Get a random chromomsome from the pool
+        :param chromindex: which chromosome are we looking for?
+        :type chromindex: int
+
+        :rtype: AlleleContainer
+        """
         chidx = np.random.randint(0, len(self.pool[chromindex]))
 
         return self.pool[chromindex][chidx]
@@ -93,18 +119,31 @@ class ChromosomePool(object):
     def evolve(self, growth_func, gens):
         ''' 
         Iterates the pool according to a popuation growth model.
-        
-        growth_func: A function that takes a generation number as an argument
-            and returns a generation size 
+
+        :param growth_func: A function that takes a generation number as an 
+            argument and returns a generation size
+        :param gens: number of generations to advance
+        :type growth_func: Callable
+        :type gens: int
+
+        :rtype void: 
         '''
         for x in range(gens):
             self.iterate_pool(growth_func(x))
 
     @staticmethod
     def from_population(pop):
+        """
+        Creates a pool from an existing population.
+
+        :param pop: Base population
+        :type pop: Population
+
+        :rtype: ChromosomePool
+        """
         newpool = ChromosomePool(chromosomes=pop.chromosomes)
-        newpool.n0 = len(pop.individuals) *2
-        for chridx, chrom in enumerate(pop.chromosomes):
+        newpool.n0 = len(pop.individuals) * 2
+        for chridx, _ in enumerate(pop.chromosomes):
             poolchroms = chain.from_iterable(ind.genotypes[chridx]
                                              for ind in pop.individuals)
             thischrom = list(poolchroms)
