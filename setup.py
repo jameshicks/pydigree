@@ -66,10 +66,15 @@ with open(os.path.join(pydigree_dir, 'classifiers.txt')) as f:
 
 lib_requirements = ['numpy', 'scipy', 'pandas', 'cython']
 
+lib_keywords = ['genetics', 'pedigree', 'kinship', 'simulation',
+                'vcf', 'plink', 'gwas']
+
+
 setup(
     name='pydigree',
     version='0.8a',
     description='A package for operations on pedigree and genotype data',
+    keywords=lib_keywords,
     author='James Hicks',
     author_email='jhicks22@wustl.edu',
     url='https://github.com/jameshicks/pydigree',
