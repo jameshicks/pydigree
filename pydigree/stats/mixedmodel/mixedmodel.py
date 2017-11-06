@@ -300,8 +300,7 @@ class MixedModel(object):
 
         obs = [x for x in self.pedigrees.individuals
                if (has_all_fixefs(x, self.fixed_effects) and 
-                   has_outcome(x) and x)
-               in self.only]
+                   has_outcome(x) and x)]
         
         if not self.obs:
             self.obs = obs

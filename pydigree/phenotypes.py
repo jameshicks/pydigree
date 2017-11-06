@@ -63,7 +63,7 @@ class Phenotypes(object):
 
     def update(self, other):
         "Updates the current Phenotype object with data from the other"
-        if isinstance(other.phenotypes, Phenotypes):
+        if isinstance(other, Phenotypes):
             self.data.update(other.data)
         else:
             self.data.update(other)

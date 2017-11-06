@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import pydigree as pyd
 from pydigree.stats import MixedModel
+from pydigree.common import table
 from pydigree.stats.stattests import LikelihoodRatioTest
 
 parser = argparse.ArgumentParser()
@@ -107,7 +108,7 @@ for chromidx, chromobj in enumerate(peds.chromosomes):
         if args.only is not None and markerlabel not in only:
             continue
 
-        freqs = peds.allele_frequencies(locus, nonfounders=True)
+        freqs = table(peds.allele_list(locus))
         alleles = [x[0]
                    for x in sorted(list(freqs.items()),
                                    key=lambda x: x[1],
