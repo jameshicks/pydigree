@@ -55,6 +55,10 @@ Pydigree includes a few useful scripts for dealing with pedigree data including:
 * `genedrop.py`: Performs gene dropping simulations to approximate the actual probability of an IBD configuration
 * `polygenic.py`: Calculates variance components for normally distributed continuous traits.
 
+### Citation
+
+J.E. Hicks (2017) Pydigree: a python module for manipulation and simulation and of genetic datasets. biorxiv preprint doi:[10.1101/213413](https://doi.org/10.1101/213413)
+
 ### References 
 #### Pedigrees
 * Charles II of Spain: http://en.wikipedia.org/wiki/Charles_II_of_Spain
